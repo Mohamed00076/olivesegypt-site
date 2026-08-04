@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Analytics — Triple Company (Admin)</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --olive-deep: #3d5a2e;
+      --olive: #5a7a4a;
+      --gold: #c9a84c;
+      --ink: #1c2416;
+      --muted: #6b7561;
+      --bg: #f6f5ef;
+      --card: #ffffff;
+      --border: #e4e2d6;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+    header.topbar {
+      background: var(--olive-deep);
+      color: #fff;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header.topbar h1 {
+      font-size: 18px;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    header.topbar .brand-mark { color: var(--gold); }
+    .controls { display: flex; align-items: center; gap: 8px; }
+    .range-btn {
+      background: transparent;
+      color: #e9ecdf;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    .range-btn:hover { background: rgba(255,255,255,0.12); }
+    .range-btn.active {
+      background: var(--gold);
+      color: var(--ink);
+      border-color: var(--gold);
+      font-weight: 600;
+    }
+    main { max-width: 1120px; margin: 0 auto; padding: 24px; }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .kpi .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .kpi .value {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--olive-deep);
+      line-height: 1.1;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--olive-deep);
+      margin: 0 0 14px;
+      font-weight: 600;
+    }
+    .card.full { grid-column: 1 / -1; }
+    ul.rank { list-style: none; margin: 0; padding: 0; }
+    ul.rank li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0efe6;
+      font-size: 14px;
+    }
+    ul.rank li:last-child { border-bottom: none; }
+    ul.rank .bar-wrap { position: relative; flex: 1; min-width: 0; }
+    ul.rank .lbl {
+      position: relative;
+      z-index: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 2px 6px;
+      display: block;
+    }
+    ul.rank .bar {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(90,122,74,0.22), rgba(90,122,74,0.10));
+      border-radius: 5px;
+      z-index: 0;
+    }
+    ul.rank .cnt { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 600; }
+    .empty { color: var(--muted); font-size: 13px; padding: 10px 0; }
+    .chart-box { position: relative; height: 300px; }
+    .chart-box.short { height: 220px; }
+    /* Gate / states */
+    .gate {
+      max-width: 440px;
+      margin: 12vh auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 40px 36px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .gate .mark { font-size: 34px; margin-bottom: 8px; }
+    .gate h2 { margin: 0 0 8px; color: var(--olive-deep); font-size: 20px; }
+    .gate p { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+    .btn-primary {
+      display: inline-block;
+      background: var(--olive-deep);
+      color: #fff;
+      text-decoration: none;
+      padding: 11px 26px;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .btn-primary:hover { background: #33501f; }
+    .banner {
+      background: #fff6e0;
+      border: 1px solid #e6d59a;
+      color: #6b5410;
+      padding: 10px 14px;
+      border-radius: 9px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .hidden { display: none !important; }
+    .loading-dim { opacity: 0.45; transition: opacity .2s; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <!-- Sign-in gate (shown when /api/analytics returns 401) -->
+  <div id="gate" class="gate hidden">
+    <div class="mark" style="color: var(--gold);">&#9673;</div>
+    <h2>Admin sign-in required</h2>
+    <p>Analytics are private. Sign in with your admin account to view the dashboard.</p>
+    <a class="btn-primary" href="/login">Sign in as Admin</a>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="app" class="hidden">
+    <header class="topbar">
+      <h1><span class="brand-mark">&#9673;</span>&nbsp; Triple Company &middot; Analytics</h1>
+      <div class="controls">
+        <button class="range-btn" data-range="7d">7 days</button>
+        <button class="range-btn active" data-range="30d">30 days</button>
+        <button class="range-btn" data-range="90d">90 days</button>
+      </div>
+    </header>
+    <main>
+      <div id="banner" class="banner hidden"></div>
+
+      <section class="kpis" id="kpis">
+        <div class="kpi"><div class="label">Visitors</div><div class="value" id="kpi-visitors">&mdash;</div></div>
+        <div class="kpi"><div class="label">Pageviews</div><div class="value" id="kpi-pageviews">&mdash;</div></div>
+        <div class="kpi"><div class="label">Bounce rate</div><div class="value" id="kpi-bounce">&mdash;</div></div>
+        <div class="kpi"><div class="label">Avg. session</div><div class="value" id="kpi-duration">&mdash;</div></div>
+      </section>
+
+      <div class="card full">
+        <h2>Traffic over time</h2>
+        <div class="chart-box"><canvas id="chart-traffic"></canvas></div>
+      </div>
+
+      <div class="grid">
+        <div class="card"><h2>Visitors by country</h2><ul class="rank" id="list-country"></ul></div>
+        <div class="card"><h2>Top pages</h2><ul class="rank" id="list-pages"></ul></div>
+        <div class="card"><h2>Top referrers</h2><ul class="rank" id="list-referrer"></ul></div>
+        <div class="card">
+          <h2>Devices</h2>
+          <div class="chart-box short"><canvas id="chart-device"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card full">
+        <h2>Browsers</h2>
+        <ul class="rank" id="list-browser"></ul>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var state = { range: '30d' };
+    var trafficChart = null;
+    var deviceChart = null;
+
+    // --- helpers -----------------------------------------------------------
+    function api(report) {
+      return fetch('/api/analytics?report=' + encodeURIComponent(report) +
+                   '&range=' + encodeURIComponent(state.range) + '&limit=8',
+                   { credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
+    }
+
+    function fmtNum(n) {
+      n = Number(n) || 0;
+      return n.toLocaleString('en-US');
+    }
+    function fmtDuration(sec) {
+      sec = Math.round(Number(sec) || 0);
+      if (sec < 60) return sec + 's';
+      var m = Math.floor(sec / 60), s = sec % 60;
+      if (m < 60) return m + 'm ' + s + 's';
+      var h = Math.floor(m / 60); m = m % 60;
+      return h + 'h ' + m + 'm';
+    }
+    function labelFor(x) {
+      if (x === null || x === undefined || x === '') return '(direct / none)';
+      return String(x);
+    }
+
+    function renderRank(elId, rows) {
+      var el = document.getElementById(elId);
+      el.innerHTML = '';
+      if (!rows || !rows.length) {
+        el.innerHTML = '<li class="empty">No data yet.</li>';
+        return;
+      }
+      var max = 0;
+      rows.forEach(function (r) { max = Math.max(max, Number(r.y) || 0); });
+      rows.forEach(function (r) {
+        var pct = max > 0 ? Math.round((Number(r.y) || 0) / max * 100) : 0;
+        var li = document.createElement('li');
+        var wrap = document.createElement('div');
+        wrap.className = 'bar-wrap';
+        var bar = document.createElement('span');
+        bar.className = 'bar';
+        bar.style.width = pct + '%';
+        var lbl = document.createElement('span');
+        lbl.className = 'lbl';
+        lbl.textContent = labelFor(r.x);       // textContent => XSS-safe
+        lbl.title = labelFor(r.x);
+        wrap.appendChild(bar); wrap.appendChild(lbl);
+        var cnt = document.createElement('span');
+        cnt.className = 'cnt';
+        cnt.textContent = fmtNum(r.y);
+        li.appendChild(wrap); li.appendChild(cnt);
+        el.appendChild(li);
+      });
+    }
+
+    function showBanner(msg) {
+      var b = document.getElementById('banner');
+      if (!msg) { b.classList.add('hidden'); return; }
+      b.textContent = msg;
+      b.classList.remove('hidden');
+    }
+
+    // --- rendering of each widget -----------------------------------------
+    function renderSummary(s) {
+      document.getElementById('kpi-visitors').textContent = fmtNum(s.visitors);
+      document.getElementById('kpi-pageviews').textContent = fmtNum(s.pageviews);
+      document.getElementById('kpi-bounce').textContent =
+        (s.visits > 0 ? Math.round((s.bounceRate || 0) * 100) : 0) + '%';
+      document.getElementById('kpi-duration').textContent = fmtDuration(s.avgDuration);
+    }
+
+    function renderTraffic(data) {
+      var pv = (data && data.pageviews) || [];
+      var se = (data && data.sessions) || [];
+      var labels = pv.map(function (p) { return p.x; });
+      var ctx = document.getElementById('chart-traffic').getContext('2d');
+      var cfg = {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Pageviews', data: pv.map(function (p) { return p.y; }),
+              borderColor: '#3d5a2e', backgroundColor: 'rgba(61,90,46,0.10)',
+              fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 },
+            { label: 'Visits', data: se.map(function (p) { return p.y; }),
+              borderColor: '#c9a84c', backgroundColor: 'rgba(201,168,76,0.08)',
+              fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+            y: { beginAtZero: true, ticks: { precision: 0 } }
+          },
+          plugins: { legend: { position: 'bottom' } }
+        }
+      };
+      if (trafficChart) trafficChart.destroy();
+      trafficChart = new Chart(ctx, cfg);
+    }
+
+    function renderDevice(rows) {
+      rows = rows || [];
+      var ctx = document.getElementById('chart-device').getContext('2d');
+      var cfg = {
+        type: 'doughnut',
+        data: {
+          labels: rows.map(function (r) { return labelFor(r.x); }),
+          datasets: [{
+            data: rows.map(function (r) { return r.y; }),
+            backgroundColor: ['#3d5a2e', '#c9a84c', '#5a7a4a', '#8a9c6e', '#b8894a', '#d9cfa0'],
+            borderWidth: 1, borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'right' } }
+        }
+      };
+      if (deviceChart) deviceChart.destroy();
+      deviceChart = new Chart(ctx, cfg);
+    }
+
+    // --- load orchestration ------------------------------------------------
+    function showGate() {
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('gate').classList.remove('hidden');
+    }
+    function showApp() {
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    }
+
+    function loadAll() {
+      var app = document.getElementById('app');
+      app.classList.add('loading-dim');
+      showBanner('');
+
+      // Summary first — it doubles as the auth probe.
+      api('summary').then(function (r) {
+        if (r.status === 401) { showGate(); return Promise.reject('unauth'); }
+        if (!r.ok) { throw new Error('summary ' + r.status); }
+        return r.json();
+      }).then(function (summary) {
+        showApp();
+        renderSummary(summary);
+
+        // Fire the rest in parallel; each degrades independently.
+        var jobs = [
+          api('timeseries').then(okJson).then(renderTraffic).catch(function () { renderTraffic({}); }),
+          api('country').then(okJson).then(function (d) { renderRank('list-country', d); }).catch(function () { renderRank('list-country', []); }),
+          api('pages').then(okJson).then(function (d) { renderRank('list-pages', d); }).catch(function () { renderRank('list-pages', []); }),
+          api('referrer').then(okJson).then(function (d) { renderRank('list-referrer', d); }).catch(function () { renderRank('list-referrer', []); }),
+          api('browser').then(okJson).then(function (d) { renderRank('list-browser', d); }).catch(function () { renderRank('list-browser', []); }),
+          api('device').then(okJson).then(renderDevice).catch(function () { renderDevice([]); })
+        ];
+        return Promise.all(jobs);
+      }).then(function () {
+        app.classList.remove('loading-dim');
+      }).catch(function (e) {
+        app.classList.remove('loading-dim');
+        if (e === 'unauth') return;               // gate already shown
+        // Auth was OK but upstream (Umami) failed. Keep the shell, warn cleanly.
+        showApp();
+        showBanner('Analytics data is temporarily unavailable. Please try again shortly.');
+      });
+    }
+
+    function okJson(r) {
+      if (r.status === 401) { showGate(); throw 'unauth'; }
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.json();
+    }
+
+    // --- range selector ----------------------------------------------------
+    Array.prototype.forEach.call(document.querySelectorAll('.range-btn'), function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.classList.contains('active')) return;
+        state.range = btn.getAttribute('data-range');
+        Array.prototype.forEach.call(document.querySelectorAll('.range-btn'), function (b) {
+          b.classList.toggle('active', b === btn);
+        });
+        loadAll();
+      });
+    });
+
+    loadAll();
+  })();
+  </script>
+</body>
+</html>

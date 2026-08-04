@@ -1,0 +1,8 @@
+{
+  "name": "triple-company-static-site",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "@neondatabase/serverless": "0.10.4"
+  }
+}
