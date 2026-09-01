@@ -1,9 +1,9 @@
 'use strict';
 // Live DB round-trip proof for /api/inquiries.
 //
-// The Neon connection string is a Vercel "sensitive" env var and CANNOT be
-// pulled to a laptop (env pull / API return it empty by design). Run this where
-// the string is actually available:
+// The Neon connection string may be marked "sensitive"/write-only in your
+// Netlify env config, in which case it won't come back via the CLI or API by
+// design. Run this where the string is actually available:
 //
 //   A) On a preview/prod deploy, hit the deployed endpoints (POST then GET with
 //      a real session cookie) — the true end-to-end test.
@@ -11,7 +11,7 @@
 //   B) Locally, only if you paste a connection string into the environment:
 //        DATABASE_URL='postgres://...neon.tech/db?sslmode=require' \
 //          node scripts/db-roundtrip-check.js
-//      (Get it from the Neon dashboard, NOT from `vercel env pull`.)
+//      (Get it from the Neon dashboard directly, not from the Netlify CLI.)
 //
 // Proves: CREATE TABLE IF NOT EXISTS is idempotent, an INSERT persists, and a
 // SELECT ... ORDER BY created_at DESC returns the row in the dashboard shape.
