@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:3.0
+N:;Triple Company for Industrial Development;;;
+FN:Triple Company for Industrial Development
+ORG:Triple Company for Industrial Development
+TITLE:Sales
+EMAIL;TYPE=INTERNET,WORK:sales@olivesegypt.com
+TEL;TYPE=WORK,VOICE:+20 100 604 5961
+ADR;TYPE=WORK:;;5th Settlement, Ouroba Square;Cairo;;;Egypt
+URL:https://olivesegypt.com
+END:VCARD

@@ -6,7 +6,6 @@ Disallow: /letterhead
 Disallow: /quotation
 Disallow: /invoice
 Disallow: /business-card
-Disallow: /company-profile
 Disallow: /catalog/print
 Disallow: /admin
 
