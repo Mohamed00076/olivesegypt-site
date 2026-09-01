@@ -219,6 +219,9 @@
             if (window.TC && TC.trackEvent) {
               TC.trackEvent('quote_request_submitted', { source_page: payload.source_page, product: payload.product_interest || null });
             }
+            if (window.TC && TC.logEvent) {
+              TC.logEvent('contact_form_submit', { source_page: payload.source_page });
+            }
             form.reset();
             showStatus('success', 'Thank you \u2014 your inquiry has been received. Our export team will respond within 24 hours.');
             if (window.TC && TC.trackEvent) {

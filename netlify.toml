@@ -56,6 +56,26 @@
   status = 200
   force = true
 
+# Section J Phase 1 -- site's own custom event pipeline (alongside, not
+# instead of, the Umami proxy above)
+[[redirects]]
+  from = "/api/analytics-collect"
+  to = "/.netlify/functions/analytics-collect"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/analytics-report"
+  to = "/.netlify/functions/analytics-report"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/analytics-settings"
+  to = "/.netlify/functions/analytics-settings"
+  status = 200
+  force = true
+
 # Buyer CRM (Section H) — separate auth/session from /admin/analytics above
 [[redirects]]
   from = "/api/crm/auth/login"

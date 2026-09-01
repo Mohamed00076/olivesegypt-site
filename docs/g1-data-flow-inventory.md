@@ -126,14 +126,46 @@ Included for completeness, not because it collects visitor personal data.
 | Admin username/password | Login form, internal staff only | Compared against `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` environment variables at request time | Access control for `/admin/analytics` | **Never persisted to any database** — no user table exists; credentials live only in Netlify environment variables. |
 | `tc_session` cookie | Server-issued on successful login | Client (httpOnly, Secure cookie) | Session for the admin dashboard | HMAC-signed, contains username + issued-at + expiry; no server-side session store; not set for ordinary site visitors, only after admin login. |
 
+## 9. Section J custom event pipeline (`assets/analytics.js` → `TC.logEvent()` → `/api/analytics-collect` → Postgres `analytics_sessions`/`analytics_events` tables, this repo's own database)
+
+Added for Section J Phase 1 (see `docs/j0-analytics-audit.md` for the
+architecture decision behind why this exists as a second pipeline
+alongside Umami, not instead of it). **Gated behind the exact same
+Analytics consent as section 4/5 above** — `TC.logEvent()` no-ops whenever
+`TC.consent.analytics` is false, and the visitor ID / session are never
+minted until consent is granted.
+
+| Field | Source | Destination | Purpose | Consent category | May contain personal data |
+|---|---|---|---|---|---|
+| `visitor_id` | Client-generated UUID (`crypto.randomUUID()`), stored in `localStorage` | `analytics_sessions.visitor_id`, `analytics_events.visitor_id` | Persistent non-PII identifier for first-touch attribution across sessions | analytics | No — random, not derived from any personal or device-fingerprint value |
+| `session_id` | Client-generated UUID, `localStorage`, rotated after 30 minutes of inactivity | `analytics_sessions.session_id` (primary key) | Groups events into a session for funnel/hot-lead analysis | analytics | No |
+| `event_type` | Fixed set: `pageview`, `whatsapp_click`, `email_click`, `specification_download`, `contact_form_submit` | `analytics_events.event_type` | Funnel stage / high-intent action classification | analytics | No |
+| `target_id` | For `specification_download`: the `?product=` query value or path, extracted client-side. Otherwise null. | `analytics_events.target_id` | Identifies which spec sheet was downloaded | analytics | No |
+| `source_page` | `window.location.pathname` | `analytics_events.source_page` | Which page the action happened on | analytics | No |
+| `utm_source/medium/campaign/content/term` | URL query params, read once at session start | `analytics_sessions.utm_*` | Campaign attribution | analytics | No |
+| `referrer_domain` | `document.referrer`, hostname only (no path/query), self-referrals dropped | `analytics_sessions.referrer_domain` | Traffic-source attribution | analytics | Low risk (could reveal a previous site visited, same caveat as section 5's Umami referrer field) |
+| `is_internal` | Server-side: request IP checked (transiently, never stored) against the `ANALYTICS_INTERNAL_IP_ALLOWLIST` env var | `analytics_sessions.is_internal` (boolean) | Soft-flags admin/office traffic — **flagged, never deleted**, excluded only from default KPI counts | analytics | No — raw IP is never persisted, only the resulting boolean |
+| `bot_confidence`, `bot_reason_codes`, `bot_detection_version` | Server-computed (User-Agent header + client-reported `webdriver`/`had_interaction`/`time_on_page_ms` signals sent via a page-exit `sendBeacon` call) | `analytics_sessions.bot_confidence` etc. | 0–100 bot-confidence score with reason codes — see `_analytics_lib.js`; the scoring rules themselves are never sent to the client or echoed in any API response | analytics | No |
+| `bot_override` | Admin action in the dashboard's Bot/Internal-Traffic Review panel | `analytics_sessions.bot_override` | Manual false-positive correction | n/a (admin action, not visitor data) | No |
+
+`event_id` (a client-generated UUID, one per event) is the idempotency
+key — a `UNIQUE` constraint plus `ON CONFLICT DO NOTHING` makes a
+retried/duplicate send a true no-op. Raw IP addresses are never stored
+anywhere in this pipeline, matching the pattern already established for
+`consent_log`/Umami elsewhere in this inventory. This visitor/session ID
+pair is entirely separate from `consent_log.device_hash` (Rule 23 —
+enforced by a code comment in `consent.js` and never reused here) and
+separate from Umami's own internal session ID (section 5).
+
 ---
 
 ## Summary for G2
 
 The only fields anywhere on the site that are genuinely optional /
-consent-gated today are the **analytics events (section 4)** and **Umami's
-own pageview tracking (section 5)**. Everything else (form submissions,
-theme preference, the consent record itself) is strictly necessary to the
-function the visitor is actively using and does not require consent under
-any reasonable reading — but is still inventoried above per G1's instruction
-to cover every field, not just the consent-gated ones.
+consent-gated today are the **analytics events (section 4)**, **Umami's
+own pageview tracking (section 5)**, and **the Section J custom pipeline
+(section 9)**. Everything else (form submissions, theme preference, the
+consent record itself) is strictly necessary to the function the visitor
+is actively using and does not require consent under any reasonable
+reading — but is still inventoried above per G1's instruction to cover
+every field, not just the consent-gated ones.

@@ -179,6 +179,33 @@
     }
     .hidden { display: none !important; }
     .loading-dim { opacity: 0.45; transition: opacity .2s; pointer-events: none; }
+    .j-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; line-height: 1.5; }
+    .j-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid #f0efe6; font-size: 13px; flex-wrap: wrap;
+    }
+    .j-row:last-child { border-bottom: none; }
+    .j-row .meta { color: var(--muted); font-size: 12px; }
+    .j-funnel-stage { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+    .j-funnel-stage .name { flex: 0 0 200px; font-size: 13px; }
+    .j-funnel-stage .track { flex: 1; height: 22px; background: #f0efe6; border-radius: 6px; overflow: hidden; }
+    .j-funnel-stage .fill { height: 100%; background: linear-gradient(90deg, #3d5a2e, #5a7a4a); }
+    .j-funnel-stage .n { flex: 0 0 auto; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13px; min-width: 46px; text-align: right; }
+    .j-toggle { display: inline-flex; gap: 6px; margin-bottom: 12px; }
+    select.j-select {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 10px; font-size: 13px; color: var(--ink);
+    }
+    .j-threshold { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 13px; }
+    .j-threshold input { width: 60px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+    .j-btn-sm {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px; cursor: pointer;
+      border: 1px solid var(--border); background: #fff; color: var(--ink);
+    }
+    .j-btn-sm.primary { background: var(--olive-deep); color: #fff; border-color: var(--olive-deep); }
+    .j-btn-sm.danger { background: #fbeceb; color: #a3312a; border-color: #eeccc9; }
+    .j-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--border); }
+    .j-badge.warn { background: #fbeecb; color: #7a5a00; }
   </style>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
@@ -236,6 +263,60 @@
       <div class="card full">
         <h2>Browsers</h2>
         <ul class="rank" id="list-browser"></ul>
+      </div>
+
+      <!-- Section J Phase 1 -- the site's own custom event pipeline.
+           Separate data source from everything above (which is all
+           Umami); see docs/j0-analytics-audit.md for why. -->
+      <div class="card full">
+        <h2>Custom Pipeline &middot; Overview</h2>
+        <section class="kpis" id="j-kpis">
+          <div class="kpi"><div class="label">Sessions (range)</div><div class="value" id="j-kpi-sessions">&mdash;</div></div>
+          <div class="kpi"><div class="label">Flagged Internal</div><div class="value" id="j-kpi-internal">&mdash;</div></div>
+          <div class="kpi"><div class="label">Bot-Suppressed</div><div class="value" id="j-kpi-bots">&mdash;</div></div>
+          <div class="kpi"><div class="label">Unknown Bot Score</div><div class="value" id="j-kpi-unknown">&mdash;</div></div>
+          <div class="kpi"><div class="label">Ingest Errors (7d)</div><div class="value" id="j-kpi-errors">&mdash;</div></div>
+        </section>
+        <p class="j-note" id="j-timezone-note"></p>
+        <p class="j-note" id="j-error-note"></p>
+      </div>
+
+      <div class="card full">
+        <h2>Funnel &middot; Landing &rarr; Catalog/Product &rarr; Spec-Sheet Download &rarr; Contact Click</h2>
+        <select class="j-select" id="j-funnel-source">
+          <option value="">All sources</option>
+        </select>
+        <div id="j-funnel" style="margin-top:14px;"></div>
+        <p class="j-note" id="j-funnel-note"></p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Attribution &middot; Contact-Form Conversions</h2>
+          <div class="j-toggle">
+            <button class="range-btn active" data-model="first_touch">First-touch</button>
+            <button class="range-btn" data-model="last_touch">Last-touch</button>
+          </div>
+          <ul class="rank" id="j-attribution"></ul>
+          <p class="j-note" id="j-attribution-note"></p>
+        </div>
+        <div class="card">
+          <h2>Hot Leads</h2>
+          <p class="j-note" id="j-hotlead-def"></p>
+          <div id="j-hot-leads"></div>
+        </div>
+      </div>
+
+      <div class="card full">
+        <h2>Bot / Internal-Traffic Review</h2>
+        <p class="j-note">Bot detection is a 0&ndash;100 confidence score with reason codes, not a yes/no classifier &mdash; nothing is ever hard-deleted for being flagged. Sessions near the current threshold are listed below so you can sanity-check the model; confirming or overriding one here locks in "human" or "bot" regardless of future score changes.</p>
+        <div class="j-threshold">
+          <label for="j-threshold-input">Confidence threshold (0&ndash;100):</label>
+          <input type="number" id="j-threshold-input" min="0" max="100" />
+          <button class="j-btn-sm primary" id="j-threshold-save">Save</button>
+          <span id="j-threshold-status" class="j-note" style="margin:0;"></span>
+        </div>
+        <div id="j-bot-review"></div>
       </div>
     </main>
   </div>
@@ -395,6 +476,7 @@
       }).then(function (summary) {
         showApp();
         renderSummary(summary);
+        loadCustomPipeline();
 
         // Fire the rest in parallel; each degrades independently.
         var jobs = [
@@ -421,6 +503,164 @@
       if (r.status === 401) { showGate(); throw 'unauth'; }
       if (!r.ok) throw new Error('http ' + r.status);
       return r.json();
+    }
+
+    // --- Section J Phase 1: custom pipeline panel -------------------------
+    var jState = { attributionModel: 'first_touch' };
+
+    function jApi(fn, params) {
+      var qs = 'range=' + encodeURIComponent(state.range);
+      for (var k in params) {
+        if (Object.prototype.hasOwnProperty.call(params, k) && params[k] != null) {
+          qs += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+        }
+      }
+      return fetch('/api/' + fn + '?' + qs, { credentials: 'same-origin', headers: { Accept: 'application/json' } }).then(okJson);
+    }
+
+    function renderOverview(d) {
+      document.getElementById('j-kpi-sessions').textContent = fmtNum(d.total_sessions);
+      document.getElementById('j-kpi-internal').textContent = fmtNum(d.internal_sessions);
+      document.getElementById('j-kpi-bots').textContent = fmtNum(d.bot_suppressed_sessions);
+      document.getElementById('j-kpi-unknown').textContent = fmtNum(d.unknown_bot_sessions);
+      document.getElementById('j-kpi-errors').textContent = fmtNum(d.ingest_errors_7d);
+      document.getElementById('j-timezone-note').textContent = d.timezone_note || '';
+      document.getElementById('j-error-note').textContent = d.known_limitation || '';
+      document.getElementById('j-threshold-input').value = d.bot_confidence_threshold;
+      populateFunnelSources(d.sources);
+    }
+
+    function renderFunnel(d) {
+      var el = document.getElementById('j-funnel');
+      el.innerHTML = '';
+      var max = 0;
+      (d.stages || []).forEach(function (s) { max = Math.max(max, s.count); });
+      (d.stages || []).forEach(function (s) {
+        var pct = max > 0 ? Math.round((s.count / max) * 100) : 0;
+        var row = document.createElement('div');
+        row.className = 'j-funnel-stage';
+        var name = document.createElement('div'); name.className = 'name'; name.textContent = s.stage;
+        var track = document.createElement('div'); track.className = 'track';
+        var fill = document.createElement('div'); fill.className = 'fill'; fill.style.width = pct + '%';
+        track.appendChild(fill);
+        var n = document.createElement('div'); n.className = 'n'; n.textContent = fmtNum(s.count);
+        row.appendChild(name); row.appendChild(track); row.appendChild(n);
+        el.appendChild(row);
+      });
+      document.getElementById('j-funnel-note').textContent = d.note || '';
+    }
+
+    function renderAttribution(d) {
+      renderRank('j-attribution', (d.rows || []).map(function (r) { return { x: r.source, y: r.conversions }; }));
+      document.getElementById('j-attribution-note').textContent = d.note || '';
+    }
+
+    function renderHotLeads(d) {
+      document.getElementById('j-hotlead-def').textContent = d.definition || '';
+      var el = document.getElementById('j-hot-leads');
+      el.innerHTML = '';
+      var rows = d.rows || [];
+      if (!rows.length) { el.innerHTML = '<p class="empty">No hot leads in this range.</p>'; return; }
+      rows.slice(0, 25).forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+        var left = document.createElement('div');
+        var page = document.createElement('div'); page.textContent = labelFor(r.entry_page);
+        var meta = document.createElement('div'); meta.className = 'meta';
+        meta.textContent = labelFor(r.attribution_source) + ' · ' + new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' });
+        left.appendChild(page); left.appendChild(meta);
+        row.appendChild(left);
+        el.appendChild(row);
+      });
+    }
+
+    function renderBotReview(d) {
+      var el = document.getElementById('j-bot-review');
+      el.innerHTML = '';
+      var rows = d.rows || [];
+      if (!rows.length) { el.innerHTML = '<p class="empty">No sessions near the current threshold need review.</p>'; return; }
+      rows.forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+
+        var left = document.createElement('div');
+        var top = document.createElement('div');
+        var badge = document.createElement('span');
+        badge.className = 'j-badge' + (r.bot_confidence >= d.threshold ? ' warn' : '');
+        badge.textContent = 'confidence ' + r.bot_confidence;
+        top.appendChild(badge);
+        var pageSpan = document.createElement('span');
+        pageSpan.textContent = '  ' + labelFor(r.entry_page);
+        pageSpan.style.marginLeft = '8px';
+        top.appendChild(pageSpan);
+        var meta = document.createElement('div'); meta.className = 'meta';
+        meta.textContent = (r.bot_reason_codes || []).join(', ') + ' · v' + labelFor(r.bot_detection_version) + ' · ' + new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' });
+        left.appendChild(top); left.appendChild(meta);
+
+        var actions = document.createElement('div');
+        var humanBtn = document.createElement('button');
+        humanBtn.className = 'j-btn-sm'; humanBtn.textContent = 'Confirm human';
+        humanBtn.addEventListener('click', function () { jOverride(r.session_id, false); });
+        var botBtn = document.createElement('button');
+        botBtn.className = 'j-btn-sm danger'; botBtn.textContent = 'Confirm bot';
+        botBtn.style.marginLeft = '6px';
+        botBtn.addEventListener('click', function () { jOverride(r.session_id, true); });
+        actions.appendChild(humanBtn); actions.appendChild(botBtn);
+
+        row.appendChild(left); row.appendChild(actions);
+        el.appendChild(row);
+      });
+    }
+
+    function jOverride(sessionId, isBot) {
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId, override: isBot }),
+      }).then(function () { return jApi('analytics-report', { report: 'bot_review' }); }).then(renderBotReview);
+    }
+
+    document.getElementById('j-threshold-save').addEventListener('click', function () {
+      var v = Number(document.getElementById('j-threshold-input').value);
+      var statusEl = document.getElementById('j-threshold-status');
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bot_confidence_threshold: v }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadCustomPipeline();
+      });
+    });
+
+    document.getElementById('j-funnel-source').addEventListener('change', function () {
+      jApi('analytics-report', { report: 'funnel', source: this.value || null }).then(renderFunnel).catch(function () {});
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.j-toggle button'), function (btn) {
+      btn.addEventListener('click', function () {
+        jState.attributionModel = btn.getAttribute('data-model');
+        Array.prototype.forEach.call(document.querySelectorAll('.j-toggle button'), function (b) { b.classList.toggle('active', b === btn); });
+        jApi('analytics-report', { report: 'attribution', model: jState.attributionModel }).then(renderAttribution).catch(function () {});
+      });
+    });
+
+    function populateFunnelSources(sources) {
+      var sel = document.getElementById('j-funnel-source');
+      var current = sel.value;
+      Array.prototype.slice.call(sel.querySelectorAll('option[data-dynamic]')).forEach(function (o) { o.remove(); });
+      (sources || []).forEach(function (s) {
+        var o = document.createElement('option');
+        o.value = s; o.textContent = labelFor(s); o.setAttribute('data-dynamic', '1');
+        sel.appendChild(o);
+      });
+      sel.value = current;
+    }
+
+    function loadCustomPipeline() {
+      jApi('analytics-report', { report: 'overview' }).then(renderOverview).catch(function () {});
+      jApi('analytics-report', { report: 'funnel' }).then(renderFunnel).catch(function () {});
+      jApi('analytics-report', { report: 'attribution', model: jState.attributionModel }).then(renderAttribution).catch(function () {});
+      jApi('analytics-report', { report: 'hot_leads' }).then(renderHotLeads).catch(function () {});
+      jApi('analytics-report', { report: 'bot_review' }).then(renderBotReview).catch(function () {});
     }
 
     // --- range selector ----------------------------------------------------
