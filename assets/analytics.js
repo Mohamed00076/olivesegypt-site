@@ -45,12 +45,26 @@
     return name + '_' + Math.abs(hash).toString(36);
   }
 
+  // G1's data-flow inventory approved exactly these payload keys for
+  // analytics events -- none of them free text, none of them able to
+  // carry a name, email, phone number, or message body. This allowlist
+  // is enforced here, not just by caller discipline: any key outside
+  // this set is silently dropped before an event is ever sent, so a
+  // future call site can't accidentally leak personal data into
+  // analytics by adding a new field without updating this list (and the
+  // inventory) first.
+  var ALLOWED_PAYLOAD_KEYS = { source_page: 1, product: 1, target: 1, form: 1, dedup_key: 1 };
+
   TC.trackEvent = function (name, payload) {
     payload = payload || {};
     if (!TC.consent.analytics) return; // default-denied: no-op until Section G grants consent
     if (typeof window.umami === 'undefined' || typeof window.umami.track !== 'function') return;
     var fullPayload = {};
-    for (var k in payload) if (Object.prototype.hasOwnProperty.call(payload, k)) fullPayload[k] = payload[k];
+    for (var k in payload) {
+      if (Object.prototype.hasOwnProperty.call(payload, k) && ALLOWED_PAYLOAD_KEYS[k]) {
+        fullPayload[k] = payload[k];
+      }
+    }
     fullPayload.dedup_key = dedupKey(name, payload);
     try {
       window.umami.track(name, fullPayload);
