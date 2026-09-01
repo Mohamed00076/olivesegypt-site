@@ -72,6 +72,8 @@ async function ensureSchema(sql) {
       device_type         text,
       browser             text,
       browser_language    text,
+      org_name            text,
+      org_resolution_type text,
       is_internal         boolean NOT NULL DEFAULT false,
       bot_confidence      integer,
       bot_reason_codes    jsonb NOT NULL DEFAULT '[]',
@@ -87,6 +89,8 @@ async function ensureSchema(sql) {
   await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS device_type text`;
   await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS browser text`;
   await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS browser_language text`;
+  await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS org_name text`;
+  await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS org_resolution_type text`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS analytics_events (
@@ -118,6 +122,115 @@ async function ensureSchema(sql) {
     VALUES ('bot_confidence_threshold', '70'::jsonb)
     ON CONFLICT (key) DO NOTHING
   `;
+  // "Active visitor" for the live feed (Phase 3 item 7): a session with
+  // an event/heartbeat within this many minutes, configurable.
+  await sql`
+    INSERT INTO analytics_settings (key, value)
+    VALUES ('live_feed_active_minutes', '5'::jsonb)
+    ON CONFLICT (key) DO NOTHING
+  `;
+  // Retention period (Phase 3 privacy requirement) -- 395 days (~13
+  // months) is the spec's own suggested figure, explicitly "pending
+  // legal review," not something I'm asserting as compliant on my own
+  // authority. Configurable via the same settings mechanism as
+  // everything else here.
+  await sql`
+    INSERT INTO analytics_settings (key, value)
+    VALUES ('data_retention_days', '395'::jsonb)
+    ON CONFLICT (key) DO NOTHING
+  `;
+  // Multi-path funnels (Phase 3 item 8): a few genuinely different
+  // named conversion paths, not just the one fixed Phase 1 path. Each
+  // stage matches an event_type, optionally narrowed to a source_page
+  // prefix (mirrors the Phase 1 "Catalog / Product Page" stage's own
+  // LIKE-prefix logic, generalized). Editable later via the settings
+  // endpoint; this is the seeded default set, not a hard limit.
+  await sql`
+    INSERT INTO analytics_settings (key, value)
+    VALUES ('funnel_definitions', ${JSON.stringify([
+      {
+        id: 'standard',
+        name: 'Standard (Landing → Catalog → Download → Contact)',
+        stages: [
+          { label: 'Landing', event_type: 'pageview' },
+          { label: 'Catalog / Product Page', event_type: 'pageview', source_page_prefix: '/catalog' },
+          { label: 'Spec-Sheet Download', event_type: 'specification_download' },
+          { label: 'Contact Click', event_type: 'whatsapp_click,email_click,contact_form_submit' },
+        ],
+      },
+      {
+        id: 'whatsapp_first',
+        name: 'WhatsApp-First (Landing → WhatsApp Click)',
+        stages: [
+          { label: 'Landing', event_type: 'pageview' },
+          { label: 'WhatsApp Click', event_type: 'whatsapp_click' },
+        ],
+      },
+      {
+        id: 'direct_inquiry',
+        name: 'Direct Inquiry (Landing → Product Page → Contact Form, no download)',
+        stages: [
+          { label: 'Landing', event_type: 'pageview' },
+          { label: 'Product Page', event_type: 'pageview', source_page_prefix: '/products' },
+          { label: 'Contact Form Submit', event_type: 'contact_form_submit' },
+        ],
+      },
+    ])}::jsonb)
+    ON CONFLICT (key) DO NOTHING
+  `;
+  // Search Console (Phase 3 item 5) -- OFF by default. Nothing about
+  // this integration touches your real Search Console property, ever,
+  // until you both (a) set the three GSC_* env vars and (b) explicitly
+  // flip this to true in the dashboard -- exactly the "explicit
+  // confirmation before any feature goes live" the spec asks for.
+  await sql`
+    INSERT INTO analytics_settings (key, value)
+    VALUES ('search_console_enabled', 'false'::jsonb)
+    ON CONFLICT (key) DO NOTHING
+  `;
+  // Rolling lookback window, re-fetched (and upserted, not appended) on
+  // every run, because Search Console's own performance data arrives
+  // late and gets corrected after the fact -- never trust "yesterday
+  // only" for this API.
+  await sql`
+    INSERT INTO analytics_settings (key, value)
+    VALUES ('search_console_lookback_days', '16'::jsonb)
+    ON CONFLICT (key) DO NOTHING
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS search_console_performance (
+      date         date NOT NULL,
+      query        text NOT NULL,
+      page         text NOT NULL,
+      device       text NOT NULL,
+      clicks       integer NOT NULL,
+      impressions  integer NOT NULL,
+      ctr          numeric NOT NULL,
+      position     numeric NOT NULL,
+      updated_at   timestamptz NOT NULL DEFAULT now(),
+      PRIMARY KEY (date, query, page, device)
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS search_console_performance_date_idx ON search_console_performance (date)`;
+
+  // One row per import attempt -- status/attempt_count/last successful
+  // run/source date range/error details, all per spec's explicit ask,
+  // so a failing scheduled import is visible in the dashboard, not
+  // silently swallowed.
+  await sql`
+    CREATE TABLE IF NOT EXISTS search_console_import_runs (
+      id                bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      started_at        timestamptz NOT NULL DEFAULT now(),
+      finished_at       timestamptz,
+      status            text NOT NULL DEFAULT 'running',
+      attempt_count     integer NOT NULL DEFAULT 1,
+      source_start_date date,
+      source_end_date   date,
+      rows_upserted     integer,
+      error_details     text
+    )
+  `;
 
   // Server-observed ingest failures only (a DB error while trying to
   // insert something we DID receive). A client request that never
@@ -132,6 +245,42 @@ async function ensureSchema(sql) {
       reason       text
     )
   `;
+
+  // Audit log: who (admin) looked at what, and when. Covers live-feed
+  // access and privacy-deletion actions -- reads and writes both, same
+  // "audit sensitive access, not just changes" stance as the CRM's
+  // crm_audit_log.
+  await sql`
+    CREATE TABLE IF NOT EXISTS analytics_audit_log (
+      id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      occurred_at  timestamptz NOT NULL DEFAULT now(),
+      actor        text NOT NULL,
+      action       text NOT NULL,
+      details      text
+    )
+  `;
+
+  // Visitor-deletion requests (Phase 3 privacy requirement): once a
+  // visitor_id is here, analytics-collect.js refuses to write any
+  // further event under it and tells the client to mint a fresh one --
+  // this is the "invalidated for future correlation" mechanism. The ID
+  // itself is a random, non-PII token to begin with (see assets/
+  // analytics.js's uuid()), so storing it here (rather than a hash of
+  // it) reveals nothing that wasn't already meaningless on its own.
+  await sql`
+    CREATE TABLE IF NOT EXISTS deleted_visitor_ids (
+      visitor_id  text PRIMARY KEY,
+      deleted_at  timestamptz NOT NULL DEFAULT now()
+    )
+  `;
+}
+
+async function auditLog(sql, actor, action, details) {
+  try {
+    await sql`INSERT INTO analytics_audit_log (actor, action, details) VALUES (${actor}, ${action}, ${details || null})`;
+  } catch {
+    // Never let audit-log failure block the action it's logging.
+  }
 }
 
 async function logIngestError(sql, eventType, reason) {
@@ -261,6 +410,7 @@ module.exports = {
   optional,
   ensureSchema,
   logIngestError,
+  auditLog,
   computeAttribution,
   parseReferrerDomain,
   scoreBotConfidence,

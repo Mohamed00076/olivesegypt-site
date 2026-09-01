@@ -169,17 +169,58 @@ against CSV-injection (a leading `=`, `+`, `-`, or `@` gets a neutralizing
 prefix) and validates every imported row server-side — a row that fails
 validation is skipped and reported, never partially inserted.
 
-## Custom Analytics Pipeline (Section J, Phase 1 + 2 so far)
+## Custom Analytics Pipeline (Section J, Phase 1–3)
 
 A second, first-party event pipeline living entirely in this repo's own
 Neon Postgres — **alongside, not instead of**, the Umami proxy above.
 Umami stays the source for pageview/session stats; this pipeline is
 where funnels, hot-lead flags, traffic-source attribution, bot/
-internal-traffic scoring, and (as of Phase 2) country/device/browser
-demographics live, because Umami's own schema has no room for the first
-few. See `docs/j0-analytics-audit.md` for the full architecture
-reasoning, `docs/j1-acceptance-criteria.md` for Phase 1, and
-`docs/j2-acceptance-criteria.md` for Phase 2.
+internal-traffic scoring, country/device/browser demographics (Phase 2),
+and — as of Phase 3 — B2B reverse-IP lookup, a live-visitor feed, multi-
+path funnels, data-retention/deletion tooling, and an optional Search
+Console import all live, because Umami's own schema has no room for the
+first few. See `docs/j0-analytics-audit.md` for the full architecture
+reasoning, and `docs/j1-acceptance-criteria.md` / `docs/j2-acceptance-criteria.md`
+/ `docs/j3-acceptance-criteria.md` for each phase's specifics and how to
+verify them yourself.
+
+### Phase 3 additions
+
+- **B2B reverse-IP lookup**: self-built, free-only RDAP (WHOIS's modern
+  successor) queries against the official Regional Internet Registries
+  (ARIN/RIPE/APNIC/AFRINIC/LACNIC), routed via IANA's own official
+  bootstrap files — no paid data-broker API anywhere. Every result is
+  cached (keyed by a one-way hash of the IP, never the IP itself) so the
+  same IP is never re-queried, and every UI surface showing an
+  organization name displays this exact disclosure alongside it: *"This
+  only reliably identifies dedicated/corporate network infrastructure.
+  Residential and mobile-carrier IPs resolve to the ISP, not the
+  visiting company. ASN/network registration data is never verified
+  company identity — treat it as a probabilistic signal, not a fact."*
+- **Live-visitor feed**: sessions active within a configurable window
+  (default 5 minutes — a session's `last_seen_at` already updates on
+  every event, no separate heartbeat mechanism needed). Never shows raw
+  IPs, full referrer URLs, or any free-text payload (this pipeline
+  doesn't store those fields to begin with). Every load of this view is
+  written to `analytics_audit_log`.
+- **Multi-path funnels**: the funnel is no longer one fixed 4-stage path
+  — `analytics_settings.funnel_definitions` holds a few genuinely
+  different named conversion paths (Standard, WhatsApp-First, Direct
+  Inquiry), selectable from a dropdown, alongside the existing source/
+  country filters.
+- **Data retention & deletion**: session/event data older than a
+  configurable retention window (default 395 days / ~13 months — the
+  spec's own suggested starting figure, explicitly pending real legal
+  review, not asserted here as a compliance guarantee) is purged daily.
+  An admin can also permanently delete a specific visitor's data on
+  request from the dashboard — this genuinely deletes the rows (not a
+  soft flag) and permanently blocks that `visitor_id` from ever writing
+  new data again, with the client told to mint a fresh, unrelated ID
+  rather than keep retrying. No cross-device identity stitching is ever
+  attempted.
+- **Search Console** (optional, off by default): see its own section
+  below — nothing about it runs until you've done the account setup
+  *and* explicitly enabled it in the dashboard.
 
 **No new paid services**, but Phase 2 does add one new *build step* and
 one *optional* free automation:
@@ -206,7 +247,40 @@ one *optional* free automation:
 
 New tables (same Neon database, created automatically on first use):
 `analytics_sessions`, `analytics_events`, `analytics_settings`,
-`analytics_ingest_errors`.
+`analytics_ingest_errors`, `analytics_audit_log`, `ip_org_cache`,
+`deleted_visitor_ids`, `search_console_performance`,
+`search_console_import_runs`.
+
+### Search Console setup (optional — skip this entirely if you don't want it)
+
+Nothing here runs until you've done this setup **and** explicitly
+enabled it via the checkbox in the dashboard's Search Console panel —
+until then it's just inactive code. If you'd rather not deal with it,
+that's a completely fine, permanent choice; everything else in this
+pipeline works independently of it.
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → enable
+   the **Search Console API** for any project.
+2. IAM & Admin → Service Accounts → create one (no GCP roles needed —
+   the "Service account ID" field is just a name you pick).
+3. Create and download a JSON key for it.
+4. [Search Console](https://search.google.com/search-console) →
+   Settings → Users and permissions → Add user → paste the service
+   account's email (the `client_email` field in the JSON key, looks like
+   `xxx@your-project.iam.gserviceaccount.com` — **not** your own Google
+   account email) → grant **Full** access.
+5. Set the three env vars below in Netlify, redeploy.
+6. In `/admin/analytics/`'s Search Console panel, check "Enabled" and
+   save (there's a confirmation prompt — this is the point where it
+   starts actually calling Google's API on a daily schedule).
+
+Verified (Rule 18): the Search Analytics API has no paid tier at
+all — quota-limited, not billed, capped at 25,000 rows/request and
+50,000 page-keyword pairs/property/day, which the import job's
+pagination and rolling lookback window are built around. Only the
+read-only Search Analytics query endpoint is ever called — never the
+Indexing API or anything that could submit or change your live
+indexing state.
 
 ### Environment variables
 
@@ -214,6 +288,13 @@ New tables (same Neon database, created automatically on first use):
 | --- | --- |
 | `ANALYTICS_INTERNAL_IP_ALLOWLIST` | Comma-separated list of IPs/CIDR ranges (e.g. `41.x.x.x,10.0.0.0/8`) to soft-flag as internal/admin traffic. **Unset by default** — until you set this, no session is ever flagged internal, so the dashboard's "Flagged Internal" count will read 0 even for your own office traffic. Flagging never deletes anything; it only excludes flagged sessions from the default KPI/funnel/attribution counts. |
 | `NETLIFY_BUILD_HOOK_URL` | *(Phase 2, optional)* A Build Hook URL from Netlify's own UI (Site settings → Build & deploy → Build hooks → Add build hook) that `geo-refresh.js` POSTs to weekly to keep the geo database current between deploys. Unset by default — `geo-refresh.js` just logs and no-ops if it's missing; nothing depends on this running. |
+| `GSC_SERVICE_ACCOUNT_EMAIL` | *(Phase 3, optional)* The service account's auto-generated email from the setup above. |
+| `GSC_SERVICE_ACCOUNT_PRIVATE_KEY` | *(Phase 3, optional)* The `private_key` field from the downloaded JSON key, pasted as-is (including the `-----BEGIN/END PRIVATE KEY-----` lines). |
+| `GSC_SITE_URL` | *(Phase 3, optional)* The exact property string as registered in Search Console, usually `sc-domain:olivesegypt.com`. |
+
+All three `GSC_*` vars must be set **and** the dashboard toggle enabled
+before any Search Console call is ever made — either alone leaves the
+integration fully inactive.
 
 No other new env vars — `DATABASE_URL` is reused, and there's no separate
 auth (this pipeline's admin endpoints sit behind the same `tc_session`
@@ -238,3 +319,14 @@ cookie as the rest of `/admin/analytics/`).
 - The dashboard's "Ingest Errors" count can only ever see failures this
   server actually received and then failed to store — a request that
   never reaches the server at all is invisible to any server-side count.
+- B2B org resolution (Phase 3) only supports IPv4 today — an IPv6
+  visitor resolves to "unknown," not an error.
+- The RDAP bootstrap-fetch → registry-query chain could not be tested
+  against the live internet from this development environment (network
+  policy blocks it here) — verified instead via the `maxmind`-equivalent
+  approach of exercising the real code against realistic mocked
+  responses; see `docs/j3-acceptance-criteria.md` for exactly what was
+  and wasn't verified.
+- Search Console dates are in Google's own reporting timezone (Pacific
+  Time), not UTC and not the Africa/Cairo convention used everywhere
+  else in this dashboard — stated on that panel itself, not just here.

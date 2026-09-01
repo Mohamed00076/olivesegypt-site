@@ -13,7 +13,8 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
-const { ensureSchema } = require('./_analytics_lib');
+const { ensureSchema, auditLog } = require('./_analytics_lib');
+const { CLASSIFICATION_DISCLOSURE, ensureSchema: ensureB2bSchema } = require('./_b2b_lib');
 
 function connectionString() {
   return (
@@ -50,14 +51,40 @@ function botSuppressedSql(threshold) {
   return `(bot_override IS TRUE OR (bot_override IS NULL AND bot_confidence IS NOT NULL AND bot_confidence >= ${threshold}))`;
 }
 
-async function reportFunnel(sql, { startAt, endAt, source, country }) {
+async function getFunnelDefinitions(sql) {
+  const rows = await sql`SELECT value FROM analytics_settings WHERE key = 'funnel_definitions'`;
+  const defs = rows[0] && rows[0].value;
+  return Array.isArray(defs) ? defs : [];
+}
+
+// Multi-path funnels (Phase 3 item 8): the stage list is no longer
+// hardcoded -- it comes from a named definition in analytics_settings
+// (see _analytics_lib.js's seeded defaults), so different genuinely
+// different conversion paths can be selected, not just one fixed path
+// with a source/country filter bolted on.
+async function reportFunnel(sql, { startAt, endAt, source, country, funnelId }) {
   const threshold = await getThreshold(sql);
   const suppressed = botSuppressedSql(threshold);
 
-  // One row per session with which funnel stages it reached, honoring
-  // the internal/bot flags as "flag, never delete": suppressed sessions
-  // are excluded from these default counts, but never removed from the
-  // underlying tables.
+  const definitions = await getFunnelDefinitions(sql);
+  const definition = definitions.find((d) => d.id === funnelId) || definitions[0];
+  if (!definition || !Array.isArray(definition.stages) || !definition.stages.length) {
+    return { stages: [], filter: { source: source || null, country: country || null }, funnel_id: null, funnel_name: null, note: 'No funnel definition configured.' };
+  }
+
+  const params = [startAt, endAt, source || null, country || null];
+  const stageClauses = definition.stages.map((stage) => {
+    const eventTypes = String(stage.event_type || '').split(',').map((s) => s.trim()).filter(Boolean);
+    params.push(eventTypes);
+    const typeParamIdx = params.length;
+    let clause = `e.event_type = ANY($${typeParamIdx}::text[])`;
+    if (stage.source_page_prefix) {
+      params.push(stage.source_page_prefix + '%');
+      clause += ` AND e.source_page LIKE $${params.length}`;
+    }
+    return `bool_or(${clause})`;
+  });
+
   const rows = await sql.query(
     `
     WITH scoped_sessions AS (
@@ -72,33 +99,25 @@ async function reportFunnel(sql, { startAt, endAt, source, country }) {
     stages AS (
       SELECT
         ss.session_id,
-        bool_or(e.event_type = 'pageview') AS reached_landing,
-        bool_or(e.event_type = 'pageview' AND (e.source_page LIKE '/catalog%' OR e.source_page LIKE '/products/%')) AS reached_catalog,
-        bool_or(e.event_type = 'specification_download') AS reached_download,
-        bool_or(e.event_type IN ('whatsapp_click', 'email_click', 'contact_form_submit')) AS reached_contact
+        ${stageClauses.map((c, i) => `${c} AS reached_${i}`).join(',\n        ')}
       FROM scoped_sessions ss
       JOIN analytics_events e ON e.session_id = ss.session_id
       GROUP BY ss.session_id
     )
     SELECT
-      count(*) FILTER (WHERE reached_landing) AS landing,
-      count(*) FILTER (WHERE reached_catalog) AS catalog,
-      count(*) FILTER (WHERE reached_download) AS download,
-      count(*) FILTER (WHERE reached_contact) AS contact
+      ${definition.stages.map((s, i) => `count(*) FILTER (WHERE reached_${i}) AS stage_${i}`).join(',\n      ')}
     FROM stages
     `,
-    [startAt, endAt, source || null, country || null],
+    params,
   );
 
-  const r = rows[0] || { landing: 0, catalog: 0, download: 0, contact: 0 };
+  const r = rows[0] || {};
   return {
-    stages: [
-      { stage: 'Landing', count: Number(r.landing) || 0 },
-      { stage: 'Catalog / Product Page', count: Number(r.catalog) || 0 },
-      { stage: 'Spec-Sheet Download', count: Number(r.download) || 0 },
-      { stage: 'Contact Click', count: Number(r.contact) || 0 },
-    ],
+    stages: definition.stages.map((s, i) => ({ stage: s.label, count: Number(r['stage_' + i]) || 0 })),
     filter: { source: source || null, country: country || null },
+    funnel_id: definition.id,
+    funnel_name: definition.name,
+    available_funnels: definitions.map((d) => ({ id: d.id, name: d.name })),
     note: 'Country is resolved from a self-hosted, country-level-only GeoLite2 database (no city data -- see docs/j2-acceptance-criteria.md) and is null for sessions from before Phase 2 shipped or where resolution failed. Excludes sessions flagged internal or bot-suppressed at the current threshold -- see bot settings.',
   };
 }
@@ -113,7 +132,7 @@ async function reportHotLeads(sql, { startAt, endAt }) {
   const rows = await sql.query(
     `
     WITH scoped_sessions AS (
-      SELECT s.session_id, s.visitor_id, s.started_at, s.entry_page, s.attribution_source
+      SELECT s.session_id, s.visitor_id, s.started_at, s.entry_page, s.attribution_source, s.org_name, s.org_resolution_type
       FROM analytics_sessions s
       WHERE s.started_at >= $1 AND s.started_at < $2
         AND s.is_internal = false
@@ -121,14 +140,14 @@ async function reportHotLeads(sql, { startAt, endAt }) {
     ),
     flagged AS (
       SELECT
-        ss.session_id, ss.visitor_id, ss.started_at, ss.entry_page, ss.attribution_source,
+        ss.session_id, ss.visitor_id, ss.started_at, ss.entry_page, ss.attribution_source, ss.org_name, ss.org_resolution_type,
         bool_or(e.event_type = 'specification_download') AS had_download,
         bool_or(e.event_type IN ('whatsapp_click', 'email_click', 'contact_form_submit')) AS had_contact
       FROM scoped_sessions ss
       JOIN analytics_events e ON e.session_id = ss.session_id
-      GROUP BY ss.session_id, ss.visitor_id, ss.started_at, ss.entry_page, ss.attribution_source
+      GROUP BY ss.session_id, ss.visitor_id, ss.started_at, ss.entry_page, ss.attribution_source, ss.org_name, ss.org_resolution_type
     )
-    SELECT session_id, visitor_id, ${isoUtc('started_at')} AS started_at, entry_page, attribution_source
+    SELECT session_id, visitor_id, ${isoUtc('started_at')} AS started_at, entry_page, attribution_source, org_name, org_resolution_type
     FROM flagged
     WHERE had_download AND had_contact
     ORDER BY started_at DESC
@@ -137,7 +156,11 @@ async function reportHotLeads(sql, { startAt, endAt }) {
     [startAt, endAt],
   );
 
-  return { definition: 'A session with at least one spec-sheet download AND at least one contact action (WhatsApp click, email click, or contact form submit).', rows };
+  return {
+    definition: 'A session with at least one spec-sheet download AND at least one contact action (WhatsApp click, email click, or contact form submit).',
+    rows,
+    org_disclosure: CLASSIFICATION_DISCLOSURE,
+  };
 }
 
 async function reportAttribution(sql, { startAt, endAt, model }) {
@@ -237,6 +260,90 @@ async function reportDemographics(sql, { startAt, endAt }) {
   };
 }
 
+// Live-visitor feed (Phase 3 item 7). "Active" is precisely: a session
+// whose last_seen_at (already updated on every event and every
+// engagement signal) falls within a configurable interval --
+// live_feed_active_minutes in analytics_settings, no separate heartbeat
+// mechanism needed since every event already refreshes last_seen_at.
+// "Expire" means drop out of this view once the interval passes, not
+// delete -- same "flag/filter, never remove" stance as everywhere else.
+//
+// Deliberately excludes anything sensitive: no raw IP (never stored
+// anywhere in this pipeline to begin with), no full referrer URL with
+// query params (only referrer_domain is ever stored), no contact-form
+// contents or free-text event payloads (this pipeline never stores
+// those fields at all -- see the fixed EVENT_TYPES/target_id shape in
+// _analytics_lib.js). Every access is written to analytics_audit_log by
+// the caller, not by this function -- see the handler below.
+async function reportLiveFeed(sql) {
+  const rows = await sql`
+    SELECT key, value FROM analytics_settings WHERE key = 'live_feed_active_minutes'
+  `;
+  const minutes = rows[0] ? Number(rows[0].value) : 5;
+
+  const sessions = await sql.query(
+    `
+    SELECT
+      s.session_id, s.entry_page, s.attribution_source, s.country, s.device_type, s.browser,
+      s.org_name, s.org_resolution_type, s.is_internal, s.bot_confidence, s.bot_override,
+      ${isoUtc('s.started_at')} AS started_at, ${isoUtc('s.last_seen_at')} AS last_seen_at,
+      (SELECT e.event_type FROM analytics_events e WHERE e.session_id = s.session_id ORDER BY e.occurred_at DESC LIMIT 1) AS last_event_type
+    FROM analytics_sessions s
+    WHERE s.last_seen_at >= now() - ($1::numeric * interval '1 minute')
+    ORDER BY s.last_seen_at DESC
+    LIMIT 100
+    `,
+    [minutes],
+  );
+
+  return {
+    active_within_minutes: minutes,
+    sessions,
+    org_disclosure: CLASSIFICATION_DISCLOSURE,
+    note: 'Never shows raw IP addresses, full referrer URLs, contact-form contents, or any free-text event payload -- this pipeline does not store those fields at all. Every load of this view is written to the audit log.',
+  };
+}
+
+async function reportSearchConsole(sql, { startAt, endAt }) {
+  const settingRows = await sql`SELECT key, value FROM analytics_settings WHERE key IN ('search_console_enabled', 'search_console_lookback_days')`;
+  const settings = {};
+  settingRows.forEach((r) => { settings[r.key] = r.value; });
+  const enabled = settings.search_console_enabled === true || settings.search_console_enabled === 'true';
+
+  const runs = await sql`
+    SELECT ${isoUtc('started_at')} AS started_at, ${isoUtc('finished_at')} AS finished_at,
+           status, attempt_count, source_start_date, source_end_date, rows_upserted, error_details
+    FROM search_console_import_runs
+    ORDER BY started_at DESC
+    LIMIT 20
+  `;
+
+  const topQueries = await sql.query(
+    `
+    SELECT query, sum(clicks)::int AS clicks, sum(impressions)::int AS impressions,
+           CASE WHEN sum(impressions) > 0 THEN round((sum(clicks)::numeric / sum(impressions)) * 100, 1) ELSE 0 END AS ctr,
+           round(avg(position), 1) AS avg_position
+    FROM search_console_performance
+    WHERE date >= $1 AND date < $2 AND query <> ''
+    GROUP BY query
+    ORDER BY clicks DESC
+    LIMIT 25
+    `,
+    [startAt.toISOString().slice(0, 10), endAt.toISOString().slice(0, 10)],
+  );
+
+  return {
+    enabled,
+    lookback_days: settings.search_console_lookback_days || 16,
+    runs,
+    top_queries: topQueries,
+    timezone_note: "Dates come from Search Console's Search Analytics API in its own reporting timezone (Pacific Time, per Google's documented behavior) -- not UTC and not the Africa/Cairo display convention used everywhere else in this dashboard.",
+    note: enabled
+      ? 'Search Console import is enabled and runs daily on a rolling lookback window, upserted by the complete (date, query, page, device) key so late corrections are captured, never appended as duplicates.'
+      : 'Search Console import is disabled. Nothing has been fetched from your Search Console property, and nothing will be, until you enable it here after completing the setup in the README.',
+  };
+}
+
 async function reportOverview(sql, { startAt, endAt }) {
   const threshold = await getThreshold(sql);
   const suppressed = botSuppressedSql(threshold);
@@ -314,13 +421,23 @@ exports.handler = async (event) => {
 
   try {
     await ensureSchema(sql);
+    await ensureB2bSchema(sql);
 
     if (report === 'overview') return json(200, await reportOverview(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
-    if (report === 'funnel') return json(200, await reportFunnel(sql, { startAt, endAt, source: q.source || null, country: q.country || null }), { 'Cache-Control': 'no-store, private' });
+    if (report === 'funnel') return json(200, await reportFunnel(sql, { startAt, endAt, source: q.source || null, country: q.country || null, funnelId: q.funnel_id || null }), { 'Cache-Control': 'no-store, private' });
     if (report === 'hot_leads') return json(200, await reportHotLeads(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
     if (report === 'attribution') return json(200, await reportAttribution(sql, { startAt, endAt, model: q.model === 'last_touch' ? 'last_touch' : 'first_touch' }), { 'Cache-Control': 'no-store, private' });
     if (report === 'bot_review') return json(200, await reportBotReview(sql), { 'Cache-Control': 'no-store, private' });
     if (report === 'demographics') return json(200, await reportDemographics(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
+    if (report === 'live_feed') {
+      // Sensitive-data view -- every access is audit-logged, not just
+      // writes, per Rule 22's own reading applied consistently across
+      // this whole engagement (see the CRM's crm_audit_log for the same
+      // stance).
+      await auditLog(sql, session.sub, 'view_live_feed', null);
+      return json(200, await reportLiveFeed(sql), { 'Cache-Control': 'no-store, private' });
+    }
+    if (report === 'search_console') return json(200, await reportSearchConsole(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
 
     return json(400, { error: 'Unknown report' });
   } catch (err) {

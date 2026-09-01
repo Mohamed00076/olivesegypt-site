@@ -150,6 +150,35 @@ minted until consent is granted.
 | `country` | Server-side, resolved from the request IP (transiently, never stored) against a self-hosted GeoLite2-Country database | `analytics_sessions.country` (two-letter ISO code) | Geographic breakdown | analytics | Yes (coarse location — country only, no city/region; see Section J Phase 2) |
 | `device_type`, `browser` | Server-side, parsed from the request's User-Agent header (never a client-supplied value) | `analytics_sessions.device_type`, `.browser` | Device/browser breakdown | analytics | Low risk, part of device fingerprint surface (same caveat as section 5) |
 | `browser_language` | `navigator.language`, read once at session start | `analytics_sessions.browser_language` | Language breakdown | analytics | Low risk |
+| `org_name`, `org_resolution_type` | Server-side, reverse-IP RDAP lookup (IANA bootstrap + the authoritative regional registry) against the request IP (transiently, never stored) at page-exit | `analytics_sessions.org_name`, `.org_resolution_type` | B2B intelligence (Section J Phase 3) — probabilistic network-org signal, never verified company identity; every UI surface showing this must render the disclosure text in `_b2b_lib.js`'s `CLASSIFICATION_DISCLOSURE` alongside it | analytics | Yes (an organization name can be identifying for a corporate/dedicated IP block; residential/mobile IPs resolve to the ISP, not a person) |
+
+Also added for Phase 3: `ip_org_cache` (a lookup cache keyed by a
+one-way hash of the IP, `ip-org-cache:<ip>` — same non-reversible-hash
+discipline as `consent_log.device_hash`, a different salt/namespace so
+the two are never the same value) exists purely to avoid re-querying the
+same IP against RDAP repeatedly; it has its own 30-day TTL, separate
+from and shorter than the general data-retention window below.
+
+**Deletion on request** (Section J Phase 3 privacy requirement): an
+admin can permanently delete all `analytics_sessions`/`analytics_events`
+rows for a given `visitor_id` from the dashboard's Privacy & Retention
+panel. That `visitor_id` is then recorded in `deleted_visitor_ids`, and
+`/api/analytics-collect` checks every incoming `visitor_id` against that
+table before writing anything — a deleted ID can never have new data
+written under it, and the client is told to mint a fresh, unrelated ID
+rather than keep retrying (see `assets/analytics.js`'s
+`handleResetSignal`). No attempt is ever made to link the new ID back to
+the deleted one, or to correlate a visitor across devices.
+
+**Retention**: `analytics_sessions`/`analytics_events` older than
+`data_retention_days` (default 395 days / ~13 months — the spec's own
+suggested starting figure, explicitly pending real legal review, not a
+compliance claim) are purged daily by
+`netlify/functions/analytics-retention.js`, a genuine deletion (not a
+soft flag) distinct from the bot/internal "flag, never delete" stance
+used elsewhere in this pipeline for traffic *classification* — retention
+is a different question (how long is any of this kept at all) from
+whether a given session is human/bot/internal.
 
 Added for Phase 2: **the request IP is used transiently for the country
 lookup and the internal-IP-allowlist check above, and is never persisted
@@ -169,6 +198,21 @@ anywhere in this pipeline, matching the pattern already established for
 pair is entirely separate from `consent_log.device_hash` (Rule 23 —
 enforced by a code comment in `consent.js` and never reused here) and
 separate from Umami's own internal session ID (section 5).
+
+## 10. Search Console performance data (Section J Phase 3, item 5 — `search_console_performance` table)
+
+Not visitor data — aggregate search-performance figures (clicks,
+impressions, CTR, average position) Google reports per date/query/page/
+device for the property, via the read-only Search Analytics API. No
+individual searcher is ever identified in this data; Google itself
+aggregates and anonymizes it before it's queryable at all. Included for
+completeness per G1's "cover every field" instruction, not because it's
+consent-gated (it isn't — it has nothing to do with this site's visitors
+individually).
+
+**Disabled by default and requires your explicit setup + an explicit
+"enabled" toggle in the dashboard before anything is ever fetched** — see
+`docs/j3-acceptance-criteria.md`.
 
 ---
 

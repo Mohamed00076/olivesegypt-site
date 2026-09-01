@@ -205,18 +205,45 @@
     return { sessionId: fresh.id, isNew: true, entryPage: fresh.entryPage, referrer: fresh.referrer, utm: fresh.utm, browserLanguage: fresh.browserLanguage };
   }
 
-  function post(payload) {
-    var body = JSON.stringify(payload);
-    try {
-      if (navigator.sendBeacon) {
-        var blob = new Blob([body], { type: 'application/json' });
-        if (navigator.sendBeacon('/api/analytics-collect', blob)) return;
+  // Section J Phase 3 -- if a visitor has asked for their data to be
+  // deleted, the server refuses to write anything further under their
+  // old visitor_id and says so; the client's job is to notice and mint
+  // a fresh one (never to keep reusing the deleted one, and never to
+  // link the new one back to the old -- that's the whole point).
+  function handleResetSignal(data) {
+    if (data && data.reset_visitor === true) {
+      try {
+        window.localStorage.removeItem(VISITOR_KEY);
+        window.localStorage.removeItem(SESSION_KEY);
+      } catch (e) {
+        // Best-effort -- worst case, the next page load tries again.
       }
-    } catch (e) {
-      // Fall through to fetch.
+    }
+  }
+
+  function post(payload, expectResponse) {
+    var body = JSON.stringify(payload);
+    // sendBeacon is fire-and-forget by design -- no response is ever
+    // readable, so the one call per session that needs to check for a
+    // reset signal (the initial pageview) explicitly opts out of it and
+    // uses fetch instead. Every other event still prefers sendBeacon,
+    // matching spec's ask for a non-blocking mechanism on exit-type
+    // sends.
+    if (!expectResponse) {
+      try {
+        if (navigator.sendBeacon) {
+          var blob = new Blob([body], { type: 'application/json' });
+          if (navigator.sendBeacon('/api/analytics-collect', blob)) return;
+        }
+      } catch (e) {
+        // Fall through to fetch.
+      }
     }
     try {
-      fetch('/api/analytics-collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+      fetch('/api/analytics-collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true })
+        .then(function (res) { return expectResponse ? res.json() : null; })
+        .then(function (data) { if (data) handleResetSignal(data); })
+        .catch(function () {});
     } catch (e) {
       // Never let a failed write affect the page.
     }
@@ -251,7 +278,10 @@
         browser_language: sess.browserLanguage || null,
       },
     };
-    post(payload);
+    // Only the event that starts a new session needs a readable
+    // response (to catch a reset_visitor signal) -- see post()'s own
+    // comment for why that means it can't use sendBeacon.
+    post(payload, sess.isNew === true);
     return sess.sessionId;
   };
 

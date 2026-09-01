@@ -282,8 +282,9 @@
       </div>
 
       <div class="card full">
-        <h2>Funnel &middot; Landing &rarr; Catalog/Product &rarr; Spec-Sheet Download &rarr; Contact Click</h2>
-        <select class="j-select" id="j-funnel-source">
+        <h2 id="j-funnel-title">Funnel</h2>
+        <select class="j-select" id="j-funnel-definition"></select>
+        <select class="j-select" id="j-funnel-source" style="margin-left:8px;">
           <option value="">All sources</option>
         </select>
         <select class="j-select" id="j-funnel-country" style="margin-left:8px;">
@@ -331,6 +332,54 @@
           <span id="j-threshold-status" class="j-note" style="margin:0;"></span>
         </div>
         <div id="j-bot-review"></div>
+      </div>
+
+      <!-- Section J Phase 3 -->
+      <div class="card full">
+        <h2>Live Visitors</h2>
+        <p class="j-note" id="j-livefeed-note"></p>
+        <div class="j-threshold">
+          <label for="j-livefeed-minutes">Active within (minutes):</label>
+          <input type="number" id="j-livefeed-minutes" min="1" max="120" />
+          <button class="j-btn-sm primary" id="j-livefeed-minutes-save">Save</button>
+          <span id="j-livefeed-status" class="j-note" style="margin:0;"></span>
+          <label style="margin-left:16px;"><input type="checkbox" id="j-livefeed-autorefresh" style="width:auto;" checked /> Auto-refresh every 15s</label>
+        </div>
+        <div id="j-livefeed"></div>
+      </div>
+
+      <div class="card full">
+        <h2>Search Console</h2>
+        <p class="j-note" id="j-gsc-note"></p>
+        <div class="j-threshold">
+          <label><input type="checkbox" id="j-gsc-enabled" style="width:auto;" /> Enabled (starts the daily import against your real property)</label>
+          <label style="margin-left:16px;" for="j-gsc-lookback">Lookback window (days):</label>
+          <input type="number" id="j-gsc-lookback" min="1" max="90" style="width:70px;" />
+          <button class="j-btn-sm primary" id="j-gsc-save">Save</button>
+          <span id="j-gsc-status" class="j-note" style="margin:0;"></span>
+        </div>
+        <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">Recent Import Runs</h3>
+        <div id="j-gsc-runs"></div>
+        <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">Top Queries</h3>
+        <div id="j-gsc-queries"></div>
+      </div>
+
+      <div class="card full">
+        <h2>Privacy &amp; Retention</h2>
+        <p class="j-note" id="j-retention-note"></p>
+        <div class="j-threshold">
+          <label for="j-retention-days">Retention period (days):</label>
+          <input type="number" id="j-retention-days" min="1" max="3650" style="width:80px;" />
+          <button class="j-btn-sm primary" id="j-retention-save">Save</button>
+          <span id="j-retention-status" class="j-note" style="margin:0;"></span>
+        </div>
+        <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">Delete a Visitor's Data</h3>
+        <p class="j-note">Deletes every session and event for the given visitor_id, permanently, and blocks that ID from ever being written under again. Get a visitor_id from the Hot Leads or Live Visitors panels.</p>
+        <div class="j-threshold">
+          <input type="text" id="j-delete-visitor-id" placeholder="visitor_id" style="width:280px;" />
+          <button class="j-btn-sm danger" id="j-delete-visitor-btn">Delete Permanently</button>
+          <span id="j-delete-visitor-status" class="j-note" style="margin:0;"></span>
+        </div>
       </div>
     </main>
   </div>
@@ -574,6 +623,19 @@
         el.appendChild(row);
       });
       document.getElementById('j-funnel-note').textContent = d.note || '';
+      document.getElementById('j-funnel-title').textContent = 'Funnel · ' + (d.funnel_name || 'Standard');
+
+      if (d.available_funnels) {
+        var sel = document.getElementById('j-funnel-definition');
+        var current = sel.value || d.funnel_id;
+        sel.innerHTML = '';
+        d.available_funnels.forEach(function (f) {
+          var o = document.createElement('option');
+          o.value = f.id; o.textContent = f.name;
+          sel.appendChild(o);
+        });
+        sel.value = current;
+      }
     }
 
     function renderAttribution(d) {
@@ -582,7 +644,7 @@
     }
 
     function renderHotLeads(d) {
-      document.getElementById('j-hotlead-def').textContent = d.definition || '';
+      document.getElementById('j-hotlead-def').textContent = (d.definition || '') + (d.org_disclosure ? ' ' + d.org_disclosure : '');
       var el = document.getElementById('j-hot-leads');
       el.innerHTML = '';
       var rows = d.rows || [];
@@ -593,8 +655,11 @@
         var left = document.createElement('div');
         var page = document.createElement('div'); page.textContent = labelFor(r.entry_page);
         var meta = document.createElement('div'); meta.className = 'meta';
-        meta.textContent = labelFor(r.attribution_source) + ' · ' + new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' });
-        left.appendChild(page); left.appendChild(meta);
+        var orgText = r.org_name ? (' · ' + r.org_name + ' (' + labelFor(r.org_resolution_type) + ')') : '';
+        meta.textContent = labelFor(r.attribution_source) + orgText + ' · ' + new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' });
+        var idLine = document.createElement('div'); idLine.className = 'meta';
+        idLine.textContent = 'visitor_id: ' + r.visitor_id;
+        left.appendChild(page); left.appendChild(meta); left.appendChild(idLine);
         row.appendChild(left);
         el.appendChild(row);
       });
@@ -660,10 +725,12 @@
     function refreshFunnel() {
       var source = document.getElementById('j-funnel-source').value || null;
       var country = document.getElementById('j-funnel-country').value || null;
-      jApi('analytics-report', { report: 'funnel', source: source, country: country }).then(renderFunnel).catch(function () {});
+      var funnelId = document.getElementById('j-funnel-definition').value || null;
+      jApi('analytics-report', { report: 'funnel', source: source, country: country, funnel_id: funnelId }).then(renderFunnel).catch(function () {});
     }
     document.getElementById('j-funnel-source').addEventListener('change', refreshFunnel);
     document.getElementById('j-funnel-country').addEventListener('change', refreshFunnel);
+    document.getElementById('j-funnel-definition').addEventListener('change', refreshFunnel);
 
     Array.prototype.forEach.call(document.querySelectorAll('.j-toggle button'), function (btn) {
       btn.addEventListener('click', function () {
@@ -687,6 +754,162 @@
     function populateFunnelSources(sources) { populateSelectOptions('j-funnel-source', sources); }
     function populateFunnelCountries(countries) { populateSelectOptions('j-funnel-country', countries); }
 
+    // --- Section J Phase 3 --------------------------------------------------
+
+    function renderLiveFeed(d) {
+      document.getElementById('j-livefeed-note').textContent =
+        'Active within the last ' + d.active_within_minutes + ' minute(s). ' + (d.note || '') + (d.org_disclosure ? ' ' + d.org_disclosure : '');
+      document.getElementById('j-livefeed-minutes').value = d.active_within_minutes;
+      var el = document.getElementById('j-livefeed');
+      el.innerHTML = '';
+      var rows = d.sessions || [];
+      if (!rows.length) { el.innerHTML = '<p class="empty">No active visitors right now.</p>'; return; }
+      rows.forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+        var left = document.createElement('div');
+        var top = document.createElement('div');
+        top.textContent = labelFor(r.entry_page) + (r.last_event_type ? ' · last: ' + r.last_event_type : '');
+        if (r.is_internal) { var b = document.createElement('span'); b.className = 'j-badge'; b.textContent = 'internal'; b.style.marginLeft = '6px'; top.appendChild(b); }
+        var meta = document.createElement('div'); meta.className = 'meta';
+        var orgText = r.org_name ? (' · ' + r.org_name) : '';
+        meta.textContent = [labelFor(r.attribution_source), labelFor(r.country), labelFor(r.device_type), labelFor(r.browser)].join(' · ') + orgText +
+          ' · last seen ' + new Date(r.last_seen_at).toLocaleTimeString('en-US', { timeZone: 'Africa/Cairo' });
+        left.appendChild(top); left.appendChild(meta);
+        row.appendChild(left);
+        el.appendChild(row);
+      });
+    }
+
+    function loadLiveFeed() {
+      jApi('analytics-report', { report: 'live_feed' }).then(renderLiveFeed).catch(function () {});
+    }
+
+    document.getElementById('j-livefeed-minutes-save').addEventListener('click', function () {
+      var v = Number(document.getElementById('j-livefeed-minutes').value);
+      var statusEl = document.getElementById('j-livefeed-status');
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ live_feed_active_minutes: v }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadLiveFeed();
+      });
+    });
+
+    var liveFeedTimer = null;
+    function armLiveFeedAutoRefresh() {
+      if (liveFeedTimer) clearInterval(liveFeedTimer);
+      if (document.getElementById('j-livefeed-autorefresh').checked) {
+        liveFeedTimer = setInterval(loadLiveFeed, 15000);
+      }
+    }
+    document.getElementById('j-livefeed-autorefresh').addEventListener('change', armLiveFeedAutoRefresh);
+
+    function renderSearchConsole(d) {
+      document.getElementById('j-gsc-note').textContent = d.note + ' ' + d.timezone_note;
+      document.getElementById('j-gsc-enabled').checked = !!d.enabled;
+      document.getElementById('j-gsc-lookback').value = d.lookback_days;
+
+      var runsEl = document.getElementById('j-gsc-runs');
+      var runs = d.runs || [];
+      runsEl.innerHTML = runs.length ? '' : '<p class="empty">No import runs yet' + (d.enabled ? ' -- the next scheduled run will start soon.' : ' -- enable the import above to start.') + '</p>';
+      runs.forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+        var left = document.createElement('div');
+        var badge = document.createElement('span');
+        badge.className = 'j-badge' + (r.status === 'error' ? ' warn' : '');
+        badge.textContent = r.status;
+        var top = document.createElement('div');
+        top.appendChild(badge);
+        var range = document.createElement('span'); range.style.marginLeft = '8px';
+        range.textContent = labelFor(r.source_start_date) + ' → ' + labelFor(r.source_end_date) + (r.rows_upserted != null ? ' (' + fmtNum(r.rows_upserted) + ' rows)' : '');
+        top.appendChild(range);
+        var meta = document.createElement('div'); meta.className = 'meta';
+        meta.textContent = new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' }) + (r.error_details ? ' · ' + r.error_details : '');
+        left.appendChild(top); left.appendChild(meta);
+        row.appendChild(left);
+        runsEl.appendChild(row);
+      });
+
+      var queriesEl = document.getElementById('j-gsc-queries');
+      var queries = d.top_queries || [];
+      queriesEl.innerHTML = queries.length ? '' : '<p class="empty">No query data yet.</p>';
+      if (queries.length) {
+        var table = document.createElement('table');
+        table.innerHTML = '<thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Avg. Position</th></tr></thead>';
+        var tbody = document.createElement('tbody');
+        queries.forEach(function (q) {
+          var tr = document.createElement('tr');
+          ['query', 'clicks', 'impressions'].forEach(function (k) {
+            var td = document.createElement('td'); td.textContent = k === 'query' ? labelFor(q[k]) : fmtNum(q[k]); tr.appendChild(td);
+          });
+          var ctrTd = document.createElement('td'); ctrTd.textContent = q.ctr + '%'; tr.appendChild(ctrTd);
+          var posTd = document.createElement('td'); posTd.textContent = q.avg_position; tr.appendChild(posTd);
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        queriesEl.appendChild(table);
+      }
+    }
+
+    function loadSearchConsole() {
+      jApi('analytics-report', { report: 'search_console' }).then(renderSearchConsole).catch(function () {});
+    }
+
+    document.getElementById('j-gsc-save').addEventListener('click', function () {
+      var statusEl = document.getElementById('j-gsc-status');
+      var body = {
+        search_console_enabled: document.getElementById('j-gsc-enabled').checked,
+        search_console_lookback_days: Number(document.getElementById('j-gsc-lookback').value),
+      };
+      if (body.search_console_enabled && !window.confirm('This starts a daily import from your real Search Console property. Continue?')) {
+        document.getElementById('j-gsc-enabled').checked = false;
+        return;
+      }
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadSearchConsole();
+      });
+    });
+
+    function renderRetention(d) {
+      document.getElementById('j-retention-note').textContent = d.note || '';
+      document.getElementById('j-retention-days').value = d.data_retention_days;
+    }
+    function loadRetention() {
+      fetch('/api/analytics-privacy', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(renderRetention).catch(function () {});
+    }
+    document.getElementById('j-retention-save').addEventListener('click', function () {
+      var v = Number(document.getElementById('j-retention-days').value);
+      var statusEl = document.getElementById('j-retention-status');
+      fetch('/api/analytics-privacy', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data_retention_days: v }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadRetention();
+      });
+    });
+
+    document.getElementById('j-delete-visitor-btn').addEventListener('click', function () {
+      var id = document.getElementById('j-delete-visitor-id').value.trim();
+      var statusEl = document.getElementById('j-delete-visitor-status');
+      if (!id) { statusEl.textContent = 'Enter a visitor_id first.'; return; }
+      if (!window.confirm('Permanently delete all data for visitor_id "' + id + '"? This cannot be undone.')) return;
+      fetch('/api/analytics-privacy?confirmed=1', {
+        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_visitor', visitor_id: id }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? ('Deleted (' + data.sessions_deleted + ' session(s)).') : (data.error || 'Could not delete.');
+        if (data.ok) { document.getElementById('j-delete-visitor-id').value = ''; loadCustomPipeline(); }
+      });
+    });
+
     function loadCustomPipeline() {
       jApi('analytics-report', { report: 'overview' }).then(renderOverview).catch(function () {});
       refreshFunnel();
@@ -694,6 +917,10 @@
       jApi('analytics-report', { report: 'hot_leads' }).then(renderHotLeads).catch(function () {});
       jApi('analytics-report', { report: 'bot_review' }).then(renderBotReview).catch(function () {});
       jApi('analytics-report', { report: 'demographics' }).then(renderDemographics).catch(function () {});
+      loadLiveFeed();
+      loadSearchConsole();
+      loadRetention();
+      armLiveFeedAutoRefresh();
     }
 
     // --- range selector ----------------------------------------------------

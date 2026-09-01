@@ -21,6 +21,19 @@
 [functions."geo-refresh"]
   schedule = "@weekly"
 
+# Section J Phase 3 -- daily data-retention purge (analytics_sessions/
+# analytics_events rows older than the configured retention window).
+# Always runs; not gated on anything, unlike Search Console below.
+[functions."analytics-retention"]
+  schedule = "@daily"
+
+# Section J Phase 3 -- daily Search Console import. The function itself
+# checks search_console_enabled (default false) before making any call
+# to Google's API -- this schedule just means "check in daily," not
+# "start pulling data automatically." See README for the required setup.
+[functions."search-console-import"]
+  schedule = "@daily"
+
 # Admin analytics page
 [[redirects]]
   from = "/admin/analytics"
@@ -92,6 +105,12 @@
 [[redirects]]
   from = "/api/analytics-settings"
   to = "/.netlify/functions/analytics-settings"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/analytics-privacy"
+  to = "/.netlify/functions/analytics-privacy"
   status = 200
   force = true
 

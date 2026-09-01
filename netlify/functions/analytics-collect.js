@@ -38,6 +38,7 @@ const {
 } = require('./_analytics_lib');
 const { readJsonBody, json } = require('./_lib');
 const { resolveCountry, parseUserAgent } = require('./_geo_lib');
+const { resolveOrg, ensureSchema: ensureB2bSchema } = require('./_b2b_lib');
 
 function connectionString() {
   return (
@@ -98,6 +99,15 @@ async function handleEvent(sql, body, ip, userAgent) {
 
   if (!validEventId(eventId) || !sessionId || !visitorId || !EVENT_TYPES.has(eventType) || !sourcePage) {
     return json(400, { ok: false, error: 'Invalid event payload' });
+  }
+
+  // Privacy deletion (Phase 3): once a visitor_id has been deleted on
+  // request, refuse to write anything further under it and tell the
+  // client to mint a fresh one -- this IS the "invalidated for future
+  // correlation" requirement, not just a courtesy. No event is written.
+  const deleted = await sql`SELECT 1 FROM deleted_visitor_ids WHERE visitor_id = ${visitorId}`;
+  if (deleted[0]) {
+    return json(200, { ok: true, reset_visitor: true });
   }
 
   const targetId = optional(body.target_id, MAX.target_id);
@@ -199,6 +209,7 @@ exports.handler = async (event) => {
 
   try {
     await ensureSchema(sql);
+    await ensureB2bSchema(sql);
 
     if (body.type === ENGAGEMENT_SIGNAL_TYPE) {
       const parsed = await handleEngagement(sql, body);
@@ -211,11 +222,21 @@ exports.handler = async (event) => {
         timeOnPageMs: parsed.timeOnPageMs,
       });
 
+      // Reverse-IP org lookup happens here, at page-exit, not at the
+      // initial pageview write -- keeps the RDAP round trip (which can
+      // take a couple of seconds worst-case, first time only, cached
+      // after that) off the critical path of every new session's first
+      // event. ip is read transiently for this one lookup, same as
+      // everywhere else in this pipeline -- see _b2b_lib.js for why only
+      // a one-way hash of it, never the raw value, ends up in storage.
+      const { orgName, resolutionType } = await resolveOrg(sql, ip);
+
       try {
         await sql`
           UPDATE analytics_sessions
           SET bot_confidence = ${confidence}, bot_reason_codes = ${JSON.stringify(reasonCodes)}::jsonb,
-              bot_detection_version = ${version}, last_seen_at = now()
+              bot_detection_version = ${version}, org_name = ${orgName}, org_resolution_type = ${resolutionType},
+              last_seen_at = now()
           WHERE session_id = ${parsed.sessionId}
         `;
       } catch (err) {
