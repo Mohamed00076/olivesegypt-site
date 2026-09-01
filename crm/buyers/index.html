@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buyers | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="stylesheet" href="/assets/crm.css" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-flex-between" style="margin-bottom:16px;">
+        <h1 style="margin:0;">Buyers</h1>
+        <div class="crm-flex">
+          <a href="/crm/buyer/?new=1" class="crm-btn crm-btn-primary">+ Add Buyer</a>
+          <button type="button" class="crm-btn crm-btn-secondary" id="export-btn">Export CSV</button>
+          <button type="button" class="crm-btn crm-btn-secondary" id="import-toggle-btn">Import CSV</button>
+        </div>
+      </div>
+
+      <div class="crm-card" id="import-card" style="display:none;">
+        <h2>Import Buyers From CSV</h2>
+        <p class="crm-muted">
+          First row must be a header with column names (e.g. <code>company_name,country_region,contact_name,contact_email,current_stage,...</code>).
+          Rows that fail validation are skipped and listed below with the reason — nothing partial is written for a skipped row.
+        </p>
+        <div class="crm-field">
+          <label for="import-file">CSV file</label>
+          <input type="file" id="import-file" accept=".csv,text/csv" />
+        </div>
+        <div class="crm-field">
+          <label for="import-text">…or paste CSV text</label>
+          <textarea id="import-text" rows="6" placeholder="company_name,country_region,contact_name,contact_email,current_stage"></textarea>
+        </div>
+        <div class="crm-flex">
+          <button type="button" class="crm-btn crm-btn-primary" id="import-run-btn">Import</button>
+          <button type="button" class="crm-btn crm-btn-secondary" id="import-cancel-btn">Cancel</button>
+        </div>
+        <div id="import-result" style="margin-top:14px;"></div>
+      </div>
+
+      <div class="crm-card">
+        <div class="crm-flex">
+          <input type="text" id="search-input" placeholder="Search company, contact, email…" style="max-width:280px;" />
+          <select id="stage-filter" style="max-width:180px;"><option value="">All stages</option></select>
+          <select id="region-filter" style="max-width:180px;"><option value="">All regions</option></select>
+        </div>
+      </div>
+
+      <div class="crm-card">
+        <div id="list-status" class="crm-muted">Loading…</div>
+        <div style="overflow-x:auto;">
+          <table id="buyers-table" style="display:none;">
+            <thead>
+              <tr>
+                <th data-sort="company_name">Company</th>
+                <th data-sort="country_region">Region</th>
+                <th data-sort="current_stage">Stage</th>
+                <th data-sort="contact_name">Contact</th>
+                <th data-sort="next_action_due">Next Action Due</th>
+                <th data-sort="updated_at">Updated</th>
+              </tr>
+            </thead>
+            <tbody id="buyers-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var allRows = [];
+        var sortKey = 'updated_at';
+        var sortDir = -1;
+
+        function populateFilters() {
+          var stageSel = document.getElementById('stage-filter');
+          CRM.STAGES.forEach(function (s) {
+            var o = document.createElement('option'); o.value = s; o.textContent = s; stageSel.appendChild(o);
+          });
+          var regionSel = document.getElementById('region-filter');
+          CRM.REGIONS.forEach(function (r) {
+            var o = document.createElement('option'); o.value = r; o.textContent = r; regionSel.appendChild(o);
+          });
+        }
+
+        function render(rows) {
+          var tbody = document.getElementById('buyers-tbody');
+          if (!rows.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="crm-muted">No buyers match.</td></tr>';
+            return;
+          }
+          tbody.innerHTML = rows.map(function (r) {
+            return '<tr>' +
+              '<td><a href="/crm/buyer/?id=' + r.id + '">' + CRM.escapeHtml(r.company_name) + '</a></td>' +
+              '<td>' + CRM.escapeHtml(r.country_region) + '</td>' +
+              '<td><span class="' + CRM.stageBadgeClass(r.current_stage) + '">' + CRM.escapeHtml(r.current_stage) + '</span></td>' +
+              '<td>' + CRM.escapeHtml(r.contact_name || '—') + '</td>' +
+              '<td>' + CRM.fmtDate(r.next_action_due) + '</td>' +
+              '<td>' + CRM.fmtDate(r.updated_at) + '</td>' +
+              '</tr>';
+          }).join('');
+        }
+
+        function applyAndRender() {
+          var search = document.getElementById('search-input').value.toLowerCase();
+          var stage = document.getElementById('stage-filter').value;
+          var region = document.getElementById('region-filter').value;
+
+          var rows = allRows.filter(function (r) {
+            if (stage && r.current_stage !== stage) return false;
+            if (region && r.country_region !== region) return false;
+            if (search) {
+              var hay = (r.company_name + ' ' + (r.contact_name || '') + ' ' + (r.contact_email || '')).toLowerCase();
+              if (hay.indexOf(search) === -1) return false;
+            }
+            return true;
+          });
+
+          rows.sort(function (a, b) {
+            var av = a[sortKey] || '', bv = b[sortKey] || '';
+            if (av < bv) return -1 * sortDir;
+            if (av > bv) return 1 * sortDir;
+            return 0;
+          });
+
+          render(rows);
+        }
+
+        document.querySelectorAll('th[data-sort]').forEach(function (th) {
+          th.addEventListener('click', function () {
+            var key = th.getAttribute('data-sort');
+            if (sortKey === key) { sortDir *= -1; } else { sortKey = key; sortDir = 1; }
+            applyAndRender();
+          });
+        });
+
+        ['search-input', 'stage-filter', 'region-filter'].forEach(function (id) {
+          document.getElementById(id).addEventListener('input', applyAndRender);
+        });
+
+        document.getElementById('export-btn').addEventListener('click', function () {
+          if (!window.confirm('Export all buyer records to CSV now?')) return;
+          window.location.href = '/api/crm/csv?confirmed=1';
+        });
+
+        function reloadList() {
+          return CRM.fetchJson('/api/crm/buyers').then(function (result) {
+            allRows = result.data;
+            applyAndRender();
+          });
+        }
+
+        document.getElementById('import-toggle-btn').addEventListener('click', function () {
+          var card = document.getElementById('import-card');
+          card.style.display = card.style.display === 'none' ? '' : 'none';
+        });
+        document.getElementById('import-cancel-btn').addEventListener('click', function () {
+          document.getElementById('import-card').style.display = 'none';
+        });
+
+        document.getElementById('import-run-btn').addEventListener('click', function () {
+          var fileInput = document.getElementById('import-file');
+          var textArea = document.getElementById('import-text');
+          var resultEl = document.getElementById('import-result');
+          var runBtn = document.getElementById('import-run-btn');
+
+          function runImport(csvText) {
+            if (!csvText || !csvText.trim()) {
+              resultEl.innerHTML = '<div class="crm-status crm-status-error">Provide a CSV file or pasted CSV text.</div>';
+              return;
+            }
+            if (!window.confirm('Import these buyer records now? This will create new buyer rows.')) return;
+            runBtn.disabled = true;
+            CRM.fetchJson('/api/crm/csv', { method: 'POST', body: { csv: csvText } }).then(function (result) {
+              runBtn.disabled = false;
+              if (!result.ok) {
+                resultEl.innerHTML = '<div class="crm-status crm-status-error">' + CRM.escapeHtml(result.data.error || 'Import failed.') + '</div>';
+                return;
+              }
+              var html = '<div class="crm-status crm-status-success">Imported ' + result.data.imported + ' buyer(s).</div>';
+              if (result.data.skipped && result.data.skipped.length) {
+                html += '<p class="crm-muted">' + result.data.skipped.length + ' row(s) skipped:</p><ul>' +
+                  result.data.skipped.map(function (s) { return '<li>Line ' + s.line + ': ' + CRM.escapeHtml(s.reason) + '</li>'; }).join('') + '</ul>';
+              }
+              resultEl.innerHTML = html;
+              textArea.value = '';
+              fileInput.value = '';
+              reloadList();
+            }).catch(function () { runBtn.disabled = false; });
+          }
+
+          if (fileInput.files && fileInput.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function () { runImport(String(reader.result || '')); };
+            reader.readAsText(fileInput.files[0]);
+          } else {
+            runImport(textArea.value);
+          }
+        });
+
+        populateFilters();
+        CRM.requireAuth().then(function () {
+          CRM.renderNav('Buyers');
+          return CRM.fetchJson('/api/crm/buyers');
+        }).then(function (result) {
+          allRows = result.data;
+          document.getElementById('list-status').style.display = 'none';
+          document.getElementById('buyers-table').style.display = '';
+          applyAndRender();
+        }).catch(function (e) {
+          if (e.message !== 'unauthorized') {
+            document.getElementById('list-status').textContent = 'Could not load buyers.';
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

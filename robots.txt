@@ -8,5 +8,6 @@ Disallow: /invoice
 Disallow: /business-card
 Disallow: /catalog/print
 Disallow: /admin
+Disallow: /crm
 
 Sitemap: https://olivesegypt.com/sitemap.xml

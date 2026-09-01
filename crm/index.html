@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="stylesheet" href="/assets/crm.css" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <h1>Dashboard</h1>
+      <div id="dashboard-content">
+        <p class="crm-muted">Loading…</p>
+      </div>
+    </div>
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        function stageOrderIndex(stage) {
+          var i = CRM.STAGES.indexOf(stage);
+          return i === -1 ? CRM.STAGES.length : i;
+        }
+
+        function renderFollowupList(title, rows, emptyMsg) {
+          if (!rows.length) return '<p class="crm-muted">' + emptyMsg + '</p>';
+          var html = '<table><thead><tr><th>Company</th><th>Next Action</th><th>Due</th></tr></thead><tbody>';
+          rows.forEach(function (r) {
+            html += '<tr><td><a href="/crm/buyer/?id=' + r.id + '">' + CRM.escapeHtml(r.company_name) + '</a></td>' +
+              '<td>' + CRM.escapeHtml(r.next_action || '') + '</td>' +
+              '<td>' + CRM.fmtDate(r.next_action_due) + '</td></tr>';
+          });
+          html += '</tbody></table>';
+          return html;
+        }
+
+        CRM.requireAuth().then(function () {
+          CRM.renderNav('Dashboard');
+          return CRM.fetchJson('/api/crm/dashboard');
+        }).then(function (result) {
+          var d = result.data;
+          var byStage = {};
+          d.by_stage.forEach(function (s) { byStage[s.stage] = s.count; });
+          var totalActive = d.by_stage.reduce(function (sum, s) { return sum + s.count; }, 0);
+
+          var stageCardsHtml = CRM.STAGES.map(function (stage) {
+            return '<div class="crm-stat"><div class="n">' + (byStage[stage] || 0) + '</div><div class="l">' + CRM.escapeHtml(stage) + '</div></div>';
+          }).join('');
+
+          var regionHtml = d.by_region.map(function (r) {
+            return '<div class="crm-stat"><div class="n">' + r.count + '</div><div class="l">' + CRM.escapeHtml(r.region) + '</div></div>';
+          }).join('');
+
+          var cr = d.conversion_rate;
+          var crPct = cr.rate === null ? 'n/a' : (cr.rate * 100).toFixed(1) + '%';
+
+          var avgStageHtml = d.avg_time_per_stage_days.length
+            ? '<table><thead><tr><th>Stage Reached</th><th>Avg. Days To Get There</th></tr></thead><tbody>' +
+              d.avg_time_per_stage_days.map(function (r) {
+                return '<tr><td>' + CRM.escapeHtml(r.stage) + '</td><td>' + r.avg_days + '</td></tr>';
+              }).join('') + '</tbody></table>'
+            : '<p class="crm-muted">Not enough stage-change history yet to compute this.</p>';
+
+          document.getElementById('dashboard-content').innerHTML =
+            '<div class="crm-card"><h2>Buyers by Stage (' + totalActive + ' active)</h2><div class="crm-grid crm-grid-4">' + stageCardsHtml + '</div></div>' +
+            '<div class="crm-card"><h2>By Region</h2><div class="crm-grid crm-grid-4">' + regionHtml + '</div></div>' +
+            '<div class="crm-grid crm-grid-2">' +
+              '<div class="crm-card"><h2>Overdue Follow-Ups (' + d.overdue_followups.length + ')</h2>' + renderFollowupList('Overdue', d.overdue_followups, 'None overdue.') + '</div>' +
+              '<div class="crm-card"><h2>Upcoming (next 7 days) (' + d.upcoming_followups.length + ')</h2>' + renderFollowupList('Upcoming', d.upcoming_followups, 'Nothing due in the next 7 days.') + '</div>' +
+            '</div>' +
+            '<div class="crm-card"><h2>Stalled / Lost Leads (' + d.stalled_leads.length + ')</h2>' +
+              (d.stalled_leads.length
+                ? '<table><thead><tr><th>Company</th><th>Stage</th><th>Last Updated</th></tr></thead><tbody>' +
+                  d.stalled_leads.map(function (r) {
+                    return '<tr><td><a href="/crm/buyer/?id=' + r.id + '">' + CRM.escapeHtml(r.company_name) + '</a></td><td><span class="' + CRM.stageBadgeClass(r.current_stage) + '">' + CRM.escapeHtml(r.current_stage) + '</span></td><td>' + CRM.fmtDate(r.updated_at) + '</td></tr>';
+                  }).join('') + '</tbody></table>'
+                : '<p class="crm-muted">No stalled leads right now.</p>') +
+            '</div>' +
+            '<div class="crm-card"><h2>Conversion Rate</h2>' +
+              '<p><strong style="font-size:22px;">' + crPct + '</strong> <span class="crm-muted">(' + cr.converted + ' of ' + cr.total + ' buyers)</span></p>' +
+              '<p class="crm-muted">' + CRM.escapeHtml(cr.definition) + '</p>' +
+            '</div>' +
+            '<div class="crm-card"><h2>Average Time to Reach Each Stage</h2>' + avgStageHtml + '</div>';
+        }).catch(function (e) {
+          if (e.message !== 'unauthorized') {
+            document.getElementById('dashboard-content').innerHTML = '<div class="crm-status crm-status-error">Could not load dashboard data.</div>';
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

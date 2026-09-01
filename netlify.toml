@@ -56,6 +56,49 @@
   status = 200
   force = true
 
+# Buyer CRM (Section H) — separate auth/session from /admin/analytics above
+[[redirects]]
+  from = "/api/crm/auth/login"
+  to = "/.netlify/functions/crm-auth-login"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/logout"
+  to = "/.netlify/functions/crm-auth-logout"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/me"
+  to = "/.netlify/functions/crm-auth-me"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/buyers"
+  to = "/.netlify/functions/crm-buyers"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/activity"
+  to = "/.netlify/functions/crm-activity"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/dashboard"
+  to = "/.netlify/functions/crm-dashboard"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/csv"
+  to = "/.netlify/functions/crm-csv"
+  status = 200
+  force = true
+
 # SPA fallback — serve index.html for all non-file routes
 [[redirects]]
   from = "/*"
