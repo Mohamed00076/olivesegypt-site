@@ -33,7 +33,6 @@ ORG_JSONLD = {
     },
     "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Egyptian Table Olives Export Catalog", "url": f"{BASE}/catalog"},
     "knowsAbout": ["Table olives", "Olive export", "Food processing"],
-    "areaServed": {"@type": "GeoShape", "description": "Preparing to serve import markets across Europe, the Gulf, North America, Asia, and Africa"},
     "sameAs": [],
 }
 
