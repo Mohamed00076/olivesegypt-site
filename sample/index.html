@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <script defer src="https://umami-olivesegypt.netlify.app/script.js" data-website-id="88799e3f-ddb2-4eb2-b162-878676480474"></script>
+    <script defer src="/assets/analytics.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
 
     <!-- Primary SEO -->
@@ -199,6 +200,7 @@
           phone: document.getElementById('sample-phone').value.trim() || undefined,
           product_interest: document.getElementById('sample-product').value || undefined,
           request_type: 'Sample Request',
+          source_page: document.referrer || window.location.href,
           message: message,
           website: document.getElementById('sample-website').value
         };
@@ -218,8 +220,16 @@
           submitBtn.disabled = false;
           submitBtn.textContent = 'Request My Sample';
           if (result.ok && result.data && result.data.ok) {
+            // Fires only here, after a confirmed successful server
+            // response -- never on client-side submit alone.
+            if (window.TC && TC.trackEvent) {
+              TC.trackEvent('sample_request_submitted', { source_page: payload.source_page, product: payload.product_interest || null });
+            }
             form.reset();
             showStatus('success', 'Thank you \u2014 your sample request has been received. A dedicated export account manager will confirm within 24 hours.');
+            if (window.TC && TC.trackEvent) {
+              TC.trackEvent('form_confirmation_viewed', { source_page: payload.source_page, form: 'sample' });
+            }
           } else {
             showStatus('error', (result.data && result.data.error) || 'Something went wrong sending your request. Please try again, or email sales@olivesegypt.com directly.');
           }

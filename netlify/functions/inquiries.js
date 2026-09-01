@@ -23,6 +23,7 @@ const MAX = {
   estimated_volume: 120,
   request_type: 40,
   message: 8000,
+  source_page: 300,
 };
 
 function str(v) {
@@ -60,12 +61,14 @@ async function ensureSchema(sql) {
       estimated_volume  text,
       request_type      text,
       message           text NOT NULL DEFAULT '',
-      client_ip         text
+      client_ip         text,
+      source_page       text
     )
   `;
-  // Table may already exist from before client_ip was added -- backfill
-  // the column on existing deployments rather than assuming a fresh table.
+  // Table may already exist from before these columns were added --
+  // backfill on existing deployments rather than assuming a fresh table.
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS client_ip text`;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS source_page text`;
 }
 
 async function checkRateLimit(sql, ip, email) {
@@ -117,14 +120,15 @@ async function handlePost(event, sql) {
   const productInterest = optional(body.product_interest, MAX.product_interest);
   const estimatedVolume = optional(body.estimated_volume, MAX.estimated_volume);
   const requestType = optional(body.request_type, MAX.request_type);
+  const sourcePage = optional(body.source_page, MAX.source_page);
 
   await sql`
     INSERT INTO inquiries
       (name, email, company, country, phone,
-       product_interest, estimated_volume, request_type, message, client_ip)
+       product_interest, estimated_volume, request_type, message, client_ip, source_page)
     VALUES
       (${name}, ${email}, ${company}, ${country}, ${phone},
-       ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip})
+       ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip}, ${sourcePage})
   `;
 
   return json(200, { ok: true });
@@ -151,7 +155,8 @@ async function handleGet(event, sql) {
       product_interest,
       estimated_volume,
       request_type,
-      COALESCE(message, '')  AS message
+      COALESCE(message, '')  AS message,
+      source_page
     FROM inquiries
     ORDER BY created_at DESC
     LIMIT 5000
