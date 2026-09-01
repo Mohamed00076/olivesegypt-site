@@ -16,6 +16,8 @@ netlify/functions/                            serverless functions (Node, Netlif
   auth-login.js, auth-me.js, auth-logout.js   owner login (scrypt + HMAC session cookie)
   inquiries.js                                contact-form submissions -> Postgres
   analytics.js                                owner-only proxy to the Umami instance
+  _analytics_lib.js, analytics-collect.js,    site's own custom event pipeline
+    analytics-report.js, analytics-settings.js  (funnels, hot leads, bot scoring — see below)
   _crm_lib.js, crm-*.js                       Buyer CRM backend (own auth, see below)
 admin/analytics/index.html                    owner dashboard (login-gated)
 crm/                                          Buyer CRM frontend (login-gated, own auth)
@@ -166,3 +168,43 @@ confirmation dialogs in the UI. CSV export/import sanitizes every cell
 against CSV-injection (a leading `=`, `+`, `-`, or `@` gets a neutralizing
 prefix) and validates every imported row server-side — a row that fails
 validation is skipped and reported, never partially inserted.
+
+## Custom Analytics Pipeline (Section J, Phase 1 so far)
+
+A second, first-party event pipeline living entirely in this repo's own
+Neon Postgres — **alongside, not instead of**, the Umami proxy above.
+Umami stays the source for pageview/session stats; this pipeline is
+where funnels, hot-lead flags, traffic-source attribution, and bot/
+internal-traffic scoring live, because Umami's own schema has no room
+for them. See `docs/j0-analytics-audit.md` for the full architecture
+reasoning and `docs/j1-acceptance-criteria.md` for exactly what to check
+to confirm each piece works.
+
+**No new services.** New tables only (`analytics_sessions`,
+`analytics_events`, `analytics_settings`, `analytics_ingest_errors`),
+same Neon database, created automatically on first use like every other
+table in this repo.
+
+### Environment variables (Phase 1)
+
+| Variable | Purpose |
+| --- | --- |
+| `ANALYTICS_INTERNAL_IP_ALLOWLIST` | Comma-separated list of IPs/CIDR ranges (e.g. `41.x.x.x,10.0.0.0/8`) to soft-flag as internal/admin traffic. **Unset by default** — until you set this, no session is ever flagged internal, so the dashboard's "Flagged Internal" count will read 0 even for your own office traffic. Flagging never deletes anything; it only excludes flagged sessions from the default KPI/funnel/attribution counts. |
+
+No other new env vars — `DATABASE_URL` is reused, and there's no separate
+auth (this pipeline's admin endpoints sit behind the same `tc_session`
+cookie as the rest of `/admin/analytics/`).
+
+### Known Phase 1 limitations
+
+- Bot-detection scoring rules live only in `netlify/functions/_analytics_lib.js`
+  and are deliberately never exposed to the client or echoed in any API
+  response — the dashboard shows a score and reason codes, not the
+  underlying formula.
+- Country/city filtering on the funnel, and any device/browser breakdown
+  for this pipeline, is Phase 2 (geo resolution hasn't been built for it
+  yet — Umami's own dashboard above still has country/device/browser
+  data in the meantime).
+- The dashboard's "Ingest Errors" count can only ever see failures this
+  server actually received and then failed to store — a request that
+  never reaches the server at all is invisible to any server-side count.
