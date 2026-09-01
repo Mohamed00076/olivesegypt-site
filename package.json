@@ -4,6 +4,8 @@
   "type": "commonjs",
   "dependencies": {
     "@neondatabase/serverless": "0.10.4",
-    "isbot": "^5.2.2"
+    "isbot": "^5.2.2",
+    "maxmind": "^5.0.7",
+    "ua-parser-js": "^2.0.10"
   }
 }

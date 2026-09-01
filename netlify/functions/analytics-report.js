@@ -50,7 +50,7 @@ function botSuppressedSql(threshold) {
   return `(bot_override IS TRUE OR (bot_override IS NULL AND bot_confidence IS NOT NULL AND bot_confidence >= ${threshold}))`;
 }
 
-async function reportFunnel(sql, { startAt, endAt, source }) {
+async function reportFunnel(sql, { startAt, endAt, source, country }) {
   const threshold = await getThreshold(sql);
   const suppressed = botSuppressedSql(threshold);
 
@@ -67,6 +67,7 @@ async function reportFunnel(sql, { startAt, endAt, source }) {
         AND s.is_internal = false
         AND NOT ${suppressed}
         AND ($3::text IS NULL OR s.attribution_source = $3)
+        AND ($4::text IS NULL OR s.country = $4)
     ),
     stages AS (
       SELECT
@@ -86,7 +87,7 @@ async function reportFunnel(sql, { startAt, endAt, source }) {
       count(*) FILTER (WHERE reached_contact) AS contact
     FROM stages
     `,
-    [startAt, endAt, source || null],
+    [startAt, endAt, source || null, country || null],
   );
 
   const r = rows[0] || { landing: 0, catalog: 0, download: 0, contact: 0 };
@@ -97,8 +98,8 @@ async function reportFunnel(sql, { startAt, endAt, source }) {
       { stage: 'Spec-Sheet Download', count: Number(r.download) || 0 },
       { stage: 'Contact Click', count: Number(r.contact) || 0 },
     ],
-    filter: { source: source || null },
-    note: 'Country filtering is Phase 2 (geo resolution not yet built for this pipeline). Excludes sessions flagged internal or bot-suppressed at the current threshold -- see bot settings.',
+    filter: { source: source || null, country: country || null },
+    note: 'Country is resolved from a self-hosted, country-level-only GeoLite2 database (no city data -- see docs/j2-acceptance-criteria.md) and is null for sessions from before Phase 2 shipped or where resolution failed. Excludes sessions flagged internal or bot-suppressed at the current threshold -- see bot settings.',
   };
 }
 
@@ -208,6 +209,34 @@ async function reportBotReview(sql) {
   return { threshold, rows };
 }
 
+async function reportDemographics(sql, { startAt, endAt }) {
+  const threshold = await getThreshold(sql);
+  const suppressed = botSuppressedSql(threshold);
+
+  const scope = `
+    FROM analytics_sessions
+    WHERE started_at >= $1 AND started_at < $2 AND is_internal = false AND NOT ${suppressed}
+  `;
+
+  const [countryRows, deviceRows, browserRows, languageRows] = await Promise.all([
+    sql.query(`SELECT country AS x, count(*)::int AS y ${scope} AND country IS NOT NULL GROUP BY country ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+    sql.query(`SELECT device_type AS x, count(*)::int AS y ${scope} AND device_type IS NOT NULL GROUP BY device_type ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+    sql.query(`SELECT browser AS x, count(*)::int AS y ${scope} AND browser IS NOT NULL GROUP BY browser ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+    sql.query(`SELECT browser_language AS x, count(*)::int AS y ${scope} AND browser_language IS NOT NULL GROUP BY browser_language ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+  ]);
+
+  const [unresolved] = await sql.query(`SELECT count(*)::int AS n ${scope} AND country IS NULL`, [startAt, endAt]);
+
+  return {
+    countries: countryRows,
+    devices: deviceRows,
+    browsers: browserRows,
+    languages: languageRows,
+    unresolved_country_sessions: unresolved ? unresolved.n : 0,
+    note: 'Country is resolved from a self-hosted, country-level-only GeoLite2 database at session start -- no city/region data (Netlify Functions\' 50MB bundle limit ruled that out; see docs/j2-acceptance-criteria.md). A session with an unresolved country (bad/missing IP, or the geo database wasn\'t available at build time) is counted separately below, not silently dropped from the total.',
+  };
+}
+
 async function reportOverview(sql, { startAt, endAt }) {
   const threshold = await getThreshold(sql);
   const suppressed = botSuppressedSql(threshold);
@@ -240,9 +269,21 @@ async function reportOverview(sql, { startAt, endAt }) {
     [startAt, endAt],
   );
 
+  const countryRows = await sql.query(
+    `
+    SELECT DISTINCT country
+    FROM analytics_sessions
+    WHERE started_at >= $1 AND started_at < $2 AND is_internal = false AND country IS NOT NULL
+    ORDER BY country
+    LIMIT 100
+    `,
+    [startAt, endAt],
+  );
+
   return {
     ...totals,
     sources: sourceRows.map((r) => r.source),
+    countries: countryRows.map((r) => r.country),
     ingest_errors_7d: errorRows[0] ? errorRows[0].n : 0,
     bot_confidence_threshold: threshold,
     timezone_note: 'All timestamps stored and returned in UTC. This dashboard displays them converted to Africa/Cairo by default.',
@@ -275,10 +316,11 @@ exports.handler = async (event) => {
     await ensureSchema(sql);
 
     if (report === 'overview') return json(200, await reportOverview(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
-    if (report === 'funnel') return json(200, await reportFunnel(sql, { startAt, endAt, source: q.source || null }), { 'Cache-Control': 'no-store, private' });
+    if (report === 'funnel') return json(200, await reportFunnel(sql, { startAt, endAt, source: q.source || null, country: q.country || null }), { 'Cache-Control': 'no-store, private' });
     if (report === 'hot_leads') return json(200, await reportHotLeads(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
     if (report === 'attribution') return json(200, await reportAttribution(sql, { startAt, endAt, model: q.model === 'last_touch' ? 'last_touch' : 'first_touch' }), { 'Cache-Control': 'no-store, private' });
     if (report === 'bot_review') return json(200, await reportBotReview(sql), { 'Cache-Control': 'no-store, private' });
+    if (report === 'demographics') return json(200, await reportDemographics(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
 
     return json(400, { error: 'Unknown report' });
   } catch (err) {

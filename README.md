@@ -169,42 +169,72 @@ against CSV-injection (a leading `=`, `+`, `-`, or `@` gets a neutralizing
 prefix) and validates every imported row server-side — a row that fails
 validation is skipped and reported, never partially inserted.
 
-## Custom Analytics Pipeline (Section J, Phase 1 so far)
+## Custom Analytics Pipeline (Section J, Phase 1 + 2 so far)
 
 A second, first-party event pipeline living entirely in this repo's own
 Neon Postgres — **alongside, not instead of**, the Umami proxy above.
 Umami stays the source for pageview/session stats; this pipeline is
-where funnels, hot-lead flags, traffic-source attribution, and bot/
-internal-traffic scoring live, because Umami's own schema has no room
-for them. See `docs/j0-analytics-audit.md` for the full architecture
-reasoning and `docs/j1-acceptance-criteria.md` for exactly what to check
-to confirm each piece works.
+where funnels, hot-lead flags, traffic-source attribution, bot/
+internal-traffic scoring, and (as of Phase 2) country/device/browser
+demographics live, because Umami's own schema has no room for the first
+few. See `docs/j0-analytics-audit.md` for the full architecture
+reasoning, `docs/j1-acceptance-criteria.md` for Phase 1, and
+`docs/j2-acceptance-criteria.md` for Phase 2.
 
-**No new services.** New tables only (`analytics_sessions`,
-`analytics_events`, `analytics_settings`, `analytics_ingest_errors`),
-same Neon database, created automatically on first use like every other
-table in this repo.
+**No new paid services**, but Phase 2 does add one new *build step* and
+one *optional* free automation:
 
-### Environment variables (Phase 1)
+- **Build step**: `scripts/build-geo.js` runs before every deploy
+  (`netlify.toml`'s `[build] command`), downloading a country-level-only
+  GeoLite2 database from a free, unofficial GitHub redistribution mirror
+  — not a MaxMind-licensed account (see `docs/j0-analytics-audit.md` and
+  `docs/j2-acceptance-criteria.md` for why: a real MaxMind account works
+  too but comes with a 90-day license-key re-verification chore, and
+  **GeoLite2-**City** specifically doesn't fit** — its ~60MB file exceeds
+  Netlify Functions' 50MB unzipped bundle limit, which is why this is
+  country-level only, not city-level). The file is never committed
+  (`.gitignore`'d, re-downloaded fresh on every deploy) and this build
+  step never fails the site build itself if the mirror is unreachable —
+  it just logs a warning and country resolution returns null until the
+  next successful deploy.
+- **Optional**: `netlify/functions/geo-refresh.js` is a Netlify
+  scheduled function (weekly, declared in `netlify.toml`) that can
+  trigger a fresh deploy purely to re-pull the geo database between your
+  normal deploys — see the env var below. Entirely optional; nothing
+  breaks if you skip it, the database just only refreshes on your actual
+  next deploy either way.
+
+New tables (same Neon database, created automatically on first use):
+`analytics_sessions`, `analytics_events`, `analytics_settings`,
+`analytics_ingest_errors`.
+
+### Environment variables
 
 | Variable | Purpose |
 | --- | --- |
 | `ANALYTICS_INTERNAL_IP_ALLOWLIST` | Comma-separated list of IPs/CIDR ranges (e.g. `41.x.x.x,10.0.0.0/8`) to soft-flag as internal/admin traffic. **Unset by default** — until you set this, no session is ever flagged internal, so the dashboard's "Flagged Internal" count will read 0 even for your own office traffic. Flagging never deletes anything; it only excludes flagged sessions from the default KPI/funnel/attribution counts. |
+| `NETLIFY_BUILD_HOOK_URL` | *(Phase 2, optional)* A Build Hook URL from Netlify's own UI (Site settings → Build & deploy → Build hooks → Add build hook) that `geo-refresh.js` POSTs to weekly to keep the geo database current between deploys. Unset by default — `geo-refresh.js` just logs and no-ops if it's missing; nothing depends on this running. |
 
 No other new env vars — `DATABASE_URL` is reused, and there's no separate
 auth (this pipeline's admin endpoints sit behind the same `tc_session`
 cookie as the rest of `/admin/analytics/`).
 
-### Known Phase 1 limitations
+### Known limitations
 
 - Bot-detection scoring rules live only in `netlify/functions/_analytics_lib.js`
   and are deliberately never exposed to the client or echoed in any API
   response — the dashboard shows a score and reason codes, not the
   underlying formula.
-- Country/city filtering on the funnel, and any device/browser breakdown
-  for this pipeline, is Phase 2 (geo resolution hasn't been built for it
-  yet — Umami's own dashboard above still has country/device/browser
-  data in the meantime).
+- Geo resolution is **country-level only, not city-level** — see above.
+  A session with no resolved country (bad/missing IP, or the geo
+  database wasn't available at the time of that build) is counted
+  separately in the dashboard, not silently dropped.
+- The geo database comes from an unofficial, free redistribution mirror
+  of MaxMind's GeoLite2 data, not a licensed MaxMind account — its
+  update cadence and long-term availability aren't guaranteed by
+  MaxMind. If that ever becomes a problem, switching to a real MaxMind
+  account only requires changing `scripts/build-geo.js`'s download URL
+  (and accepting the account/license-key maintenance that comes with it).
 - The dashboard's "Ingest Errors" count can only ever see failures this
   server actually received and then failed to store — a request that
   never reaches the server at all is invisible to any server-side count.

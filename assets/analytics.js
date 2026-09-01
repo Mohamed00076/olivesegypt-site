@@ -199,9 +199,10 @@
         content: params.get('utm_content') || null,
         term: params.get('utm_term') || null,
       },
+      browserLanguage: (navigator.language || '').slice(0, 35) || null,
     };
     writeJson(SESSION_KEY, fresh);
-    return { sessionId: fresh.id, isNew: true, entryPage: fresh.entryPage, referrer: fresh.referrer, utm: fresh.utm };
+    return { sessionId: fresh.id, isNew: true, entryPage: fresh.entryPage, referrer: fresh.referrer, utm: fresh.utm, browserLanguage: fresh.browserLanguage };
   }
 
   function post(payload) {
@@ -247,6 +248,7 @@
         utm_campaign: sess.utm.campaign,
         utm_content: sess.utm.content,
         utm_term: sess.utm.term,
+        browser_language: sess.browserLanguage || null,
       },
     };
     post(payload);

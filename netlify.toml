@@ -1,6 +1,25 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  # Section J Phase 2 -- fetches the (country-level-only) GeoLite2
+  # database from a free redistribution mirror before each deploy. Never
+  # fails the build itself; see scripts/build-geo.js.
+  command = "node scripts/build-geo.js"
+
+[functions]
+  # Bundles the freshly-downloaded geo database into every function's
+  # deploy package so analytics-collect.js can read it at runtime. Well
+  # under the 50MB unzipped function bundle limit (country-level file is
+  # ~8-9MB) -- GeoLite2-City was ruled out specifically because it isn't
+  # (see docs/j2-acceptance-criteria.md).
+  included_files = ["geo/**"]
+
+# Section J Phase 2 -- optional "scheduled auto-refresh": POSTs to a
+# Netlify Build Hook weekly, which triggers a fresh deploy (re-running
+# the geo download above). Requires NETLIFY_BUILD_HOOK_URL to be set;
+# entirely optional otherwise -- see README.
+[functions."geo-refresh"]
+  schedule = "@weekly"
 
 # Admin analytics page
 [[redirects]]

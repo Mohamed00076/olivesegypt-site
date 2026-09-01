@@ -37,6 +37,7 @@ const {
   clientIp,
 } = require('./_analytics_lib');
 const { readJsonBody, json } = require('./_lib');
+const { resolveCountry, parseUserAgent } = require('./_geo_lib');
 
 function connectionString() {
   return (
@@ -76,11 +77,11 @@ async function upsertSession(sql, s) {
     INSERT INTO analytics_sessions (
       session_id, visitor_id, entry_page, referrer_domain,
       utm_source, utm_medium, utm_campaign, utm_content, utm_term,
-      attribution_source, is_internal
+      attribution_source, country, device_type, browser, browser_language, is_internal
     ) VALUES (
       ${s.sessionId}, ${s.visitorId}, ${s.entryPage}, ${s.referrerDomain},
       ${s.utmSource}, ${s.utmMedium}, ${s.utmCampaign}, ${s.utmContent}, ${s.utmTerm},
-      ${s.attributionSource}, ${s.isInternal}
+      ${s.attributionSource}, ${s.country}, ${s.deviceType}, ${s.browser}, ${s.browserLanguage}, ${s.isInternal}
     )
     ON CONFLICT (session_id) DO UPDATE SET
       last_seen_at = now(),
@@ -88,7 +89,7 @@ async function upsertSession(sql, s) {
   `;
 }
 
-async function handleEvent(sql, body, ip) {
+async function handleEvent(sql, body, ip, userAgent) {
   const eventId = clean(body.event_id, MAX.event_id);
   const sessionId = clean(body.session_id, MAX.session_id);
   const visitorId = clean(body.visitor_id, MAX.visitor_id);
@@ -114,6 +115,19 @@ async function handleEvent(sql, body, ip) {
   const entryPage = optional(sess.entry_page, MAX.source_page);
   const attributionSource = computeAttribution({ utmSource, referrerDomain });
   const isInternal = isAllowlistedIp(ip);
+  const browserLanguage = optional(sess.browser_language, 35);
+
+  // Country/device/browser are resolved once, at session creation, same
+  // as UTM/referrer -- not re-derived on every event in the session.
+  // The IP is used here transiently and never persisted (see
+  // _geo_lib.js); only the resolved two-letter country code is stored.
+  let country = null;
+  let deviceType = null;
+  let browser = null;
+  if (isNewSession) {
+    country = await resolveCountry(ip);
+    ({ deviceType, browser } = parseUserAgent(userAgent));
+  }
 
   try {
     // The session row is upserted on every event (not just new ones) so
@@ -130,6 +144,10 @@ async function handleEvent(sql, body, ip) {
       utmContent: isNewSession ? utmContent : null,
       utmTerm: isNewSession ? utmTerm : null,
       attributionSource: isNewSession ? attributionSource : 'Direct',
+      country,
+      deviceType,
+      browser,
+      browserLanguage: isNewSession ? browserLanguage : null,
       isInternal,
     });
 
@@ -177,6 +195,8 @@ exports.handler = async (event) => {
     return json(400, { ok: false, error: 'Invalid request body' });
   }
 
+  const userAgent = (event.headers && (event.headers['user-agent'] || event.headers['User-Agent'])) || '';
+
   try {
     await ensureSchema(sql);
 
@@ -184,7 +204,6 @@ exports.handler = async (event) => {
       const parsed = await handleEngagement(sql, body);
       if (!parsed) return json(400, { ok: false, error: 'Invalid engagement payload' });
 
-      const userAgent = (event.headers && (event.headers['user-agent'] || event.headers['User-Agent'])) || '';
       const { confidence, reasonCodes, version } = scoreBotConfidence({
         userAgent,
         webdriver: parsed.webdriver,
@@ -207,7 +226,7 @@ exports.handler = async (event) => {
     }
 
     if (body.type === 'event') {
-      return await handleEvent(sql, body, ip);
+      return await handleEvent(sql, body, ip, userAgent);
     }
 
     return json(400, { ok: false, error: 'Unknown request type' });

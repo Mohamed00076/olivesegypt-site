@@ -147,6 +147,19 @@ minted until consent is granted.
 | `is_internal` | Server-side: request IP checked (transiently, never stored) against the `ANALYTICS_INTERNAL_IP_ALLOWLIST` env var | `analytics_sessions.is_internal` (boolean) | Soft-flags admin/office traffic — **flagged, never deleted**, excluded only from default KPI counts | analytics | No — raw IP is never persisted, only the resulting boolean |
 | `bot_confidence`, `bot_reason_codes`, `bot_detection_version` | Server-computed (User-Agent header + client-reported `webdriver`/`had_interaction`/`time_on_page_ms` signals sent via a page-exit `sendBeacon` call) | `analytics_sessions.bot_confidence` etc. | 0–100 bot-confidence score with reason codes — see `_analytics_lib.js`; the scoring rules themselves are never sent to the client or echoed in any API response | analytics | No |
 | `bot_override` | Admin action in the dashboard's Bot/Internal-Traffic Review panel | `analytics_sessions.bot_override` | Manual false-positive correction | n/a (admin action, not visitor data) | No |
+| `country` | Server-side, resolved from the request IP (transiently, never stored) against a self-hosted GeoLite2-Country database | `analytics_sessions.country` (two-letter ISO code) | Geographic breakdown | analytics | Yes (coarse location — country only, no city/region; see Section J Phase 2) |
+| `device_type`, `browser` | Server-side, parsed from the request's User-Agent header (never a client-supplied value) | `analytics_sessions.device_type`, `.browser` | Device/browser breakdown | analytics | Low risk, part of device fingerprint surface (same caveat as section 5) |
+| `browser_language` | `navigator.language`, read once at session start | `analytics_sessions.browser_language` | Language breakdown | analytics | Low risk |
+
+Added for Phase 2: **the request IP is used transiently for the country
+lookup and the internal-IP-allowlist check above, and is never persisted
+in this pipeline** — same pattern as `is_internal`. Only the resolved
+two-letter country code is stored. The geo database itself is
+country-level only (GeoLite2-City was ruled out — its ~60MB file exceeds
+Netlify Functions' 50MB unzipped bundle limit; see
+`docs/j2-acceptance-criteria.md`), fetched at build time from a free,
+unofficial GitHub-hosted redistribution mirror (not a MaxMind-licensed
+account) — never committed to this repo, refreshed on every deploy.
 
 `event_id` (a client-generated UUID, one per event) is the idempotency
 key — a `UNIQUE` constraint plus `ON CONFLICT DO NOTHING` makes a

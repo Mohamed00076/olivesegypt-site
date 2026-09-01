@@ -286,11 +286,24 @@
         <select class="j-select" id="j-funnel-source">
           <option value="">All sources</option>
         </select>
+        <select class="j-select" id="j-funnel-country" style="margin-left:8px;">
+          <option value="">All countries</option>
+        </select>
         <div id="j-funnel" style="margin-top:14px;"></div>
         <p class="j-note" id="j-funnel-note"></p>
       </div>
 
       <div class="grid">
+        <div class="card">
+          <h2>Geography &amp; Devices</h2>
+          <p class="j-note" id="j-demographics-note"></p>
+          <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">By Country</h3>
+          <ul class="rank" id="j-countries"></ul>
+          <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">By Device</h3>
+          <ul class="rank" id="j-devices"></ul>
+          <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">By Browser</h3>
+          <ul class="rank" id="j-browsers"></ul>
+        </div>
         <div class="card">
           <h2>Attribution &middot; Contact-Form Conversions</h2>
           <div class="j-toggle">
@@ -300,11 +313,12 @@
           <ul class="rank" id="j-attribution"></ul>
           <p class="j-note" id="j-attribution-note"></p>
         </div>
-        <div class="card">
-          <h2>Hot Leads</h2>
-          <p class="j-note" id="j-hotlead-def"></p>
-          <div id="j-hot-leads"></div>
-        </div>
+      </div>
+
+      <div class="card full">
+        <h2>Hot Leads</h2>
+        <p class="j-note" id="j-hotlead-def"></p>
+        <div id="j-hot-leads"></div>
       </div>
 
       <div class="card full">
@@ -528,6 +542,18 @@
       document.getElementById('j-error-note').textContent = d.known_limitation || '';
       document.getElementById('j-threshold-input').value = d.bot_confidence_threshold;
       populateFunnelSources(d.sources);
+      populateFunnelCountries(d.countries);
+    }
+
+    function renderDemographics(d) {
+      renderRank('j-countries', (d.countries || []).map(function (r) { return { x: r.x, y: r.y }; }));
+      renderRank('j-devices', (d.devices || []).map(function (r) { return { x: r.x, y: r.y }; }));
+      renderRank('j-browsers', (d.browsers || []).map(function (r) { return { x: r.x, y: r.y }; }));
+      var note = d.note || '';
+      if (d.unresolved_country_sessions) {
+        note += ' ' + fmtNum(d.unresolved_country_sessions) + ' session(s) in this range have no resolved country.';
+      }
+      document.getElementById('j-demographics-note').textContent = note;
     }
 
     function renderFunnel(d) {
@@ -631,9 +657,13 @@
       });
     });
 
-    document.getElementById('j-funnel-source').addEventListener('change', function () {
-      jApi('analytics-report', { report: 'funnel', source: this.value || null }).then(renderFunnel).catch(function () {});
-    });
+    function refreshFunnel() {
+      var source = document.getElementById('j-funnel-source').value || null;
+      var country = document.getElementById('j-funnel-country').value || null;
+      jApi('analytics-report', { report: 'funnel', source: source, country: country }).then(renderFunnel).catch(function () {});
+    }
+    document.getElementById('j-funnel-source').addEventListener('change', refreshFunnel);
+    document.getElementById('j-funnel-country').addEventListener('change', refreshFunnel);
 
     Array.prototype.forEach.call(document.querySelectorAll('.j-toggle button'), function (btn) {
       btn.addEventListener('click', function () {
@@ -643,24 +673,27 @@
       });
     });
 
-    function populateFunnelSources(sources) {
-      var sel = document.getElementById('j-funnel-source');
+    function populateSelectOptions(selectId, values) {
+      var sel = document.getElementById(selectId);
       var current = sel.value;
       Array.prototype.slice.call(sel.querySelectorAll('option[data-dynamic]')).forEach(function (o) { o.remove(); });
-      (sources || []).forEach(function (s) {
+      (values || []).forEach(function (v) {
         var o = document.createElement('option');
-        o.value = s; o.textContent = labelFor(s); o.setAttribute('data-dynamic', '1');
+        o.value = v; o.textContent = labelFor(v); o.setAttribute('data-dynamic', '1');
         sel.appendChild(o);
       });
       sel.value = current;
     }
+    function populateFunnelSources(sources) { populateSelectOptions('j-funnel-source', sources); }
+    function populateFunnelCountries(countries) { populateSelectOptions('j-funnel-country', countries); }
 
     function loadCustomPipeline() {
       jApi('analytics-report', { report: 'overview' }).then(renderOverview).catch(function () {});
-      jApi('analytics-report', { report: 'funnel' }).then(renderFunnel).catch(function () {});
+      refreshFunnel();
       jApi('analytics-report', { report: 'attribution', model: jState.attributionModel }).then(renderAttribution).catch(function () {});
       jApi('analytics-report', { report: 'hot_leads' }).then(renderHotLeads).catch(function () {});
       jApi('analytics-report', { report: 'bot_review' }).then(renderBotReview).catch(function () {});
+      jApi('analytics-report', { report: 'demographics' }).then(renderDemographics).catch(function () {});
     }
 
     // --- range selector ----------------------------------------------------

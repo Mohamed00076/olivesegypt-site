@@ -68,6 +68,10 @@ async function ensureSchema(sql) {
       utm_content         text,
       utm_term            text,
       attribution_source  text NOT NULL DEFAULT 'Direct',
+      country             text,
+      device_type         text,
+      browser             text,
+      browser_language    text,
       is_internal         boolean NOT NULL DEFAULT false,
       bot_confidence      integer,
       bot_reason_codes    jsonb NOT NULL DEFAULT '[]',
@@ -76,6 +80,14 @@ async function ensureSchema(sql) {
       created_at          timestamptz NOT NULL DEFAULT now()
     )
   `;
+  // Table may already exist from Phase 1, before these columns existed --
+  // backfill on existing deployments rather than assuming a fresh table
+  // (same pattern as inquiries.js's client_ip/source_page backfill).
+  await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS country text`;
+  await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS device_type text`;
+  await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS browser text`;
+  await sql`ALTER TABLE analytics_sessions ADD COLUMN IF NOT EXISTS browser_language text`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS analytics_events (
       id             bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
