@@ -27,6 +27,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/consent"
+  to = "/.netlify/functions/consent"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/auth/login"
   to = "/.netlify/functions/auth-login"
   status = 200
