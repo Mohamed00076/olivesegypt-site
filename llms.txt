@@ -35,5 +35,12 @@ Quality and documentation information is being prepared. Current product specifi
 - Home: https://olivesegypt.com/
 - Catalog: https://olivesegypt.com/catalog
 - How We Work: https://olivesegypt.com/how-we-work
+- Resources: https://olivesegypt.com/resources
+- Resources — Packaging: https://olivesegypt.com/resources/packaging
+- Resources — Pricing: https://olivesegypt.com/resources/pricing
+- Resources — Why Egyptian Olives: https://olivesegypt.com/resources/why-egyptian-olives
+- Resources — Certifications: https://olivesegypt.com/resources/certifications
+- Resources — Export Markets: https://olivesegypt.com/resources/export-markets
+- Resources — FAQ: https://olivesegypt.com/resources/faq
 - Media Center: https://olivesegypt.com/media
 - Contact: https://olivesegypt.com/contact

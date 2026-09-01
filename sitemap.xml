@@ -80,6 +80,48 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://olivesegypt.com/resources</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources" />  </url>
+  <url>
+    <loc>https://olivesegypt.com/resources/packaging</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/packaging" />  </url>
+  <url>
+    <loc>https://olivesegypt.com/resources/pricing</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/pricing" />  </url>
+  <url>
+    <loc>https://olivesegypt.com/resources/why-egyptian-olives</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/why-egyptian-olives" />  </url>
+  <url>
+    <loc>https://olivesegypt.com/resources/certifications</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/certifications" />  </url>
+  <url>
+    <loc>https://olivesegypt.com/resources/export-markets</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/export-markets" />  </url>
+  <url>
+    <loc>https://olivesegypt.com/resources/faq</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/faq" />  </url>
+  <url>
     <loc>https://olivesegypt.com/downloads</loc>
     <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
