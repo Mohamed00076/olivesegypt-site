@@ -1,6 +1,38 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  # Section J Phase 2 -- fetches the (country-level-only) GeoLite2
+  # database from a free redistribution mirror before each deploy. Never
+  # fails the build itself; see scripts/build-geo.js.
+  command = "node scripts/build-geo.js"
+
+[functions]
+  # Bundles the freshly-downloaded geo database into every function's
+  # deploy package so analytics-collect.js can read it at runtime. Well
+  # under the 50MB unzipped function bundle limit (country-level file is
+  # ~8-9MB) -- GeoLite2-City was ruled out specifically because it isn't
+  # (see docs/j2-acceptance-criteria.md).
+  included_files = ["geo/**"]
+
+# Section J Phase 2 -- optional "scheduled auto-refresh": POSTs to a
+# Netlify Build Hook weekly, which triggers a fresh deploy (re-running
+# the geo download above). Requires NETLIFY_BUILD_HOOK_URL to be set;
+# entirely optional otherwise -- see README.
+[functions."geo-refresh"]
+  schedule = "@weekly"
+
+# Section J Phase 3 -- daily data-retention purge (analytics_sessions/
+# analytics_events rows older than the configured retention window).
+# Always runs; not gated on anything, unlike Search Console below.
+[functions."analytics-retention"]
+  schedule = "@daily"
+
+# Section J Phase 3 -- daily Search Console import. The function itself
+# checks search_console_enabled (default false) before making any call
+# to Google's API -- this schedule just means "check in daily," not
+# "start pulling data automatically." See README for the required setup.
+[functions."search-console-import"]
+  schedule = "@daily"
 
 # Admin analytics page
 [[redirects]]
@@ -17,6 +49,18 @@
 [[redirects]]
   from = "/api/inquiries"
   to = "/.netlify/functions/inquiries"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/leads"
+  to = "/.netlify/functions/leads"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/consent"
+  to = "/.netlify/functions/consent"
   status = 200
   force = true
 
@@ -41,6 +85,75 @@
 [[redirects]]
   from = "/api/analytics"
   to = "/.netlify/functions/analytics"
+  status = 200
+  force = true
+
+# Section J Phase 1 -- site's own custom event pipeline (alongside, not
+# instead of, the Umami proxy above)
+[[redirects]]
+  from = "/api/analytics-collect"
+  to = "/.netlify/functions/analytics-collect"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/analytics-report"
+  to = "/.netlify/functions/analytics-report"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/analytics-settings"
+  to = "/.netlify/functions/analytics-settings"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/analytics-privacy"
+  to = "/.netlify/functions/analytics-privacy"
+  status = 200
+  force = true
+
+# Buyer CRM (Section H) — separate auth/session from /admin/analytics above
+[[redirects]]
+  from = "/api/crm/auth/login"
+  to = "/.netlify/functions/crm-auth-login"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/logout"
+  to = "/.netlify/functions/crm-auth-logout"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/me"
+  to = "/.netlify/functions/crm-auth-me"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/buyers"
+  to = "/.netlify/functions/crm-buyers"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/activity"
+  to = "/.netlify/functions/crm-activity"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/dashboard"
+  to = "/.netlify/functions/crm-dashboard"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/csv"
+  to = "/.netlify/functions/crm-csv"
   status = 200
   force = true
 

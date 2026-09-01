@@ -3,6 +3,10 @@
   "private": true,
   "type": "commonjs",
   "dependencies": {
-    "@neondatabase/serverless": "0.10.4"
+    "@neondatabase/serverless": "0.10.4",
+    "google-auth-library": "^11.0.2",
+    "isbot": "^5.2.2",
+    "maxmind": "^5.0.7",
+    "ua-parser-js": "^2.0.10"
   }
 }

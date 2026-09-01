@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex,nofollow" />
   <title>Analytics — Triple Company (Admin)</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --olive-deep: #3d5a2e;
@@ -180,8 +179,43 @@
     }
     .hidden { display: none !important; }
     .loading-dim { opacity: 0.45; transition: opacity .2s; pointer-events: none; }
+    .j-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; line-height: 1.5; }
+    .j-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid #f0efe6; font-size: 13px; flex-wrap: wrap;
+    }
+    .j-row:last-child { border-bottom: none; }
+    .j-row .meta { color: var(--muted); font-size: 12px; }
+    .j-funnel-stage { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+    .j-funnel-stage .name { flex: 0 0 200px; font-size: 13px; }
+    .j-funnel-stage .track { flex: 1; height: 22px; background: #f0efe6; border-radius: 6px; overflow: hidden; }
+    .j-funnel-stage .fill { height: 100%; background: linear-gradient(90deg, #3d5a2e, #5a7a4a); }
+    .j-funnel-stage .n { flex: 0 0 auto; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13px; min-width: 46px; text-align: right; }
+    .j-toggle { display: inline-flex; gap: 6px; margin-bottom: 12px; }
+    select.j-select {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 10px; font-size: 13px; color: var(--ink);
+    }
+    .j-threshold { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 13px; }
+    .j-threshold input { width: 60px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+    .j-btn-sm {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px; cursor: pointer;
+      border: 1px solid var(--border); background: #fff; color: var(--ink);
+    }
+    .j-btn-sm.primary { background: var(--olive-deep); color: #fff; border-color: var(--olive-deep); }
+    .j-btn-sm.danger { background: #fbeceb; color: #a3312a; border-color: #eeccc9; }
+    .j-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--border); }
+    .j-badge.warn { background: #fbeecb; color: #7a5a00; }
   </style>
-</head>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
 <body>
   <!-- Sign-in gate (shown when /api/analytics returns 401) -->
   <div id="gate" class="gate hidden">
@@ -229,6 +263,123 @@
       <div class="card full">
         <h2>Browsers</h2>
         <ul class="rank" id="list-browser"></ul>
+      </div>
+
+      <!-- Section J Phase 1 -- the site's own custom event pipeline.
+           Separate data source from everything above (which is all
+           Umami); see docs/j0-analytics-audit.md for why. -->
+      <div class="card full">
+        <h2>Custom Pipeline &middot; Overview</h2>
+        <section class="kpis" id="j-kpis">
+          <div class="kpi"><div class="label">Sessions (range)</div><div class="value" id="j-kpi-sessions">&mdash;</div></div>
+          <div class="kpi"><div class="label">Flagged Internal</div><div class="value" id="j-kpi-internal">&mdash;</div></div>
+          <div class="kpi"><div class="label">Bot-Suppressed</div><div class="value" id="j-kpi-bots">&mdash;</div></div>
+          <div class="kpi"><div class="label">Unknown Bot Score</div><div class="value" id="j-kpi-unknown">&mdash;</div></div>
+          <div class="kpi"><div class="label">Ingest Errors (7d)</div><div class="value" id="j-kpi-errors">&mdash;</div></div>
+        </section>
+        <p class="j-note" id="j-timezone-note"></p>
+        <p class="j-note" id="j-error-note"></p>
+      </div>
+
+      <div class="card full">
+        <h2 id="j-funnel-title">Funnel</h2>
+        <select class="j-select" id="j-funnel-definition"></select>
+        <select class="j-select" id="j-funnel-source" style="margin-left:8px;">
+          <option value="">All sources</option>
+        </select>
+        <select class="j-select" id="j-funnel-country" style="margin-left:8px;">
+          <option value="">All countries</option>
+        </select>
+        <div id="j-funnel" style="margin-top:14px;"></div>
+        <p class="j-note" id="j-funnel-note"></p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Geography &amp; Devices</h2>
+          <p class="j-note" id="j-demographics-note"></p>
+          <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">By Country</h3>
+          <ul class="rank" id="j-countries"></ul>
+          <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">By Device</h3>
+          <ul class="rank" id="j-devices"></ul>
+          <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">By Browser</h3>
+          <ul class="rank" id="j-browsers"></ul>
+        </div>
+        <div class="card">
+          <h2>Attribution &middot; Contact-Form Conversions</h2>
+          <div class="j-toggle">
+            <button class="range-btn active" data-model="first_touch">First-touch</button>
+            <button class="range-btn" data-model="last_touch">Last-touch</button>
+          </div>
+          <ul class="rank" id="j-attribution"></ul>
+          <p class="j-note" id="j-attribution-note"></p>
+        </div>
+      </div>
+
+      <div class="card full">
+        <h2>Hot Leads</h2>
+        <p class="j-note" id="j-hotlead-def"></p>
+        <div id="j-hot-leads"></div>
+      </div>
+
+      <div class="card full">
+        <h2>Bot / Internal-Traffic Review</h2>
+        <p class="j-note">Bot detection is a 0&ndash;100 confidence score with reason codes, not a yes/no classifier &mdash; nothing is ever hard-deleted for being flagged. Sessions near the current threshold are listed below so you can sanity-check the model; confirming or overriding one here locks in "human" or "bot" regardless of future score changes.</p>
+        <div class="j-threshold">
+          <label for="j-threshold-input">Confidence threshold (0&ndash;100):</label>
+          <input type="number" id="j-threshold-input" min="0" max="100" />
+          <button class="j-btn-sm primary" id="j-threshold-save">Save</button>
+          <span id="j-threshold-status" class="j-note" style="margin:0;"></span>
+        </div>
+        <div id="j-bot-review"></div>
+      </div>
+
+      <!-- Section J Phase 3 -->
+      <div class="card full">
+        <h2>Live Visitors</h2>
+        <p class="j-note" id="j-livefeed-note"></p>
+        <div class="j-threshold">
+          <label for="j-livefeed-minutes">Active within (minutes):</label>
+          <input type="number" id="j-livefeed-minutes" min="1" max="120" />
+          <button class="j-btn-sm primary" id="j-livefeed-minutes-save">Save</button>
+          <span id="j-livefeed-status" class="j-note" style="margin:0;"></span>
+          <label style="margin-left:16px;"><input type="checkbox" id="j-livefeed-autorefresh" style="width:auto;" checked /> Auto-refresh every 15s</label>
+        </div>
+        <div id="j-livefeed"></div>
+      </div>
+
+      <div class="card full">
+        <h2>Search Console</h2>
+        <p class="j-note" id="j-gsc-note"></p>
+        <div class="j-threshold">
+          <label><input type="checkbox" id="j-gsc-enabled" style="width:auto;" /> Enabled (starts the daily import against your real property)</label>
+          <label style="margin-left:16px;" for="j-gsc-lookback">Lookback window (days):</label>
+          <input type="number" id="j-gsc-lookback" min="1" max="90" style="width:70px;" />
+          <button class="j-btn-sm primary" id="j-gsc-save">Save</button>
+          <span id="j-gsc-status" class="j-note" style="margin:0;"></span>
+        </div>
+        <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">Recent Import Runs</h3>
+        <div id="j-gsc-runs"></div>
+        <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">Top Queries</h3>
+        <div id="j-gsc-queries"></div>
+      </div>
+
+      <div class="card full">
+        <h2>Privacy &amp; Retention</h2>
+        <p class="j-note" id="j-retention-note"></p>
+        <div class="j-threshold">
+          <label for="j-retention-days">Retention period (days):</label>
+          <input type="number" id="j-retention-days" min="1" max="3650" style="width:80px;" />
+          <button class="j-btn-sm primary" id="j-retention-save">Save</button>
+          <span id="j-retention-status" class="j-note" style="margin:0;"></span>
+        </div>
+        <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px;">Delete a Visitor's Data</h3>
+        <p class="j-note">Deletes every session and event for the given visitor_id, permanently, and blocks that ID from ever being written under again. Get a visitor_id from the Hot Leads or Live Visitors panels.</p>
+        <div class="j-threshold">
+          <input type="text" id="j-delete-visitor-id" placeholder="visitor_id" style="width:280px;" />
+          <button class="j-btn-sm danger" id="j-delete-visitor-btn">Delete Permanently</button>
+          <span id="j-delete-visitor-status" class="j-note" style="margin:0;"></span>
+        </div>
       </div>
     </main>
   </div>
@@ -388,6 +539,7 @@
       }).then(function (summary) {
         showApp();
         renderSummary(summary);
+        loadCustomPipeline();
 
         // Fire the rest in parallel; each degrades independently.
         var jobs = [
@@ -414,6 +566,361 @@
       if (r.status === 401) { showGate(); throw 'unauth'; }
       if (!r.ok) throw new Error('http ' + r.status);
       return r.json();
+    }
+
+    // --- Section J Phase 1: custom pipeline panel -------------------------
+    var jState = { attributionModel: 'first_touch' };
+
+    function jApi(fn, params) {
+      var qs = 'range=' + encodeURIComponent(state.range);
+      for (var k in params) {
+        if (Object.prototype.hasOwnProperty.call(params, k) && params[k] != null) {
+          qs += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+        }
+      }
+      return fetch('/api/' + fn + '?' + qs, { credentials: 'same-origin', headers: { Accept: 'application/json' } }).then(okJson);
+    }
+
+    function renderOverview(d) {
+      document.getElementById('j-kpi-sessions').textContent = fmtNum(d.total_sessions);
+      document.getElementById('j-kpi-internal').textContent = fmtNum(d.internal_sessions);
+      document.getElementById('j-kpi-bots').textContent = fmtNum(d.bot_suppressed_sessions);
+      document.getElementById('j-kpi-unknown').textContent = fmtNum(d.unknown_bot_sessions);
+      document.getElementById('j-kpi-errors').textContent = fmtNum(d.ingest_errors_7d);
+      document.getElementById('j-timezone-note').textContent = d.timezone_note || '';
+      document.getElementById('j-error-note').textContent = d.known_limitation || '';
+      document.getElementById('j-threshold-input').value = d.bot_confidence_threshold;
+      populateFunnelSources(d.sources);
+      populateFunnelCountries(d.countries);
+    }
+
+    function renderDemographics(d) {
+      renderRank('j-countries', (d.countries || []).map(function (r) { return { x: r.x, y: r.y }; }));
+      renderRank('j-devices', (d.devices || []).map(function (r) { return { x: r.x, y: r.y }; }));
+      renderRank('j-browsers', (d.browsers || []).map(function (r) { return { x: r.x, y: r.y }; }));
+      var note = d.note || '';
+      if (d.unresolved_country_sessions) {
+        note += ' ' + fmtNum(d.unresolved_country_sessions) + ' session(s) in this range have no resolved country.';
+      }
+      document.getElementById('j-demographics-note').textContent = note;
+    }
+
+    function renderFunnel(d) {
+      var el = document.getElementById('j-funnel');
+      el.innerHTML = '';
+      var max = 0;
+      (d.stages || []).forEach(function (s) { max = Math.max(max, s.count); });
+      (d.stages || []).forEach(function (s) {
+        var pct = max > 0 ? Math.round((s.count / max) * 100) : 0;
+        var row = document.createElement('div');
+        row.className = 'j-funnel-stage';
+        var name = document.createElement('div'); name.className = 'name'; name.textContent = s.stage;
+        var track = document.createElement('div'); track.className = 'track';
+        var fill = document.createElement('div'); fill.className = 'fill'; fill.style.width = pct + '%';
+        track.appendChild(fill);
+        var n = document.createElement('div'); n.className = 'n'; n.textContent = fmtNum(s.count);
+        row.appendChild(name); row.appendChild(track); row.appendChild(n);
+        el.appendChild(row);
+      });
+      document.getElementById('j-funnel-note').textContent = d.note || '';
+      document.getElementById('j-funnel-title').textContent = 'Funnel · ' + (d.funnel_name || 'Standard');
+
+      if (d.available_funnels) {
+        var sel = document.getElementById('j-funnel-definition');
+        var current = sel.value || d.funnel_id;
+        sel.innerHTML = '';
+        d.available_funnels.forEach(function (f) {
+          var o = document.createElement('option');
+          o.value = f.id; o.textContent = f.name;
+          sel.appendChild(o);
+        });
+        sel.value = current;
+      }
+    }
+
+    function renderAttribution(d) {
+      renderRank('j-attribution', (d.rows || []).map(function (r) { return { x: r.source, y: r.conversions }; }));
+      document.getElementById('j-attribution-note').textContent = d.note || '';
+    }
+
+    function renderHotLeads(d) {
+      document.getElementById('j-hotlead-def').textContent = (d.definition || '') + (d.org_disclosure ? ' ' + d.org_disclosure : '');
+      var el = document.getElementById('j-hot-leads');
+      el.innerHTML = '';
+      var rows = d.rows || [];
+      if (!rows.length) { el.innerHTML = '<p class="empty">No hot leads in this range.</p>'; return; }
+      rows.slice(0, 25).forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+        var left = document.createElement('div');
+        var page = document.createElement('div'); page.textContent = labelFor(r.entry_page);
+        var meta = document.createElement('div'); meta.className = 'meta';
+        var orgText = r.org_name ? (' · ' + r.org_name + ' (' + labelFor(r.org_resolution_type) + ')') : '';
+        meta.textContent = labelFor(r.attribution_source) + orgText + ' · ' + new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' });
+        var idLine = document.createElement('div'); idLine.className = 'meta';
+        idLine.textContent = 'visitor_id: ' + r.visitor_id;
+        left.appendChild(page); left.appendChild(meta); left.appendChild(idLine);
+        row.appendChild(left);
+        el.appendChild(row);
+      });
+    }
+
+    function renderBotReview(d) {
+      var el = document.getElementById('j-bot-review');
+      el.innerHTML = '';
+      var rows = d.rows || [];
+      if (!rows.length) { el.innerHTML = '<p class="empty">No sessions near the current threshold need review.</p>'; return; }
+      rows.forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+
+        var left = document.createElement('div');
+        var top = document.createElement('div');
+        var badge = document.createElement('span');
+        badge.className = 'j-badge' + (r.bot_confidence >= d.threshold ? ' warn' : '');
+        badge.textContent = 'confidence ' + r.bot_confidence;
+        top.appendChild(badge);
+        var pageSpan = document.createElement('span');
+        pageSpan.textContent = '  ' + labelFor(r.entry_page);
+        pageSpan.style.marginLeft = '8px';
+        top.appendChild(pageSpan);
+        var meta = document.createElement('div'); meta.className = 'meta';
+        meta.textContent = (r.bot_reason_codes || []).join(', ') + ' · v' + labelFor(r.bot_detection_version) + ' · ' + new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' });
+        left.appendChild(top); left.appendChild(meta);
+
+        var actions = document.createElement('div');
+        var humanBtn = document.createElement('button');
+        humanBtn.className = 'j-btn-sm'; humanBtn.textContent = 'Confirm human';
+        humanBtn.addEventListener('click', function () { jOverride(r.session_id, false); });
+        var botBtn = document.createElement('button');
+        botBtn.className = 'j-btn-sm danger'; botBtn.textContent = 'Confirm bot';
+        botBtn.style.marginLeft = '6px';
+        botBtn.addEventListener('click', function () { jOverride(r.session_id, true); });
+        actions.appendChild(humanBtn); actions.appendChild(botBtn);
+
+        row.appendChild(left); row.appendChild(actions);
+        el.appendChild(row);
+      });
+    }
+
+    function jOverride(sessionId, isBot) {
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId, override: isBot }),
+      }).then(function () { return jApi('analytics-report', { report: 'bot_review' }); }).then(renderBotReview);
+    }
+
+    document.getElementById('j-threshold-save').addEventListener('click', function () {
+      var v = Number(document.getElementById('j-threshold-input').value);
+      var statusEl = document.getElementById('j-threshold-status');
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bot_confidence_threshold: v }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadCustomPipeline();
+      });
+    });
+
+    function refreshFunnel() {
+      var source = document.getElementById('j-funnel-source').value || null;
+      var country = document.getElementById('j-funnel-country').value || null;
+      var funnelId = document.getElementById('j-funnel-definition').value || null;
+      jApi('analytics-report', { report: 'funnel', source: source, country: country, funnel_id: funnelId }).then(renderFunnel).catch(function () {});
+    }
+    document.getElementById('j-funnel-source').addEventListener('change', refreshFunnel);
+    document.getElementById('j-funnel-country').addEventListener('change', refreshFunnel);
+    document.getElementById('j-funnel-definition').addEventListener('change', refreshFunnel);
+
+    Array.prototype.forEach.call(document.querySelectorAll('.j-toggle button'), function (btn) {
+      btn.addEventListener('click', function () {
+        jState.attributionModel = btn.getAttribute('data-model');
+        Array.prototype.forEach.call(document.querySelectorAll('.j-toggle button'), function (b) { b.classList.toggle('active', b === btn); });
+        jApi('analytics-report', { report: 'attribution', model: jState.attributionModel }).then(renderAttribution).catch(function () {});
+      });
+    });
+
+    function populateSelectOptions(selectId, values) {
+      var sel = document.getElementById(selectId);
+      var current = sel.value;
+      Array.prototype.slice.call(sel.querySelectorAll('option[data-dynamic]')).forEach(function (o) { o.remove(); });
+      (values || []).forEach(function (v) {
+        var o = document.createElement('option');
+        o.value = v; o.textContent = labelFor(v); o.setAttribute('data-dynamic', '1');
+        sel.appendChild(o);
+      });
+      sel.value = current;
+    }
+    function populateFunnelSources(sources) { populateSelectOptions('j-funnel-source', sources); }
+    function populateFunnelCountries(countries) { populateSelectOptions('j-funnel-country', countries); }
+
+    // --- Section J Phase 3 --------------------------------------------------
+
+    function renderLiveFeed(d) {
+      document.getElementById('j-livefeed-note').textContent =
+        'Active within the last ' + d.active_within_minutes + ' minute(s). ' + (d.note || '') + (d.org_disclosure ? ' ' + d.org_disclosure : '');
+      document.getElementById('j-livefeed-minutes').value = d.active_within_minutes;
+      var el = document.getElementById('j-livefeed');
+      el.innerHTML = '';
+      var rows = d.sessions || [];
+      if (!rows.length) { el.innerHTML = '<p class="empty">No active visitors right now.</p>'; return; }
+      rows.forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+        var left = document.createElement('div');
+        var top = document.createElement('div');
+        top.textContent = labelFor(r.entry_page) + (r.last_event_type ? ' · last: ' + r.last_event_type : '');
+        if (r.is_internal) { var b = document.createElement('span'); b.className = 'j-badge'; b.textContent = 'internal'; b.style.marginLeft = '6px'; top.appendChild(b); }
+        var meta = document.createElement('div'); meta.className = 'meta';
+        var orgText = r.org_name ? (' · ' + r.org_name) : '';
+        meta.textContent = [labelFor(r.attribution_source), labelFor(r.country), labelFor(r.device_type), labelFor(r.browser)].join(' · ') + orgText +
+          ' · last seen ' + new Date(r.last_seen_at).toLocaleTimeString('en-US', { timeZone: 'Africa/Cairo' });
+        left.appendChild(top); left.appendChild(meta);
+        row.appendChild(left);
+        el.appendChild(row);
+      });
+    }
+
+    function loadLiveFeed() {
+      jApi('analytics-report', { report: 'live_feed' }).then(renderLiveFeed).catch(function () {});
+    }
+
+    document.getElementById('j-livefeed-minutes-save').addEventListener('click', function () {
+      var v = Number(document.getElementById('j-livefeed-minutes').value);
+      var statusEl = document.getElementById('j-livefeed-status');
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ live_feed_active_minutes: v }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadLiveFeed();
+      });
+    });
+
+    var liveFeedTimer = null;
+    function armLiveFeedAutoRefresh() {
+      if (liveFeedTimer) clearInterval(liveFeedTimer);
+      if (document.getElementById('j-livefeed-autorefresh').checked) {
+        liveFeedTimer = setInterval(loadLiveFeed, 15000);
+      }
+    }
+    document.getElementById('j-livefeed-autorefresh').addEventListener('change', armLiveFeedAutoRefresh);
+
+    function renderSearchConsole(d) {
+      document.getElementById('j-gsc-note').textContent = d.note + ' ' + d.timezone_note;
+      document.getElementById('j-gsc-enabled').checked = !!d.enabled;
+      document.getElementById('j-gsc-lookback').value = d.lookback_days;
+
+      var runsEl = document.getElementById('j-gsc-runs');
+      var runs = d.runs || [];
+      runsEl.innerHTML = runs.length ? '' : '<p class="empty">No import runs yet' + (d.enabled ? ' -- the next scheduled run will start soon.' : ' -- enable the import above to start.') + '</p>';
+      runs.forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'j-row';
+        var left = document.createElement('div');
+        var badge = document.createElement('span');
+        badge.className = 'j-badge' + (r.status === 'error' ? ' warn' : '');
+        badge.textContent = r.status;
+        var top = document.createElement('div');
+        top.appendChild(badge);
+        var range = document.createElement('span'); range.style.marginLeft = '8px';
+        range.textContent = labelFor(r.source_start_date) + ' → ' + labelFor(r.source_end_date) + (r.rows_upserted != null ? ' (' + fmtNum(r.rows_upserted) + ' rows)' : '');
+        top.appendChild(range);
+        var meta = document.createElement('div'); meta.className = 'meta';
+        meta.textContent = new Date(r.started_at).toLocaleString('en-US', { timeZone: 'Africa/Cairo' }) + (r.error_details ? ' · ' + r.error_details : '');
+        left.appendChild(top); left.appendChild(meta);
+        row.appendChild(left);
+        runsEl.appendChild(row);
+      });
+
+      var queriesEl = document.getElementById('j-gsc-queries');
+      var queries = d.top_queries || [];
+      queriesEl.innerHTML = queries.length ? '' : '<p class="empty">No query data yet.</p>';
+      if (queries.length) {
+        var table = document.createElement('table');
+        table.innerHTML = '<thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Avg. Position</th></tr></thead>';
+        var tbody = document.createElement('tbody');
+        queries.forEach(function (q) {
+          var tr = document.createElement('tr');
+          ['query', 'clicks', 'impressions'].forEach(function (k) {
+            var td = document.createElement('td'); td.textContent = k === 'query' ? labelFor(q[k]) : fmtNum(q[k]); tr.appendChild(td);
+          });
+          var ctrTd = document.createElement('td'); ctrTd.textContent = q.ctr + '%'; tr.appendChild(ctrTd);
+          var posTd = document.createElement('td'); posTd.textContent = q.avg_position; tr.appendChild(posTd);
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        queriesEl.appendChild(table);
+      }
+    }
+
+    function loadSearchConsole() {
+      jApi('analytics-report', { report: 'search_console' }).then(renderSearchConsole).catch(function () {});
+    }
+
+    document.getElementById('j-gsc-save').addEventListener('click', function () {
+      var statusEl = document.getElementById('j-gsc-status');
+      var body = {
+        search_console_enabled: document.getElementById('j-gsc-enabled').checked,
+        search_console_lookback_days: Number(document.getElementById('j-gsc-lookback').value),
+      };
+      if (body.search_console_enabled && !window.confirm('This starts a daily import from your real Search Console property. Continue?')) {
+        document.getElementById('j-gsc-enabled').checked = false;
+        return;
+      }
+      fetch('/api/analytics-settings', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadSearchConsole();
+      });
+    });
+
+    function renderRetention(d) {
+      document.getElementById('j-retention-note').textContent = d.note || '';
+      document.getElementById('j-retention-days').value = d.data_retention_days;
+    }
+    function loadRetention() {
+      fetch('/api/analytics-privacy', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(renderRetention).catch(function () {});
+    }
+    document.getElementById('j-retention-save').addEventListener('click', function () {
+      var v = Number(document.getElementById('j-retention-days').value);
+      var statusEl = document.getElementById('j-retention-status');
+      fetch('/api/analytics-privacy', {
+        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data_retention_days: v }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Could not save.');
+        loadRetention();
+      });
+    });
+
+    document.getElementById('j-delete-visitor-btn').addEventListener('click', function () {
+      var id = document.getElementById('j-delete-visitor-id').value.trim();
+      var statusEl = document.getElementById('j-delete-visitor-status');
+      if (!id) { statusEl.textContent = 'Enter a visitor_id first.'; return; }
+      if (!window.confirm('Permanently delete all data for visitor_id "' + id + '"? This cannot be undone.')) return;
+      fetch('/api/analytics-privacy?confirmed=1', {
+        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_visitor', visitor_id: id }),
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = data.ok ? ('Deleted (' + data.sessions_deleted + ' session(s)).') : (data.error || 'Could not delete.');
+        if (data.ok) { document.getElementById('j-delete-visitor-id').value = ''; loadCustomPipeline(); }
+      });
+    });
+
+    function loadCustomPipeline() {
+      jApi('analytics-report', { report: 'overview' }).then(renderOverview).catch(function () {});
+      refreshFunnel();
+      jApi('analytics-report', { report: 'attribution', model: jState.attributionModel }).then(renderAttribution).catch(function () {});
+      jApi('analytics-report', { report: 'hot_leads' }).then(renderHotLeads).catch(function () {});
+      jApi('analytics-report', { report: 'bot_review' }).then(renderBotReview).catch(function () {});
+      jApi('analytics-report', { report: 'demographics' }).then(renderDemographics).catch(function () {});
+      loadLiveFeed();
+      loadSearchConsole();
+      loadRetention();
+      armLiveFeedAutoRefresh();
     }
 
     // --- range selector ----------------------------------------------------

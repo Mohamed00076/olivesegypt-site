@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+<link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-login-wrap crm-card">
+        <h1>Buyer CRM</h1>
+        <p class="crm-muted" style="margin-bottom:20px;">Internal tool. Sign in to continue.</p>
+        <form id="login-form">
+          <div class="crm-field">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required />
+          </div>
+          <div class="crm-field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          </div>
+          <div id="login-status" class="crm-status crm-status-error" style="display:none;"></div>
+          <button type="submit" class="crm-btn crm-btn-primary" id="login-submit" style="width:100%;justify-content:center;">Sign In</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      (function () {
+        'use strict';
+        var form = document.getElementById('login-form');
+        var statusEl = document.getElementById('login-status');
+        var submitBtn = document.getElementById('login-submit');
+
+        function qs(name) {
+          var m = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+          return m ? decodeURIComponent(m[1]) : null;
+        }
+
+        // If already signed in, skip the form.
+        fetch('/api/crm/auth/me', { credentials: 'same-origin' }).then(function (res) {
+          if (res.ok) window.location.href = qs('next') || '/crm/';
+        });
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          statusEl.style.display = 'none';
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Signing in...';
+
+          fetch('/api/crm/auth/login', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: document.getElementById('username').value,
+              password: document.getElementById('password').value,
+            }),
+          }).then(function (res) { return res.json(); }).then(function (data) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Sign In';
+            if (data.ok) {
+              window.location.href = qs('next') || '/crm/';
+            } else {
+              statusEl.textContent = data.error || 'Incorrect username or password.';
+              statusEl.style.display = 'block';
+            }
+          }).catch(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Sign In';
+            statusEl.textContent = 'Network error. Please try again.';
+            statusEl.style.display = 'block';
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kanban | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+<link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-flex-between" style="margin-bottom:16px;">
+        <h1 style="margin:0;">Kanban</h1>
+        <a href="/crm/buyer/?new=1" class="crm-btn crm-btn-primary">+ Add Buyer</a>
+      </div>
+      <p class="crm-muted">Drag a card to a new column to move that buyer's pipeline stage. "Exported/Completed" is a future stage — no record occupies it yet unless one has genuinely completed export.</p>
+      <div id="kanban-status" class="crm-muted">Loading…</div>
+      <div id="kanban-board" class="crm-kanban" style="display:none;"></div>
+    </div>
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var allRows = [];
+
+        function renderBoard() {
+          var board = document.getElementById('kanban-board');
+          board.innerHTML = '';
+          CRM.STAGES.forEach(function (stage) {
+            var col = document.createElement('div');
+            col.className = 'crm-kanban-col';
+            col.setAttribute('data-stage', stage);
+
+            var rows = allRows.filter(function (r) { return r.current_stage === stage; });
+
+            var heading = document.createElement('h3');
+            heading.textContent = stage + ' (' + rows.length + ')';
+            col.appendChild(heading);
+
+            rows.forEach(function (r) {
+              var card = document.createElement('div');
+              card.className = 'crm-kanban-card';
+              card.setAttribute('draggable', 'true');
+              card.setAttribute('data-id', r.id);
+              card.innerHTML = '<div class="company">' + CRM.escapeHtml(r.company_name) + '</div>' +
+                '<div class="crm-muted">' + CRM.escapeHtml(r.country_region) + '</div>' +
+                '<div class="crm-muted">' + (r.next_action_due ? 'Due ' + CRM.fmtDate(r.next_action_due) : '') + '</div>' +
+                '<a href="/crm/buyer/?id=' + r.id + '" style="font-size:11px;">View →</a>';
+
+              card.addEventListener('dragstart', function (e) {
+                e.dataTransfer.setData('text/plain', String(r.id));
+                e.dataTransfer.effectAllowed = 'move';
+              });
+              col.appendChild(card);
+            });
+
+            col.addEventListener('dragover', function (e) {
+              e.preventDefault();
+              col.classList.add('dragover');
+            });
+            col.addEventListener('dragleave', function () {
+              col.classList.remove('dragover');
+            });
+            col.addEventListener('drop', function (e) {
+              e.preventDefault();
+              col.classList.remove('dragover');
+              var id = e.dataTransfer.getData('text/plain');
+              var buyer = allRows.find(function (r) { return String(r.id) === id; });
+              if (!buyer || buyer.current_stage === stage) return;
+              moveBuyer(buyer, stage);
+            });
+
+            board.appendChild(col);
+          });
+        }
+
+        function moveBuyer(buyer, newStage) {
+          var previousStage = buyer.current_stage;
+          buyer.current_stage = newStage; // optimistic
+          renderBoard();
+          CRM.fetchJson('/api/crm/buyers?id=' + buyer.id, { method: 'PATCH', body: { current_stage: newStage } }).then(function (result) {
+            if (!result.ok) {
+              buyer.current_stage = previousStage; // revert on failure
+              renderBoard();
+              window.alert((result.data && result.data.error) || 'Could not move buyer.');
+            }
+          }).catch(function () {
+            buyer.current_stage = previousStage;
+            renderBoard();
+          });
+        }
+
+        CRM.requireAuth().then(function () {
+          CRM.renderNav('Kanban');
+          return CRM.fetchJson('/api/crm/buyers');
+        }).then(function (result) {
+          allRows = result.data;
+          document.getElementById('kanban-status').style.display = 'none';
+          document.getElementById('kanban-board').style.display = '';
+          renderBoard();
+        }).catch(function (e) {
+          if (e.message !== 'unauthorized') {
+            document.getElementById('kanban-status').textContent = 'Could not load buyers.';
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

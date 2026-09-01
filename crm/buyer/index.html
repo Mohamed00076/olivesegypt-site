@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buyer | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+<link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-flex-between" style="margin-bottom:16px;">
+        <h1 id="page-title" style="margin:0;">Buyer</h1>
+        <div class="crm-flex">
+          <button type="button" class="crm-btn crm-btn-danger" id="delete-btn" style="display:none;">Delete</button>
+        </div>
+      </div>
+
+      <div id="save-status" class="crm-status" style="display:none;"></div>
+
+      <div class="crm-card">
+        <h2>Buyer Details</h2>
+        <form id="buyer-form">
+          <div class="crm-grid crm-grid-2">
+            <div class="crm-field">
+              <label for="company_name">Company Name *</label>
+              <input id="company_name" required maxlength="300" />
+            </div>
+            <div class="crm-field">
+              <label for="country_region">Region *</label>
+              <select id="country_region" required></select>
+            </div>
+            <div class="crm-field">
+              <label for="current_stage">Pipeline Stage</label>
+              <select id="current_stage"></select>
+            </div>
+            <div class="crm-field">
+              <label for="lead_source">Lead Source</label>
+              <input id="lead_source" maxlength="150" />
+            </div>
+            <div class="crm-field">
+              <label for="contact_name">Contact Name</label>
+              <input id="contact_name" maxlength="200" />
+            </div>
+            <div class="crm-field">
+              <label for="contact_title">Contact Title</label>
+              <input id="contact_title" maxlength="150" />
+            </div>
+            <div class="crm-field">
+              <label for="contact_email">Contact Email</label>
+              <input id="contact_email" type="email" maxlength="320" />
+            </div>
+            <div class="crm-field">
+              <label for="contact_phone">Contact Phone</label>
+              <input id="contact_phone" maxlength="60" />
+            </div>
+            <div class="crm-field">
+              <label for="contact_whatsapp">Contact WhatsApp</label>
+              <input id="contact_whatsapp" maxlength="60" />
+            </div>
+            <div class="crm-field">
+              <label for="assigned_to">Assigned To</label>
+              <input id="assigned_to" maxlength="100" />
+            </div>
+          </div>
+
+          <div class="crm-field">
+            <label>Product Interest</label>
+            <div id="product-checks" class="crm-flex" style="flex-wrap:wrap;"></div>
+          </div>
+
+          <div class="crm-grid crm-grid-3">
+            <div class="crm-field">
+              <label for="packaging_format">Packaging Format</label>
+              <input id="packaging_format" maxlength="150" />
+            </div>
+            <div class="crm-field">
+              <label for="estimated_volume">Estimated Volume</label>
+              <input id="estimated_volume" maxlength="150" />
+            </div>
+            <div class="crm-field">
+              <label for="incoterm">Incoterm</label>
+              <input id="incoterm" maxlength="20" placeholder="e.g. FOB" />
+            </div>
+            <div class="crm-field">
+              <label for="target_price">Target Price</label>
+              <input id="target_price" maxlength="100" />
+            </div>
+            <div class="crm-field">
+              <label for="quoted_price">Quoted Price</label>
+              <input id="quoted_price" maxlength="100" />
+            </div>
+          </div>
+
+          <div class="crm-field">
+            <label for="certifications_required">Certifications Required</label>
+            <input id="certifications_required" maxlength="500" placeholder="e.g. Organic, Kosher, HACCP" />
+          </div>
+          <div class="crm-field">
+            <label class="crm-flex" style="align-items:center;">
+              <input type="checkbox" id="certification_gap" style="width:auto;" />
+              <span style="margin-left:6px;">Certification gap flagged (buyer requires a certification we currently don't hold)</span>
+            </label>
+          </div>
+          <div id="cert-gap-warning" class="crm-status crm-status-error" style="display:none;"></div>
+
+          <div class="crm-grid crm-grid-2">
+            <div class="crm-field">
+              <label for="next_action">Next Action</label>
+              <input id="next_action" maxlength="300" />
+            </div>
+            <div class="crm-field">
+              <label for="next_action_due">Next Action Due</label>
+              <input id="next_action_due" type="date" />
+            </div>
+          </div>
+
+          <div class="crm-field" id="lost-reason-field" style="display:none;">
+            <label for="lost_reason">Lost / Stalled Reason</label>
+            <input id="lost_reason" maxlength="300" />
+          </div>
+
+          <div class="crm-field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" rows="4" maxlength="8000"></textarea>
+          </div>
+
+          <button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Save Buyer</button>
+        </form>
+      </div>
+
+      <div class="crm-card" id="stage-history-card" style="display:none;">
+        <h2>Stage History</h2>
+        <table>
+          <thead><tr><th>From</th><th>To</th><th>Changed</th><th>By</th></tr></thead>
+          <tbody id="stage-history-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="crm-card" id="activity-card" style="display:none;">
+        <h2>Activity Log</h2>
+        <form id="activity-form" class="crm-flex" style="align-items:flex-start;margin-bottom:16px;">
+          <textarea id="activity-entry" rows="2" maxlength="4000" placeholder="Log a call, email, sample sent, etc." style="flex:1;"></textarea>
+          <button type="submit" class="crm-btn crm-btn-secondary">Add Entry</button>
+        </form>
+        <div id="activity-list"></div>
+      </div>
+    </div>
+
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var qs = new URLSearchParams(window.location.search);
+        var buyerId = qs.get('id');
+        var isNew = qs.get('new') === '1' || !buyerId;
+
+        function populateSelects() {
+          var stageSel = document.getElementById('current_stage');
+          CRM.STAGES.forEach(function (s) {
+            var o = document.createElement('option'); o.value = s; o.textContent = s; stageSel.appendChild(o);
+          });
+          var regionSel = document.getElementById('country_region');
+          var blank = document.createElement('option'); blank.value = ''; blank.textContent = '— choose —';
+          regionSel.appendChild(blank);
+          CRM.REGIONS.forEach(function (r) {
+            var o = document.createElement('option'); o.value = r; o.textContent = r; regionSel.appendChild(o);
+          });
+          var checksWrap = document.getElementById('product-checks');
+          CRM.PRODUCTS.forEach(function (p) {
+            var label = document.createElement('label');
+            label.style.cssText = 'display:flex;align-items:center;font-weight:400;font-size:13px;gap:6px;background:#f0eee5;padding:6px 10px;border-radius:6px;';
+            label.innerHTML = '<input type="checkbox" value="' + p[0] + '" style="width:auto;" /> ' + CRM.escapeHtml(p[1]);
+            checksWrap.appendChild(label);
+          });
+          stageSel.addEventListener('change', toggleLostReason);
+        }
+
+        function toggleLostReason() {
+          var show = document.getElementById('current_stage').value === 'Lost/Stalled';
+          document.getElementById('lost-reason-field').style.display = show ? '' : 'none';
+        }
+
+        function checkCertificationGap(buyer) {
+          // Cross-reference buyer's required certifications against what we
+          // currently hold, per the spec's A1 cross-reference requirement.
+          // We don't have a live certification-status API in this session,
+          // so this only reflects the certification_gap flag the user (or
+          // import) has set explicitly -- it does not infer the gap.
+          var warn = document.getElementById('cert-gap-warning');
+          if (buyer && buyer.certification_gap) {
+            warn.textContent = 'This buyer requires a certification we do not currently hold for their market. Confirm before promising delivery.';
+            warn.style.display = 'block';
+          } else {
+            warn.style.display = 'none';
+          }
+        }
+
+        function fillForm(b) {
+          document.getElementById('company_name').value = b.company_name || '';
+          document.getElementById('country_region').value = b.country_region || '';
+          document.getElementById('current_stage').value = b.current_stage || 'Lead';
+          document.getElementById('lead_source').value = b.lead_source || '';
+          document.getElementById('contact_name').value = b.contact_name || '';
+          document.getElementById('contact_title').value = b.contact_title || '';
+          document.getElementById('contact_email').value = b.contact_email || '';
+          document.getElementById('contact_phone').value = b.contact_phone || '';
+          document.getElementById('contact_whatsapp').value = b.contact_whatsapp || '';
+          document.getElementById('assigned_to').value = b.assigned_to || '';
+          document.getElementById('packaging_format').value = b.packaging_format || '';
+          document.getElementById('estimated_volume').value = b.estimated_volume || '';
+          document.getElementById('incoterm').value = b.incoterm || '';
+          document.getElementById('target_price').value = b.target_price || '';
+          document.getElementById('quoted_price').value = b.quoted_price || '';
+          document.getElementById('certifications_required').value = b.certifications_required || '';
+          document.getElementById('certification_gap').checked = !!b.certification_gap;
+          document.getElementById('next_action').value = b.next_action || '';
+          document.getElementById('next_action_due').value = b.next_action_due ? String(b.next_action_due).slice(0, 10) : '';
+          document.getElementById('lost_reason').value = b.lost_reason || '';
+          document.getElementById('notes').value = b.notes || '';
+          var interest = Array.isArray(b.product_interest) ? b.product_interest : [];
+          document.querySelectorAll('#product-checks input[type=checkbox]').forEach(function (cb) {
+            cb.checked = interest.indexOf(cb.value) !== -1;
+          });
+          toggleLostReason();
+          checkCertificationGap(b);
+        }
+
+        function collectForm() {
+          var checks = Array.prototype.slice.call(document.querySelectorAll('#product-checks input:checked')).map(function (cb) { return cb.value; });
+          return {
+            company_name: document.getElementById('company_name').value,
+            country_region: document.getElementById('country_region').value,
+            current_stage: document.getElementById('current_stage').value,
+            lead_source: document.getElementById('lead_source').value,
+            contact_name: document.getElementById('contact_name').value,
+            contact_title: document.getElementById('contact_title').value,
+            contact_email: document.getElementById('contact_email').value,
+            contact_phone: document.getElementById('contact_phone').value,
+            contact_whatsapp: document.getElementById('contact_whatsapp').value,
+            assigned_to: document.getElementById('assigned_to').value,
+            product_interest: checks,
+            packaging_format: document.getElementById('packaging_format').value,
+            estimated_volume: document.getElementById('estimated_volume').value,
+            incoterm: document.getElementById('incoterm').value,
+            target_price: document.getElementById('target_price').value,
+            quoted_price: document.getElementById('quoted_price').value,
+            certifications_required: document.getElementById('certifications_required').value,
+            certification_gap: document.getElementById('certification_gap').checked,
+            next_action: document.getElementById('next_action').value,
+            next_action_due: document.getElementById('next_action_due').value || null,
+            lost_reason: document.getElementById('lost_reason').value,
+            notes: document.getElementById('notes').value,
+          };
+        }
+
+        function showStatus(msg, ok) {
+          var el = document.getElementById('save-status');
+          el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
+          el.textContent = msg;
+          el.style.display = 'block';
+          if (ok) setTimeout(function () { el.style.display = 'none'; }, 4000);
+        }
+
+        function renderStageHistory(rows) {
+          var card = document.getElementById('stage-history-card');
+          if (!rows.length) { card.style.display = 'none'; return; }
+          card.style.display = '';
+          document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r) {
+            return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) + '</td>' +
+              '<td>' + CRM.fmtDate(r.changed_at) + '</td><td>' + CRM.escapeHtml(r.changed_by || '') + '</td></tr>';
+          }).join('');
+        }
+
+        function renderActivity(rows) {
+          var list = document.getElementById('activity-list');
+          if (!rows.length) { list.innerHTML = '<p class="crm-muted">No activity logged yet.</p>'; return; }
+          list.innerHTML = rows.map(function (r) {
+            return '<div class="crm-activity-entry"><div>' + CRM.escapeHtml(r.entry) + '</div>' +
+              '<div class="crm-activity-meta">' + CRM.fmtDate(r.created_at) + (r.created_by ? ' &middot; ' + CRM.escapeHtml(r.created_by) : '') + '</div></div>';
+          }).join('');
+        }
+
+        function loadExisting() {
+          document.getElementById('activity-card').style.display = '';
+          return CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
+            if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
+            var b = result.data;
+            document.getElementById('page-title').textContent = b.company_name;
+            document.getElementById('delete-btn').style.display = '';
+            fillForm(b);
+            renderStageHistory(b.stage_history || []);
+            renderActivity(b.activity_log || []);
+          });
+        }
+
+        document.getElementById('buyer-form').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var payload = collectForm();
+          var saveBtn = document.getElementById('save-btn');
+          saveBtn.disabled = true;
+
+          var req = isNew
+            ? CRM.fetchJson('/api/crm/buyers', { method: 'POST', body: payload })
+            : CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId), { method: 'PATCH', body: payload });
+
+          req.then(function (result) {
+            saveBtn.disabled = false;
+            if (!result.ok) {
+              showStatus(result.data.error || 'Validation failed.' + (result.data.fields ? ' (' + result.data.fields.join(', ') + ')' : ''), false);
+              return;
+            }
+            if (isNew) {
+              window.location.href = '/crm/buyer/?id=' + result.data.id;
+            } else {
+              showStatus('Saved.', true);
+              checkCertificationGap(payload);
+            }
+          }).catch(function () { saveBtn.disabled = false; });
+        });
+
+        document.getElementById('activity-form').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var entryEl = document.getElementById('activity-entry');
+          var entry = entryEl.value.trim();
+          if (!entry) return;
+          CRM.fetchJson('/api/crm/activity', { method: 'POST', body: { buyer_id: Number(buyerId), entry: entry } }).then(function (result) {
+            if (!result.ok) { showStatus(result.data.error || 'Could not add entry.', false); return; }
+            entryEl.value = '';
+            return loadExisting();
+          });
+        });
+
+        document.getElementById('delete-btn').addEventListener('click', function () {
+          if (!window.confirm('Delete this buyer record? This can only be undone by a database administrator.')) return;
+          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
+            if (!result.ok) { showStatus(result.data.error || 'Could not delete.', false); return; }
+            window.location.href = '/crm/buyers/';
+          });
+        });
+
+        populateSelects();
+        CRM.requireAuth().then(function () {
+          CRM.renderNav(isNew ? 'Add Buyer' : '');
+          if (isNew) {
+            document.getElementById('page-title').textContent = 'Add Buyer';
+            toggleLostReason();
+          } else {
+            return loadExisting();
+          }
+        }).catch(function (e) {
+          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+        });
+      })();
+    </script>
+  </body>
+</html>
