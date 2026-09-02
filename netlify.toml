@@ -157,6 +157,26 @@
   status = 200
   force = true
 
+# Section J2 -- KPI Manager (extends /admin/analytics; same admin auth,
+# same database, no separate app)
+[[redirects]]
+  from = "/api/kpi-definitions"
+  to = "/.netlify/functions/kpi-definitions"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/kpi-values"
+  to = "/.netlify/functions/kpi-values"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/kpi-dashboard"
+  to = "/.netlify/functions/kpi-dashboard"
+  status = 200
+  force = true
+
 # A0 canonical-route audit (re-checked 2026-09-02): these four /media/
 # article paths appeared in an old sitemap with no matching content
 # anywhere in this repo's history, and no evidence they were ever
