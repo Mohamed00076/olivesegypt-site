@@ -197,6 +197,13 @@
   status = 200
   force = true
 
+# Section L -- quotation/invoice generator
+[[redirects]]
+  from = "/api/crm/documents"
+  to = "/.netlify/functions/crm-documents"
+  status = 200
+  force = true
+
 # Section J2 -- KPI Manager (extends /admin/analytics; same admin auth,
 # same database, no separate app)
 [[redirects]]

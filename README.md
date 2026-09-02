@@ -401,9 +401,56 @@ actually *see* that data, since neither existed before:
 No new database table, no new auth — this reuses `DATABASE_URL` and the
 `tc_session` cookie already in place for the rest of `/admin/analytics/`.
 
-**Not built (yet):** a quotation/invoice generator tied to a specific
-buyer's data (the old pre-rebuild `/dashboard/quotation` and
-`/dashboard/invoice` tools, explicitly deferred rather than rebuilt when
-this site was — see commit `24cae36`'s message for the original note).
-This section only covers *seeing* and *being notified of* inquiries, not
-generating documents from them.
+## Quotation & Invoice Generator (Section L)
+
+The piece Section K explicitly left for later: a real quotation/invoice
+generator tied to a specific buyer's data (the old pre-rebuild
+`/dashboard/quotation` and `/dashboard/invoice` tools, deliberately
+deferred rather than rebuilt when this site was — see commit `24cae36`'s
+message for the original note, and Section H below for the CRM this
+pairs with).
+
+**How it works:**
+
+1. From a buyer's page in the CRM (`/crm/buyer/?id=...`), a new
+   **Documents** card lists every quotation/invoice issued to that buyer,
+   with "New Quotation" and "New Invoice" buttons.
+2. That opens `/crm/document/` — an editor: the buyer's info is
+   read-only (pulled from their CRM record), then currency, incoterm, a
+   valid-until date (quotations) or due date (invoices), notes, and a
+   dynamic line-items table (description, unit, quantity, unit price —
+   subtotal/total computed live as you type).
+3. "Create Document" saves it and opens `/crm/document/view/?id=...` —
+   the actual document, styled exactly like `/letterhead/` (same logo,
+   fonts, layout). "Print / Save as PDF" uses the browser's own print
+   dialog — no PDF-generation library or extra cost.
+
+**Design decisions worth knowing:**
+
+- **CRM buyers only** — every document is tied to a real buyer record;
+  there's no "one-off, not-yet-a-buyer" path. Add the buyer to the CRM
+  first (takes a few seconds) if they aren't in it yet.
+- **Immutable once created.** There's deliberately no edit/update
+  endpoint — a document is either kept as issued or **voided** (marks it
+  `VOID` with a stamp on the printed page, keeps the row and its document
+  number for your records; requires an explicit confirmation, same
+  pattern as deleting a buyer). This matches how a real invoice/quotation
+  should behave: you don't quietly rewrite one after the fact, you void
+  it and issue a new one.
+- **The buyer's details are snapshotted onto the document at creation
+  time** (company name, contact, country) — editing that buyer's CRM
+  record later never changes a document already issued to them.
+- **Document numbers** are `Q-<year>-<6-digit-id>` / `INV-<year>-<6-digit-id>`
+  (e.g. `INV-2026-000007`), derived from the row's own id — guaranteed
+  unique with no separate counter/sequence to manage.
+- **No tax/discount calculation.** Subtotal and total are the same
+  number in this version (server-recomputed from quantity × unit price
+  on every line, never trusted from the browser) — add tax, discounts,
+  or other terms via the Notes field for now if you need them stated on
+  the document.
+- Same CRM session/auth as the rest of `/crm/` (`netlify/functions/crm-documents.js`,
+  new `crm_documents` table) — no new environment variables, no separate login.
+
+**Not built:** a searchable "all documents across every buyer" list (only
+per-buyer, from that buyer's page) — flagging as a possible future
+addition rather than building it speculatively now.
