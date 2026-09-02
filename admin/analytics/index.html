@@ -226,6 +226,15 @@
       width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit;
     }
     .kpi-form .span2 { grid-column: 1 / -1; }
+    /* Section K -- Inquiries table. No table CSS existed before this
+       (the Search Console queries table above relied on browser
+       defaults); this styles that one too, for free. */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table th, table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #f0efe6; vertical-align: top; }
+    table th { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; }
+    tr.inq-new td { background: #fbf6df; }
+    .inq-msg { max-width: 320px; white-space: normal; word-break: break-word; }
+    #inq-search { flex: 1; min-width: 220px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
   </style>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
@@ -275,6 +284,23 @@
     </header>
     <main>
       <div id="banner" class="banner hidden"></div>
+
+      <!-- Section K -- every Contact/Sample-form submission, newest
+           first. Placed first on the page (not with the rest of the
+           custom pipeline further down) since this is the single most
+           time-sensitive thing on this dashboard: a real customer
+           waiting on a reply. -->
+      <div class="card full" id="inquiries-card">
+        <h2>Inquiries</h2>
+        <p class="j-note">Every submission from the Contact and Sample-Request forms, saved the instant it comes in and emailed to you as a copy (if email notifications are configured — see README). This list is just a window into that same data.</p>
+        <div class="j-threshold" style="flex-wrap:wrap;">
+          <input type="text" id="inq-search" placeholder="Search name, email, company, country, message…" />
+          <button class="j-btn-sm" id="inq-refresh">Refresh</button>
+          <button class="j-btn-sm" id="inq-csv">Download CSV</button>
+          <span id="inq-new-note" class="j-note" style="margin:0;"></span>
+        </div>
+        <div id="inq-table-wrap" style="overflow-x:auto;margin-top:10px;"></div>
+      </div>
 
       <section class="kpis" id="kpis">
         <div class="kpi"><div class="label">Visitors</div><div class="value" id="kpi-visitors">&mdash;</div></div>
@@ -1185,8 +1211,102 @@
       loadSearchConsole();
       loadRetention();
       loadKpiDashboard();
+      loadInquiries();
       armLiveFeedAutoRefresh();
     }
+
+    // --- Section K: Inquiries panel ----------------------------------------
+    var INQ_SEEN_KEY = 'tc-inquiries-last-seen';
+    var inqState = { rows: [] };
+
+    function inqLastSeen() {
+      try { return localStorage.getItem(INQ_SEEN_KEY) || ''; } catch (e) { return ''; }
+    }
+    function inqSetSeen(iso) {
+      try { localStorage.setItem(INQ_SEEN_KEY, iso); } catch (e) {}
+    }
+    function inqFmtDate(iso) {
+      try { return new Date(iso).toLocaleString('en-US', { timeZone: 'Africa/Cairo' }); }
+      catch (e) { return iso; }
+    }
+    function inqMatches(r, q) {
+      if (!q) return true;
+      q = q.toLowerCase();
+      return ['name', 'email', 'company', 'country', 'phone', 'product_interest',
+              'estimated_volume', 'request_type', 'message'].some(function (k) {
+        return (r[k] || '').toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
+    function renderInquiries(rows, query, newSet) {
+      var wrap = document.getElementById('inq-table-wrap');
+      wrap.innerHTML = '';
+      var filtered = rows.filter(function (r) { return inqMatches(r, query); });
+      if (!filtered.length) {
+        wrap.innerHTML = '<p class="empty">' + (rows.length ? 'No inquiries match that search.' : 'No inquiries yet — they’ll show up here the moment someone submits the Contact or Sample-Request form.') + '</p>';
+        return;
+      }
+      var table = document.createElement('table');
+      table.innerHTML = '<thead><tr><th>Date</th><th>Name</th><th>Company</th><th>Country</th><th>Email</th><th>Phone</th><th>Type</th><th>Interest</th><th>Message</th></tr></thead>';
+      var tbody = document.createElement('tbody');
+      filtered.forEach(function (r) {
+        var tr = document.createElement('tr');
+        if (newSet && newSet.has(r.id)) tr.className = 'inq-new';
+        [inqFmtDate(r.created_at), r.name, r.company, r.country, r.email, r.phone || '—',
+         r.request_type || '—', r.product_interest || '—'].forEach(function (v) {
+          var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
+        });
+        var msgTd = document.createElement('td'); msgTd.className = 'inq-msg'; msgTd.textContent = r.message;
+        tr.appendChild(msgTd);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+    }
+
+    function loadInquiries() {
+      return kpiApi('inquiries').then(function (res) {
+        if (!res.ok) return;
+        var rows = Array.isArray(res.data) ? res.data : [];
+        inqState.rows = rows;
+
+        var lastSeen = inqLastSeen();
+        var newSet = new Set();
+        if (lastSeen) {
+          rows.forEach(function (r) { if (r.created_at > lastSeen) newSet.add(r.id); });
+        }
+        var noteEl = document.getElementById('inq-new-note');
+        noteEl.textContent = newSet.size ? (newSet.size + ' new since your last visit') : '';
+
+        renderInquiries(rows, document.getElementById('inq-search').value.trim(), newSet);
+
+        if (rows.length) inqSetSeen(rows[0].created_at); // rows[0] is newest (server sorts DESC)
+      }).catch(function () {});
+    }
+
+    function inqCsvEscape(v) {
+      var s = v === null || v === undefined ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    document.getElementById('inq-search').addEventListener('input', function () {
+      renderInquiries(inqState.rows, this.value.trim());
+    });
+    document.getElementById('inq-refresh').addEventListener('click', function () { loadInquiries(); });
+    document.getElementById('inq-csv').addEventListener('click', function () {
+      var header = ['Date', 'Name', 'Email', 'Company', 'Country', 'Phone', 'Product Interest', 'Estimated Volume', 'Type', 'Message', 'Source Page'];
+      var lines = [header.map(inqCsvEscape).join(',')];
+      inqState.rows.forEach(function (r) {
+        lines.push([r.created_at, r.name, r.email, r.company, r.country, r.phone, r.product_interest,
+                    r.estimated_volume, r.request_type, r.message, r.source_page].map(inqCsvEscape).join(','));
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'inquiries.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
 
     // --- range selector ----------------------------------------------------
     Array.prototype.forEach.call(document.querySelectorAll('.range-btn'), function (btn) {

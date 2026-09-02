@@ -360,3 +360,50 @@ if you want to see it yourself:
 ```
 DATABASE_URL='postgres://...neon.tech/db?sslmode=require' node scripts/kpi-roundtrip-check.js
 ```
+
+## Inquiries Dashboard & Email Notifications (Section K)
+
+Every submission from the Contact and Sample-Request forms has always
+been saved to the `inquiries` table the moment it's submitted
+(`netlify/functions/inquiries.js`) — this section adds two ways to
+actually *see* that data, since neither existed before:
+
+1. **An "Inquiries" card inside `/admin/analytics/`**, first thing on the
+   page. Lists every inquiry newest-first, with a search box (filters by
+   name/email/company/country/message client-side), a "Download CSV"
+   button, and a "N new since your last visit" note + row highlight (per
+   browser, via `localStorage` — not a real read-receipt system, just a
+   convenience). Reuses the *existing* `GET /api/inquiries` endpoint,
+   which already required the same `tc_session` admin cookie as the rest
+   of the dashboard — no new backend route needed for the list itself.
+2. **An emailed copy of each new inquiry**, sent via
+   [Resend](https://resend.com)'s API (`netlify/functions/_email_lib.js`).
+   Optional and off by default — if unconfigured, `inquiries.js` just logs
+   and continues; a form submission is never blocked or failed by a
+   missing or failed notification email.
+
+### Setting up email notifications (optional)
+
+1. Create a free Resend account (100 emails/day, 3,000/month — far more
+   than this site will ever send) and copy an API key from their
+   dashboard.
+2. In Netlify: Site settings → Environment variables, add:
+
+| Variable | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Your Resend API key. Without this (or without `NOTIFY_EMAIL`), notification emails are silently skipped — nothing else depends on this. |
+| `NOTIFY_EMAIL` | The address that should receive a copy of every new inquiry — normally your own. |
+| `NOTIFY_FROM_EMAIL` | *(optional)* A "from" address on your own domain, once verified in Resend (e.g. `"Triple Company <inquiries@olivesegypt.com>"`). Left unset, this defaults to Resend's own sandbox sender (`onboarding@resend.dev`), which needs **no domain setup at all** to send to `NOTIFY_EMAIL` — just to your own registered address, which is exactly this use case. |
+
+3. Redeploy (or trigger a new deploy) so the function picks up the new
+   environment variables.
+
+No new database table, no new auth — this reuses `DATABASE_URL` and the
+`tc_session` cookie already in place for the rest of `/admin/analytics/`.
+
+**Not built (yet):** a quotation/invoice generator tied to a specific
+buyer's data (the old pre-rebuild `/dashboard/quotation` and
+`/dashboard/invoice` tools, explicitly deferred rather than rebuilt when
+this site was — see commit `24cae36`'s message for the original note).
+This section only covers *seeing* and *being notified of* inquiries, not
+generating documents from them.
