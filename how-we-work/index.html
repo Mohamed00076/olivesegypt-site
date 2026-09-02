@@ -174,6 +174,29 @@
             menuBtn.setAttribute('aria-expanded', 'false');
           });
         });
+        // Part 2B: focus the first nav link when the panel opens, close on
+        // Escape (returning focus to the toggle button), and close when a
+        // pointer interacts with anything outside the open panel/button --
+        // so the drawer never traps focus or blocks interaction silently.
+        menuBtn.addEventListener('click', function () {
+          if (!menuPanel.hasAttribute('hidden')) {
+            var firstLink = menuPanel.querySelector('a');
+            if (firstLink) firstLink.focus();
+          }
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !menuPanel.hasAttribute('hidden')) {
+            menuPanel.setAttribute('hidden', '');
+            menuBtn.setAttribute('aria-expanded', 'false');
+            menuBtn.focus();
+          }
+        });
+        document.addEventListener('click', function (e) {
+          if (menuPanel.hasAttribute('hidden')) return;
+          if (menuPanel.contains(e.target) || menuBtn.contains(e.target)) return;
+          menuPanel.setAttribute('hidden', '');
+          menuBtn.setAttribute('aria-expanded', 'false');
+        });
       }
     })();
     </script>

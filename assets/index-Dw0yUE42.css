@@ -96,3 +96,50 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
     row-gap: 4px;
   }
 }
+
+/* Part 2B fix (2026-09-02): mobile hamburger-menu drawer, 22-page "main
+   template" header. #mobile-menu-panel is a sibling of the icon-sized
+   header buttons inside a flex row constrained to the header's h-16
+   (64px) height -- with no positioning override it rendered as an
+   unsized flex-item ~170px wide, squeezed into that row and clipped
+   both above and below the 64px band (confirmed via direct
+   getBoundingClientRect() measurement: width 169.86px, top -79px,
+   bottom 143px, position "static"). Lifting it out of flow with
+   position:absolute anchored to <header> (already position:sticky, so
+   it is this panel's containing block -- no other ancestor between here
+   and <header> sets a position) turns it into a proper full-width
+   drawer immediately below the header, matching this stylesheet's own
+   `lg` breakpoint (64rem / 1024px, confirmed from the compiled
+   .lg\:hidden rule) so it only applies while the hamburger toggle
+   itself is visible. bg-background/border-t already on the element
+   (unchanged) keep it solid, not transparent. max-height+overflow-y
+   guard against a future nav list taller than the viewport. */
+@media (max-width: 1023px) {
+  #mobile-menu-panel:not([hidden]) {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 50;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+  }
+  /* The panel's own links (identical markup on all 22 pages) measured a
+     36px tap target (py-2 padding + text line-height) -- short of the
+     44px minimum. Centering each link's content in a 44px-tall flex box
+     enlarges the tap target without changing the visible text size or
+     padding-driven look. The CTA link sits one level deeper (nav > div >
+     a) and already used text-center for horizontal centering, so its
+     rule also sets justify-content to preserve that. */
+  #mobile-menu-panel nav > a,
+  #mobile-menu-panel nav > div > a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  #mobile-menu-panel nav > div > a {
+    justify-content: center;
+  }
+}
