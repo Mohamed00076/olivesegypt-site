@@ -143,3 +143,41 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
     justify-content: center;
   }
 }
+
+/* Part 3 homepage design pass (2026-09-02): dark-mode contrast fix for
+   bg-primary + white-text buttons/badges (measured via the real WCAG
+   contrast formula, not eyeballed). Dark mode's --primary token
+   (75 40% 40%) was deliberately lightened relative to light mode's
+   (75 40% 25%) for visibility against the dark page background -- but
+   that same lighter green now fails 4.5:1 against white text on the
+   header/mobile-menu "Request a Quote" button (measured 3.61:1, all 22
+   shared-header pages) and the homepage hero's "Single Origin - Egypt"
+   badge (also 3.61:1).
+
+   Deliberately NOT a change to the shared --primary token itself:
+   --primary is also used as a *text* color (icons/links) against the
+   dark page background elsewhere on the site, where a darker value
+   would fail ITS OWN contrast in the other direction. This scoped
+   .tc-cta-primary class -- added only to the specific button/badge
+   instances that measured a real failure -- avoids that tradeoff
+   entirely. Light mode is untouched (already passes at 7.57:1). */
+.dark .tc-cta-primary {
+  background-color: hsl(75 40% 28%);
+}
+.dark .tc-cta-primary:hover {
+  background-color: hsl(75 40% 24%);
+}
+
+/* Same pass: the newsletter "Subscribe to the Brief" button (white text
+   on --secondary, the site's gold brand color) measured 2.32:1 in BOTH
+   themes (--secondary is identical, 45 60% 50%, light and dark) --
+   fails even the 3:1 large-text threshold this 14px bold text qualifies
+   for. Targeted by existing #newsletter-submit id, not a class, since
+   only this one button needs it and the id is already unique. Not
+   scoped to .dark since the failure isn't theme-specific. */
+#newsletter-submit {
+  background-color: hsl(45 60% 32%);
+}
+#newsletter-submit:hover {
+  background-color: hsl(45 60% 28%);
+}
