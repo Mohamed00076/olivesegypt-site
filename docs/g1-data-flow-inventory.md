@@ -214,6 +214,61 @@ individually).
 "enabled" toggle in the dashboard before anything is ever fetched** — see
 `docs/j3-acceptance-criteria.md`.
 
+## 11. Buyer CRM (`/crm/` → `netlify/functions/crm-buyers.js`/`crm-documents.js` → Postgres `buyers`/`crm_documents` tables, Section H)
+
+**Gap found and closed by this entry (2026-09-02):** this system was live from the
+original site rebuild but was never added to this inventory or mentioned in
+the published privacy policy's "What we collect and why" section until now.
+Unlike sections 1-3, buyer records here are **not** created by a visitor
+submitting a public form — no code path in `inquiries.js` or `leads.js`
+writes to these tables. A buyer record is entered manually by CRM staff
+through the login-gated `/crm/` dashboard, typically after some other
+contact with the buyer (a form inquiry, a call, an email, a trade
+relationship) — that originating contact is not itself tracked back to this
+record.
+
+| Field | Source | Origin | Destination | Purpose | Consent category | Lawful-basis question (for counsel) | Retention | Access role | Deletion behavior | May contain personal data |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `company_name`, `country_region` | Staff manual entry | CRM staff | `buyers.*` | Identify the buyer organization | strictly necessary (internal business record) | Is maintaining a sales-pipeline record on a business contact an internal legitimate-interest/contractual-necessity matter, or does it need a separate legal basis from whatever the original contact was? | `[TODO: confirm]` | CRM staff (session-authenticated, own auth system distinct from the admin-analytics login in section 8) | See note below — no automated retention/purge exists today | Possibly (sole proprietorships) |
+| `contact_name`, `contact_title`, `contact_email`, `contact_phone`, `contact_whatsapp` | Staff manual entry | CRM staff | `buyers.*` | Reach the buyer's actual contact person | strictly necessary | Same as above | `[TODO: confirm]` | Same | Same | Yes |
+| `lead_source`, `current_stage`, `product_interest`, `packaging_format`, `estimated_volume`, `target_price`, `quoted_price`, `incoterm`, `certifications_required`, `certification_gap`, `next_action`, `next_action_due`, `lost_reason` | Staff manual entry | CRM staff | `buyers.*` | Sales-pipeline tracking | strictly necessary | N/A (commercial/deal data, not personal on its own) | `[TODO: confirm]` | Same | Same | No |
+| `notes` | Staff free-text | CRM staff | `buyers.notes` | Free-form sales notes | strictly necessary | Same as name/email above | `[TODO: confirm]` | Same | Same | **Yes — high risk.** Free text; staff can type anything, including personal data about the contact or third parties. |
+| `created_by`, `assigned_to` | Session actor at write time | Server | `buyers.created_by`/`.assigned_to` | Internal accountability | n/a (internal staff identifier, not buyer data) | N/A | `[TODO: confirm]` | Same | Same | No (staff, not visitor) |
+| `buyer_stage_history.from_stage/to_stage/changed_by` | Automatic, on every stage change | Server | `buyer_stage_history.*` | Pipeline audit trail | strictly necessary | N/A | `[TODO: confirm]` | Same | Never deleted independently of the parent buyer row | No |
+| `crm_documents.buyer_company_name`, `.buyer_contact_name`, `.buyer_country`, `.buyer_address` | Staff manual entry, tied to a `buyers` record (Section L, quotation/invoice generator) | CRM staff | `crm_documents.*` | Populate an issued quotation/invoice | strictly necessary | Same as buyers table above | `[TODO: confirm]` | Same | **Never deleted or edited once issued** — a document is only ever voided (`voided_at`), matching real-invoice integrity expectations; the personal data on it persists indefinitely by design | Yes (`buyer_address` especially) |
+| `crm_documents.notes`, `.line_items`, `.subtotal`, `.total`, `.currency`, `.incoterm`, `.valid_until`, `.due_date` | Staff manual entry | CRM staff | `crm_documents.*` | Commercial content of the document | strictly necessary | N/A (commercial data; `notes` may contain personal data, same caveat as `buyers.notes`) | `[TODO: confirm]` | Same | Same as above | `notes`: possibly. Rest: No |
+| `crm_users` (staff accounts: username, password hash, display name, email) | Created by an admin script (`scripts/crm-create-user.js`), not self-registration | Server-side script, run by staff | `crm_users.*` | CRM staff login | n/a (internal staff, not visitor data) | N/A | `[TODO: confirm]` | Same table (staff manage their own account) | `[TODO: confirm]` | No (staff, not visitor) |
+
+**Deletion behavior, precisely (code-verified, not assumed):** `crm-buyers.js`'s
+DELETE handler only sets `buyers.deleted_at = now()` — a **soft delete**. The
+row and every field above (including `contact_email`, `contact_phone`,
+`notes`) remains in the database indefinitely; it is simply excluded from
+default list queries (`WHERE deleted_at IS NULL`). No code anywhere in this
+repo purges, hard-deletes, or anonymizes old `buyers` or `crm_documents`
+rows — unlike the Section 9 analytics pipeline, which has both a daily
+automated retention purge (`analytics-retention.js`) and an admin-triggered
+delete-on-request workflow. There is currently no equivalent mechanism for
+CRM buyer data, and no documented process for fulfilling a buyer's own
+deletion/erasure request against this system.
+
+## 12. Facebook widget (homepage footer, Section M — click-to-load embed)
+
+**Gap found and closed by this entry (2026-09-02):** added in a later PR
+than the original G1 inventory and never added here or to the published
+privacy policy's third-party list, which currently states "we do not share
+your information with any other third party" (with one narrow shipping
+exception) — a claim this widget makes inaccurate as written.
+
+| Field | Source | Trigger | Destination | Purpose | Consent category | Lawful-basis / disclosure question (for counsel) | May contain personal data |
+|---|---|---|---|---|---|---|---|
+| Facebook SDK load (`https://connect.facebook.net/en_US/sdk.js`) + XFBML `fb-page` widget render | Meta/Facebook, third-party | **User-initiated only** — a visitor must explicitly click the "fb-widget-toggle" button; nothing Facebook-related loads on ordinary page load or navigation | Visitor's browser, direct connection to Meta's own servers (this codebase never receives or stores anything Facebook collects) | Show the company's Facebook Page feed inline | Not gated by this site's own Analytics-consent mechanism at all — it is its own separate, user-initiated trigger | Is a deliberate click sufficient basis for this kind of third-party load under Egyptian law, or does it need the same explicit consent-category treatment as Analytics? Is Meta (a US-based company) an "international transfer" the same way the G0 question #2 asks about Netlify/Neon/etc.? | Yes, per Meta's own standard SDK behavior (cookies, possible tracking) — entirely outside this codebase's visibility or control once loaded |
+
+**Not currently true, and worth fixing in the privacy policy regardless of
+counsel's answer above:** the "Third parties / sub-processors" section's
+"we do not share your information with any other third party" line no
+longer accurately describes the site now that this widget exists, even
+though it is user-initiated rather than automatic.
+
 ---
 
 ## Summary for G2
@@ -222,7 +277,25 @@ The only fields anywhere on the site that are genuinely optional /
 consent-gated today are the **analytics events (section 4)**, **Umami's
 own pageview tracking (section 5)**, and **the Section J custom pipeline
 (section 9)**. Everything else (form submissions, theme preference, the
-consent record itself) is strictly necessary to the function the visitor
-is actively using and does not require consent under any reasonable
-reading — but is still inventoried above per G1's instruction to cover
-every field, not just the consent-gated ones.
+consent record itself, the CRM's internal buyer records, the
+Facebook-widget click-trigger) is either strictly necessary to the
+function being actively used, or — for the CRM and the Facebook widget
+specifically — an internal business record or a user-initiated third-party
+load that isn't gated by this site's own cookie-consent mechanism at all,
+not because it was deemed to need no consent under any legal analysis, but
+because that specific question (rows 11 and 12) is still open for counsel.
+Everything above is inventoried per G1's instruction to cover every field,
+not just the consent-gated ones — this file is a documentation exercise,
+not a compliance determination.
+
+## 2026-09-02 update note
+
+Sections 11 (Buyer CRM) and 12 (Facebook widget) were added on this date,
+closing a real gap: both systems were already live on the site before this
+update but had never been added to this inventory, and neither is mentioned
+in the published privacy policy's "What we collect and why" or "Third
+parties / sub-processors" sections. See each section above for what's
+verified by code review vs. what remains an open question for counsel —
+nothing in this update changes any compliance claim (there was never one to
+begin with; see the Legal-Review Boundary note in
+[g0-counsel-questions.md](./g0-counsel-questions.md)).
