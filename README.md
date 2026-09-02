@@ -330,3 +330,33 @@ cookie as the rest of `/admin/analytics/`).
 - Search Console dates are in Google's own reporting timezone (Pacific
   Time), not UTC and not the Africa/Cairo convention used everywhere
   else in this dashboard — stated on that panel itself, not just here.
+
+## KPI Manager (Section J2)
+
+A "KPI Manager" card inside `/admin/analytics/` — not a separate app,
+route, or login. Define business KPIs (name, category, unit, target,
+weekly/monthly frequency), enter a value each period, and see status
+(on track / warning / off track) against the target. No new environment
+variables — it reuses `DATABASE_URL` and the same admin session cookie
+as the rest of the dashboard.
+
+**Manual entry only, for now.** A KPI can be defined with
+`data_source: analytics/crm/csv`, but it's created inactive with a
+warning, since no automated calculation path exists yet for any of
+those — only `data_source: manual` (you enter the number yourself each
+period) is live. See `docs/kpi-manager-acceptance-criteria.md` for the
+full schema, why `owner_user_id`/`entered_by_user_id` became plain-text
+`owner_actor`/`entered_by_actor` fields (there's no multi-user `users`
+table for this dashboard — one admin login, via
+`ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`), and the 33 automated checks run
+against the real endpoint code.
+
+**Core design principle: append-only.** Correcting a period's value never
+overwrites it — it creates a new version and marks the old one
+superseded, keeping both. `scripts/kpi-roundtrip-check.js` (same pattern
+as `scripts/db-roundtrip-check.js`) proves this against your own database
+if you want to see it yourself:
+
+```
+DATABASE_URL='postgres://...neon.tech/db?sslmode=require' node scripts/kpi-roundtrip-check.js
+```
