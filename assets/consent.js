@@ -100,9 +100,31 @@
 
   // ---- UI ----------------------------------------------------------
 
+  // Part 2 contrast audit (2026-09-02): real, measured findings (WCAG
+  // relative-luminance formula, not eyeballed):
+  //  - The banner/reopen-button were a fixed dark surface (#1c2416)
+  //    regardless of theme -- fine in light mode (15:1 boundary contrast
+  //    against the light page) but only 1.1:1 against a dark-mode page,
+  //    i.e. the component's own edge was nearly invisible. Fixed with an
+  //    explicit gold border (matches the site's existing --secondary
+  //    token) -- 7.7:1 against the dark page, still correct/harmless in
+  //    light mode where the boundary already passed on its own.
+  //  - The modal was hardcoded pure white regardless of theme -- not a
+  //    contrast failure by itself, but jarring in an otherwise
+  //    dark-themed page. Now uses the site's existing --card/
+  //    --card-foreground tokens (already proven elsewhere on this site)
+  //    under `.dark`, so it adapts like every other card-styled surface.
+  //  - .tc-btn-secondary was reused unchanged for the modal's "Cancel"
+  //    button, but its cream text (#e9e7dd) was designed for the dark
+  //    banner background -- against the modal's white background that
+  //    measured 1.24:1, a real pre-existing failure (present in light
+  //    mode too, not something dark mode introduced) surfaced by this
+  //    same audit. Given .tc-btn-secondary/.tc-btn-modal-secondary now
+  //    sit on genuinely different backgrounds, they get their own class
+  //    instead of one class serving two unrelated surfaces.
   var STYLE = '' +
     '#tc-consent-banner,#tc-consent-modal-overlay{position:fixed;left:0;right:0;z-index:9999;font-family:inherit;}' +
-    '#tc-consent-banner{bottom:0;background:#1c2416;color:#e9e7dd;padding:16px 20px;box-shadow:0 -2px 12px rgba(0,0,0,.25);}' +
+    '#tc-consent-banner{bottom:0;background:#1c2416;color:#e9e7dd;padding:16px 20px;box-shadow:0 -2px 12px rgba(0,0,0,.25);border-top:1px solid #c9a84c;}' +
     '#tc-consent-banner .tc-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;max-width:1100px;margin:0 auto;}' +
     '#tc-consent-banner p{margin:0;font-size:13px;line-height:1.5;flex:1 1 320px;}' +
     '#tc-consent-banner a{color:#c9a84c;text-decoration:underline;}' +
@@ -112,12 +134,19 @@
     '#tc-consent-modal-overlay{top:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;}' +
     '#tc-consent-modal{background:#fff;color:#1c2416;border-radius:12px;max-width:480px;width:100%;padding:24px;box-shadow:0 12px 40px rgba(0,0,0,.3);}' +
     '#tc-consent-modal h2{margin:0 0 12px;font-size:18px;}' +
+    '.tc-modal-subtext{font-size:13px;color:#555;margin:0 0 4px;}' +
     '.tc-cat{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-top:1px solid #eee;}' +
     '.tc-cat:first-of-type{border-top:none;}' +
     '.tc-cat-label{font-weight:600;font-size:14px;}' +
     '.tc-cat-desc{font-size:12px;color:#666;margin-top:2px;}' +
     '.tc-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}' +
-    '#tc-consent-reopen{position:fixed;left:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:none;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}';
+    '.tc-btn-modal-secondary{background:transparent;color:#1c2416;border-color:#1c241633;}' +
+    '#tc-consent-reopen{position:fixed;left:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
+    '.dark #tc-consent-modal{background:hsl(var(--card));color:hsl(var(--card-foreground));}' +
+    '.dark .tc-modal-subtext{color:hsl(var(--muted-foreground));}' +
+    '.dark .tc-cat{border-top-color:hsl(var(--card-border));}' +
+    '.dark .tc-cat-desc{color:hsl(var(--muted-foreground));}' +
+    '.dark .tc-btn-modal-secondary{color:hsl(var(--card-foreground));border-color:hsl(var(--card-border));}';
 
   function injectStyle() {
     if (document.getElementById('tc-consent-style')) return;
@@ -170,7 +199,7 @@
     overlay.innerHTML =
       '<div id="tc-consent-modal" role="dialog" aria-modal="true" aria-labelledby="tc-consent-modal-title">' +
         '<h2 id="tc-consent-modal-title">Cookie Preferences</h2>' +
-        '<p style="font-size:13px;color:#555;margin:0 0 4px;">Choose what we\'re allowed to use. You can change this anytime.</p>' +
+        '<p class="tc-modal-subtext">Choose what we\'re allowed to use. You can change this anytime.</p>' +
         '<div class="tc-cat">' +
           '<div><div class="tc-cat-label">Strictly Necessary</div><div class="tc-cat-desc">Required for the site to function (forms, navigation). Always on.</div></div>' +
           '<input type="checkbox" checked disabled aria-label="Strictly Necessary (always on)"/>' +
@@ -180,7 +209,7 @@
           '<input type="checkbox" id="tc-consent-analytics-toggle"' + (analyticsChecked ? ' checked' : '') + ' aria-label="Analytics"/>' +
         '</div>' +
         '<div class="tc-modal-actions">' +
-          '<button type="button" class="tc-btn tc-btn-secondary" id="tc-consent-modal-cancel">Cancel</button>' +
+          '<button type="button" class="tc-btn tc-btn-modal-secondary" id="tc-consent-modal-cancel">Cancel</button>' +
           '<button type="button" class="tc-btn tc-btn-primary" id="tc-consent-modal-save">Save Preferences</button>' +
         '</div>' +
       '</div>';
