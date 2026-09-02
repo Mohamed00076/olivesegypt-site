@@ -57,3 +57,42 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
      padding as the safe print inset. */
   @page{size:auto}
 }
+
+/* Part 2 responsive fix (2026-09-02): the "Read Our Insights" floating
+   widget (data-testid="floating-blog-link") is fixed at top:50% with
+   -translate-y-1/2 -- vertically centered on whatever the viewport
+   currently shows, not the page. That means it can land on top of real
+   content (confirmed via a real headless-browser measurement: it covers
+   the /catalog hero's stat row at a 375px viewport) depending on scroll
+   position, since a viewport-centered fixed element has no scroll-aware
+   way to avoid content underneath it. Anchoring it near the bottom
+   instead (stacked just above the WhatsApp button, same right edge)
+   keeps it out of the vertical-center "sweet spot" where hero text and
+   cards actually live, at every scroll position -- content scrolls past
+   a bottom-anchored element without ever needing to share space with it.
+   Desktop (>=640px, this stylesheet's own breakpoint) keeps the original
+   vertically-centered design untouched. */
+@media (max-width: 639px) {
+  [data-testid="floating-blog-link"] {
+    top: auto;
+    bottom: 88px;
+    transform: none;
+    max-width: 200px;
+  }
+}
+
+/* Part 2 responsive fix (2026-09-02): the 10 individual /products/*
+   pages share a simpler header than the 22-page "main template" header
+   (confirmed identical across all 10, no hamburger/mobile-menu system
+   at all) -- its nav (logo + 3 links + theme toggle, all in one
+   non-wrapping row) measured a real, if small, 4px horizontal overflow
+   at a 390px viewport. Letting it wrap is the minimal, correct fix for
+   *this* task (no horizontal overflow) without redesigning the header
+   into a proper hamburger/drawer menu, which is explicitly a separate,
+   later task (Part 2B) once this baseline is approved. */
+@media (max-width: 639px) {
+  header nav.flex.gap-4.text-sm.font-medium {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+}

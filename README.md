@@ -500,3 +500,32 @@ pairs with).
 **Not built:** a searchable "all documents across every buyer" list (only
 per-buyer, from that buyer's page) — flagging as a possible future
 addition rather than building it speculatively now.
+
+## Facebook Widget (Section M)
+
+The homepage footer's "Follow Us" row previously just linked out to
+`facebook.com/triplecompanyexport` like the other social icons. There's
+now also a real embedded Facebook Like button there, next to it.
+
+**Deliberately click-to-load, not automatic.** A "Show Facebook page"
+link is all that renders by default — only once a visitor clicks it does
+this page load Facebook's SDK and the actual widget (an iframe from
+`facebook.com`). Facebook's SDK sets its own tracking cookies the moment
+it loads, and this site already has a real, deliberate privacy posture
+(the consent banner, retention limits, geo handling elsewhere in this
+README) — loading a third-party tracker unconditionally on every
+homepage visit, for every visitor, would cut against all of that. This
+widget was kept **out of** the existing consent-banner system rather
+than stretched to fit it: that system is specifically "analytics
+on/off" (`assets/consent.js`, Section G2), not a general third-party-
+embed consent framework, and misusing it here would blur what it
+actually governs. Click-to-load needs no such framework at all — nothing
+loads until the visitor asks for it.
+
+Two new CSP allowances in `netlify.toml` make this possible:
+`connect.facebook.net` in `script-src` (the SDK itself) and
+`https://www.facebook.com` in a new `frame-src` directive (the widget's
+iframe) — both scoped to exactly those two hosts, nothing broader.
+
+No new environment variables, no new backend — this is homepage-only,
+static markup plus about 20 lines of inline JS.
