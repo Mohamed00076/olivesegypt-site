@@ -48,6 +48,17 @@
 # hijacking, no framing (clickjacking). External hosts allowlisted below
 # are exactly what this site actually loads (grepped site-wide) -- Chart.js
 # from jsdelivr, Google Fonts.
+#
+# connect.facebook.net/www.facebook.com (added for the homepage's
+# Facebook Like widget, footer "Follow Us" section): deliberately
+# click-to-load, not loaded on every page view -- the SDK script and its
+# iframe (which set Facebook's own cookies) only load after a visitor
+# clicks "Show Facebook page," never automatically. These CSP entries
+# only control *whether the browser is allowed to load it when asked*;
+# they don't make it load on their own, and don't apply to the analytics
+# consent system (a different, narrower "just Umami" toggle -- see
+# assets/consent.js -- that this widget was deliberately kept out of
+# rather than stretched to cover something it wasn't built for).
 [[headers]]
   for = "/*"
   [headers.values]
@@ -55,7 +66,7 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://www.facebook.com https://connect.facebook.net; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 # A0 discovery flagged this and it was never actually done: JSON API
 # responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to
