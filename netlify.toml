@@ -157,6 +157,40 @@
   status = 200
   force = true
 
+# A0 canonical-route audit (re-checked 2026-09-02): these four /media/
+# article paths appeared in an old sitemap with no matching content
+# anywhere in this repo's history, and no evidence they were ever
+# published. Without that evidence they stay unwritten rather than
+# authored now -- two of the four titles ("iso-22000-recertification",
+# "new-brining-line-capacity") assert exactly the kind of certification/
+# facility-capacity claims A1 blocks until real certificate documents
+# are verified. Explicit 410 (not a silent fallback to the homepage)
+# so search engines drop any stale index entry cleanly instead of
+# treating it as duplicate homepage content.
+[[redirects]]
+  from = "/media/triple-company-gulfood-2026"
+  to = "/index.html"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/media/iso-22000-recertification-2025"
+  to = "/index.html"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/media/new-brining-line-capacity"
+  to = "/index.html"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/media/harvest-season-2025-26"
+  to = "/index.html"
+  status = 410
+  force = true
+
 # SPA fallback — serve index.html for all non-file routes
 [[redirects]]
   from = "/*"
