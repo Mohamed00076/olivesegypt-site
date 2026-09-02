@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forgot Password | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-login-wrap crm-card">
+        <h1>Forgot Password</h1>
+        <p class="crm-muted" style="margin-bottom:20px;">
+          Enter your CRM username. If your account has a recovery email on
+          file, we'll send a reset link to it.
+        </p>
+        <form id="forgot-form">
+          <div class="crm-field">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required />
+          </div>
+          <div id="forgot-status" class="crm-status" style="display:none;"></div>
+          <button type="submit" class="crm-btn crm-btn-primary" id="forgot-submit" style="width:100%;justify-content:center;">Send Reset Link</button>
+        </form>
+        <p style="text-align:center;margin-top:14px;"><a href="/crm/login/" class="crm-muted" style="font-size:12px;">Back to sign in</a></p>
+      </div>
+    </div>
+    <script>
+      (function () {
+        'use strict';
+        var form = document.getElementById('forgot-form');
+        var statusEl = document.getElementById('forgot-status');
+        var submitBtn = document.getElementById('forgot-submit');
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          statusEl.style.display = 'none';
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+
+          fetch('/api/crm/auth/forgot', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: document.getElementById('username').value }),
+          }).then(function (res) { return res.json(); }).then(function (data) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Reset Link';
+            // Deliberately the same message whether or not the account
+            // exists -- see crm-auth-forgot.js.
+            statusEl.className = 'crm-status crm-status-success';
+            statusEl.textContent = data.message || 'If that account exists and has a recovery email on file, a reset link has been sent to it.';
+            statusEl.style.display = 'block';
+            form.reset();
+          }).catch(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Reset Link';
+            statusEl.className = 'crm-status crm-status-error';
+            statusEl.textContent = 'Network error. Please try again.';
+            statusEl.style.display = 'block';
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

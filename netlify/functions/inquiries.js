@@ -2,6 +2,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
+const { sendNotification } = require('./_email_lib');
 
 function connectionString() {
   return (
@@ -71,6 +72,30 @@ async function ensureSchema(sql) {
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS source_page text`;
 }
 
+// Section K -- plain-text email body for the "copy of every inquiry"
+// notification. Plain text only (no HTML): this is an internal
+// notification, not a marketing email, and skipping HTML sidesteps
+// needing an HTML-escaping helper here for values that are about to be
+// shown verbatim in the admin dashboard's table anyway.
+function inquiryEmailText(f) {
+  const lines = [
+    'New inquiry received on olivesegypt.com',
+    '',
+    'Name: ' + f.name,
+    'Email: ' + f.email,
+    'Company: ' + f.company,
+    'Country: ' + f.country,
+  ];
+  if (f.phone) lines.push('Phone: ' + f.phone);
+  if (f.productInterest) lines.push('Product interest: ' + f.productInterest);
+  if (f.estimatedVolume) lines.push('Estimated volume: ' + f.estimatedVolume);
+  if (f.requestType) lines.push('Request type: ' + f.requestType);
+  lines.push('', 'Message:', f.message);
+  if (f.sourcePage) lines.push('', 'Submitted from: ' + f.sourcePage);
+  lines.push('', 'View all inquiries: https://olivesegypt.com/admin/analytics/');
+  return lines.join('\n');
+}
+
 async function checkRateLimit(sql, ip, email) {
   const rows = await sql`
     SELECT count(*)::int AS n FROM inquiries
@@ -130,6 +155,22 @@ async function handlePost(event, sql) {
       (${name}, ${email}, ${company}, ${country}, ${phone},
        ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip}, ${sourcePage})
   `;
+
+  // Best-effort "email me a copy" notification -- awaited so it actually
+  // finishes before this function's execution context is frozen, but its
+  // own errors are swallowed here too: a failed/unconfigured notification
+  // must never turn a successfully-saved inquiry into a failed response.
+  try {
+    await sendNotification(
+      `New inquiry — ${name} (${company})`,
+      inquiryEmailText({
+        name, email, company, country, phone,
+        productInterest, estimatedVolume, requestType, message, sourcePage,
+      })
+    );
+  } catch (err) {
+    console.error('[inquiries] notification email failed:', err?.message ?? err);
+  }
 
   return json(200, { ok: true });
 }

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document | Triple Company for Industrial Development</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
+
+    <style>
+      .sheet { max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; background: #fff; box-shadow: 0 1px 8px rgba(0,0,0,0.1); padding: 2cm; display: flex; flex-direction: column; position: relative; }
+      .lh-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid hsl(var(--primary)); padding-bottom: 1rem; margin-bottom: 2rem; }
+      .lh-body { flex: 1; }
+      .lh-footer { border-top: 1px solid hsl(var(--border)); padding-top: 0.75rem; margin-top: 2rem; font-size: 10px; color: hsl(var(--muted-foreground)); text-align: center; }
+      .doc-table { width: 100%; font-size: 13px; border-collapse: collapse; margin-bottom: 1.5rem; }
+      .doc-table th { text-align: left; padding: 6px 4px; border-bottom: 2px solid hsl(var(--primary)); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: hsl(var(--muted-foreground)); }
+      .doc-table td { padding: 8px 4px; border-bottom: 1px solid hsl(var(--border)); vertical-align: top; }
+      .doc-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .doc-table tfoot td { border-bottom: none; padding-top: 10px; }
+      .doc-total-row td { font-weight: 700; font-size: 16px; color: hsl(var(--primary)); }
+      .void-stamp {
+        position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-18deg);
+        font-size: 90px; font-weight: 800; color: rgba(163, 49, 42, 0.28); border: 8px solid rgba(163, 49, 42, 0.28);
+        padding: 4px 30px; letter-spacing: 0.1em; pointer-events: none; text-transform: uppercase; z-index: 5;
+      }
+      @media print {
+        .no-print { display: none !important; }
+        .sheet { box-shadow: none; margin: 0; }
+        @page { margin: 2cm; }
+      }
+    </style>
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body class="bg-muted/30">
+    <div class="no-print sticky top-0 z-10 bg-background border-b border-border py-3 mb-2">
+      <div class="container max-w-screen-md mx-auto px-4 flex items-center justify-between">
+        <a href="#" id="back-link" class="text-sm font-semibold text-primary">&larr; Back to buyer</a>
+        <div class="flex gap-2">
+          <button id="void-btn" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;">Void</button>
+          <button onclick="window.print()" class="text-sm px-4 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold">Print / Save as PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="load-status" class="container max-w-screen-md mx-auto px-4 text-sm text-muted-foreground"></div>
+
+    <div class="sheet" id="sheet" style="display:none;">
+      <div class="void-stamp" id="void-stamp" style="display:none;">Void</div>
+      <div class="lh-header">
+        <div class="flex items-center gap-3">
+          <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" class="h-12 w-12 object-contain" width="512" height="512"/>
+          <div>
+            <div class="font-serif text-lg font-bold text-primary leading-tight">TRIPLE COMPANY</div>
+            <div class="text-[10px] uppercase tracking-widest text-muted-foreground">for Industrial Development</div>
+          </div>
+        </div>
+        <div class="text-right text-xs text-muted-foreground leading-relaxed">
+          5th Settlement, Ouroba Square<br/>
+          Cairo, Egypt<br/>
+          sales@olivesegypt.com &middot; +20 100 604 5961
+        </div>
+      </div>
+
+      <div class="lh-body">
+        <div class="flex items-start justify-between mb-8">
+          <div>
+            <h1 class="font-serif text-2xl font-bold text-primary" id="doc-title-type">QUOTATION</h1>
+            <div class="text-sm text-muted-foreground" id="doc-number"></div>
+          </div>
+          <div class="text-right text-xs text-muted-foreground leading-relaxed">
+            <div>Date: <span id="doc-date"></span></div>
+            <div id="doc-date-row"></div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <div class="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Bill To</div>
+          <div class="font-semibold" id="buyer-company"></div>
+          <div class="text-xs text-muted-foreground" id="buyer-contact"></div>
+          <div class="text-xs text-muted-foreground" id="buyer-address"></div>
+          <div class="text-xs text-muted-foreground" id="buyer-country"></div>
+        </div>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Description</th><th>Unit</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Total</th></tr>
+          </thead>
+          <tbody id="li-tbody"></tbody>
+          <tfoot>
+            <tr><td colspan="4" class="num" style="text-align:right;">Subtotal</td><td class="num" id="doc-subtotal"></td></tr>
+            <tr class="doc-total-row"><td colspan="4" class="num" style="text-align:right;">Total</td><td class="num" id="doc-total"></td></tr>
+          </tfoot>
+        </table>
+
+        <div id="doc-incoterm-row" class="text-xs text-muted-foreground mb-2"></div>
+        <div id="doc-notes" class="text-xs text-muted-foreground" style="white-space:pre-wrap;"></div>
+      </div>
+
+      <div class="lh-footer">
+        Triple Company for Industrial Development &middot; olivesegypt.com &middot; Document prepared by Triple Company for Industrial Development
+      </div>
+    </div>
+
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var qs = new URLSearchParams(window.location.search);
+        var docId = qs.get('id');
+
+        function fmtMoney(n, currency) {
+          n = Number(n) || 0;
+          return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
+        }
+        function fmtDate(iso) {
+          if (!iso) return '';
+          try { return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
+          catch (e) { return String(iso).slice(0, 10); }
+        }
+
+        function render(d) {
+          document.getElementById('back-link').href = '/crm/buyer/?id=' + d.buyer_id;
+          document.getElementById('doc-title-type').textContent = d.doc_type === 'invoice' ? 'INVOICE' : 'QUOTATION';
+          document.getElementById('doc-number').textContent = d.doc_number;
+          document.title = d.doc_number + ' | Triple Company for Industrial Development';
+          document.getElementById('doc-date').textContent = fmtDate(d.created_at);
+
+          if (d.doc_type === 'invoice' && d.due_date) {
+            document.getElementById('doc-date-row').textContent = 'Due: ' + fmtDate(d.due_date);
+          } else if (d.doc_type === 'quotation' && d.valid_until) {
+            document.getElementById('doc-date-row').textContent = 'Valid until: ' + fmtDate(d.valid_until);
+          }
+
+          document.getElementById('buyer-company').textContent = d.buyer_company_name;
+          document.getElementById('buyer-contact').textContent = d.buyer_contact_name || '';
+          document.getElementById('buyer-address').textContent = d.buyer_address || '';
+          document.getElementById('buyer-country').textContent = d.buyer_country || '';
+
+          var tbody = document.getElementById('li-tbody');
+          tbody.innerHTML = '';
+          (d.line_items || []).forEach(function (li) {
+            var tr = document.createElement('tr');
+            var lineTotal = (Number(li.quantity) || 0) * (Number(li.unit_price) || 0);
+            ['description', 'unit'].forEach(function (k) {
+              var td = document.createElement('td'); td.textContent = li[k] || ''; tr.appendChild(td);
+            });
+            var qtyTd = document.createElement('td'); qtyTd.className = 'num'; qtyTd.textContent = li.quantity; tr.appendChild(qtyTd);
+            var priceTd = document.createElement('td'); priceTd.className = 'num'; priceTd.textContent = fmtMoney(li.unit_price, d.currency); tr.appendChild(priceTd);
+            var totalTd = document.createElement('td'); totalTd.className = 'num'; totalTd.textContent = fmtMoney(lineTotal, d.currency); tr.appendChild(totalTd);
+            tbody.appendChild(tr);
+          });
+
+          document.getElementById('doc-subtotal').textContent = fmtMoney(d.subtotal, d.currency);
+          document.getElementById('doc-total').textContent = fmtMoney(d.total, d.currency);
+
+          if (d.incoterm) document.getElementById('doc-incoterm-row').textContent = 'Incoterm: ' + d.incoterm;
+          if (d.notes) document.getElementById('doc-notes').textContent = d.notes;
+
+          var voidBtn = document.getElementById('void-btn');
+          if (d.voided_at) {
+            document.getElementById('void-stamp').style.display = '';
+            voidBtn.style.display = 'none';
+          } else {
+            voidBtn.style.display = '';
+            voidBtn.addEventListener('click', function () {
+              if (!window.confirm('Void this document? This is permanent and cannot be undone (the record stays for your records, marked VOID).')) return;
+              CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(docId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
+                if (result.ok) window.location.reload();
+              });
+            });
+          }
+
+          document.getElementById('load-status').textContent = '';
+          document.getElementById('sheet').style.display = '';
+        }
+
+        if (!docId) {
+          document.getElementById('load-status').textContent = 'No document specified.';
+        } else {
+          CRM.requireAuth().then(function () {
+            return CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(docId));
+          }).then(function (result) {
+            if (!result.ok) { document.getElementById('load-status').textContent = result.data.error || 'Could not load document.'; return; }
+            render(result.data);
+          }).catch(function (e) {
+            if (e.message !== 'unauthorized') document.getElementById('load-status').textContent = 'Could not load document.';
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

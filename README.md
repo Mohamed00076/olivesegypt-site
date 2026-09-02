@@ -111,10 +111,12 @@ analytics dashboard or with the Umami instance.
    (`CREATE TABLE IF NOT EXISTS ...`) the first time any `crm-*` function runs.
 2. Create your own login locally (never typed into chat, never committed):
    ```bash
-   DATABASE_URL=postgres://... node scripts/crm-create-user.js <username> <password> ["Display Name"]
+   DATABASE_URL=postgres://... node scripts/crm-create-user.js <username> <password> ["Display Name"] [email]
    ```
    Requires a password of at least 12 characters. Re-run any time to reset a
-   password.
+   password (existing display name/email are kept if you leave them out).
+   The optional `email` is only needed for the self-service "Forgot
+   password?" flow below — sign-in itself never uses it.
 3. (Optional) Seed realistic fictional sample buyers so the dashboard and
    kanban board aren't empty on first use:
    ```bash
@@ -123,6 +125,50 @@ analytics dashboard or with the Umami instance.
    Only inserts if the `buyers` table is currently empty — pass `--force` to
    insert anyway.
 4. Visit `/crm/login/` and sign in.
+
+### Password Reset
+
+Previously the *only* way to reset a CRM password was re-running
+`scripts/crm-create-user.js` above — fine for the one person running this
+project today, but a real gap for any actual multi-user CRM (a locked-out
+staff member shouldn't need someone with `DATABASE_URL` access to get them
+back in). That script still works and still needs no email setup, so it
+stays as the always-available fallback; on top of it there's now a
+self-service flow:
+
+1. `/crm/login/` has a "Forgot password?" link → `/crm/forgot-password/`.
+2. Enter a username. If that account has a recovery email on file (set via
+   `crm-create-user.js`'s optional `[email]` argument above), a one-time
+   reset link is emailed to it — reusing Section K's `RESEND_API_KEY`
+   (**not** `NOTIFY_EMAIL`, since this goes to the individual user, not the
+   site owner). If email isn't configured, or the account has no email on
+   file, nothing gets sent — fall back to the script.
+   **Sender limitation:** without a verified sending domain, Resend's
+   sandbox sender can only deliver to the email address *your own Resend
+   account* is registered under — fine for testing with yourself as the
+   one CRM user, but for reset emails to actually reach other staff,
+   verify a domain in Resend and set `NOTIFY_FROM_EMAIL` to an address on
+   it. Until then, other users' reset requests still return the same
+   generic success response (see below) but nothing arrives — treat the
+   script as the working fallback until a domain is verified.
+3. The response is **identical either way** (account found or not, email
+   configured or not) — deliberately, so this endpoint can't be used to
+   enumerate valid CRM usernames.
+4. The link (`/crm/reset-password/?token=...`) expires in 60 minutes and
+   works once. Only a SHA-256 hash of the token is ever stored in the new
+   `crm_password_resets` table — the raw token exists only in the email and
+   the requester's browser, so a database breach alone can't be used to
+   replay it.
+
+**Known limitation, stated rather than silently left out:** resetting a
+password this way does **not** invalidate that user's other active
+sessions. CRM sessions are stateless HMAC-signed cookies (checked by
+signature + expiry only, no server-side session table) — real revocation
+would need a session store for every login, a materially larger change
+than this reset flow. If you suspect a session is compromised specifically
+(not just a forgotten password), the only current mitigation is waiting out
+its 7-day expiry or rotating `CRM_SESSION_SECRET` (which invalidates
+*every* CRM session, not just one).
 
 ### Environment variables (CRM-specific)
 
@@ -360,3 +406,97 @@ if you want to see it yourself:
 ```
 DATABASE_URL='postgres://...neon.tech/db?sslmode=require' node scripts/kpi-roundtrip-check.js
 ```
+
+## Inquiries Dashboard & Email Notifications (Section K)
+
+Every submission from the Contact and Sample-Request forms has always
+been saved to the `inquiries` table the moment it's submitted
+(`netlify/functions/inquiries.js`) — this section adds two ways to
+actually *see* that data, since neither existed before:
+
+1. **An "Inquiries" card inside `/admin/analytics/`**, first thing on the
+   page. Lists every inquiry newest-first, with a search box (filters by
+   name/email/company/country/message client-side), a "Download CSV"
+   button, and a "N new since your last visit" note + row highlight (per
+   browser, via `localStorage` — not a real read-receipt system, just a
+   convenience). Reuses the *existing* `GET /api/inquiries` endpoint,
+   which already required the same `tc_session` admin cookie as the rest
+   of the dashboard — no new backend route needed for the list itself.
+2. **An emailed copy of each new inquiry**, sent via
+   [Resend](https://resend.com)'s API (`netlify/functions/_email_lib.js`).
+   Optional and off by default — if unconfigured, `inquiries.js` just logs
+   and continues; a form submission is never blocked or failed by a
+   missing or failed notification email.
+
+### Setting up email notifications (optional)
+
+1. Create a free Resend account (100 emails/day, 3,000/month — far more
+   than this site will ever send) and copy an API key from their
+   dashboard.
+2. In Netlify: Site settings → Environment variables, add:
+
+| Variable | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Your Resend API key. Without this (or without `NOTIFY_EMAIL`), notification emails are silently skipped — nothing else depends on this. |
+| `NOTIFY_EMAIL` | The address that should receive a copy of every new inquiry — normally your own. |
+| `NOTIFY_FROM_EMAIL` | *(optional)* A "from" address on your own domain, once verified in Resend (e.g. `"Triple Company <inquiries@olivesegypt.com>"`). Left unset, this defaults to Resend's own sandbox sender (`onboarding@resend.dev`), which needs **no domain setup at all** to send to `NOTIFY_EMAIL` — just to your own registered address, which is exactly this use case. |
+
+3. Redeploy (or trigger a new deploy) so the function picks up the new
+   environment variables.
+
+No new database table, no new auth — this reuses `DATABASE_URL` and the
+`tc_session` cookie already in place for the rest of `/admin/analytics/`.
+
+## Quotation & Invoice Generator (Section L)
+
+The piece Section K explicitly left for later: a real quotation/invoice
+generator tied to a specific buyer's data (the old pre-rebuild
+`/dashboard/quotation` and `/dashboard/invoice` tools, deliberately
+deferred rather than rebuilt when this site was — see commit `24cae36`'s
+message for the original note, and Section H below for the CRM this
+pairs with).
+
+**How it works:**
+
+1. From a buyer's page in the CRM (`/crm/buyer/?id=...`), a new
+   **Documents** card lists every quotation/invoice issued to that buyer,
+   with "New Quotation" and "New Invoice" buttons.
+2. That opens `/crm/document/` — an editor: the buyer's info is
+   read-only (pulled from their CRM record), then currency, incoterm, a
+   valid-until date (quotations) or due date (invoices), notes, and a
+   dynamic line-items table (description, unit, quantity, unit price —
+   subtotal/total computed live as you type).
+3. "Create Document" saves it and opens `/crm/document/view/?id=...` —
+   the actual document, styled exactly like `/letterhead/` (same logo,
+   fonts, layout). "Print / Save as PDF" uses the browser's own print
+   dialog — no PDF-generation library or extra cost.
+
+**Design decisions worth knowing:**
+
+- **CRM buyers only** — every document is tied to a real buyer record;
+  there's no "one-off, not-yet-a-buyer" path. Add the buyer to the CRM
+  first (takes a few seconds) if they aren't in it yet.
+- **Immutable once created.** There's deliberately no edit/update
+  endpoint — a document is either kept as issued or **voided** (marks it
+  `VOID` with a stamp on the printed page, keeps the row and its document
+  number for your records; requires an explicit confirmation, same
+  pattern as deleting a buyer). This matches how a real invoice/quotation
+  should behave: you don't quietly rewrite one after the fact, you void
+  it and issue a new one.
+- **The buyer's details are snapshotted onto the document at creation
+  time** (company name, contact, country) — editing that buyer's CRM
+  record later never changes a document already issued to them.
+- **Document numbers** are `Q-<year>-<6-digit-id>` / `INV-<year>-<6-digit-id>`
+  (e.g. `INV-2026-000007`), derived from the row's own id — guaranteed
+  unique with no separate counter/sequence to manage.
+- **No tax/discount calculation.** Subtotal and total are the same
+  number in this version (server-recomputed from quantity × unit price
+  on every line, never trusted from the browser) — add tax, discounts,
+  or other terms via the Notes field for now if you need them stated on
+  the document.
+- Same CRM session/auth as the rest of `/crm/` (`netlify/functions/crm-documents.js`,
+  new `crm_documents` table) — no new environment variables, no separate login.
+
+**Not built:** a searchable "all documents across every buyer" list (only
+per-buyer, from that buyer's page) — flagging as a possible future
+addition rather than building it speculatively now.

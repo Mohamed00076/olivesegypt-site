@@ -22,6 +22,16 @@ function safeEqualStr(a, b) {
   return crypto.timingSafeEqual(ha, hb);
 }
 
+// Section H password-reset (crm-auth-reset.js) and scripts/crm-create-user.js
+// both need to produce a hash verifyPassword() below accepts -- shared here
+// so there's exactly one place that scheme is defined, not two copies that
+// could quietly drift apart (16-byte salt, 32-byte hash, both hex).
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16);
+  const hash = crypto.scryptSync(String(password), salt, 32);
+  return `scrypt:${salt.toString('hex')}:${hash.toString('hex')}`;
+}
+
 function verifyPassword(password, stored) {
   if (typeof stored !== 'string') return false;
   const parts = stored.split(':');
@@ -119,6 +129,7 @@ function json(statusCode, body, extraHeaders = {}) {
 module.exports = {
   COOKIE_NAME,
   SESSION_TTL_SECONDS,
+  hashPassword,
   verifyPassword,
   safeEqualStr,
   signSession,

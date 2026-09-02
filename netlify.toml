@@ -174,6 +174,18 @@
   force = true
 
 [[redirects]]
+  from = "/api/crm/auth/forgot"
+  to = "/.netlify/functions/crm-auth-forgot"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/reset"
+  to = "/.netlify/functions/crm-auth-reset"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/crm/buyers"
   to = "/.netlify/functions/crm-buyers"
   status = 200
@@ -194,6 +206,13 @@
 [[redirects]]
   from = "/api/crm/csv"
   to = "/.netlify/functions/crm-csv"
+  status = 200
+  force = true
+
+# Section L -- quotation/invoice generator
+[[redirects]]
+  from = "/api/crm/documents"
+  to = "/.netlify/functions/crm-documents"
   status = 200
   force = true
 

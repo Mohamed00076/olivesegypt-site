@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-login-wrap crm-card">
+        <h1>Reset Password</h1>
+
+        <div id="no-token" class="crm-status crm-status-error" style="display:none;">
+          This link is missing its reset code. Request a new one from the
+          <a href="/crm/forgot-password/">forgot password</a> page.
+        </div>
+
+        <form id="reset-form">
+          <p class="crm-muted" style="margin-bottom:20px;">Choose a new password (at least 12 characters).</p>
+          <div class="crm-field">
+            <label for="new_password">New Password</label>
+            <input id="new_password" type="password" autocomplete="new-password" minlength="12" required />
+          </div>
+          <div class="crm-field">
+            <label for="confirm_password">Confirm New Password</label>
+            <input id="confirm_password" type="password" autocomplete="new-password" minlength="12" required />
+          </div>
+          <div id="reset-status" class="crm-status" style="display:none;"></div>
+          <button type="submit" class="crm-btn crm-btn-primary" id="reset-submit" style="width:100%;justify-content:center;">Reset Password</button>
+        </form>
+
+        <div id="reset-done" style="display:none;">
+          <div class="crm-status crm-status-success">Password reset. You can now sign in with your new password.</div>
+          <p style="text-align:center;margin-top:14px;"><a href="/crm/login/" class="crm-btn crm-btn-primary" style="width:100%;justify-content:center;">Go to Sign In</a></p>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        'use strict';
+        var qs = new URLSearchParams(window.location.search);
+        var token = qs.get('token');
+
+        if (!token) {
+          document.getElementById('no-token').style.display = 'block';
+          document.getElementById('reset-form').style.display = 'none';
+          return;
+        }
+
+        var form = document.getElementById('reset-form');
+        var statusEl = document.getElementById('reset-status');
+        var submitBtn = document.getElementById('reset-submit');
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          statusEl.style.display = 'none';
+
+          var newPassword = document.getElementById('new_password').value;
+          var confirmPassword = document.getElementById('confirm_password').value;
+          if (newPassword !== confirmPassword) {
+            statusEl.className = 'crm-status crm-status-error';
+            statusEl.textContent = 'Passwords do not match.';
+            statusEl.style.display = 'block';
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Resetting...';
+
+          fetch('/api/crm/auth/reset', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, new_password: newPassword }),
+          }).then(function (res) { return res.json(); }).then(function (data) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Reset Password';
+            if (data.ok) {
+              form.style.display = 'none';
+              document.getElementById('reset-done').style.display = 'block';
+            } else {
+              statusEl.className = 'crm-status crm-status-error';
+              statusEl.textContent = data.error || 'Could not reset password.';
+              statusEl.style.display = 'block';
+            }
+          }).catch(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Reset Password';
+            statusEl.className = 'crm-status crm-status-error';
+            statusEl.textContent = 'Network error. Please try again.';
+            statusEl.style.display = 'block';
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
