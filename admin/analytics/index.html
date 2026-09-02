@@ -237,12 +237,30 @@
     <meta name="theme-color" content="#3f4f2b" />
   </head>
 <body>
-  <!-- Sign-in gate (shown when /api/analytics returns 401) -->
+  <!-- Sign-in gate (shown when /api/analytics returns 401). Found during
+       a security/functional audit: this used to link to "/login", a
+       route that hasn't existed since the pre-rebuild SPA -- and nothing
+       anywhere called /api/auth/login at all, so there was genuinely no
+       way to sign into this dashboard through the UI. Fixed by making
+       the gate itself the login form, same pattern as /crm/login/. -->
   <div id="gate" class="gate hidden">
     <div class="mark" style="color: var(--gold);">&#9673;</div>
     <h2>Admin sign-in required</h2>
     <p>Analytics are private. Sign in with your admin account to view the dashboard.</p>
-    <a class="btn-primary" href="/login">Sign in as Admin</a>
+    <form id="gate-login-form" style="text-align:left;max-width:280px;margin:0 auto;">
+      <div style="margin-bottom:12px;">
+        <label for="gate-username" style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Username</label>
+        <input id="gate-username" type="text" autocomplete="username" required
+               style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;box-sizing:border-box;" />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="gate-password" style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Password</label>
+        <input id="gate-password" type="password" autocomplete="current-password" required
+               style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;box-sizing:border-box;" />
+      </div>
+      <div id="gate-login-status" style="display:none;color:#a3312a;font-size:13px;margin-bottom:12px;"></div>
+      <button type="submit" id="gate-login-submit" class="btn-primary" style="width:100%;border:none;cursor:pointer;">Sign In</button>
+    </form>
   </div>
 
   <!-- Dashboard -->
@@ -589,6 +607,40 @@
       document.getElementById('gate').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
     }
+
+    (function () {
+      var gateForm = document.getElementById('gate-login-form');
+      var gateStatus = document.getElementById('gate-login-status');
+      var gateSubmit = document.getElementById('gate-login-submit');
+      gateForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        gateStatus.style.display = 'none';
+        gateSubmit.disabled = true;
+        gateSubmit.textContent = 'Signing in...';
+        fetch('/api/auth/login', {
+          method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('gate-username').value,
+            password: document.getElementById('gate-password').value,
+          }),
+        }).then(function (r) { return r.json(); }).then(function (data) {
+          gateSubmit.disabled = false;
+          gateSubmit.textContent = 'Sign In';
+          if (data.ok) {
+            document.getElementById('gate-password').value = '';
+            loadAll();
+          } else {
+            gateStatus.textContent = data.error || 'Incorrect username or password.';
+            gateStatus.style.display = 'block';
+          }
+        }).catch(function () {
+          gateSubmit.disabled = false;
+          gateSubmit.textContent = 'Sign In';
+          gateStatus.textContent = 'Network error. Please try again.';
+          gateStatus.style.display = 'block';
+        });
+      });
+    })();
 
     function loadAll() {
       var app = document.getElementById('app');
@@ -1012,13 +1064,21 @@
       var targetStr = cur && cur.target_value !== null && cur.target_value !== undefined
         ? 'target ' + fmtKpiValue(cur.target_value, def.unit) : (def.current_target_value !== null ? 'target ' + fmtKpiValue(def.current_target_value, def.unit) : 'no target set');
       var periodStr = cur ? (cur.period_start + ' to ' + cur.period_end) : 'no entry yet this period';
-      var inactiveNote = def.is_active ? '' : ' &middot; <strong>inactive</strong>' + (def.data_source !== 'manual' ? ' (no ' + def.data_source + ' calculation path built yet)' : '');
+      var inactiveNote = def.is_active ? '' : ' &middot; <strong>inactive</strong>' + (def.data_source !== 'manual' ? ' (no ' + escKpi(def.data_source) + ' calculation path built yet)' : '');
 
+      // def.frequency/status are both DB CHECK-constrained enums (only
+      // ever 'weekly'/'monthly' and the fixed status list), so this was
+      // never reachable with attacker-controlled content -- escKpi()'d
+      // anyway, found and fixed in a security audit, to match the same
+      // "escape every server-sourced value, don't rely on it being
+      // constrained elsewhere" discipline the rest of this dashboard's
+      // rendering code already uses (see renderHotLeads/renderBotReview,
+      // which use textContent throughout for exactly this reason).
       el.innerHTML =
         '<div class="kpi-head">' +
           '<div><div class="kpi-name">' + escKpi(def.name) + '</div>' +
-          '<div class="kpi-meta">' + escKpi(def.category) + ' &middot; ' + def.frequency + ' &middot; ' + escKpi(def.data_source) + inactiveNote + '</div></div>' +
-          '<span class="j-badge ' + (KPI_STATUS_CLASS[status] || 'muted') + '">' + (KPI_STATUS_LABEL[status] || status) + '</span>' +
+          '<div class="kpi-meta">' + escKpi(def.category) + ' &middot; ' + escKpi(def.frequency) + ' &middot; ' + escKpi(def.data_source) + inactiveNote + '</div></div>' +
+          '<span class="j-badge ' + (KPI_STATUS_CLASS[status] || 'muted') + '">' + escKpi(KPI_STATUS_LABEL[status] || status) + '</span>' +
         '</div>' +
         '<div class="kpi-value-row"><span class="kpi-actual">' + actualStr + '</span><span class="kpi-target">' + targetStr + '</span></div>' +
         '<div class="kpi-meta">' + escKpi(periodStr) + (cur && cur.note ? ' &middot; ' + escKpi(cur.note) : '') + (cur && cur.version > 1 ? ' &middot; v' + cur.version + ' (corrected)' : '') + '</div>';
