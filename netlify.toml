@@ -34,6 +34,46 @@
 [functions."search-console-import"]
   schedule = "@daily"
 
+# Security audit (2026-09-02): baseline headers, none of which existed
+# before. The CSP's script-src/style-src need 'unsafe-inline' -- this
+# site's every page (forms, the CRM, the admin dashboard, the consent
+# banner) is built from inline <script> and inline style="" throughout,
+# and removing that would mean restructuring every HTML file to external
+# scripts with nonces, a separate, much larger project. So this CSP is
+# NOT primary XSS defense (that's the consistent output-escaping already
+# in the JS -- CRM.escapeHtml() etc., verified during this audit) -- its
+# real value here is restricting *what a script is allowed to do even if
+# one runs*: no loading from or sending data to unknown external hosts
+# (connect-src/script-src), no <object>/<embed> injection, no <base> tag
+# hijacking, no framing (clickjacking). External hosts allowlisted below
+# are exactly what this site actually loads (grepped site-wide) -- Chart.js
+# from jsdelivr, Google Fonts.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+# A0 discovery flagged this and it was never actually done: JSON API
+# responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to
+# carry noindex (only HTML pages do), so this carries the same signal at
+# the header level for all of them, API responses included.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/crm/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # Admin analytics page
 [[redirects]]
   from = "/admin/analytics"
