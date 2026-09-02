@@ -12,7 +12,7 @@
 // (that rule is about olivesegypt-site vs. the separate umami-olivesegypt
 // codebase, which this file has no connection to at all).
 
-const { verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json } = require('./_lib');
+const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json } = require('./_lib');
 
 const CRM_COOKIE_NAME = 'tc_crm_session';
 const CRM_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
@@ -49,6 +49,7 @@ function requireCrmSession(event) {
 module.exports = {
   CRM_COOKIE_NAME,
   CRM_SESSION_TTL_SECONDS,
+  hashPassword,
   verifyPassword,
   signSession,
   verifySession,

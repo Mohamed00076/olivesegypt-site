@@ -111,10 +111,12 @@ analytics dashboard or with the Umami instance.
    (`CREATE TABLE IF NOT EXISTS ...`) the first time any `crm-*` function runs.
 2. Create your own login locally (never typed into chat, never committed):
    ```bash
-   DATABASE_URL=postgres://... node scripts/crm-create-user.js <username> <password> ["Display Name"]
+   DATABASE_URL=postgres://... node scripts/crm-create-user.js <username> <password> ["Display Name"] [email]
    ```
    Requires a password of at least 12 characters. Re-run any time to reset a
-   password.
+   password (existing display name/email are kept if you leave them out).
+   The optional `email` is only needed for the self-service "Forgot
+   password?" flow below — sign-in itself never uses it.
 3. (Optional) Seed realistic fictional sample buyers so the dashboard and
    kanban board aren't empty on first use:
    ```bash
@@ -123,6 +125,50 @@ analytics dashboard or with the Umami instance.
    Only inserts if the `buyers` table is currently empty — pass `--force` to
    insert anyway.
 4. Visit `/crm/login/` and sign in.
+
+### Password Reset
+
+Previously the *only* way to reset a CRM password was re-running
+`scripts/crm-create-user.js` above — fine for the one person running this
+project today, but a real gap for any actual multi-user CRM (a locked-out
+staff member shouldn't need someone with `DATABASE_URL` access to get them
+back in). That script still works and still needs no email setup, so it
+stays as the always-available fallback; on top of it there's now a
+self-service flow:
+
+1. `/crm/login/` has a "Forgot password?" link → `/crm/forgot-password/`.
+2. Enter a username. If that account has a recovery email on file (set via
+   `crm-create-user.js`'s optional `[email]` argument above), a one-time
+   reset link is emailed to it — reusing Section K's `RESEND_API_KEY`
+   (**not** `NOTIFY_EMAIL`, since this goes to the individual user, not the
+   site owner). If email isn't configured, or the account has no email on
+   file, nothing gets sent — fall back to the script.
+   **Sender limitation:** without a verified sending domain, Resend's
+   sandbox sender can only deliver to the email address *your own Resend
+   account* is registered under — fine for testing with yourself as the
+   one CRM user, but for reset emails to actually reach other staff,
+   verify a domain in Resend and set `NOTIFY_FROM_EMAIL` to an address on
+   it. Until then, other users' reset requests still return the same
+   generic success response (see below) but nothing arrives — treat the
+   script as the working fallback until a domain is verified.
+3. The response is **identical either way** (account found or not, email
+   configured or not) — deliberately, so this endpoint can't be used to
+   enumerate valid CRM usernames.
+4. The link (`/crm/reset-password/?token=...`) expires in 60 minutes and
+   works once. Only a SHA-256 hash of the token is ever stored in the new
+   `crm_password_resets` table — the raw token exists only in the email and
+   the requester's browser, so a database breach alone can't be used to
+   replay it.
+
+**Known limitation, stated rather than silently left out:** resetting a
+password this way does **not** invalidate that user's other active
+sessions. CRM sessions are stateless HMAC-signed cookies (checked by
+signature + expiry only, no server-side session table) — real revocation
+would need a session store for every login, a materially larger change
+than this reset flow. If you suspect a session is compromised specifically
+(not just a forgotten password), the only current mitigation is waiting out
+its 7-day expiry or rotating `CRM_SESSION_SECRET` (which invalidates
+*every* CRM session, not just one).
 
 ### Environment variables (CRM-specific)
 

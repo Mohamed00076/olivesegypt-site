@@ -174,6 +174,18 @@
   force = true
 
 [[redirects]]
+  from = "/api/crm/auth/forgot"
+  to = "/.netlify/functions/crm-auth-forgot"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/reset"
+  to = "/.netlify/functions/crm-auth-reset"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/crm/buyers"
   to = "/.netlify/functions/crm-buyers"
   status = 200

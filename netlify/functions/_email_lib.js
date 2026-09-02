@@ -1,32 +1,40 @@
 'use strict';
 
 /*
- * Section K -- optional outbound email notifications, shared by anything
- * that wants to email the site owner (currently just inquiries.js, "email
- * me a copy of every new inquiry").
+ * Section K -- optional outbound email, shared by anything that wants to
+ * send mail: inquiries.js ("email me a copy of every new inquiry") and,
+ * as of Section H's password-reset flow, crm-auth-forgot.js (emailing a
+ * reset link to a specific CRM user's own address, not the site owner's).
  *
  * Uses Resend's HTTP API directly over fetch -- no SDK to add as a
  * dependency, and Resend's free tier (100 emails/day, 3,000/month) is
- * more than this site will ever send. Requires RESEND_API_KEY and
- * NOTIFY_EMAIL to both be set in Netlify's environment variables; if
- * either is missing this just logs and no-ops, the same "optional,
- * degrades cleanly" pattern geo-refresh.js already uses for its build
- * hook -- nothing else depends on this running, and a missing/failed send
- * must never break the thing that triggered it (a form submission).
+ * more than this site will ever send. sendEmail() requires only
+ * RESEND_API_KEY; sendNotification() is the site-owner-specific wrapper
+ * used by inquiries.js and additionally requires NOTIFY_EMAIL. Either
+ * way, if what's required is missing this just logs and no-ops, the same
+ * "optional, degrades cleanly" pattern geo-refresh.js already uses for
+ * its build hook -- nothing else depends on this running, and a missing/
+ * failed send must never break the thing that triggered it (a form
+ * submission, a password-reset request).
  *
- * No domain verification needed for the default sender: Resend's own
- * sandbox address (onboarding@resend.dev) is allowed to send to the
- * account's own registered email without any DNS setup at all -- which is
- * exactly this use case (notifying the site owner at their own address).
- * If you later want a "from" address on your own domain, verify it in
- * Resend and set NOTIFY_FROM_EMAIL.
+ * IMPORTANT sender limitation: Resend's sandbox address
+ * (onboarding@resend.dev, the default when NOTIFY_FROM_EMAIL is unset)
+ * can only deliver to the email address your own Resend account is
+ * registered under -- that's exactly sendNotification()'s use case (site
+ * owner notifying themselves), but it means sendEmail() to anyone *else*
+ * (e.g. crm-auth-forgot.js emailing a specific CRM user their own reset
+ * link) needs a verified sending domain and NOTIFY_FROM_EMAIL set to an
+ * address on it -- see Resend's domain verification docs. Until that's
+ * set up, sendEmail() to anyone but the account owner will fail (logged,
+ * not thrown) and callers must degrade gracefully rather than assume
+ * delivery succeeded -- as crm-auth-forgot.js does (same response either
+ * way, see its file header).
  */
 
-async function sendNotification(subject, text) {
+async function sendEmail(to, subject, text) {
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.NOTIFY_EMAIL;
   if (!apiKey || !to) {
-    console.log('[email] RESEND_API_KEY or NOTIFY_EMAIL not set -- skipping notification email.');
+    console.log('[email] RESEND_API_KEY not set, or no recipient given -- skipping.');
     return false;
   }
   const from = process.env.NOTIFY_FROM_EMAIL || 'Triple Company Website <onboarding@resend.dev>';
@@ -52,4 +60,13 @@ async function sendNotification(subject, text) {
   }
 }
 
-module.exports = { sendNotification };
+function sendNotification(subject, text) {
+  const to = process.env.NOTIFY_EMAIL;
+  if (!to) {
+    console.log('[email] NOTIFY_EMAIL not set -- skipping notification email.');
+    return Promise.resolve(false);
+  }
+  return sendEmail(to, subject, text);
+}
+
+module.exports = { sendEmail, sendNotification };
