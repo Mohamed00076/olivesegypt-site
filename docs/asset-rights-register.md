@@ -30,18 +30,18 @@ predates this register, not because its rights have been checked.
 
 | File | Depicts | Source | License / permission | Photographer / owner | Attribution required | Routes | Rollback |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `assets/olive-aggizi-*.jpg` | "Aggizi Green Olives" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-manzanilla-*.jpg` | "Manzanilla Green Olives" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-black-*.jpg` | "Natural Black Olives" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-hamed-*.jpg` | "Hamed Green Olives" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-toffahi-*.jpg` | "Toffahi Green Olives" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-stuffed-new-*.png` | "Stuffed Green Olives" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/product-artichoke-*.png` | "Marinated Artichoke Hearts" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/product-jalapeno-*.png` | "Sliced Jalapeño Peppers" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/product-oxidized-black-*.png` | "Oxidized Black Olives" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/catalog/` | Swap file or fall back to no image |
-| `assets/product-pepperoncini-*.png` | "Pepperoncini Peppers" | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/catalog/` | Swap file or fall back to no image |
-| `assets/product-olives-*.png` | Generic hero olive-jar image | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/` (hero) | Swap file or fall back to no image |
-| `assets/pack-glass-jar-*.png`, `pack-tin-can-*.png`, `pack-bucket-*.png`, `pack-barrel-*.png` | Packaging-format illustrations | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/` (packaging section) | Swap file or fall back to no image |
+| `assets/olive-aggizi-*.jpg` | "Aggizi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
+| `assets/olive-manzanilla-*.jpg` | "Manzanilla Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
+| `assets/olive-black-*.jpg` | "Natural Black Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
+| `assets/olive-hamed-*.jpg` | "Hamed Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/` | Swap file or fall back to no image |
+| `assets/olive-toffahi-*.jpg` | "Toffahi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/` | Swap file or fall back to no image |
+| `assets/olive-stuffed-new-*.png` | "Stuffed Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
+| `assets/product-artichoke-*.png` | "Marinated Artichoke Hearts" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
+| `assets/product-jalapeno-*.png` | "Sliced Jalapeño Peppers" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
+| `assets/product-oxidized-black-*.png` | "Oxidized Black Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/` | Swap file or fall back to no image |
+| `assets/product-pepperoncini-*.png` | "Pepperoncini Peppers" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/` | Swap file or fall back to no image |
+| `assets/product-olives-*.png` | Generic hero olive-jar image | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/` (hero) | Swap file or fall back to no image |
+| `assets/pack-glass-jar-*.png`, `pack-tin-can-*.png`, `pack-bucket-*.png`, `pack-barrel-*.png` | Packaging-format illustrations | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/` (packaging section) | Swap file or fall back to no image |
 | `assets/hero-olive-grove-*.png` | Decorative low-opacity background texture | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/` (hero background, aria-hidden) | Remove the `background-image` declaration |
 | `opengraph.jpg` | Social-share preview image (used as `og:image`/`twitter:image` site-wide) | UNCONFIRMED — and separately, this file is a **raw screenshot of the homepage** (browser chrome visible), not a purpose-built social card. Its dimensions (1280×720) were also mismatched against the declared `og:image:width/height` meta (1200×630) until this pass, now corrected to match the real file. | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | Every page (same image reused everywhere) | Replace with a properly designed 1200×630 card once source art is settled |
 | `assets/industrial-olives-*.png` | Not currently used anywhere (unreferenced by any page or stylesheet) | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | none (dead asset) | Safe to delete once confirmed unused, or wire in if it should be used somewhere |
