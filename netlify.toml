@@ -6,6 +6,20 @@
   # fails the build itself; see scripts/build-geo.js.
   command = "node scripts/build-geo.js"
 
+# Persists geo/ (the downloaded GeoLite2-Country database) between
+# builds. Before this, scripts/build-geo.js re-downloaded and
+# re-extracted an ~8-9MB file on every single build -- including every
+# PR deploy preview -- even when nothing about it had changed, burning
+# build minutes for no reason. build-geo.js now checks geo/.fetched-at
+# (restored from this cache) and skips the download entirely unless
+# it's missing or more than a week old, so the weekly geo-refresh
+# scheduled function below still keeps it current during quiet periods
+# with no other deploys.
+[[plugins]]
+  package = "netlify-plugin-cache"
+  [plugins.inputs]
+    paths = ["geo"]
+
 [functions]
   # Bundles the freshly-downloaded geo database into every function's
   # deploy package so analytics-collect.js can read it at runtime. Well
