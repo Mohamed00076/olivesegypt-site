@@ -54,7 +54,13 @@ const ALLOWED_KEYS = new Set([
 ]);
 
 const BUYER_TYPES = new Set(['importer', 'distributor', 'retail_chain', 'food_service', 'other']);
-const SEGMENTS = new Set(['market_report', 'private_label']);
+// 'pricing_guide' / 'origin_guide' / 'buyers_guide' added for Part C's
+// gated PDF downloads -- same staging-only backend and table as
+// 'market_report' above, just a distinct segment value so leads are
+// attributable to which specific asset was requested. No new
+// destination, no new validation path, no change to any existing
+// segment's behavior.
+const SEGMENTS = new Set(['market_report', 'private_label', 'pricing_guide', 'origin_guide', 'buyers_guide']);
 
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 const RATE_LIMIT_MAX_PER_WINDOW = 5;

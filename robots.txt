@@ -7,6 +7,9 @@ Disallow: /quotation
 Disallow: /invoice
 Disallow: /business-card
 Disallow: /catalog/print
+Disallow: /downloads/pricing-packaging-guide
+Disallow: /downloads/origin-comparison-guide
+Disallow: /downloads/buyers-guide
 Disallow: /admin
 Disallow: /crm
 
