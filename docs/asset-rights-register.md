@@ -66,6 +66,21 @@ products/packaging shots, send the files and I'll wire them in — following
 the same rule as everything else on this site, a real photo needs a known,
 confirmed source before it goes live representing an actual product.
 
+**Update, this pass**: five of the six removed product slots (all except the
+generic hero image) now show a distinct per-product illustration —
+`assets/illus-jalapeno.svg`, `illus-artichoke.svg`, `illus-pepperoncini.svg`,
+`illus-oxidized-black.svg`, `illus-stuffed.svg` — instead of the single
+generic `photo-pending.svg` graphic. Same rule applied: these are original,
+self-made line-art icons (not photos, not AI-generated, not attempting
+photorealism), each keeping the same "Product photography pending" text
+baked into the graphic and the same honest alt text pattern. This replaces
+sameness (one identical graphic for five different products) with
+recognizability (a distinct shape per product), not a step toward looking
+like real photography. `photo-pending.svg` itself is untouched and still
+covers the generic homepage hero slot and the 4 packaging-format slots,
+which are out of scope for this pass. Still no real photography for any of
+these six — the "send the files" next step above still stands.
+
 ## Brand / icon assets
 
 | File | Used as | Source | License / permission | Photographer / owner | Attribution required | Routes | Rollback |
@@ -90,7 +105,12 @@ confirmed source before it goes live representing an actual product.
 | ~~`assets/product-pepperoncini-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/product-olives-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/pack-glass-jar-*.png`, `pack-tin-can-*.png`, `pack-bucket-*.png`, `pack-barrel-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
-| `assets/photo-pending.svg` | Neutral "photography pending" placeholder (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/` (in the six slots above); also used in the B2B export catalog PDF for the same removed slots | Delete and revert to no-image styling if a different placeholder treatment is preferred |
+| `assets/photo-pending.svg` | Neutral "photography pending" placeholder (self-made 2026-09-01) | Made for this site, 2026-09-01 | N/A — original graphic, no external source | Claude, as part of this project | None | `/` (hero product slot, aria-labelled generically, and the 4 packaging-format slots — Glass Jar, Tin Can, Plastic Bucket, Plastic Barrel); also used in the B2B export catalog PDF for the still-unphotographed slots | Delete and revert to no-image styling if a different placeholder treatment is preferred |
+| `assets/illus-jalapeno.svg` | Per-product "photography pending" illustration — sliced jalapeño rings (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/products/sliced-jalapeno-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-artichoke.svg` | Per-product "photography pending" illustration — artichoke heart (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/products/marinated-artichoke-hearts` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-pepperoncini.svg` | Per-product "photography pending" illustration — pepperoncini peppers (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/products/pepperoncini-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-oxidized-black.svg` | Per-product "photography pending" illustration — oxidized black olive cluster (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/products/oxidized-black-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-stuffed.svg` | Per-product "photography pending" illustration — stuffed green olives on a pick (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/products/pepper-stuffed-green-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
 | `assets/hero-olive-grove-*.png` | Decorative low-opacity background texture | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/` (hero background, aria-hidden) | Remove the `background-image` declaration |
 | `opengraph.jpg` | Social-share preview image (used as `og:image`/`twitter:image` site-wide) | UNCONFIRMED — and separately, this file is a **raw screenshot of the homepage** (browser chrome visible), not a purpose-built social card. Its dimensions (1280×720) were also mismatched against the declared `og:image:width/height` meta (1200×630) until this pass, now corrected to match the real file. | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | Every page (same image reused everywhere) | Replace with a properly designed 1200×630 card once source art is settled |
 | `assets/industrial-olives-*.png` | Not currently used anywhere (unreferenced by any page or stylesheet) | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | none (dead asset) | Safe to delete once confirmed unused, or wire in if it should be used somewhere |
@@ -139,3 +159,22 @@ compression, and packaging of files that already existed.
   slots (cover + Oxidized Black, Pepper Stuffed, Artichoke, Pepperoncini,
   Jalapeño), matching the live site's own treatment rather than shipping a
   printed document with fake product photography in it.
+
+## What changed 2026-09-03 (later pass — per-product illustrations)
+
+- Replaced the single generic `photo-pending.svg` graphic with five distinct,
+  self-made illustrations — one per still-unphotographed product — on
+  `/catalog/`, each product's own `/products/*` page, and the 3 of those
+  products that appear in the homepage catalog teaser section (`/`). See the
+  "Update, this pass" note above for the full explanation and the new rows
+  in the Product / catalog photography table.
+- `photo-pending.svg` itself was not modified; it still covers the generic
+  homepage hero slot and the 4 packaging-format slots, unchanged.
+- No `<img>` was added to any JSON-LD `Product.image` field for these five
+  products — same discipline as 2026-09-01, since none of this is real
+  product photography.
+- The B2B export catalog PDF (`/downloads/triple-company-export-catalog-
+  2026.pdf`) was not regenerated in this pass and still uses the generic
+  `photo-pending.svg` in its unphotographed slots; it is not visually
+  inconsistent with the site (both are honest "pending" placeholders), just
+  not yet updated to the new per-product graphics.
