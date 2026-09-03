@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Triple Company Export Catalog</title>
+<!--
+  Print source for downloads/triple-company-export-catalog-2026.pdf.
+
+  This file is not a site route -- nothing links to it and it is not
+  meant to be browsed. It exists only so the PDF can be regenerated
+  instead of hand-edited as a binary. Render it with
+  scripts/generate-export-catalog-pdf.js (Playwright, prints to A4 with
+  backgrounds enabled) from a local server so the /assets/* paths below
+  resolve.
+
+  Content is copied verbatim from the site's already-approved pages
+  (company profile, product specs, private label, logistics, contact) --
+  nothing here is new copy. Images: the 5 products with owner-confirmed
+  real photography use that photo; the 5 without real photography use
+  their per-product illustration (see docs/asset-rights-register.md) --
+  same "photography pending" disclosure as the live site, not upgraded
+  to look like a real photo. The cover keeps the generic
+  photo-pending.svg placeholder, matching its use elsewhere on the site
+  for the same generic (non-product-specific) slot.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pdf-page { width: 210mm; min-height: 297mm; padding: 20mm 20mm 26mm; position: relative; page-break-after: always; overflow: hidden; }
+  .pdf-page:last-child { page-break-after: auto; }
+  .pdf-eyebrow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8mm; }
+  .pdf-brand { display: flex; align-items: center; gap: 8px; }
+  .pdf-brand img { width: 20px; height: 20px; object-fit: contain; }
+  .pdf-brand span { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: hsl(var(--primary)); }
+  .pdf-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: hsl(var(--muted-foreground)); text-transform: uppercase; }
+  .pdf-h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 22px; color: hsl(var(--foreground)); margin: 0 0 6mm; }
+  .pdf-h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 14px; color: hsl(var(--foreground)); margin: 6mm 0 2mm; }
+  .pdf-p { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; line-height: 1.6; color: hsl(var(--muted-foreground)); margin: 0 0 2mm; }
+  .pdf-footer { position: absolute; bottom: 12mm; left: 20mm; right: 20mm; display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 8.5px; color: hsl(var(--muted-foreground)); border-top: 1px solid hsl(var(--border)); padding-top: 3mm; }
+  table.pdf-table { width: 100%; border-collapse: collapse; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 9.5px; margin: 2mm 0 3mm; }
+  table.pdf-table th { text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); border-bottom: 1px solid hsl(var(--border)); padding: 2mm 3mm 2mm 0; }
+  table.pdf-table td { padding: 2mm 3mm 2mm 0; border-bottom: 1px solid hsl(var(--border) / 0.5); color: hsl(var(--foreground)); vertical-align: top; }
+  .pdf-caption { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 8.5px; color: hsl(var(--muted-foreground)); font-style: italic; margin: 1mm 0 4mm; }
+  .product-row { display: flex; gap: 5mm; margin-bottom: 5mm; align-items: flex-start; }
+  .product-row img { width: 34mm; height: 34mm; object-fit: cover; border-radius: 3mm; border: 1px solid hsl(var(--border)); flex-shrink: 0; }
+  .product-row .body { flex: 1; min-width: 0; }
+  .product-name { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 12.5px; color: hsl(var(--foreground)); margin: 0 0 1.5mm; }
+  .product-meta { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 9px; color: hsl(var(--foreground)); margin-top: 1.5mm; }
+  .product-meta b { font-weight: 600; }
+  ul.pdf-list { margin: 2mm 0; padding-left: 4mm; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10px; color: hsl(var(--muted-foreground)); line-height: 1.6; }
+  .cover-badge { display: inline-block; border: 1px solid hsl(var(--primary) / 0.4); color: hsl(var(--primary)); font-size: 10px; font-weight: 600; padding: 1.5mm 4mm; border-radius: 2mm; margin-top: 6mm; }
+  .cover-toc { margin-top: 10mm; border-top: 1px solid hsl(var(--border)); padding-top: 5mm; }
+  .cover-toc-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: hsl(var(--muted-foreground)); text-transform: uppercase; margin-bottom: 3mm; }
+  .cover-toc-row { display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; color: hsl(var(--foreground)); padding: 1.5mm 0; border-bottom: 1px dotted hsl(var(--border)); }
+  .cover-img-wrap { margin: 8mm 0; border-radius: 4mm; overflow: hidden; border: 1px solid hsl(var(--border)); }
+  .cover-img-wrap img { width: 100%; height: 60mm; object-fit: cover; display: block; }
+  .cover-img-caption { font-size: 8.5px; color: hsl(var(--muted-foreground)); font-style: italic; margin-top: 2mm; }
+  .contact-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding-top: 40mm; }
+  .contact-page img { width: 22mm; height: 22mm; object-fit: contain; margin-bottom: 4mm; }
+  .contact-page .brandline { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 16px; color: hsl(var(--primary)); }
+  .contact-page .brandsub { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: 12mm; }
+  .contact-block { margin-bottom: 6mm; }
+  .contact-block .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--muted-foreground)); margin-bottom: 1.5mm; }
+  .contact-block .value { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 11.5px; color: hsl(var(--foreground)); }
+  .contact-cta { margin-top: 8mm; font-weight: 600; color: hsl(var(--primary)); font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand">
+      <img src="/assets/logo-BJ1TOn9V.png" alt="" />
+      <span>TRIPLE COMPANY</span>
+    </div>
+    <span class="pdf-section-label">Egyptian Table Olive Supplier</span>
+  </div>
+  <h1 class="pdf-h1" style="font-size:26px;">Triple Company for Industrial Development</h1>
+  <p class="pdf-p" style="font-size:12px;">Premium Table Olives Exporter</p>
+
+  <div class="cover-img-wrap">
+    <img src="/assets/photo-pending.svg" alt="Cover photography pending" />
+  </div>
+  <p class="cover-img-caption">Cover photography pending — real product photography to be added before final print.</p>
+
+  <span class="cover-badge">B2B Export Catalog · 2026 Edition</span>
+
+  <div class="cover-toc">
+    <div class="cover-toc-label">In This Catalog</div>
+    <div class="cover-toc-row"><span>Company Profile &amp; Quality Status</span><span>2</span></div>
+    <div class="cover-toc-row"><span>Product Range &amp; Quick-Matrix</span><span>3</span></div>
+    <div class="cover-toc-row"><span>Green Olives</span><span>4</span></div>
+    <div class="cover-toc-row"><span>Black Olives &amp; Stuffed Varieties</span><span>5</span></div>
+    <div class="cover-toc-row"><span>Specialty, Peppers &amp; Antipasto</span><span>6</span></div>
+    <div class="cover-toc-row"><span>Private Label &amp; Customization</span><span>7</span></div>
+    <div class="cover-toc-row"><span>Logistics, Container Loads &amp; Trade Terms</span><span>8A</span></div>
+    <div class="cover-toc-row" style="border-bottom:none;"><span>Contact</span><span>8B</span></div>
+  </div>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Cover</span></div>
+</section>
+
+<!-- PAGE 2: COMPANY PROFILE -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>TRIPLE COMPANY</span></div>
+    <span class="pdf-section-label">Company Profile</span>
+  </div>
+  <h1 class="pdf-h1">Company Profile &amp; Quality Status</h1>
+
+  <h2 class="pdf-h2">Our Story</h2>
+  <p class="pdf-p">Triple Company for Industrial Development is an Egyptian table-olive supplier based in Cairo, Egypt. We are preparing for international export of the approved product range for bulk, wholesale, food-service, retail, and private-label buyer discussions. As a newly established company, we are building our supply model through approved partner arrangements. Product specifications, samples, packaging, documentation, MOQ, pricing, and delivery terms are confirmed according to the product and buyer request. We are actively developing buyer relationships and will confirm the applicable commercial and documentation requirements during quotation.</p>
+
+  <h2 class="pdf-h2">Certifications &amp; Quality Documentation</h2>
+  <p class="pdf-p">Quality and documentation information is being prepared. Current product specifications and available documents can be requested by qualified buyers.</p>
+  <p class="pdf-p">We work through a partner processing arrangement — Triple Company does not own or operate a processing factory. Products are sourced and processed through an approved partner facility in the 10th of Ramadan Industrial Zone. Any certification claim refers to that partner facility, never to Triple Company itself.</p>
+
+  <h2 class="pdf-h2">Product Range</h2>
+  <p class="pdf-p">Aggizi, Toffahi, Hamed, and Manzanilla Green Olives · Natural and Oxidized Black Olives · Pepper Stuffed Green Olives · Marinated Artichoke Hearts · Pepperoncini Peppers · Sliced Jalapeño Peppers. Full specifications on pages 4–6.</p>
+
+  <h2 class="pdf-h2">Requesting Current Documentation</h2>
+  <p class="pdf-p">Qualified buyers can request the current status of our quality documentation, along with product specification sheets, at any time via olivesegypt.com/contact.</p>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 2</span></div>
+</section>
+
+<!-- PAGE 3: PRODUCT RANGE & QUICK-MATRIX -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>TRIPLE COMPANY</span></div>
+    <span class="pdf-section-label">Product Range</span>
+  </div>
+  <h1 class="pdf-h1">Product Range Overview &amp; Quick-Matrix</h1>
+
+  <table class="pdf-table">
+    <tr><th>Variety</th><th>Styles</th><th>Confirmed Caliber Range</th></tr>
+    <tr><td>Aggizi Green Olives</td><td>Whole, Pitted, Cracked</td><td>141/160 – 231/260</td></tr>
+    <tr><td>Toffahi Green Olives</td><td>Whole, Pitted, Stuffed</td><td>101/110 – 161/180</td></tr>
+    <tr><td>Hamed Green Olives</td><td>Cracked, Marinated</td><td>161/180 – 261/290</td></tr>
+    <tr><td>Manzanilla Green Olives</td><td>Whole, Pitted, Stuffed</td><td>101/110 – 231/260</td></tr>
+    <tr><td>Natural Black Olives</td><td>Whole, Sliced, Pitted</td><td>141/160 – 261/290</td></tr>
+    <tr><td>Oxidized Black Olives</td><td>Whole, Pitted, Sliced</td><td>Confirmed during quotation</td></tr>
+    <tr><td>Pepper Stuffed Green Olives</td><td>Stuffed (pimiento / almond / garlic / lemon)</td><td>Confirmed during quotation</td></tr>
+    <tr><td>Marinated Artichoke Hearts</td><td>Quarters, Hearts, Grilled</td><td>—</td></tr>
+    <tr><td>Pepperoncini Peppers</td><td>Whole, pickled (Golden Greek style)</td><td>—</td></tr>
+    <tr><td>Sliced Jalapeño Peppers</td><td>Sliced rings, Whole</td><td>—</td></tr>
+  </table>
+  <p class="pdf-caption">Caliber ranges shown are as published; where marked "Confirmed during quotation," no specific caliber is currently published for that product.</p>
+
+  <h2 class="pdf-h2">Packaging Formats Available</h2>
+  <table class="pdf-table">
+    <tr><th>Format</th><th>Size</th></tr>
+    <tr><td>Glass Jars</td><td>300g–1.7kg</td></tr>
+    <tr><td>Tin Cans</td><td>Confirmed during quotation</td></tr>
+    <tr><td>Plastic Buckets</td><td>1–10kg</td></tr>
+    <tr><td>Wooden / Plastic Barrels</td><td>50–200kg</td></tr>
+    <tr><td>Vacuum Pouches</td><td>Confirmed during quotation</td></tr>
+  </table>
+  <p class="pdf-caption">Packaging-format photography is not yet available for this catalog — the images previously used for these formats were found to be AI-generated and were removed from the site and this document. Real packaging photography will be added once available.</p>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 3</span></div>
+</section>
+
+<!-- PAGE 4: GREEN OLIVES -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>TRIPLE COMPANY</span></div>
+    <span class="pdf-section-label">Product Specifications</span>
+  </div>
+  <h1 class="pdf-h1">Green Olives</h1>
+
+  <div class="product-row">
+    <img src="/assets/olive-aggizi-BuhWRZTd.jpg" alt="Aggizi Green Olives" />
+    <div class="body">
+      <p class="product-name">Aggizi Green Olives</p>
+      <p class="pdf-p">Egypt's most exported olive variety. Firm texture, mild brine, bright green color. Grown in the Nile Delta.</p>
+      <p class="product-meta"><b>Styles:</b> Whole, Pitted, Cracked &nbsp;·&nbsp; <b>Caliber:</b> 141/160 – 231/260</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/olive-toffahi-SpdiHPHF.jpg" alt="Toffahi Green Olives" />
+    <div class="body">
+      <p class="product-name">Toffahi Green Olives</p>
+      <p class="pdf-p">Premium Egyptian olive from Fayoum. High flesh-to-pit ratio, slightly sweet flavor.</p>
+      <p class="product-meta"><b>Styles:</b> Whole, Pitted, Stuffed &nbsp;·&nbsp; <b>Caliber:</b> 101/110 – 161/180</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/olive-hamed-DhlKuQ55.jpg" alt="Hamed Green Olives" />
+    <div class="body">
+      <p class="product-name">Hamed Green Olives</p>
+      <p class="pdf-p">Large-caliber olives from Egypt's North Coast. Cracked and marinated with herbs. Popular in Middle Eastern import markets.</p>
+      <p class="product-meta"><b>Styles:</b> Cracked, Marinated &nbsp;·&nbsp; <b>Caliber:</b> 161/180 – 261/290</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/olive-manzanilla-vwgGqjiA.jpg" alt="Manzanilla Green Olives" />
+    <div class="body">
+      <p class="product-name">Manzanilla Green Olives</p>
+      <p class="pdf-p">Internationally recognized Spanish variety grown and processed in Egypt.</p>
+      <p class="product-meta"><b>Styles:</b> Whole, Pitted, Stuffed (pimiento, almond, or garlic) &nbsp;·&nbsp; <b>Caliber:</b> 101/110 – 231/260</p>
+    </div>
+  </div>
+  <p class="pdf-caption">Brine/pH parameters and per-product packaging sizes: confirmed during quotation — not published for these varieties at this time.</p>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 4</span></div>
+</section>
+
+<!-- PAGE 5: BLACK OLIVES & STUFFED VARIETIES -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>TRIPLE COMPANY</span></div>
+    <span class="pdf-section-label">Product Specifications</span>
+  </div>
+  <h1 class="pdf-h1">Black Olives &amp; Stuffed Varieties</h1>
+
+  <div class="product-row">
+    <img src="/assets/olive-black-CzV0ukvu.jpg" alt="Natural Black Olives" />
+    <div class="body">
+      <p class="product-name">Natural Black Olives</p>
+      <p class="pdf-p">Naturally ripened Egyptian black olives. No iron gluconate, no artificial coloring.</p>
+      <p class="product-meta"><b>Styles:</b> Whole, Sliced, Pitted — in brine or vacuum-sealed &nbsp;·&nbsp; <b>Caliber:</b> 141/160 – 261/290</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-oxidized-black.svg" alt="Oxidized Black Olives — photography pending" />
+    <div class="body">
+      <p class="product-name">Oxidized Black Olives</p>
+      <p class="pdf-p">California-style black olives darkened by controlled oxidation for a uniform jet-black color and smooth, mild flavor. Ideal for pizza toppings, food service, and retail cans.</p>
+      <p class="product-meta"><b>Styles:</b> Whole, Pitted, Sliced &nbsp;·&nbsp; <b>Caliber:</b> Confirmed during quotation</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-stuffed.svg" alt="Pepper Stuffed Green Olives — photography pending" />
+    <div class="body">
+      <p class="product-name">Pepper Stuffed Green Olives</p>
+      <p class="pdf-p">Premium Manzanilla and Aggizi olives stuffed with pimiento, almond, garlic, or lemon at our partner facility. Available in glass jars and tins for European retail and food service.</p>
+      <p class="product-meta"><b>Styles:</b> Stuffed (pimiento, almond, garlic, or lemon) &nbsp;·&nbsp; <b>Caliber:</b> Confirmed during quotation &nbsp;·&nbsp; <b>Packaging:</b> Glass jars and tins</p>
+    </div>
+  </div>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 5</span></div>
+</section>
+
+<!-- PAGE 6: SPECIALTY, PEPPERS & ANTIPASTO -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>TRIPLE COMPANY</span></div>
+    <span class="pdf-section-label">Product Specifications</span>
+  </div>
+  <h1 class="pdf-h1">Specialty, Peppers &amp; Antipasto</h1>
+
+  <div class="product-row">
+    <img src="/assets/illus-artichoke.svg" alt="Marinated Artichoke Hearts — photography pending" />
+    <div class="body">
+      <p class="product-name">Marinated Artichoke Hearts</p>
+      <p class="pdf-p">Tender artichoke hearts marinated in oil with Mediterranean herbs. A premium antipasto line that complements our olive range for delis, retail, and food service.</p>
+      <p class="product-meta"><b>Styles:</b> Quarters, Hearts, Grilled &nbsp;·&nbsp; Not a caliber-graded product</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-pepperoncini.svg" alt="Pepperoncini Peppers — photography pending" />
+    <div class="body">
+      <p class="product-name">Pepperoncini Peppers</p>
+      <p class="pdf-p">Mild, tangy golden-green peppers pickled in brine (Golden Greek style). A versatile antipasto and sandwich pepper in strong demand across European and North American retail.</p>
+      <p class="product-meta"><b>Styles:</b> Whole, pickled &nbsp;·&nbsp; Not a caliber-graded product</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-jalapeno.svg" alt="Sliced Jalapeño Peppers — photography pending" />
+    <div class="body">
+      <p class="product-name">Sliced Jalapeño Peppers</p>
+      <p class="pdf-p">Crisp green jalapeño rings pickled for a bright, medium heat. A high-demand food-service line for nachos, pizza, and Tex-Mex applications.</p>
+      <p class="product-meta"><b>Styles:</b> Sliced rings, Whole &nbsp;·&nbsp; Not a caliber-graded product</p>
+    </div>
+  </div>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 6</span></div>
+</section>
+
+<!-- PAGE 7: PRIVATE LABEL -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>TRIPLE COMPANY</span></div>
+    <span class="pdf-section-label">Private Label</span>
+  </div>
+  <h1 class="pdf-h1">Private Label &amp; Customization</h1>
+  <p class="pdf-p">Your brand, your packaging design, our export-ready product. We support full design-to-shelf private label service across glass, tin, bucket, and barrel formats, handling printing, filling, and export documentation. Minimum order quantity, artwork specifications, and labeling requirements for private-label and custom packaging are confirmed per project during quotation, since they depend on the format, print method, and volume you need.</p>
+
+  <h2 class="pdf-h2">Channel Guidance</h2>
+  <ul class="pdf-list">
+    <li>Oxidized Black Olives — pizza toppings, food service, retail cans</li>
+    <li>Pepper Stuffed Green Olives — European retail and food service</li>
+    <li>Marinated Artichoke Hearts — delis, retail, and food service</li>
+  </ul>
+  <p class="pdf-caption">Structured "best for" channel guidance is not published for every product — shown here only where the site specifies it.</p>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 7</span></div>
+</section>
+
+<!-- PAGE 8: LOGISTICS & TRADE TERMS -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>TRIPLE COMPANY</span></div>
+    <span class="pdf-section-label">Logistics &amp; Trade Terms</span>
+  </div>
+  <h1 class="pdf-h1">Logistics, Container Loads &amp; Trade Terms</h1>
+
+  <table class="pdf-table">
+    <tr><th style="width:26%">Term</th><th>Detail</th></tr>
+    <tr><td>Minimum Order</td><td>1 × 20ft container (~16–18 MT)</td></tr>
+    <tr><td>Incoterms</td><td>FOB Alexandria · CIF · CFR</td></tr>
+    <tr><td>Payment Terms</td><td>Flexible, confirmed per buyer relationship — typically 30% T/T deposit, 70% against B/L copy, with L/C at sight and other negotiable terms available for established partners.</td></tr>
+    <tr><td>Samples</td><td>Samples available; no trial shipment. Sample packages consist of a few tins of the requested variety(ies), up to 5kg total. Progression beyond sample stage goes straight to contract at standard MOQ, 1 × 20ft FCL.</td></tr>
+    <tr><td>Indicative Lead Time</td><td>3–4 weeks, order to vessel</td></tr>
+    <tr><td>Currency</td><td>USD or EUR</td></tr>
+    <tr><td>HS Classification</td><td>Varies by destination market — confirm the applicable HS code and duty rate with your own customs broker.</td></tr>
+  </table>
+  <p class="pdf-p">Every order is prepared with standard export documentation — commercial invoice, packing list, certificate of origin, phytosanitary or health certificate, and bill of lading.</p>
+
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 8A</span></div>
+</section>
+
+<!-- PAGE 9: CONTACT -->
+<section class="pdf-page">
+  <div class="contact-page">
+    <img src="/assets/logo-BJ1TOn9V.png" alt="" />
+    <div class="brandline">Triple Company</div>
+    <div class="brandsub">For Industrial Development</div>
+
+    <div class="contact-block">
+      <div class="label">Sales Contact</div>
+      <div class="value">Mohamed Abdullah, Sales</div>
+    </div>
+    <div class="contact-block">
+      <div class="label">Head Office</div>
+      <div class="value">5th Settlement, Ouroba Square (ميدان العروبة), Cairo, Egypt</div>
+    </div>
+    <div class="contact-block">
+      <div class="label">Partner Processing Facility</div>
+      <div class="value">10th of Ramadan Industrial Zone</div>
+    </div>
+    <div class="contact-block">
+      <div class="label">Contact</div>
+      <div class="value">sales@olivesegypt.com · +20 100 604 5961</div>
+    </div>
+    <div class="contact-cta">Request a Quote → olivesegypt.com/contact</div>
+  </div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 8B</span></div>
+</section>
+
+</body>
+</html>
