@@ -1,0 +1,28 @@
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sliced Jalapeño Peppers photography pending">
+  <rect width="900" height="900" fill="#3d5a2e"/>
+  <g transform="translate(450,370)">
+    <!-- three overlapping jalapeño rings -->
+    <g transform="translate(-90,-20) rotate(-8)">
+      <circle r="78" fill="none" stroke="#5a7a4a" stroke-width="26"/>
+      <circle cx="8" cy="-30" r="7" fill="#c9a84c"/>
+      <circle cx="-35" cy="18" r="6" fill="#c9a84c"/>
+      <circle cx="30" cy="32" r="6" fill="#c9a84c"/>
+      <circle cx="-10" cy="45" r="5" fill="#c9a84c"/>
+    </g>
+    <g transform="translate(70,10) rotate(6)">
+      <circle r="86" fill="none" stroke="#6c8d5a" stroke-width="28"/>
+      <circle cx="-10" cy="-35" r="8" fill="#c9a84c"/>
+      <circle cx="32" cy="10" r="6" fill="#c9a84c"/>
+      <circle cx="-30" cy="28" r="6" fill="#c9a84c"/>
+      <circle cx="8" cy="45" r="5" fill="#c9a84c"/>
+    </g>
+    <g transform="translate(-10,70) rotate(-4)">
+      <circle r="70" fill="none" stroke="#5a7a4a" stroke-width="24"/>
+      <circle cx="-5" cy="-28" r="6" fill="#c9a84c"/>
+      <circle cx="26" cy="20" r="5" fill="#c9a84c"/>
+      <circle cx="-25" cy="18" r="5" fill="#c9a84c"/>
+    </g>
+  </g>
+  <text x="450" y="580" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#f5f0e1" letter-spacing="0.5">Product photography</text>
+  <text x="450" y="625" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#f5f0e1" letter-spacing="0.5">pending</text>
+</svg>

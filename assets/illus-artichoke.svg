@@ -1,0 +1,16 @@
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Marinated Artichoke Hearts photography pending">
+  <rect width="900" height="900" fill="#3d5a2e"/>
+  <g transform="translate(450,370)">
+    <!-- artichoke heart: teardrop body with layered leaf arcs -->
+    <path d="M0,-120 C70,-120 105,-55 100,0 C95,60 55,110 0,130 C-55,110 -95,60 -100,0 C-105,-55 -70,-120 0,-120 Z" fill="#5a7a4a"/>
+    <path d="M0,-95 C48,-95 78,-45 74,5 C70,50 40,88 0,102" fill="none" stroke="#3d5a2e" stroke-width="5" opacity="0.55"/>
+    <path d="M0,-95 C-48,-95 -78,-45 -74,5 C-70,50 -40,88 0,102" fill="none" stroke="#3d5a2e" stroke-width="5" opacity="0.55"/>
+    <path d="M0,-70 C30,-70 50,-30 47,10 C44,45 25,70 0,80" fill="none" stroke="#3d5a2e" stroke-width="4" opacity="0.45"/>
+    <path d="M0,-70 C-30,-70 -50,-30 -47,10 C-44,45 -25,70 0,80" fill="none" stroke="#3d5a2e" stroke-width="4" opacity="0.45"/>
+    <path d="M-14,-118 C-30,-150 -10,-175 8,-165 C18,-150 4,-128 -14,-118 Z" fill="#c9a84c"/>
+    <path d="M14,-118 C34,-146 16,-172 -2,-160" fill="none" stroke="#c9a84c" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+    <line x1="0" y1="130" x2="0" y2="175" stroke="#c9a84c" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  <text x="450" y="580" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#f5f0e1" letter-spacing="0.5">Product photography</text>
+  <text x="450" y="625" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#f5f0e1" letter-spacing="0.5">pending</text>
+</svg>
