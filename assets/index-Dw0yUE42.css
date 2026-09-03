@@ -181,3 +181,18 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
 #newsletter-submit:hover {
   background-color: hsl(45 60% 28%);
 }
+
+/* Same contrast sweep: the packaging-card size chips (370 ml, 5 kg,
+   etc., homepage "Packaging Options" section) measured 3.87:1 in light
+   mode (text-muted-foreground on bg-muted) -- needs 4.5:1. Dark mode
+   already passes (6.06:1, different token values there) and must stay
+   untouched -- html:not(.dark) scopes this to light mode only (an
+   unscoped rule would have overridden dark mode's own, already-correct
+   color too, since this selector's specificity beats the plain
+   .text-muted-foreground utility it's overriding). Scoped to these 15
+   specific chips rather than the shared --muted-foreground token, which
+   is used more broadly against other backgrounds elsewhere on the site
+   that weren't measured as failing. */
+html:not(.dark) .tc-pkg-chip {
+  color: hsl(40 5% 36%);
+}
