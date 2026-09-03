@@ -31,43 +31,43 @@
   @page { size: A4; margin: 0; }
   * { box-sizing: border-box; }
   body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .pdf-page { width: 210mm; min-height: 297mm; padding: 20mm 20mm 26mm; position: relative; page-break-after: always; overflow: hidden; }
+  .pdf-page { width: 210mm; min-height: 297mm; padding: 18mm 22mm 26mm; position: relative; page-break-after: always; overflow: hidden; }
   .pdf-page:last-child { page-break-after: auto; }
-  .pdf-eyebrow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8mm; }
-  .pdf-brand { display: flex; align-items: center; gap: 8px; }
-  .pdf-brand img { width: 20px; height: 20px; object-fit: contain; }
-  .pdf-brand span { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: hsl(var(--primary)); }
-  .pdf-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: hsl(var(--muted-foreground)); text-transform: uppercase; }
-  .pdf-h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 22px; color: hsl(var(--foreground)); margin: 0 0 6mm; }
-  .pdf-h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 14px; color: hsl(var(--foreground)); margin: 6mm 0 2mm; }
-  .pdf-p { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; line-height: 1.6; color: hsl(var(--muted-foreground)); margin: 0 0 2mm; }
-  .pdf-footer { position: absolute; bottom: 12mm; left: 20mm; right: 20mm; display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 8.5px; color: hsl(var(--muted-foreground)); border-top: 1px solid hsl(var(--border)); padding-top: 3mm; }
-  table.pdf-table { width: 100%; border-collapse: collapse; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 9.5px; margin: 2mm 0 3mm; }
-  table.pdf-table th { text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); border-bottom: 1px solid hsl(var(--border)); padding: 2mm 3mm 2mm 0; }
-  table.pdf-table td { padding: 2mm 3mm 2mm 0; border-bottom: 1px solid hsl(var(--border) / 0.5); color: hsl(var(--foreground)); vertical-align: top; }
-  .pdf-caption { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 8.5px; color: hsl(var(--muted-foreground)); font-style: italic; margin: 1mm 0 4mm; }
-  .product-row { display: flex; gap: 5mm; margin-bottom: 5mm; align-items: flex-start; }
-  .product-row img { width: 34mm; height: 34mm; object-fit: cover; border-radius: 3mm; border: 1px solid hsl(var(--border)); flex-shrink: 0; }
+  .pdf-eyebrow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10mm; }
+  .pdf-brand { display: flex; align-items: center; gap: 10px; }
+  .pdf-brand img { width: 26px; height: 26px; object-fit: contain; }
+  .pdf-brand span { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 15px; letter-spacing: 0.06em; color: hsl(var(--primary)); }
+  .pdf-section-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; color: hsl(var(--muted-foreground)); text-transform: uppercase; }
+  .pdf-h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 28px; color: hsl(var(--foreground)); margin: 0 0 7mm; }
+  .pdf-h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 17px; color: hsl(var(--foreground)); margin: 6mm 0 3mm; }
+  .pdf-p { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 14px; line-height: 1.7; color: hsl(var(--muted-foreground)); margin: 0 0 3.5mm; }
+  .pdf-footer { position: absolute; bottom: 14mm; left: 24mm; right: 24mm; display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; color: hsl(var(--muted-foreground)); border-top: 1px solid hsl(var(--border)); padding-top: 4mm; }
+  table.pdf-table { width: 100%; border-collapse: collapse; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 13px; margin: 3mm 0 5mm; }
+  table.pdf-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); border-bottom: 1px solid hsl(var(--border)); padding: 2mm 4mm 2mm 0; }
+  table.pdf-table td { padding: 2mm 4mm 2mm 0; border-bottom: 1px solid hsl(var(--border) / 0.5); color: hsl(var(--foreground)); vertical-align: top; line-height: 1.4; }
+  .pdf-caption { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 11.5px; line-height: 1.6; color: hsl(var(--muted-foreground)); font-style: italic; margin: 2mm 0 6mm; }
+  .product-row { display: flex; gap: 7mm; margin-bottom: 7mm; align-items: flex-start; }
+  .product-row img { width: 36mm; height: 36mm; object-fit: cover; border-radius: 4mm; border: 1px solid hsl(var(--border)); flex-shrink: 0; }
   .product-row .body { flex: 1; min-width: 0; }
-  .product-name { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 12.5px; color: hsl(var(--foreground)); margin: 0 0 1.5mm; }
-  .product-meta { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 9px; color: hsl(var(--foreground)); margin-top: 1.5mm; }
+  .product-name { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 18px; color: hsl(var(--foreground)); margin: 0 0 2.5mm; }
+  .product-meta { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 12.5px; color: hsl(var(--foreground)); margin-top: 2.5mm; line-height: 1.6; }
   .product-meta b { font-weight: 600; }
-  ul.pdf-list { margin: 2mm 0; padding-left: 4mm; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10px; color: hsl(var(--muted-foreground)); line-height: 1.6; }
-  .cover-badge { display: inline-block; border: 1px solid hsl(var(--primary) / 0.4); color: hsl(var(--primary)); font-size: 10px; font-weight: 600; padding: 1.5mm 4mm; border-radius: 2mm; margin-top: 6mm; }
-  .cover-toc { margin-top: 10mm; border-top: 1px solid hsl(var(--border)); padding-top: 5mm; }
-  .cover-toc-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: hsl(var(--muted-foreground)); text-transform: uppercase; margin-bottom: 3mm; }
-  .cover-toc-row { display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; color: hsl(var(--foreground)); padding: 1.5mm 0; border-bottom: 1px dotted hsl(var(--border)); }
-  .cover-img-wrap { margin: 8mm 0; border-radius: 4mm; overflow: hidden; border: 1px solid hsl(var(--border)); }
-  .cover-img-wrap img { width: 100%; height: 60mm; object-fit: cover; display: block; }
-  .cover-img-caption { font-size: 8.5px; color: hsl(var(--muted-foreground)); font-style: italic; margin-top: 2mm; }
-  .contact-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding-top: 40mm; }
-  .contact-page img { width: 22mm; height: 22mm; object-fit: contain; margin-bottom: 4mm; }
-  .contact-page .brandline { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 16px; color: hsl(var(--primary)); }
-  .contact-page .brandsub { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: 12mm; }
-  .contact-block { margin-bottom: 6mm; }
-  .contact-block .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--muted-foreground)); margin-bottom: 1.5mm; }
-  .contact-block .value { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 11.5px; color: hsl(var(--foreground)); }
-  .contact-cta { margin-top: 8mm; font-weight: 600; color: hsl(var(--primary)); font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 11px; }
+  ul.pdf-list { margin: 3mm 0; padding-left: 5mm; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 14px; color: hsl(var(--muted-foreground)); line-height: 1.8; }
+  .cover-badge { display: inline-block; border: 1px solid hsl(var(--primary) / 0.4); color: hsl(var(--primary)); font-size: 13px; font-weight: 600; padding: 2.5mm 6mm; border-radius: 2mm; margin-top: 8mm; }
+  .cover-toc { margin-top: 8mm; border-top: 1px solid hsl(var(--border)); padding-top: 5mm; }
+  .cover-toc-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; color: hsl(var(--muted-foreground)); text-transform: uppercase; margin-bottom: 5mm; }
+  .cover-toc-row { display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 13px; color: hsl(var(--foreground)); padding: 2mm 0; border-bottom: 1px dotted hsl(var(--border)); }
+  .cover-img-wrap { margin: 10mm 0; border-radius: 5mm; overflow: hidden; border: 1px solid hsl(var(--border)); }
+  .cover-img-wrap img { width: 100%; height: 58mm; object-fit: cover; display: block; }
+  .cover-img-caption { font-size: 11px; color: hsl(var(--muted-foreground)); font-style: italic; margin-top: 3mm; }
+  .contact-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding-top: 30mm; }
+  .contact-page img { width: 30mm; height: 30mm; object-fit: contain; margin-bottom: 6mm; }
+  .contact-page .brandline { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 24px; color: hsl(var(--primary)); }
+  .contact-page .brandsub { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: 18mm; }
+  .contact-block { margin-bottom: 9mm; }
+  .contact-block .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--muted-foreground)); margin-bottom: 2.5mm; }
+  .contact-block .value { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 16px; color: hsl(var(--foreground)); }
+  .contact-cta { margin-top: 12mm; font-weight: 600; color: hsl(var(--primary)); font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 15px; }
 </style>
 </head>
 <body>
@@ -81,8 +81,8 @@
     </div>
     <span class="pdf-section-label">Egyptian Table Olive Supplier</span>
   </div>
-  <h1 class="pdf-h1" style="font-size:26px;">Triple Company for Industrial Development</h1>
-  <p class="pdf-p" style="font-size:12px;">Premium Table Olives Exporter</p>
+  <h1 class="pdf-h1" style="font-size:32px;">Triple Company for Industrial Development</h1>
+  <p class="pdf-p" style="font-size:15px;">Premium Table Olives Exporter</p>
 
   <div class="cover-img-wrap">
     <img src="/assets/photo-pending.svg" alt="Cover photography pending" />
