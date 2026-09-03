@@ -105,12 +105,12 @@ these six — the "send the files" next step above still stands.
 | ~~`assets/product-pepperoncini-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/product-olives-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/pack-glass-jar-*.png`, `pack-tin-can-*.png`, `pack-bucket-*.png`, `pack-barrel-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
-| `assets/photo-pending.svg` | Neutral "photography pending" placeholder (self-made 2026-09-01) | Made for this site, 2026-09-01 | N/A — original graphic, no external source | Claude, as part of this project | None | `/` (hero product slot, aria-labelled generically, and the 4 packaging-format slots — Glass Jar, Tin Can, Plastic Bucket, Plastic Barrel); also used in the B2B export catalog PDF for the still-unphotographed slots | Delete and revert to no-image styling if a different placeholder treatment is preferred |
-| `assets/illus-jalapeno.svg` | Per-product "photography pending" illustration — sliced jalapeño rings (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/sliced-jalapeno-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-artichoke.svg` | Per-product "photography pending" illustration — artichoke heart (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/marinated-artichoke-hearts` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-pepperoncini.svg` | Per-product "photography pending" illustration — pepperoncini peppers (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/catalog/print`, `/products/pepperoncini-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-oxidized-black.svg` | Per-product "photography pending" illustration — oxidized black olive cluster (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/catalog/print`, `/products/oxidized-black-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-stuffed.svg` | Per-product "photography pending" illustration — stuffed green olives on a pick (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/pepper-stuffed-green-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/photo-pending.svg` | Neutral "photography pending" placeholder (self-made 2026-09-01) | Made for this site, 2026-09-01 | N/A — original graphic, no external source | Claude, as part of this project | None | `/` (hero product slot, aria-labelled generically, and the 4 packaging-format slots — Glass Jar, Tin Can, Plastic Bucket, Plastic Barrel); also used in the B2B export catalog PDF's cover slot only (the 5 product slots there now use their per-product illustration, see below) | Delete and revert to no-image styling if a different placeholder treatment is preferred |
+| `assets/illus-jalapeno.svg` | Per-product "photography pending" illustration — sliced jalapeño rings (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/sliced-jalapeno-peppers`, B2B export catalog PDF | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-artichoke.svg` | Per-product "photography pending" illustration — artichoke heart (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/marinated-artichoke-hearts`, B2B export catalog PDF | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-pepperoncini.svg` | Per-product "photography pending" illustration — pepperoncini peppers (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/catalog/print`, `/products/pepperoncini-peppers`, B2B export catalog PDF | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-oxidized-black.svg` | Per-product "photography pending" illustration — oxidized black olive cluster (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/catalog/print`, `/products/oxidized-black-olives`, B2B export catalog PDF | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-stuffed.svg` | Per-product "photography pending" illustration — stuffed green olives on a pick (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/pepper-stuffed-green-olives`, B2B export catalog PDF | Delete and revert to `photo-pending.svg` or no-image styling |
 | `assets/hero-olive-grove-*.png` | Decorative low-opacity background texture | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/` (hero background, aria-hidden) | Remove the `background-image` declaration |
 | `opengraph.jpg` | Social-share preview image (used as `og:image`/`twitter:image` site-wide) | UNCONFIRMED — and separately, this file is a **raw screenshot of the homepage** (browser chrome visible), not a purpose-built social card. Its dimensions (1280×720) were also mismatched against the declared `og:image:width/height` meta (1200×630) until this pass, now corrected to match the real file. | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | Every page (same image reused everywhere) | Replace with a properly designed 1200×630 card once source art is settled |
 | `assets/industrial-olives-*.png` | Not currently used anywhere (unreferenced by any page or stylesheet) | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | none (dead asset) | Safe to delete once confirmed unused, or wire in if it should be used somewhere |
@@ -197,3 +197,33 @@ compression, and packaging of files that already existed.
 - No new image files were introduced in this pass — every `<img>` added to
   `/catalog/print` reuses a file already covered by a row in the table
   above.
+
+## What changed 2026-09-03 (later pass — export catalog PDF regenerated)
+
+- Regenerated `downloads/triple-company-export-catalog-2026.pdf` so its 5
+  unphotographed product pages (Oxidized Black Olives, Pepper Stuffed Green
+  Olives, Marinated Artichoke Hearts, Pepperoncini Peppers, Sliced Jalapeño
+  Peppers) use their per-product illustration instead of the single generic
+  `photo-pending.svg` graphic, matching the live site. The 5 products with
+  real photography (Aggizi, Toffahi, Hamed, Manzanilla, Natural Black
+  Olives) are unchanged. The cover page keeps `photo-pending.svg` — same
+  reasoning as the site's own generic hero slot, since a cover isn't
+  depicting one specific product.
+- This PDF previously had no committed source (it was hand-built and only
+  the binary was ever committed, per the 2026-09-03 "B2B export catalog
+  PDF" entry above) — meaning nobody could regenerate it without
+  reconstructing it from scratch. Fixed by adding
+  `scripts/export-catalog-source.html` (the printable HTML source, content
+  copied verbatim from the extracted text of the previous PDF — nothing
+  new was written) and `scripts/generate-export-catalog-pdf.js` (a
+  Playwright script that prints it to PDF, matching the original file's own
+  producer — headless Chrome / Skia PDF — so this is a like-for-like
+  rebuild tool, not a different pipeline). Playwright is deliberately not
+  added to `package.json` (see the script's header comment) so this stays
+  a manual maintainer tool and never affects `netlify.toml`'s build command
+  or any `npm install`.
+- Verified before replacing the committed binary: page count (9, unchanged),
+  page size (A4, unchanged), and the text of all 9 pages extracted and
+  visually rendered page-by-page — content matches the original word for
+  word except the swapped images, and the "Page 8A" / "Page 8B" footer
+  numbering (a quirk of the original document) is preserved.
