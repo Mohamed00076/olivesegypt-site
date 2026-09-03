@@ -25,10 +25,41 @@
       .spec-badge-specialty { color: #b45309; border-color: #f59e0b66; }
       html.dark .spec-badge-specialty { color: #f59e0b; }
       [hidden] { display: none !important; }
+
+      /* Single-product view (?product=<slug>): the matching card gets
+         .expanded and switches from the compact list-row layout to a
+         full one-page spec sheet using the same data already on that
+         product's own /products/<slug> page (formats, calibers,
+         packaging, brine spec, best-for) -- not shown in the
+         multi-product list view, to keep that one scannable. */
+      .spec-full { display: none; }
+      .spec-card.expanded { flex-direction: column; }
+      .spec-card.expanded .spec-thumb { width: 100%; height: 260px; border-radius: 1rem; }
+      /* The 5 illustration placeholders bake their "photography pending"
+         text into a fixed spot in a square canvas; a wide cover-crop at
+         this expanded size clips it. object-fit:contain plus a
+         background matching the SVG's own fill keeps the whole graphic
+         (icon + text) visible with no visible seam. No effect on the
+         compact 96x96 list view, since that's already square. */
+      .spec-thumb-illus { object-fit: contain; background: #3d5a2e; }
+      .spec-card.expanded .spec-full { display: block; margin-top: 1.25rem; }
+      .spec-full-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem; margin-bottom: 1.25rem; }
+      .spec-full-span2 { grid-column: 1 / -1; }
+      .spec-full-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); margin-bottom: 0.35rem; }
+      .chip-row { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+      .chip { display: inline-block; border-radius: 0.25rem; border: 1px solid hsl(var(--border)); background: hsl(var(--muted)); padding: 0.1rem 0.5rem; font-family: ui-monospace, 'Space Mono', monospace; font-size: 0.7rem; color: hsl(var(--foreground)); }
+      .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-width: 24rem; text-align: center; margin-bottom: 1.5rem; }
+      .stat-box { border-radius: 0.375rem; background: hsl(var(--muted)); padding: 0.5rem; }
+      .stat-label { font-size: 0.6rem; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
+      .stat-value { font-weight: 600; color: hsl(var(--foreground)); font-size: 0.85rem; }
+      .best-for-list { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; color: hsl(var(--muted-foreground)); line-height: 1.6; }
+
       @media print {
         header, footer, .no-print { display: none !important; }
         .spec-card { border-bottom: none; page-break-inside: avoid; padding: 0.75rem 0; }
         .spec-thumb { width: 64px; height: 64px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .spec-card.expanded .spec-thumb { width: 100%; height: 220px; }
+        .chip, .stat-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         @page { margin: 2cm; }
       }
     </style>
@@ -56,7 +87,7 @@
       <p class="text-xs text-muted-foreground mb-2 no-print"><a href="/catalog" class="hover:underline">Catalog</a> / Print</p>
       <h1 class="text-3xl font-serif font-bold text-foreground mb-1">Triple Company for Industrial Development</h1>
       <p id="doc-subtitle" class="text-muted-foreground mb-1">Product Specifications &middot; Revised 2026-09-03</p>
-      <p class="text-xs text-muted-foreground mb-6">10 varieties &middot; Prepared for export worldwide &middot; Full documentation on request</p>
+      <p id="doc-meta" class="text-xs text-muted-foreground mb-6">10 varieties &middot; Prepared for export worldwide &middot; Full documentation on request</p>
       <div class="h-px bg-gradient-to-r from-primary/50 via-border to-transparent mb-8"></div>
 
       <div id="products">
@@ -66,6 +97,25 @@
             <span class="spec-badge spec-badge-green">Green Olive</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Aggizi Green Olives</h2>
             <p class="text-sm text-muted-foreground mt-2">Egypt's most exported olive variety. Firm texture, mild brine, bright green color. Grown in the Nile Delta. Available whole, pitted, or cracked. Calibers 141/160 to 231/260.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Whole &middot; Pitted &middot; Cracked</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <div class="chip-row"><span class="chip">141/160</span><span class="chip">161/180</span><span class="chip">181/200</span><span class="chip">201/230</span><span class="chip">231/260</span></div>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">6–8%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.2–0.4% lactic</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.8–4.2</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Retail glass-jar programs</li><li>Wholesale bulk supply</li><li>Buyers wanting Egypt's benchmark green-olive variety</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="toffahi">
@@ -74,6 +124,25 @@
             <span class="spec-badge spec-badge-green">Green Olive</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Toffahi Green Olives</h2>
             <p class="text-sm text-muted-foreground mt-2">Premium Egyptian olive from Fayoum. High flesh-to-pit ratio, slightly sweet flavor. Available whole, pitted, or stuffed. Calibers 101/110 to 161/180.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Whole &middot; Pitted &middot; Stuffed</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <div class="chip-row"><span class="chip">101/110</span><span class="chip">111/120</span><span class="chip">121/140</span><span class="chip">141/160</span><span class="chip">161/180</span></div>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">5–7%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.3–0.5% lactic</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.7–4.1</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Premium glass-jar presentation</li><li>Retail programs wanting a sweeter flavor profile</li><li>Stuffed-olive production</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="hamed">
@@ -82,6 +151,25 @@
             <span class="spec-badge spec-badge-green">Green Olive</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Hamed Green Olives</h2>
             <p class="text-sm text-muted-foreground mt-2">Large-caliber olives from Egypt's North Coast. Cracked and marinated with herbs. Calibers 161/180 to 261/290. Popular in Middle Eastern import markets.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Whole &middot; Cracked with Herbs</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <div class="chip-row"><span class="chip">161/180</span><span class="chip">181/200</span><span class="chip">201/230</span><span class="chip">231/260</span><span class="chip">261/290</span></div>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">7–9%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.2–0.3% lactic</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.9–4.3</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Middle Eastern and North African import markets</li><li>Buyers wanting a large-caliber cracked olive</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="manzanilla">
@@ -90,6 +178,25 @@
             <span class="spec-badge spec-badge-green">Green Olive</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Manzanilla Green Olives</h2>
             <p class="text-sm text-muted-foreground mt-2">Internationally recognized Spanish variety grown and processed in Egypt. Available whole, pitted, or stuffed with pimiento, almond, or garlic. Full caliber range 101/110 to 231/260.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Whole &middot; Pitted &middot; Stuffed (Pimiento / Almond / Garlic)</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <div class="chip-row"><span class="chip">101/110</span><span class="chip">111/120</span><span class="chip">121/140</span><span class="chip">141/160</span><span class="chip">161/180</span><span class="chip">181/200</span><span class="chip">201/230</span><span class="chip">231/260</span></div>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">5–7%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.2–0.4% lactic</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.7–4.1</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Stuffed-olive production</li><li>Buyers who already source Manzanilla elsewhere and want an Egypt-origin alternative</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="black_natural">
@@ -98,46 +205,160 @@
             <span class="spec-badge spec-badge-black">Black Olive</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Natural Black Olives</h2>
             <p class="text-sm text-muted-foreground mt-2">Naturally ripened Egyptian black olives. No iron gluconate, no artificial coloring. Available whole, sliced, or pitted in brine or vacuum-sealed. Calibers 141/160 to 261/290.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Whole &middot; Sliced &middot; Pitted</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <div class="chip-row"><span class="chip">141/160</span><span class="chip">161/180</span><span class="chip">181/200</span><span class="chip">201/230</span><span class="chip">231/260</span><span class="chip">261/290</span></div>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">4–6%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.1–0.2% citric</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">6.0–7.0</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Buyers wanting a naturally ripened black olive (not oxidized)</li><li>Retail and food-service</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="stuffed">
-          <img src="/assets/illus-stuffed.svg" alt="Stuffed Green Olives — photography pending" class="spec-thumb" width="96" height="96" loading="lazy"/>
+          <img src="/assets/illus-stuffed.svg" alt="Stuffed Green Olives — photography pending" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-green">Green Olive</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Stuffed Green Olives</h2>
             <p class="text-sm text-muted-foreground mt-2">Premium Manzanilla and Aggizi olives stuffed with pimiento, almond, garlic, or lemon under hygienic, quality-controlled conditions at our partner facility. Available in glass jars and tins for European retail and food service.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Pimiento &middot; Almond &middot; Garlic &middot; Lemon</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <div class="chip-row"><span class="chip">101/110</span><span class="chip">111/120</span><span class="chip">121/140</span><span class="chip">141/160</span></div>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">5–7%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.2–0.4% lactic</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.7–4.2</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>European retail</li><li>Food-service programs wanting a ready-to-serve stuffed olive</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="oxidized_black">
-          <img src="/assets/illus-oxidized-black.svg" alt="Oxidized Black Olives — photography pending" class="spec-thumb" width="96" height="96" loading="lazy"/>
+          <img src="/assets/illus-oxidized-black.svg" alt="Oxidized Black Olives — photography pending" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-black">Black Olive</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Oxidized Black Olives</h2>
             <p class="text-sm text-muted-foreground mt-2">California-style black olives darkened by controlled oxidation for a uniform jet-black color and smooth, mild flavor. Whole, sliced, or pitted. Ideal for pizza toppings, food service, and retail cans. Grown in the Nile Delta, Egypt.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Whole &middot; Sliced &middot; Pitted</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <div class="chip-row"><span class="chip">181/200</span><span class="chip">201/230</span><span class="chip">231/260</span><span class="chip">261/290</span></div>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">3–5%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.1–0.2% citric</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">5.5–6.5</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Pizza toppings</li><li>Food service</li><li>Retail cans</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="jalapeno">
-          <img src="/assets/illus-jalapeno.svg" alt="Sliced Jalapeño Peppers — photography pending" class="spec-thumb" width="96" height="96" loading="lazy"/>
+          <img src="/assets/illus-jalapeno.svg" alt="Sliced Jalapeño Peppers — photography pending" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-specialty">Specialty</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Sliced Jalape&ntilde;o Peppers</h2>
             <p class="text-sm text-muted-foreground mt-2">Crisp green jalape&ntilde;o rings pickled for a bright, medium heat. Available as sliced rings or whole. A high-demand food-service line for nachos, pizza, and Tex-Mex applications.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Sliced Rings &middot; Whole</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <p class="text-sm text-foreground">Confirmed during quotation</p>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">4–6%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.6–0.8% acetic</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.4–3.8</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Nachos, pizza, and Tex-Mex food-service applications</li><li>Retail</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="artichoke">
-          <img src="/assets/illus-artichoke.svg" alt="Marinated Artichoke Hearts — photography pending" class="spec-thumb" width="96" height="96" loading="lazy"/>
+          <img src="/assets/illus-artichoke.svg" alt="Marinated Artichoke Hearts — photography pending" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-specialty">Specialty</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Marinated Artichoke Hearts</h2>
             <p class="text-sm text-muted-foreground mt-2">Tender artichoke hearts marinated in oil with Mediterranean herbs. Available as quarters, hearts, or grilled. A premium antipasto line that complements our olive range for delis, retail, and food service.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Quarters &middot; Hearts &middot; Grilled</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <p class="text-sm text-foreground">Confirmed during quotation</p>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">2–3%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.4–0.6% citric</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.8–4.2</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>Delis</li><li>Retail antipasto programs</li><li>Food service</li></ul>
+            </div>
           </div>
         </section>
         <section class="spec-card" data-slug="pepperoncini">
-          <img src="/assets/illus-pepperoncini.svg" alt="Pepperoncini Peppers — photography pending" class="spec-thumb" width="96" height="96" loading="lazy"/>
+          <img src="/assets/illus-pepperoncini.svg" alt="Pepperoncini Peppers — photography pending" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-specialty">Specialty</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Pepperoncini Peppers</h2>
             <p class="text-sm text-muted-foreground mt-2">Mild, tangy golden-green peppers pickled in brine (Golden Greek style). A versatile antipasto and sandwich pepper in strong demand across European and North American retail.</p>
+            <div class="spec-full">
+              <div class="spec-full-grid">
+                <div>
+                  <h3 class="spec-full-label">Available Formats</h3>
+                  <p class="text-sm text-foreground">Whole &middot; Golden Greek</p>
+                </div>
+                <div>
+                  <h3 class="spec-full-label">Calibers (count / kg)</h3>
+                  <p class="text-sm text-foreground">Confirmed during quotation</p>
+                </div>
+                <div class="spec-full-span2">
+                  <h3 class="spec-full-label">Packaging Options</h3>
+                  <p class="text-sm text-foreground">Glass jars, tin cans, plastic buckets, wooden barrels (brine), or vacuum pouches, subject to product and order volume.</p>
+                </div>
+              </div>
+              <div class="stat-row"><div class="stat-box"><p class="stat-label">Salt</p><p class="stat-value">4–6%</p></div><div class="stat-box"><p class="stat-label">Acidity</p><p class="stat-value">0.5–0.7% acetic</p></div><div class="stat-box"><p class="stat-label">pH</p><p class="stat-value">3.4–3.8</p></div></div>
+              <h3 class="spec-full-label">Best For</h3>
+              <ul class="best-for-list"><li>European and North American retail</li><li>Antipasto and sandwich programs</li></ul>
+            </div>
           </div>
         </section>
       </div>
@@ -164,12 +385,15 @@
         cards.forEach(function (card) {
           if (card.getAttribute('data-slug') === slug) {
             found = true;
+            card.classList.add('expanded');
           } else {
             card.hidden = true;
           }
         });
         if (found) {
           document.getElementById('doc-subtitle').textContent = 'Product Specification Sheet · Revised 2026-09-03';
+          var meta = document.getElementById('doc-meta');
+          if (meta) meta.hidden = true;
         }
       })();
     </script>
