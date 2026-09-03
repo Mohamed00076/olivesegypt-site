@@ -14,6 +14,8 @@ in the meantime.
 | 3 | What consent is required for analytics, persistent visitor IDs, geolocation, and enrichment? | All optional tracking defaults to off (`TC.consent.analytics = false`, unknown-behaves-as-denied). Consent is granular per category, withdrawable, and logged (G2). No persistent visitor ID exists anywhere on the site today — see G1's "persistent visitor ID" row. |
 | 4 | Is Arabic-primary or bilingual notice legally required for our consent banner and privacy policy? | **Flagged, not decided.** English copy is prepared now (G2 banner, G3 policy). No Arabic copy is published for either — machine-translated Arabic would violate Rule 12 (no machine-translated content as final) on top of the open legal question. |
 | 5 | What data-subject rights, response deadlines, and identity-verification process apply? | A request-intake channel exists (the privacy page's contact-email instruction). No specific deadline (e.g. "72 hours") or automated deletion/anonymization workflow is published or claimed until counsel confirms what applies. |
+| 6 | Is Meta/Facebook (the homepage's click-to-load widget SDK) an "international transfer" the same way question 2 asks about Netlify/Neon/etc.? | Added to the G1 inventory (section 12) as its own gap, 2026-09-02 — was live before this without being inventoried or disclosed on `/privacy`. The widget is strictly user-initiated (a click), not loaded on page load, but that doesn't answer this question. |
+| 7 | Does the Buyer CRM's lack of any retention/deletion policy for buyer personal data (soft-delete only, `deleted_at`, data never actually purged) need one, and if so what deadline? | Added to the G1 inventory (section 11), 2026-09-02 — same gap pattern as question 5, but specific to a system that was previously undocumented entirely. No retention period invented or published anywhere. |
 
 ## Additional items flagged for a legal/business decision (not technical questions)
 
@@ -21,6 +23,7 @@ These came up directly while implementing G2 and G1 and need your call, not just
 
 - **Whether an Arabic-primary bilingual toggle is required** for the consent banner and privacy policy (see row 4 above) — pending counsel, and separately pending a translation-and-review process per Rule 12 once counsel answers.
 - **Whether pre-consent "Direct" traffic should be stored at all, or dropped entirely.** Currently: pre-consent, no optional-category data is sent anywhere (Umami's script itself does not load until Analytics consent is granted — see G2), so there is no "Direct" traffic record to decide about yet. This becomes a live question only once real consent-gated analytics data starts accumulating.
+- **Whether the public privacy policy needs to be updated now to accurately describe the CRM and the Facebook widget** (both real, live, and currently undisclosed on `/privacy` — see questions 6-7 above), independent of whatever counsel eventually says about their underlying legal basis. A factual disclosure gap doesn't wait on a legal-basis answer to become inaccurate; it's inaccurate today. Flagged here as a business decision, not yet acted on without your review of the specific wording.
 
 ## What "PDPL implementation" does NOT mean here
 

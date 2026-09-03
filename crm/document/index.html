@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Document | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" href="/assets/crm.css" />
+    <style>
+      .li-table input { padding: 6px 8px; font-size: 13px; }
+      .li-table td { vertical-align: top; padding: 6px 8px; }
+      .li-table .qty, .li-table .price { width: 100px; text-align: right; }
+      .li-table .unit { width: 90px; }
+      .li-table .line-total { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-top: 14px; }
+      .li-table .remove-btn { background: none; border: none; color: var(--crm-danger); cursor: pointer; font-size: 16px; padding: 4px 8px; }
+      .totals-row td { border-top: 2px solid var(--crm-border); border-bottom: none; padding-top: 10px; font-weight: 700; }
+      .totals-row.grand td { font-size: 16px; color: var(--crm-primary); }
+    </style>
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-flex-between" style="margin-bottom:16px;">
+        <h1 id="page-title" style="margin:0;">New Document</h1>
+      </div>
+
+      <div id="status" class="crm-status" style="display:none;"></div>
+      <div id="buyer-missing" class="crm-status crm-status-error" style="display:none;">
+        No buyer selected — open this page from a buyer's "New Quotation" or "New Invoice" button.
+      </div>
+
+      <form id="doc-form" style="display:none;">
+        <div class="crm-card">
+          <h2>Buyer</h2>
+          <div id="buyer-summary" class="crm-muted"></div>
+        </div>
+
+        <div class="crm-card">
+          <h2>Details</h2>
+          <div class="crm-grid crm-grid-3">
+            <div class="crm-field">
+              <label for="currency">Currency</label>
+              <input id="currency" maxlength="3" value="USD" style="text-transform:uppercase;" required />
+            </div>
+            <div class="crm-field">
+              <label for="incoterm">Incoterm</label>
+              <input id="incoterm" maxlength="20" placeholder="e.g. FOB Alexandria" />
+            </div>
+            <div class="crm-field" id="date-field">
+              <label id="date-label" for="date-input">Valid Until</label>
+              <input id="date-input" type="date" />
+            </div>
+          </div>
+          <div class="crm-field">
+            <label for="notes">Notes (payment terms, packaging, shipping details, etc.)</label>
+            <textarea id="notes" rows="3" maxlength="2000"></textarea>
+          </div>
+        </div>
+
+        <div class="crm-card">
+          <h2>Line Items</h2>
+          <datalist id="product-suggestions"></datalist>
+          <table class="li-table">
+            <thead>
+              <tr><th>Description</th><th class="unit">Unit</th><th class="qty">Qty</th><th class="price">Unit Price</th><th class="line-total">Total</th><th></th></tr>
+            </thead>
+            <tbody id="li-tbody"></tbody>
+            <tfoot>
+              <tr class="totals-row"><td colspan="4" style="text-align:right;">Subtotal</td><td class="line-total" id="li-subtotal">0.00</td><td></td></tr>
+              <tr class="totals-row grand"><td colspan="4" style="text-align:right;">Total</td><td class="line-total" id="li-total">0.00</td><td></td></tr>
+            </tfoot>
+          </table>
+          <button type="button" class="crm-btn crm-btn-secondary" id="add-line-btn" style="margin-top:10px;">+ Add Line</button>
+        </div>
+
+        <button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Create Document</button>
+      </form>
+    </div>
+
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var qs = new URLSearchParams(window.location.search);
+        var buyerId = qs.get('buyer_id');
+        var docType = qs.get('type') === 'invoice' ? 'invoice' : 'quotation';
+
+        function fmt2(n) {
+          n = Number(n) || 0;
+          return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function addLine(prefill) {
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td><input type="text" class="li-desc" list="product-suggestions" maxlength="300" required /></td>' +
+            '<td class="unit"><input type="text" class="li-unit" maxlength="30" placeholder="kg / tons / cartons" /></td>' +
+            '<td class="qty"><input type="number" class="li-qty" min="0" step="any" required /></td>' +
+            '<td class="price"><input type="number" class="li-price" min="0" step="any" required /></td>' +
+            '<td class="line-total"><span class="li-line-total">0.00</span></td>' +
+            '<td><button type="button" class="remove-btn" title="Remove line">&times;</button></td>';
+          if (prefill) {
+            tr.querySelector('.li-desc').value = prefill;
+          }
+          document.getElementById('li-tbody').appendChild(tr);
+          tr.querySelector('.remove-btn').addEventListener('click', function () {
+            tr.remove();
+            recalc();
+          });
+          ['li-qty', 'li-price'].forEach(function (cls) {
+            tr.querySelector('.' + cls).addEventListener('input', recalc);
+          });
+          return tr;
+        }
+
+        function collectLines() {
+          return Array.prototype.map.call(document.querySelectorAll('#li-tbody tr'), function (tr) {
+            return {
+              description: tr.querySelector('.li-desc').value.trim(),
+              unit: tr.querySelector('.li-unit').value.trim(),
+              quantity: Number(tr.querySelector('.li-qty').value),
+              unit_price: Number(tr.querySelector('.li-price').value),
+            };
+          });
+        }
+
+        function recalc() {
+          var subtotal = 0;
+          Array.prototype.forEach.call(document.querySelectorAll('#li-tbody tr'), function (tr) {
+            var qty = Number(tr.querySelector('.li-qty').value) || 0;
+            var price = Number(tr.querySelector('.li-price').value) || 0;
+            var lineTotal = qty * price;
+            subtotal += lineTotal;
+            tr.querySelector('.li-line-total').textContent = fmt2(lineTotal);
+          });
+          document.getElementById('li-subtotal').textContent = fmt2(subtotal);
+          document.getElementById('li-total').textContent = fmt2(subtotal); // no tax/discount in v1 -- see README
+        }
+
+        function showStatus(msg, ok) {
+          var el = document.getElementById('status');
+          el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
+          el.textContent = msg;
+          el.style.display = 'block';
+        }
+
+        document.getElementById('add-line-btn').addEventListener('click', function () { addLine(); });
+
+        document.getElementById('doc-form').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var lines = collectLines();
+          if (!lines.length) { showStatus('Add at least one line item.', false); return; }
+          for (var i = 0; i < lines.length; i++) {
+            if (!lines[i].description) { showStatus('Every line needs a description.', false); return; }
+            if (!(lines[i].quantity > 0)) { showStatus('Every line needs a quantity greater than zero.', false); return; }
+            if (!(lines[i].unit_price >= 0)) { showStatus('Every line needs a unit price.', false); return; }
+          }
+          var payload = {
+            doc_type: docType,
+            buyer_id: Number(buyerId),
+            currency: document.getElementById('currency').value.trim().toUpperCase() || 'USD',
+            incoterm: document.getElementById('incoterm').value.trim(),
+            notes: document.getElementById('notes').value.trim(),
+            line_items: lines,
+          };
+          if (docType === 'quotation') payload.valid_until = document.getElementById('date-input').value || null;
+          else payload.due_date = document.getElementById('date-input').value || null;
+
+          var saveBtn = document.getElementById('save-btn');
+          saveBtn.disabled = true;
+          CRM.fetchJson('/api/crm/documents', { method: 'POST', body: payload }).then(function (result) {
+            saveBtn.disabled = false;
+            if (!result.ok) {
+              showStatus(result.data.error || 'Could not create document.' + (result.data.fields ? ' (' + result.data.fields.join(', ') + ')' : ''), false);
+              return;
+            }
+            window.location.href = '/crm/document/view/?id=' + result.data.id;
+          }).catch(function () { saveBtn.disabled = false; });
+        });
+
+        function init() {
+          document.getElementById('page-title').textContent = (docType === 'invoice' ? 'New Invoice' : 'New Quotation');
+          document.getElementById('date-label').textContent = docType === 'invoice' ? 'Due Date' : 'Valid Until';
+
+          var suggestions = document.getElementById('product-suggestions');
+          CRM.PRODUCTS.forEach(function (p) {
+            var o = document.createElement('option'); o.value = p[1]; suggestions.appendChild(o);
+          });
+
+          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
+            if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
+            var b = result.data;
+            document.getElementById('page-title').textContent =
+              (docType === 'invoice' ? 'New Invoice for ' : 'New Quotation for ') + b.company_name;
+            document.getElementById('buyer-summary').innerHTML =
+              '<strong>' + CRM.escapeHtml(b.company_name) + '</strong><br/>' +
+              (b.contact_name ? CRM.escapeHtml(b.contact_name) + '<br/>' : '') +
+              (b.contact_email ? CRM.escapeHtml(b.contact_email) + ' &middot; ' : '') +
+              (b.contact_phone ? CRM.escapeHtml(b.contact_phone) : '') + '<br/>' +
+              CRM.escapeHtml(b.country_region || '');
+            if (b.incoterm) document.getElementById('incoterm').value = b.incoterm;
+            document.getElementById('doc-form').style.display = '';
+            var firstProduct = Array.isArray(b.product_interest) && b.product_interest.length
+              ? (CRM.PRODUCTS.find(function (p) { return p[0] === b.product_interest[0]; }) || [])[1]
+              : null;
+            addLine(firstProduct);
+            recalc();
+          });
+        }
+
+        if (!buyerId) {
+          document.getElementById('buyer-missing').style.display = 'block';
+        } else {
+          CRM.requireAuth().then(function () {
+            CRM.renderNav('');
+            init();
+          }).catch(function (e) {
+            if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

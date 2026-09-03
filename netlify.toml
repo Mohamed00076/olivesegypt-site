@@ -34,6 +34,57 @@
 [functions."search-console-import"]
   schedule = "@daily"
 
+# Security audit (2026-09-02): baseline headers, none of which existed
+# before. The CSP's script-src/style-src need 'unsafe-inline' -- this
+# site's every page (forms, the CRM, the admin dashboard, the consent
+# banner) is built from inline <script> and inline style="" throughout,
+# and removing that would mean restructuring every HTML file to external
+# scripts with nonces, a separate, much larger project. So this CSP is
+# NOT primary XSS defense (that's the consistent output-escaping already
+# in the JS -- CRM.escapeHtml() etc., verified during this audit) -- its
+# real value here is restricting *what a script is allowed to do even if
+# one runs*: no loading from or sending data to unknown external hosts
+# (connect-src/script-src), no <object>/<embed> injection, no <base> tag
+# hijacking, no framing (clickjacking). External hosts allowlisted below
+# are exactly what this site actually loads (grepped site-wide) -- Chart.js
+# from jsdelivr, Google Fonts.
+#
+# connect.facebook.net/www.facebook.com (added for the homepage's
+# Facebook Like widget, footer "Follow Us" section): deliberately
+# click-to-load, not loaded on every page view -- the SDK script and its
+# iframe (which set Facebook's own cookies) only load after a visitor
+# clicks "Show Facebook page," never automatically. These CSP entries
+# only control *whether the browser is allowed to load it when asked*;
+# they don't make it load on their own, and don't apply to the analytics
+# consent system (a different, narrower "just Umami" toggle -- see
+# assets/consent.js -- that this widget was deliberately kept out of
+# rather than stretched to cover something it wasn't built for).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://www.facebook.com https://connect.facebook.net; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+# A0 discovery flagged this and it was never actually done: JSON API
+# responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to
+# carry noindex (only HTML pages do), so this carries the same signal at
+# the header level for all of them, API responses included.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/crm/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # Admin analytics page
 [[redirects]]
   from = "/admin/analytics"
@@ -134,6 +185,18 @@
   force = true
 
 [[redirects]]
+  from = "/api/crm/auth/forgot"
+  to = "/.netlify/functions/crm-auth-forgot"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/reset"
+  to = "/.netlify/functions/crm-auth-reset"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/crm/buyers"
   to = "/.netlify/functions/crm-buyers"
   status = 200
@@ -155,6 +218,67 @@
   from = "/api/crm/csv"
   to = "/.netlify/functions/crm-csv"
   status = 200
+  force = true
+
+# Section L -- quotation/invoice generator
+[[redirects]]
+  from = "/api/crm/documents"
+  to = "/.netlify/functions/crm-documents"
+  status = 200
+  force = true
+
+# Section J2 -- KPI Manager (extends /admin/analytics; same admin auth,
+# same database, no separate app)
+[[redirects]]
+  from = "/api/kpi-definitions"
+  to = "/.netlify/functions/kpi-definitions"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/kpi-values"
+  to = "/.netlify/functions/kpi-values"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/kpi-dashboard"
+  to = "/.netlify/functions/kpi-dashboard"
+  status = 200
+  force = true
+
+# A0 canonical-route audit (re-checked 2026-09-02): these four /media/
+# article paths appeared in an old sitemap with no matching content
+# anywhere in this repo's history, and no evidence they were ever
+# published. Without that evidence they stay unwritten rather than
+# authored now -- two of the four titles ("iso-22000-recertification",
+# "new-brining-line-capacity") assert exactly the kind of certification/
+# facility-capacity claims A1 blocks until real certificate documents
+# are verified. Explicit 410 (not a silent fallback to the homepage)
+# so search engines drop any stale index entry cleanly instead of
+# treating it as duplicate homepage content.
+[[redirects]]
+  from = "/media/triple-company-gulfood-2026"
+  to = "/index.html"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/media/iso-22000-recertification-2025"
+  to = "/index.html"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/media/new-brining-line-capacity"
+  to = "/index.html"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/media/harvest-season-2025-26"
+  to = "/index.html"
+  status = 410
   force = true
 
 # SPA fallback — serve index.html for all non-file routes

@@ -206,6 +206,35 @@
     .j-btn-sm.danger { background: #fbeceb; color: #a3312a; border-color: #eeccc9; }
     .j-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--border); }
     .j-badge.warn { background: #fbeecb; color: #7a5a00; }
+    .j-badge.ok { background: #e2f0da; color: #2e5a1c; }
+    .j-badge.off { background: #fbeceb; color: #a3312a; }
+    .j-badge.muted { background: var(--border); color: var(--muted); }
+    .kpi-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+    .kpi-card .kpi-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .kpi-card .kpi-name { font-weight: 600; font-size: 14px; }
+    .kpi-card .kpi-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .kpi-card .kpi-value-row { display: flex; align-items: baseline; gap: 6px; margin-top: 8px; }
+    .kpi-card .kpi-actual { font-size: 22px; font-weight: 700; }
+    .kpi-card .kpi-target { color: var(--muted); font-size: 12px; }
+    .kpi-entry { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .kpi-entry input[type="number"] { width: 110px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+    .kpi-entry input[type="text"] { flex: 1; min-width: 140px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+    .kpi-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-top: 4px; }
+    .kpi-form.hidden { display: none; }
+    .kpi-form label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 3px; }
+    .kpi-form input, .kpi-form select, .kpi-form textarea {
+      width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit;
+    }
+    .kpi-form .span2 { grid-column: 1 / -1; }
+    /* Section K -- Inquiries table. No table CSS existed before this
+       (the Search Console queries table above relied on browser
+       defaults); this styles that one too, for free. */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table th, table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #f0efe6; vertical-align: top; }
+    table th { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; }
+    tr.inq-new td { background: #fbf6df; }
+    .inq-msg { max-width: 320px; white-space: normal; word-break: break-word; }
+    #inq-search { flex: 1; min-width: 220px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
   </style>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
@@ -217,12 +246,30 @@
     <meta name="theme-color" content="#3f4f2b" />
   </head>
 <body>
-  <!-- Sign-in gate (shown when /api/analytics returns 401) -->
+  <!-- Sign-in gate (shown when /api/analytics returns 401). Found during
+       a security/functional audit: this used to link to "/login", a
+       route that hasn't existed since the pre-rebuild SPA -- and nothing
+       anywhere called /api/auth/login at all, so there was genuinely no
+       way to sign into this dashboard through the UI. Fixed by making
+       the gate itself the login form, same pattern as /crm/login/. -->
   <div id="gate" class="gate hidden">
     <div class="mark" style="color: var(--gold);">&#9673;</div>
     <h2>Admin sign-in required</h2>
     <p>Analytics are private. Sign in with your admin account to view the dashboard.</p>
-    <a class="btn-primary" href="/login">Sign in as Admin</a>
+    <form id="gate-login-form" style="text-align:left;max-width:280px;margin:0 auto;">
+      <div style="margin-bottom:12px;">
+        <label for="gate-username" style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Username</label>
+        <input id="gate-username" type="text" autocomplete="username" required
+               style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;box-sizing:border-box;" />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="gate-password" style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Password</label>
+        <input id="gate-password" type="password" autocomplete="current-password" required
+               style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;box-sizing:border-box;" />
+      </div>
+      <div id="gate-login-status" style="display:none;color:#a3312a;font-size:13px;margin-bottom:12px;"></div>
+      <button type="submit" id="gate-login-submit" class="btn-primary" style="width:100%;border:none;cursor:pointer;">Sign In</button>
+    </form>
   </div>
 
   <!-- Dashboard -->
@@ -237,6 +284,23 @@
     </header>
     <main>
       <div id="banner" class="banner hidden"></div>
+
+      <!-- Section K -- every Contact/Sample-form submission, newest
+           first. Placed first on the page (not with the rest of the
+           custom pipeline further down) since this is the single most
+           time-sensitive thing on this dashboard: a real customer
+           waiting on a reply. -->
+      <div class="card full" id="inquiries-card">
+        <h2>Inquiries</h2>
+        <p class="j-note">Every submission from the Contact and Sample-Request forms, saved the instant it comes in and emailed to you as a copy (if email notifications are configured — see README). This list is just a window into that same data.</p>
+        <div class="j-threshold" style="flex-wrap:wrap;">
+          <input type="text" id="inq-search" placeholder="Search name, email, company, country, message…" />
+          <button class="j-btn-sm" id="inq-refresh">Refresh</button>
+          <button class="j-btn-sm" id="inq-csv">Download CSV</button>
+          <span id="inq-new-note" class="j-note" style="margin:0;"></span>
+        </div>
+        <div id="inq-table-wrap" style="overflow-x:auto;margin-top:10px;"></div>
+      </div>
 
       <section class="kpis" id="kpis">
         <div class="kpi"><div class="label">Visitors</div><div class="value" id="kpi-visitors">&mdash;</div></div>
@@ -380,6 +444,50 @@
           <button class="j-btn-sm danger" id="j-delete-visitor-btn">Delete Permanently</button>
           <span id="j-delete-visitor-status" class="j-note" style="margin:0;"></span>
         </div>
+      </div>
+
+      <div class="card full" id="kpi-manager-card">
+        <h2>KPI Manager</h2>
+        <p class="j-note">What we're tracking, this period's actual vs. target, and whether we're on track. Each period's value is a permanent snapshot — correcting one keeps the original and adds a new version, it never overwrites.</p>
+
+        <div id="kpi-list"></div>
+
+        <button class="j-btn-sm" id="kpi-new-toggle" style="margin-top:8px;">+ New KPI</button>
+        <form class="kpi-form hidden" id="kpi-new-form">
+          <div><label for="kpi-new-name">Name</label><input type="text" id="kpi-new-name" required maxlength="200" /></div>
+          <div><label for="kpi-new-category">Category</label><input type="text" id="kpi-new-category" required maxlength="100" placeholder="sales / marketing / website / operations" /></div>
+          <div class="span2"><label for="kpi-new-description">Description (precise business definition)</label><textarea id="kpi-new-description" required rows="2" maxlength="2000"></textarea></div>
+          <div><label for="kpi-new-unit">Unit</label><input type="text" id="kpi-new-unit" required maxlength="50" placeholder="count / % / currency / days" /></div>
+          <div><label for="kpi-new-direction">Direction</label>
+            <select id="kpi-new-direction">
+              <option value="higher_is_better">Higher is better</option>
+              <option value="lower_is_better">Lower is better</option>
+              <option value="neutral">Neutral (just tracking)</option>
+            </select>
+          </div>
+          <div><label for="kpi-new-frequency">Frequency</label>
+            <select id="kpi-new-frequency">
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+          <div><label for="kpi-new-data-source">Data source</label>
+            <select id="kpi-new-data-source">
+              <option value="manual">Manual entry</option>
+              <option value="analytics">Analytics (not built yet — created inactive)</option>
+              <option value="crm">CRM (not built yet — created inactive)</option>
+              <option value="csv">CSV import (not built yet — created inactive)</option>
+            </select>
+          </div>
+          <div><label for="kpi-new-calc-type">Calculation type</label><input type="text" id="kpi-new-calc-type" required maxlength="100" placeholder="manual / event_count / sum / average" /></div>
+          <div><label for="kpi-new-target">Target (optional)</label><input type="number" id="kpi-new-target" step="any" /></div>
+          <div><label for="kpi-new-warning">Warning threshold (optional)</label><input type="number" id="kpi-new-warning" step="any" /></div>
+          <div><label for="kpi-new-owner">Owner (optional)</label><input type="text" id="kpi-new-owner" maxlength="200" /></div>
+          <div class="span2" style="display:flex;gap:8px;align-items:center;">
+            <button type="submit" class="j-btn-sm primary">Create KPI</button>
+            <span id="kpi-new-status" class="j-note" style="margin:0;"></span>
+          </div>
+        </form>
       </div>
     </main>
   </div>
@@ -525,6 +633,40 @@
       document.getElementById('gate').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
     }
+
+    (function () {
+      var gateForm = document.getElementById('gate-login-form');
+      var gateStatus = document.getElementById('gate-login-status');
+      var gateSubmit = document.getElementById('gate-login-submit');
+      gateForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        gateStatus.style.display = 'none';
+        gateSubmit.disabled = true;
+        gateSubmit.textContent = 'Signing in...';
+        fetch('/api/auth/login', {
+          method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('gate-username').value,
+            password: document.getElementById('gate-password').value,
+          }),
+        }).then(function (r) { return r.json(); }).then(function (data) {
+          gateSubmit.disabled = false;
+          gateSubmit.textContent = 'Sign In';
+          if (data.ok) {
+            document.getElementById('gate-password').value = '';
+            loadAll();
+          } else {
+            gateStatus.textContent = data.error || 'Incorrect username or password.';
+            gateStatus.style.display = 'block';
+          }
+        }).catch(function () {
+          gateSubmit.disabled = false;
+          gateSubmit.textContent = 'Sign In';
+          gateStatus.textContent = 'Network error. Please try again.';
+          gateStatus.style.display = 'block';
+        });
+      });
+    })();
 
     function loadAll() {
       var app = document.getElementById('app');
@@ -910,6 +1052,154 @@
       });
     });
 
+    // --- KPI Manager (Section J2) ------------------------------------------
+    var KPI_STATUS_LABEL = {
+      on_track: 'On track', warning: 'Warning', off_track: 'Off track',
+      no_data: 'No data', target_not_configured: 'No target set', data_unavailable: 'Unavailable',
+    };
+    var KPI_STATUS_CLASS = {
+      on_track: 'ok', warning: 'warn', off_track: 'off',
+      no_data: 'muted', target_not_configured: 'muted', data_unavailable: 'muted',
+    };
+
+    function kpiApi(path, opts) {
+      opts = opts || {};
+      return fetch('/api/' + path, Object.assign({ credentials: 'same-origin', headers: { 'Accept': 'application/json' } }, opts))
+        .then(function (r) {
+          if (r.status === 401) { showGate(); return Promise.reject('unauth'); }
+          return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; });
+        });
+    }
+
+    function fmtKpiValue(v, unit) {
+      if (v === null || v === undefined) return '—';
+      var n = Number(v);
+      var s = Math.abs(n) >= 1000 ? n.toLocaleString('en-US') : String(n);
+      if (unit === '%' || unit === 'percentage') return s + '%';
+      if (unit === 'currency') return '$' + s;
+      return s + (unit && unit !== 'count' ? ' ' + unit : '');
+    }
+
+    function renderKpiCard(item) {
+      var def = item.definition, cur = item.current;
+      var status = cur ? cur.status : 'no_data';
+      var el = document.createElement('div');
+      el.className = 'kpi-card';
+
+      var actualStr = fmtKpiValue(cur ? cur.actual_value : null, def.unit);
+      var targetStr = cur && cur.target_value !== null && cur.target_value !== undefined
+        ? 'target ' + fmtKpiValue(cur.target_value, def.unit) : (def.current_target_value !== null ? 'target ' + fmtKpiValue(def.current_target_value, def.unit) : 'no target set');
+      var periodStr = cur ? (cur.period_start + ' to ' + cur.period_end) : 'no entry yet this period';
+      var inactiveNote = def.is_active ? '' : ' &middot; <strong>inactive</strong>' + (def.data_source !== 'manual' ? ' (no ' + escKpi(def.data_source) + ' calculation path built yet)' : '');
+
+      // def.frequency/status are both DB CHECK-constrained enums (only
+      // ever 'weekly'/'monthly' and the fixed status list), so this was
+      // never reachable with attacker-controlled content -- escKpi()'d
+      // anyway, found and fixed in a security audit, to match the same
+      // "escape every server-sourced value, don't rely on it being
+      // constrained elsewhere" discipline the rest of this dashboard's
+      // rendering code already uses (see renderHotLeads/renderBotReview,
+      // which use textContent throughout for exactly this reason).
+      el.innerHTML =
+        '<div class="kpi-head">' +
+          '<div><div class="kpi-name">' + escKpi(def.name) + '</div>' +
+          '<div class="kpi-meta">' + escKpi(def.category) + ' &middot; ' + escKpi(def.frequency) + ' &middot; ' + escKpi(def.data_source) + inactiveNote + '</div></div>' +
+          '<span class="j-badge ' + (KPI_STATUS_CLASS[status] || 'muted') + '">' + escKpi(KPI_STATUS_LABEL[status] || status) + '</span>' +
+        '</div>' +
+        '<div class="kpi-value-row"><span class="kpi-actual">' + actualStr + '</span><span class="kpi-target">' + targetStr + '</span></div>' +
+        '<div class="kpi-meta">' + escKpi(periodStr) + (cur && cur.note ? ' &middot; ' + escKpi(cur.note) : '') + (cur && cur.version > 1 ? ' &middot; v' + cur.version + ' (corrected)' : '') + '</div>';
+
+      if (def.data_source === 'manual') {
+        var entryWrap = document.createElement('div');
+        entryWrap.className = 'kpi-entry';
+        entryWrap.innerHTML =
+          '<input type="number" step="any" placeholder="value for current period" class="kpi-value-input" />' +
+          '<input type="text" placeholder="note (optional)" class="kpi-note-input" />' +
+          '<button class="j-btn-sm primary kpi-save-btn">Save</button>' +
+          '<span class="j-note kpi-entry-status" style="margin:0;"></span>';
+        var saveBtn = entryWrap.querySelector('.kpi-save-btn');
+        var valInput = entryWrap.querySelector('.kpi-value-input');
+        var noteInput = entryWrap.querySelector('.kpi-note-input');
+        var statusEl = entryWrap.querySelector('.kpi-entry-status');
+        saveBtn.addEventListener('click', function () {
+          var raw = valInput.value.trim();
+          var body = { kpi_id: def.id, actual_value: raw === '' ? null : Number(raw), note: noteInput.value.trim() || undefined };
+          statusEl.textContent = 'Saving…';
+          kpiApi('kpi-values', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+            .then(function (res) {
+              statusEl.textContent = res.ok ? (res.data.corrected ? 'Corrected (new version saved).' : 'Saved.') : (res.data.error || 'Could not save.');
+              if (res.ok) { valInput.value = ''; noteInput.value = ''; loadKpiDashboard(); }
+            });
+        });
+        el.appendChild(entryWrap);
+      }
+
+      var archiveBtn = document.createElement('button');
+      archiveBtn.className = 'j-btn-sm danger';
+      archiveBtn.style.marginTop = '8px';
+      archiveBtn.textContent = 'Archive';
+      archiveBtn.addEventListener('click', function () {
+        if (!window.confirm('Archive "' + def.name + '"? It stops showing here but its history is kept.')) return;
+        kpiApi('kpi-definitions', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: def.id, archive: true }) })
+          .then(function (res) { if (res.ok) loadKpiDashboard(); });
+      });
+      el.appendChild(archiveBtn);
+
+      return el;
+    }
+
+    function escKpi(s) {
+      var d = document.createElement('div');
+      d.textContent = s === null || s === undefined ? '' : String(s);
+      return d.innerHTML;
+    }
+
+    function renderKpiDashboard(d) {
+      var wrap = document.getElementById('kpi-list');
+      wrap.innerHTML = '';
+      if (!d.kpis || !d.kpis.length) {
+        wrap.innerHTML = '<p class="empty">No KPIs defined yet. Use "+ New KPI" below to add the first one.</p>';
+        return;
+      }
+      d.kpis.forEach(function (item) { wrap.appendChild(renderKpiCard(item)); });
+    }
+
+    function loadKpiDashboard() {
+      kpiApi('kpi-dashboard').then(function (res) { if (res.ok) renderKpiDashboard(res.data); }).catch(function () {});
+    }
+
+    document.getElementById('kpi-new-toggle').addEventListener('click', function () {
+      document.getElementById('kpi-new-form').classList.toggle('hidden');
+    });
+
+    document.getElementById('kpi-new-form').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var statusEl = document.getElementById('kpi-new-status');
+      var targetRaw = document.getElementById('kpi-new-target').value.trim();
+      var warnRaw = document.getElementById('kpi-new-warning').value.trim();
+      var body = {
+        name: document.getElementById('kpi-new-name').value.trim(),
+        category: document.getElementById('kpi-new-category').value.trim(),
+        description: document.getElementById('kpi-new-description').value.trim(),
+        unit: document.getElementById('kpi-new-unit').value.trim(),
+        direction: document.getElementById('kpi-new-direction').value,
+        frequency: document.getElementById('kpi-new-frequency').value,
+        data_source: document.getElementById('kpi-new-data-source').value,
+        calculation_type: document.getElementById('kpi-new-calc-type').value.trim(),
+        current_target_value: targetRaw === '' ? null : Number(targetRaw),
+        current_warning_threshold: warnRaw === '' ? null : Number(warnRaw),
+        owner_actor: document.getElementById('kpi-new-owner').value.trim() || undefined,
+      };
+      statusEl.textContent = 'Creating…';
+      kpiApi('kpi-definitions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (res) {
+          if (!res.ok) { statusEl.textContent = res.data.error || 'Could not create.'; return; }
+          statusEl.textContent = res.data.warning || 'Created.';
+          document.getElementById('kpi-new-form').reset();
+          loadKpiDashboard();
+        });
+    });
+
     function loadCustomPipeline() {
       jApi('analytics-report', { report: 'overview' }).then(renderOverview).catch(function () {});
       refreshFunnel();
@@ -920,8 +1210,103 @@
       loadLiveFeed();
       loadSearchConsole();
       loadRetention();
+      loadKpiDashboard();
+      loadInquiries();
       armLiveFeedAutoRefresh();
     }
+
+    // --- Section K: Inquiries panel ----------------------------------------
+    var INQ_SEEN_KEY = 'tc-inquiries-last-seen';
+    var inqState = { rows: [] };
+
+    function inqLastSeen() {
+      try { return localStorage.getItem(INQ_SEEN_KEY) || ''; } catch (e) { return ''; }
+    }
+    function inqSetSeen(iso) {
+      try { localStorage.setItem(INQ_SEEN_KEY, iso); } catch (e) {}
+    }
+    function inqFmtDate(iso) {
+      try { return new Date(iso).toLocaleString('en-US', { timeZone: 'Africa/Cairo' }); }
+      catch (e) { return iso; }
+    }
+    function inqMatches(r, q) {
+      if (!q) return true;
+      q = q.toLowerCase();
+      return ['name', 'email', 'company', 'country', 'phone', 'product_interest',
+              'estimated_volume', 'request_type', 'message'].some(function (k) {
+        return (r[k] || '').toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
+    function renderInquiries(rows, query, newSet) {
+      var wrap = document.getElementById('inq-table-wrap');
+      wrap.innerHTML = '';
+      var filtered = rows.filter(function (r) { return inqMatches(r, query); });
+      if (!filtered.length) {
+        wrap.innerHTML = '<p class="empty">' + (rows.length ? 'No inquiries match that search.' : 'No inquiries yet — they’ll show up here the moment someone submits the Contact or Sample-Request form.') + '</p>';
+        return;
+      }
+      var table = document.createElement('table');
+      table.innerHTML = '<thead><tr><th>Date</th><th>Name</th><th>Company</th><th>Country</th><th>Email</th><th>Phone</th><th>Type</th><th>Interest</th><th>Message</th></tr></thead>';
+      var tbody = document.createElement('tbody');
+      filtered.forEach(function (r) {
+        var tr = document.createElement('tr');
+        if (newSet && newSet.has(r.id)) tr.className = 'inq-new';
+        [inqFmtDate(r.created_at), r.name, r.company, r.country, r.email, r.phone || '—',
+         r.request_type || '—', r.product_interest || '—'].forEach(function (v) {
+          var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
+        });
+        var msgTd = document.createElement('td'); msgTd.className = 'inq-msg'; msgTd.textContent = r.message;
+        tr.appendChild(msgTd);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+    }
+
+    function loadInquiries() {
+      return kpiApi('inquiries').then(function (res) {
+        if (!res.ok) return;
+        var rows = Array.isArray(res.data) ? res.data : [];
+        inqState.rows = rows;
+
+        var lastSeen = inqLastSeen();
+        var newSet = new Set();
+        if (lastSeen) {
+          rows.forEach(function (r) { if (r.created_at > lastSeen) newSet.add(r.id); });
+        }
+        var noteEl = document.getElementById('inq-new-note');
+        noteEl.textContent = newSet.size ? (newSet.size + ' new since your last visit') : '';
+
+        renderInquiries(rows, document.getElementById('inq-search').value.trim(), newSet);
+
+        if (rows.length) inqSetSeen(rows[0].created_at); // rows[0] is newest (server sorts DESC)
+      }).catch(function () {});
+    }
+
+    function inqCsvEscape(v) {
+      var s = v === null || v === undefined ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    document.getElementById('inq-search').addEventListener('input', function () {
+      renderInquiries(inqState.rows, this.value.trim());
+    });
+    document.getElementById('inq-refresh').addEventListener('click', function () { loadInquiries(); });
+    document.getElementById('inq-csv').addEventListener('click', function () {
+      var header = ['Date', 'Name', 'Email', 'Company', 'Country', 'Phone', 'Product Interest', 'Estimated Volume', 'Type', 'Message', 'Source Page'];
+      var lines = [header.map(inqCsvEscape).join(',')];
+      inqState.rows.forEach(function (r) {
+        lines.push([r.created_at, r.name, r.email, r.company, r.country, r.phone, r.product_interest,
+                    r.estimated_volume, r.request_type, r.message, r.source_page].map(inqCsvEscape).join(','));
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'inquiries.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
 
     // --- range selector ----------------------------------------------------
     Array.prototype.forEach.call(document.querySelectorAll('.range-btn'), function (btn) {

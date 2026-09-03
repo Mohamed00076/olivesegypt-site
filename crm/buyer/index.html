@@ -137,6 +137,21 @@
         </form>
       </div>
 
+      <div class="crm-card" id="documents-card" style="display:none;">
+        <div class="crm-flex-between">
+          <h2 style="margin:0;">Documents</h2>
+          <div class="crm-flex">
+            <a class="crm-btn crm-btn-secondary" id="new-quotation-link" href="#">New Quotation</a>
+            <a class="crm-btn crm-btn-secondary" id="new-invoice-link" href="#">New Invoice</a>
+          </div>
+        </div>
+        <table style="margin-top:12px;">
+          <thead><tr><th>Number</th><th>Type</th><th>Total</th><th>Date</th><th></th></tr></thead>
+          <tbody id="documents-tbody"></tbody>
+        </table>
+        <p class="crm-muted" id="documents-empty" style="display:none;">No quotations or invoices yet.</p>
+      </div>
+
       <div class="crm-card" id="stage-history-card" style="display:none;">
         <h2>Stage History</h2>
         <table>
@@ -289,6 +304,40 @@
           }).join('');
         }
 
+        function renderDocuments(rows) {
+          var tbody = document.getElementById('documents-tbody');
+          tbody.innerHTML = '';
+          document.getElementById('documents-empty').style.display = rows.length ? 'none' : '';
+          rows.forEach(function (d) {
+            var tr = document.createElement('tr');
+            var numTd = document.createElement('td');
+            var link = document.createElement('a');
+            link.href = '/crm/document/view/?id=' + d.id;
+            link.textContent = d.doc_number + (d.voided_at ? ' (void)' : '');
+            numTd.appendChild(link);
+            tr.appendChild(numTd);
+            [d.doc_type === 'invoice' ? 'Invoice' : 'Quotation',
+             (Number(d.total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + d.currency,
+             CRM.fmtDate(d.created_at)].forEach(function (v) {
+              var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
+            });
+            var viewTd = document.createElement('td');
+            var viewLink = document.createElement('a'); viewLink.href = '/crm/document/view/?id=' + d.id; viewLink.textContent = 'View';
+            viewTd.appendChild(viewLink);
+            tr.appendChild(viewTd);
+            tbody.appendChild(tr);
+          });
+        }
+
+        function loadDocuments() {
+          document.getElementById('documents-card').style.display = '';
+          document.getElementById('new-quotation-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=quotation';
+          document.getElementById('new-invoice-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=invoice';
+          CRM.fetchJson('/api/crm/documents?buyer_id=' + encodeURIComponent(buyerId)).then(function (result) {
+            if (result.ok) renderDocuments(result.data);
+          });
+        }
+
         function loadExisting() {
           document.getElementById('activity-card').style.display = '';
           return CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
@@ -299,6 +348,7 @@
             fillForm(b);
             renderStageHistory(b.stage_history || []);
             renderActivity(b.activity_log || []);
+            loadDocuments();
           });
         }
 

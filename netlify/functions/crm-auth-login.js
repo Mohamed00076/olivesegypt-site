@@ -81,8 +81,18 @@ exports.handler = async (event) => {
 
     // Always run verifyPassword, even with a placeholder hash, so a
     // nonexistent username doesn't respond measurably faster than a
-    // wrong password for a real one (basic timing-attack hygiene).
-    const passOk = verifyPassword(password, user ? user.password_hash : 'scrypt:00:00');
+    // wrong password for a real one (basic timing-attack hygiene). The
+    // placeholder must be a *correctly-sized* scrypt string (16-byte
+    // salt, 32-byte hash, both hex) -- verifyPassword's own length check
+    // rejects an undersized one (like the plain 'scrypt:00:00' this used
+    // to be) before ever reaching the expensive scryptSync call, which
+    // defeats the whole point: that short-circuit made a nonexistent
+    // username's response ~600x faster than a real one's, the exact
+    // timing side-channel this was meant to prevent. Confirmed via
+    // direct timing (see PR) that this padded form actually takes
+    // comparable time to a real check.
+    const DUMMY_HASH = 'scrypt:' + '00'.repeat(16) + ':' + '00'.repeat(32);
+    const passOk = verifyPassword(password, user ? user.password_hash : DUMMY_HASH);
 
     if (!user || !passOk) {
       return json(200, { ok: false, error: 'Incorrect username or password. Please try again.' });

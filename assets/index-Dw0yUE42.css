@@ -57,3 +57,171 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
      padding as the safe print inset. */
   @page{size:auto}
 }
+
+/* Part 2 responsive fix (2026-09-02): the "Read Our Insights" floating
+   widget (data-testid="floating-blog-link") is fixed at top:50% with
+   -translate-y-1/2 -- vertically centered on whatever the viewport
+   currently shows, not the page. That means it can land on top of real
+   content (confirmed via a real headless-browser measurement: it covers
+   the /catalog hero's stat row at a 375px viewport) depending on scroll
+   position, since a viewport-centered fixed element has no scroll-aware
+   way to avoid content underneath it. Anchoring it near the bottom
+   instead (stacked just above the WhatsApp button, same right edge)
+   keeps it out of the vertical-center "sweet spot" where hero text and
+   cards actually live, at every scroll position -- content scrolls past
+   a bottom-anchored element without ever needing to share space with it.
+   Desktop (>=640px, this stylesheet's own breakpoint) keeps the original
+   vertically-centered design untouched. */
+@media (max-width: 639px) {
+  [data-testid="floating-blog-link"] {
+    top: auto;
+    bottom: 88px;
+    transform: none;
+    max-width: 200px;
+  }
+}
+
+/* Part 2 responsive fix (2026-09-02): the 10 individual /products/*
+   pages share a simpler header than the 22-page "main template" header
+   (confirmed identical across all 10, no hamburger/mobile-menu system
+   at all) -- its nav (logo + 3 links + theme toggle, all in one
+   non-wrapping row) measured a real, if small, 4px horizontal overflow
+   at a 390px viewport. Letting it wrap is the minimal, correct fix for
+   *this* task (no horizontal overflow) without redesigning the header
+   into a proper hamburger/drawer menu, which is explicitly a separate,
+   later task (Part 2B) once this baseline is approved. */
+@media (max-width: 639px) {
+  header nav.flex.gap-4.text-sm.font-medium {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+}
+
+/* Part 2B fix (2026-09-02): mobile hamburger-menu drawer, 22-page "main
+   template" header. #mobile-menu-panel is a sibling of the icon-sized
+   header buttons inside a flex row constrained to the header's h-16
+   (64px) height -- with no positioning override it rendered as an
+   unsized flex-item ~170px wide, squeezed into that row and clipped
+   both above and below the 64px band (confirmed via direct
+   getBoundingClientRect() measurement: width 169.86px, top -79px,
+   bottom 143px, position "static"). Lifting it out of flow with
+   position:absolute anchored to <header> (already position:sticky, so
+   it is this panel's containing block -- no other ancestor between here
+   and <header> sets a position) turns it into a proper full-width
+   drawer immediately below the header, matching this stylesheet's own
+   `lg` breakpoint (64rem / 1024px, confirmed from the compiled
+   .lg\:hidden rule) so it only applies while the hamburger toggle
+   itself is visible. bg-background/border-t already on the element
+   (unchanged) keep it solid, not transparent. max-height+overflow-y
+   guard against a future nav list taller than the viewport. */
+@media (max-width: 1023px) {
+  #mobile-menu-panel:not([hidden]) {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 50;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+  }
+  /* The panel's own links (identical markup on all 22 pages) measured a
+     36px tap target (py-2 padding + text line-height) -- short of the
+     44px minimum. Centering each link's content in a 44px-tall flex box
+     enlarges the tap target without changing the visible text size or
+     padding-driven look. The CTA link sits one level deeper (nav > div >
+     a) and already used text-center for horizontal centering, so its
+     rule also sets justify-content to preserve that. */
+  #mobile-menu-panel nav > a,
+  #mobile-menu-panel nav > div > a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  #mobile-menu-panel nav > div > a {
+    justify-content: center;
+  }
+}
+
+/* Part 3 homepage design pass (2026-09-02): dark-mode contrast fix for
+   bg-primary + white-text buttons/badges (measured via the real WCAG
+   contrast formula, not eyeballed). Dark mode's --primary token
+   (75 40% 40%) was deliberately lightened relative to light mode's
+   (75 40% 25%) for visibility against the dark page background -- but
+   that same lighter green now fails 4.5:1 against white text on the
+   header/mobile-menu "Request a Quote" button (measured 3.61:1, all 22
+   shared-header pages) and the homepage hero's "Single Origin - Egypt"
+   badge (also 3.61:1).
+
+   Deliberately NOT a change to the shared --primary token itself:
+   --primary is also used as a *text* color (icons/links) against the
+   dark page background elsewhere on the site, where a darker value
+   would fail ITS OWN contrast in the other direction. This scoped
+   .tc-cta-primary class -- added only to the specific button/badge
+   instances that measured a real failure -- avoids that tradeoff
+   entirely. Light mode is untouched (already passes at 7.57:1). */
+.dark .tc-cta-primary {
+  background-color: hsl(75 40% 28%);
+}
+.dark .tc-cta-primary:hover {
+  background-color: hsl(75 40% 24%);
+}
+
+/* Same pass: the newsletter "Subscribe to the Brief" button (white text
+   on --secondary, the site's gold brand color) measured 2.32:1 in BOTH
+   themes (--secondary is identical, 45 60% 50%, light and dark) --
+   fails even the 3:1 large-text threshold this 14px bold text qualifies
+   for. Targeted by existing #newsletter-submit id, not a class, since
+   only this one button needs it and the id is already unique. Not
+   scoped to .dark since the failure isn't theme-specific. */
+#newsletter-submit {
+  background-color: hsl(45 60% 32%);
+}
+#newsletter-submit:hover {
+  background-color: hsl(45 60% 28%);
+}
+
+/* Same contrast sweep: the packaging-card size chips (370 ml, 5 kg,
+   etc., homepage "Packaging Options" section) measured 3.87:1 in light
+   mode (text-muted-foreground on bg-muted) -- needs 4.5:1. Dark mode
+   already passes (6.06:1, different token values there) and must stay
+   untouched -- html:not(.dark) scopes this to light mode only (an
+   unscoped rule would have overridden dark mode's own, already-correct
+   color too, since this selector's specificity beats the plain
+   .text-muted-foreground utility it's overriding). Scoped to these 15
+   specific chips rather than the shared --muted-foreground token, which
+   is used more broadly against other backgrounds elsewhere on the site
+   that weren't measured as failing. */
+html:not(.dark) .tc-pkg-chip {
+  color: hsl(40 5% 36%);
+}
+
+/* Mobile-nav fuller audit (2026-09-03): the WhatsApp FAB
+   (.fixed.bottom-6.right-6, z-50 -- same z-index as #mobile-menu-panel
+   below) and the open mobile menu genuinely overlap on short viewports.
+   The FAB is anchored to the *viewport* bottom (bottom-6) while the open
+   panel's bottom edge is anchored to the *header* -- as viewport height
+   shrinks the gap between them closes, confirmed by direct measurement:
+   overlapping at 568px height, clear at 667px+. Hides the FAB only while
+   the menu is open (:has() is already relied on elsewhere in this
+   compiled stylesheet, e.g. the has-[...]:ring-1 utility, so browser
+   support here matches the rest of the site) and only below the lg
+   breakpoint, where the toggle that can even open the panel exists. */
+@media (max-width: 1023px) {
+  body:has(#mobile-menu-panel:not([hidden])) .fixed.bottom-6.right-6 {
+    display: none;
+  }
+}
+
+/* Same audit: no safe-area-inset handling existed anywhere on the site
+   for notched/rounded-corner devices in landscape, where the header's
+   left/right edges can sit under the device's safe-area cutout. Adds
+   safe-area padding on top of (never below) the header's existing
+   1.25rem container padding via max(), so non-notched devices are
+   pixel-identical to before and notched devices in landscape get
+   correctly protected content. */
+header .container {
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+}
