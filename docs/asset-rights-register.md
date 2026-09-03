@@ -93,11 +93,11 @@ these six — the "send the files" next step above still stands.
 
 | File | Depicts | Source | License / permission | Photographer / owner | Attribution required | Routes | Rollback |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `assets/olive-aggizi-*.jpg` | "Aggizi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-manzanilla-*.jpg` | "Manzanilla Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-black-*.jpg` | "Natural Black Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-hamed-*.jpg` | "Hamed Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/` | Swap file or fall back to no image |
-| `assets/olive-toffahi-*.jpg` | "Toffahi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/` | Swap file or fall back to no image |
+| `assets/olive-aggizi-*.jpg` | "Aggizi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
+| `assets/olive-manzanilla-*.jpg` | "Manzanilla Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
+| `assets/olive-black-*.jpg` | "Natural Black Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
+| `assets/olive-hamed-*.jpg` | "Hamed Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
+| `assets/olive-toffahi-*.jpg` | "Toffahi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
 | ~~`assets/olive-stuffed-new-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/product-artichoke-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/product-jalapeno-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
@@ -106,11 +106,11 @@ these six — the "send the files" next step above still stands.
 | ~~`assets/product-olives-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/pack-glass-jar-*.png`, `pack-tin-can-*.png`, `pack-bucket-*.png`, `pack-barrel-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | `assets/photo-pending.svg` | Neutral "photography pending" placeholder (self-made 2026-09-01) | Made for this site, 2026-09-01 | N/A — original graphic, no external source | Claude, as part of this project | None | `/` (hero product slot, aria-labelled generically, and the 4 packaging-format slots — Glass Jar, Tin Can, Plastic Bucket, Plastic Barrel); also used in the B2B export catalog PDF for the still-unphotographed slots | Delete and revert to no-image styling if a different placeholder treatment is preferred |
-| `assets/illus-jalapeno.svg` | Per-product "photography pending" illustration — sliced jalapeño rings (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/products/sliced-jalapeno-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-artichoke.svg` | Per-product "photography pending" illustration — artichoke heart (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/products/marinated-artichoke-hearts` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-pepperoncini.svg` | Per-product "photography pending" illustration — pepperoncini peppers (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/products/pepperoncini-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-oxidized-black.svg` | Per-product "photography pending" illustration — oxidized black olive cluster (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/products/oxidized-black-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
-| `assets/illus-stuffed.svg` | Per-product "photography pending" illustration — stuffed green olives on a pick (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/products/pepper-stuffed-green-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-jalapeno.svg` | Per-product "photography pending" illustration — sliced jalapeño rings (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/sliced-jalapeno-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-artichoke.svg` | Per-product "photography pending" illustration — artichoke heart (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/marinated-artichoke-hearts` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-pepperoncini.svg` | Per-product "photography pending" illustration — pepperoncini peppers (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/catalog/print`, `/products/pepperoncini-peppers` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-oxidized-black.svg` | Per-product "photography pending" illustration — oxidized black olive cluster (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/catalog/`, `/catalog/print`, `/products/oxidized-black-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
+| `assets/illus-stuffed.svg` | Per-product "photography pending" illustration — stuffed green olives on a pick (self-made this pass) | Made for this site, this pass | N/A — original graphic, no external source | Claude, as part of this project | None | `/`, `/catalog/`, `/catalog/print`, `/products/pepper-stuffed-green-olives` | Delete and revert to `photo-pending.svg` or no-image styling |
 | `assets/hero-olive-grove-*.png` | Decorative low-opacity background texture | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | `/` (hero background, aria-hidden) | Remove the `background-image` declaration |
 | `opengraph.jpg` | Social-share preview image (used as `og:image`/`twitter:image` site-wide) | UNCONFIRMED — and separately, this file is a **raw screenshot of the homepage** (browser chrome visible), not a purpose-built social card. Its dimensions (1280×720) were also mismatched against the declared `og:image:width/height` meta (1200×630) until this pass, now corrected to match the real file. | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | Every page (same image reused everywhere) | Replace with a properly designed 1200×630 card once source art is settled |
 | `assets/industrial-olives-*.png` | Not currently used anywhere (unreferenced by any page or stylesheet) | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | UNCONFIRMED | none (dead asset) | Safe to delete once confirmed unused, or wire in if it should be used somewhere |
@@ -178,3 +178,22 @@ compression, and packaging of files that already existed.
   `photo-pending.svg` in its unphotographed slots; it is not visually
   inconsistent with the site (both are honest "pending" placeholders), just
   not yet updated to the new per-product graphics.
+
+## What changed 2026-09-03 (later pass — print catalog thumbnails)
+
+- The site owner reported that "Download Full Catalog (PDF)" — the button on
+  `/catalog/` and `/downloads/` that opens `/catalog/print` for the visitor
+  to print or save as PDF themselves — looked out of date next to the
+  redesigned `/catalog/` page. Root cause: `/catalog/print` never had any
+  images at all (pure text spec sheets since it was first built), so it read
+  as stale next to the photo/illustration grid on `/catalog/`.
+- Added a thumbnail image to each of the 10 spec-card entries on
+  `/catalog/print` — the same real photo or per-product illustration already
+  used for that product elsewhere on the site, not a new asset. Routes
+  updated above accordingly. Also added a category badge (Green Olive /
+  Black Olive / Specialty) per card, matching `/catalog/`'s existing badge
+  taxonomy, and refreshed the revision date shown on the page (2026-09-01 →
+  2026-09-03).
+- No new image files were introduced in this pass — every `<img>` added to
+  `/catalog/print` reuses a file already covered by a row in the table
+  above.
