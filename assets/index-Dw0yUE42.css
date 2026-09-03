@@ -196,3 +196,32 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
 html:not(.dark) .tc-pkg-chip {
   color: hsl(40 5% 36%);
 }
+
+/* Mobile-nav fuller audit (2026-09-03): the WhatsApp FAB
+   (.fixed.bottom-6.right-6, z-50 -- same z-index as #mobile-menu-panel
+   below) and the open mobile menu genuinely overlap on short viewports.
+   The FAB is anchored to the *viewport* bottom (bottom-6) while the open
+   panel's bottom edge is anchored to the *header* -- as viewport height
+   shrinks the gap between them closes, confirmed by direct measurement:
+   overlapping at 568px height, clear at 667px+. Hides the FAB only while
+   the menu is open (:has() is already relied on elsewhere in this
+   compiled stylesheet, e.g. the has-[...]:ring-1 utility, so browser
+   support here matches the rest of the site) and only below the lg
+   breakpoint, where the toggle that can even open the panel exists. */
+@media (max-width: 1023px) {
+  body:has(#mobile-menu-panel:not([hidden])) .fixed.bottom-6.right-6 {
+    display: none;
+  }
+}
+
+/* Same audit: no safe-area-inset handling existed anywhere on the site
+   for notched/rounded-corner devices in landscape, where the header's
+   left/right edges can sit under the device's safe-area cutout. Adds
+   safe-area padding on top of (never below) the header's existing
+   1.25rem container padding via max(), so non-notched devices are
+   pixel-identical to before and notched devices in landscape get
+   correctly protected content. */
+header .container {
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+}
