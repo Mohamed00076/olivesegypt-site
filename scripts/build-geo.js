@@ -22,13 +22,20 @@
  * and re-extract an ~8-9MB file on every single build -- including
  * every PR deploy preview -- when nothing about it has changed. It
  * skips the download whenever geo/.fetched-at (also cached, restored
- * alongside the .mmdb file) says the existing copy is under a week
- * old; the weekly geo-refresh scheduled function still forces a real
- * refresh during quiet periods with no other deploys, since by then
- * the cached copy really will be stale. This uses a sidecar timestamp
- * file rather than the .mmdb's own filesystem mtime deliberately --
- * whether a cache-restore step preserves original mtimes isn't
- * something to depend on.
+ * alongside the .mmdb file) says the existing copy is under MAX_AGE_MS
+ * old. This uses a sidecar timestamp file rather than the .mmdb's own
+ * filesystem mtime deliberately -- whether a cache-restore step
+ * preserves original mtimes isn't something to depend on.
+ *
+ * MAX_AGE_MS is currently set to 1 day rather than the ~1 week the geo-
+ * refresh scheduled function's cadence implies -- deliberately, while
+ * the site is under heavy active development with many deploys per
+ * day. A day-old ceiling still means at most one real download per day
+ * no matter how many builds happen that day, which is most of the
+ * savings this change was for. Once things settle back down to mostly
+ * occasional blog/article updates, bump this back to a week (matching
+ * geo-refresh again) so quiet periods don't force daily downloads for
+ * no reason.
  *
  * Must never fail the whole site build over a geo-data hiccup: any
  * download/extract failure is logged and the script exits 0, leaving
@@ -50,7 +57,7 @@ const DEST_MMDB = path.join(GEO_DIR, 'GeoLite2-Country.mmdb');
 const FETCHED_AT_FILE = path.join(GEO_DIR, '.fetched-at');
 const TMP_TAR = path.join(GEO_DIR, '.download.tar.gz');
 const TMP_EXTRACT = path.join(GEO_DIR, '.extract');
-const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // ~1 week -- matches the geo-refresh schedule
+const MAX_AGE_MS = 1 * 24 * 60 * 60 * 1000; // 1 day for now -- see note above; bump to a week later
 
 function cachedCopyIsFresh() {
   if (!fs.existsSync(DEST_MMDB) || !fs.existsSync(FETCHED_AT_FILE)) return false;
