@@ -45,9 +45,21 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/company-profile</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/company-profile" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/company-profile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/company-profile" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/company-profile</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/company-profile" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/company-profile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/company-profile" />
   </url>
   <url>
     <loc>https://olivesegypt.com/products/aggizi-green-olives</loc>
@@ -303,16 +315,40 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media" />  </url>
   <url>
     <loc>https://olivesegypt.com/how-we-work</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/how-we-work" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/how-we-work" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/how-we-work" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/how-we-work" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/how-we-work</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/how-we-work" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/how-we-work" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/how-we-work" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/contact</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/contact" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/contact" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/contact</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/contact" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/sample</loc>
     <lastmod>2026-09-01</lastmod>
