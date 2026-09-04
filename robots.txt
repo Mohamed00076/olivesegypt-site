@@ -11,8 +11,11 @@ Disallow: /ar/business-card
 Disallow: /catalog/print
 Disallow: /ar/catalog/print
 Disallow: /downloads/pricing-packaging-guide
+Disallow: /ar/downloads/pricing-packaging-guide
 Disallow: /downloads/origin-comparison-guide
+Disallow: /ar/downloads/origin-comparison-guide
 Disallow: /downloads/buyers-guide
+Disallow: /ar/downloads/buyers-guide
 Disallow: /admin
 Disallow: /crm
 
