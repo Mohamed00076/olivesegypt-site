@@ -8,5 +8,8 @@
     "isbot": "^5.2.2",
     "maxmind": "^5.0.7",
     "ua-parser-js": "^2.0.10"
+  },
+  "devDependencies": {
+    "netlify-plugin-cache": "^1.0.3"
   }
 }
