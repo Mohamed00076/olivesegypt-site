@@ -21,14 +21,25 @@
 //   python3 -m http.server 8899 &
 //   node scripts/generate-export-catalog-pdf.js
 //
-// Reads PORT from the environment (default 8899).
+// Reads PORT from the environment (default 8899). Also reads
+// SOURCE_FILE and OUT_FILE (both relative to the repo root) to build
+// a different source/destination pair -- e.g. the Arabic catalog:
+//
+//   SOURCE_FILE=scripts/export-catalog-source-ar.html \
+//   OUT_FILE=downloads/triple-company-export-catalog-2026-ar.pdf \
+//   node scripts/generate-export-catalog-pdf.js
+//
+// Both default to the English catalog, so existing invocations are
+// unaffected.
 
 const path = require('path');
 const { chromium } = require('playwright');
 
 const PORT = process.env.PORT || 8899;
-const SOURCE_URL = `http://127.0.0.1:${PORT}/scripts/export-catalog-source.html`;
-const OUT_PATH = path.join(__dirname, '..', 'downloads', 'triple-company-export-catalog-2026.pdf');
+const SOURCE_FILE = process.env.SOURCE_FILE || 'scripts/export-catalog-source.html';
+const OUT_FILE = process.env.OUT_FILE || 'downloads/triple-company-export-catalog-2026.pdf';
+const SOURCE_URL = `http://127.0.0.1:${PORT}/${SOURCE_FILE}`;
+const OUT_PATH = path.join(__dirname, '..', OUT_FILE);
 
 (async () => {
   const browser = await chromium.launch();

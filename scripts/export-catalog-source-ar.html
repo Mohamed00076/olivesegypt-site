@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>كتالوج التصدير - الشركة الثلاثية</title>
+<!--
+  Print source for downloads/triple-company-export-catalog-2026-ar.pdf.
+
+  Arabic counterpart of scripts/export-catalog-source.html. Same rules
+  apply: not a site route, nothing links to it, exists only so the PDF
+  can be regenerated instead of hand-edited as a binary. Render it with
+  scripts/generate-export-catalog-pdf.js (pass SOURCE=export-catalog-source-ar.html
+  OUT=downloads/triple-company-export-catalog-2026-ar.pdf) from a local
+  server so the /assets/* paths below resolve.
+
+  Content is copied verbatim from the site's already-approved Arabic
+  pages (ar/company-profile, ar/products/*, ar/catalog/print,
+  ar/downloads/pricing-packaging-guide, ar/downloads/buyers-guide,
+  ar/contact) -- nothing here is new copy, matching the English
+  source's own stated policy. Images and the "photography pending" /
+  "AI-generated images removed" disclosures are identical to the
+  English source, unchanged, since none of that is language-dependent.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family: 'Noto Naskh Arabic', 'Plus Jakarta Sans', Arial, sans-serif; }
+  .pdf-page { width: 210mm; min-height: 297mm; padding: 18mm 22mm 26mm; position: relative; page-break-after: always; overflow: hidden; }
+  .pdf-page:last-child { page-break-after: auto; }
+  .pdf-eyebrow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10mm; }
+  .pdf-brand { display: flex; align-items: center; gap: 10px; }
+  .pdf-brand img { width: 26px; height: 26px; object-fit: contain; }
+  .pdf-brand span { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 15px; letter-spacing: 0.02em; color: hsl(var(--primary)); }
+  .pdf-section-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; color: hsl(var(--muted-foreground)); text-transform: uppercase; }
+  .pdf-h1 { font-family: 'Playfair Display', 'Noto Naskh Arabic', Georgia, serif; font-weight: 700; font-size: 26px; color: hsl(var(--foreground)); margin: 0 0 7mm; }
+  .pdf-h2 { font-family: 'Playfair Display', 'Noto Naskh Arabic', Georgia, serif; font-weight: 600; font-size: 17px; color: hsl(var(--foreground)); margin: 6mm 0 3mm; }
+  .pdf-p { font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 14px; line-height: 1.85; color: hsl(var(--muted-foreground)); margin: 0 0 3.5mm; }
+  .pdf-footer { position: absolute; bottom: 14mm; left: 24mm; right: 24mm; display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; color: hsl(var(--muted-foreground)); border-top: 1px solid hsl(var(--border)); padding-top: 4mm; }
+  table.pdf-table { width: 100%; border-collapse: collapse; font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 13px; margin: 3mm 0 5mm; }
+  table.pdf-table th { text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 0.02em; color: hsl(var(--muted-foreground)); border-bottom: 1px solid hsl(var(--border)); padding: 2mm 0 2mm 4mm; }
+  table.pdf-table td { padding: 2mm 0 2mm 4mm; border-bottom: 1px solid hsl(var(--border) / 0.5); color: hsl(var(--foreground)); vertical-align: top; line-height: 1.6; }
+  .pdf-caption { font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 11.5px; line-height: 1.75; color: hsl(var(--muted-foreground)); font-style: italic; margin: 2mm 0 6mm; }
+  .product-row { display: flex; gap: 7mm; margin-bottom: 7mm; align-items: flex-start; }
+  .product-row img { width: 36mm; height: 36mm; object-fit: cover; border-radius: 4mm; border: 1px solid hsl(var(--border)); flex-shrink: 0; }
+  .product-row .body { flex: 1; min-width: 0; }
+  .product-name { font-family: 'Playfair Display', 'Noto Naskh Arabic', Georgia, serif; font-weight: 600; font-size: 18px; color: hsl(var(--foreground)); margin: 0 0 2.5mm; }
+  .product-meta { font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 12.5px; color: hsl(var(--foreground)); margin-top: 2.5mm; line-height: 1.8; }
+  .product-meta b { font-weight: 600; }
+  ul.pdf-list { margin: 3mm 0; padding-right: 5mm; padding-left: 0; font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 14px; color: hsl(var(--muted-foreground)); line-height: 1.9; }
+  .cover-badge { display: inline-block; border: 1px solid hsl(var(--primary) / 0.4); color: hsl(var(--primary)); font-size: 13px; font-weight: 600; padding: 2.5mm 6mm; border-radius: 2mm; margin-top: 8mm; }
+  .cover-toc { margin-top: 8mm; border-top: 1px solid hsl(var(--border)); padding-top: 5mm; }
+  .cover-toc-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; color: hsl(var(--muted-foreground)); text-transform: uppercase; margin-bottom: 5mm; }
+  .cover-toc-row { display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 13px; color: hsl(var(--foreground)); padding: 2mm 0; border-bottom: 1px dotted hsl(var(--border)); }
+  .cover-toc-row span:last-child { direction: ltr; }
+  .cover-img-wrap { margin: 10mm 0; border-radius: 5mm; overflow: hidden; border: 1px solid hsl(var(--border)); }
+  .cover-img-wrap img { width: 100%; height: 58mm; object-fit: cover; display: block; }
+  .cover-img-caption { font-size: 11px; color: hsl(var(--muted-foreground)); font-style: italic; margin-top: 3mm; }
+  .contact-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding-top: 30mm; }
+  .contact-page img { width: 30mm; height: 30mm; object-fit: contain; margin-bottom: 6mm; }
+  .contact-page .brandline { font-family: 'Playfair Display', 'Noto Naskh Arabic', Georgia, serif; font-weight: 700; font-size: 22px; color: hsl(var(--primary)); }
+  .contact-page .brandsub { font-size: 12px; letter-spacing: 0.02em; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: 18mm; }
+  .contact-block { margin-bottom: 9mm; }
+  .contact-block .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.02em; color: hsl(var(--muted-foreground)); margin-bottom: 2.5mm; }
+  .contact-block .value { font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 16px; color: hsl(var(--foreground)); }
+  .contact-cta { margin-top: 12mm; font-weight: 600; color: hsl(var(--primary)); font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 15px; }
+  .ltr { direction: ltr; unicode-bidi: embed; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand">
+      <img src="/assets/logo-BJ1TOn9V.png" alt="" />
+      <span>الشركة الثلاثية</span>
+    </div>
+    <span class="pdf-section-label">مورّد زيتون مائدة مصري</span>
+  </div>
+  <h1 class="pdf-h1" style="font-size:30px;">الشركة الثلاثية للتنمية الصناعية</h1>
+  <p class="pdf-p" style="font-size:15px;">مُصدِّر زيتون مائدة فاخر</p>
+
+  <div class="cover-img-wrap">
+    <img src="/assets/photo-pending.svg" alt="صورة الغلاف قيد الإعداد" />
+  </div>
+  <p class="cover-img-caption">صورة الغلاف قيد الإعداد — ستُضاف صورة منتج حقيقية قبل الطباعة النهائية.</p>
+
+  <span class="cover-badge">كتالوج التصدير للشركات (B2B) &middot; إصدار 2026</span>
+
+  <div class="cover-toc">
+    <div class="cover-toc-label">في هذا الكتالوج</div>
+    <div class="cover-toc-row"><span>الملف التعريفي للشركة وحالة الجودة</span><span>2</span></div>
+    <div class="cover-toc-row"><span>نطاق المنتجات والمصفوفة السريعة</span><span>3</span></div>
+    <div class="cover-toc-row"><span>الزيتون الأخضر</span><span>4</span></div>
+    <div class="cover-toc-row"><span>الزيتون الأسود والأصناف المحشوة</span><span>5</span></div>
+    <div class="cover-toc-row"><span>المنتجات المميزة والفلفل والأنتيباستو</span><span>6</span></div>
+    <div class="cover-toc-row"><span>العلامة الخاصة والتخصيص</span><span>7</span></div>
+    <div class="cover-toc-row"><span>اللوجستيات وتحميل الحاويات والشروط التجارية</span><span>8A</span></div>
+    <div class="cover-toc-row" style="border-bottom:none;"><span>التواصل</span><span>8B</span></div>
+  </div>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>الغلاف</span></div>
+</section>
+
+<!-- PAGE 2: COMPANY PROFILE -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>الشركة الثلاثية</span></div>
+    <span class="pdf-section-label">الملف التعريفي للشركة</span>
+  </div>
+  <h1 class="pdf-h1">الملف التعريفي للشركة وحالة الجودة</h1>
+
+  <h2 class="pdf-h2">قصتنا</h2>
+  <p class="pdf-p">الشركة الثلاثية للتنمية الصناعية مورّد زيتون مائدة مصري مقرّه القاهرة، مصر. نستعد للتصدير الدولي لمجموعة المنتجات المعتمدة للمناقشات مع مشتري الجملة والتجزئة وخدمات الأغذية والعلامة التجارية الخاصة. بصفتنا شركة حديثة التأسيس، نبني نموذج التوريد لدينا من خلال ترتيبات شراكة معتمدة. تُحدَّد مواصفات المنتج والعينات والتغليف والمستندات والحد الأدنى للطلب والتسعير وشروط التسليم وفقًا للمنتج وطلب المشتري. نعمل بفاعلية على تطوير علاقات مع المشترين، وسنؤكد المتطلبات التجارية والمستندية المعمول بها أثناء عرض السعر.</p>
+
+  <h2 class="pdf-h2">الشهادات ووثائق الجودة</h2>
+  <p class="pdf-p">معلومات الجودة والمستندات قيد الإعداد. يمكن للمشترين المؤهلين طلب مواصفات المنتج الحالية والمستندات المتاحة.</p>
+  <p class="pdf-p">نعمل من خلال ترتيب شراكة معتمد للمعالجة — الشركة الثلاثية لا تمتلك أو تُشغّل مصنع معالجة. يُورَّد المنتج ويُعالَج من خلال منشأة شريكة معتمدة في منطقة العاشر من رمضان الصناعية. أي ادعاء بشهادة يشير إلى تلك المنشأة الشريكة، وليس إلى الشركة الثلاثية نفسها أبدًا.</p>
+
+  <h2 class="pdf-h2">نطاق المنتجات</h2>
+  <p class="pdf-p">زيتون عجيزي وتفاحي وحامد ومانزانيلا الأخضر &middot; زيتون أسود طبيعي ومؤكسد &middot; زيتون أخضر محشو بالفلفل &middot; قلوب أرضي شوكي متبّلة &middot; فلفل بيبرونشيني &middot; فلفل خالبينو مقطّع. المواصفات الكاملة في الصفحات 4–6.</p>
+
+  <h2 class="pdf-h2">طلب المستندات الحالية</h2>
+  <p class="pdf-p">يمكن للمشترين المؤهلين طلب الحالة الراهنة لمستندات الجودة لدينا، إلى جانب أوراق مواصفات المنتج، في أي وقت عبر olivesegypt.com/ar/contact.</p>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 2</span></div>
+</section>
+
+<!-- PAGE 3: PRODUCT RANGE & QUICK-MATRIX -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>الشركة الثلاثية</span></div>
+    <span class="pdf-section-label">نطاق المنتجات</span>
+  </div>
+  <h1 class="pdf-h1">نظرة عامة على نطاق المنتجات والمصفوفة السريعة</h1>
+
+  <table class="pdf-table">
+    <tr><th>الصنف</th><th>الصيغ</th><th>نطاق العيار المؤكَّد</th></tr>
+    <tr><td>زيتون عجيزي أخضر</td><td>كامل، منزوع النواة، مكسّر</td><td class="ltr" style="text-align:right">141/160 – 231/260</td></tr>
+    <tr><td>زيتون تفاحي أخضر</td><td>كامل، منزوع النواة، محشو</td><td class="ltr" style="text-align:right">101/110 – 161/180</td></tr>
+    <tr><td>زيتون حامد أخضر</td><td>مكسّر، متبّل</td><td class="ltr" style="text-align:right">161/180 – 261/290</td></tr>
+    <tr><td>زيتون مانزانيلا أخضر</td><td>كامل، منزوع النواة، محشو</td><td class="ltr" style="text-align:right">101/110 – 231/260</td></tr>
+    <tr><td>زيتون أسود طبيعي</td><td>كامل، مقطع، منزوع النواة</td><td class="ltr" style="text-align:right">141/160 – 261/290</td></tr>
+    <tr><td>زيتون أسود مؤكسد</td><td>كامل، منزوع النواة، مقطع</td><td>تُؤكَّد أثناء عرض السعر</td></tr>
+    <tr><td>زيتون أخضر محشو بالفلفل</td><td>محشو (فلفل أحمر / لوز / ثوم / ليمون)</td><td>تُؤكَّد أثناء عرض السعر</td></tr>
+    <tr><td>قلوب أرضي شوكي متبّلة</td><td>أرباع، قلوب كاملة، مشوية</td><td>—</td></tr>
+    <tr><td>فلفل بيبرونشيني</td><td>كامل، مخلل (بطريقة يونانية ذهبية)</td><td>—</td></tr>
+    <tr><td>فلفل خالبينو مقطّع</td><td>حلقات مقطعة، كامل</td><td>—</td></tr>
+  </table>
+  <p class="pdf-caption">نطاقات العيار المعروضة كما نُشرت؛ حيث تظهر عبارة "تُؤكَّد أثناء عرض السعر"، لا يوجد عيار محدد منشور حاليًا لذلك المنتج.</p>
+
+  <h2 class="pdf-h2">صيغ التغليف المتاحة</h2>
+  <table class="pdf-table">
+    <tr><th>الصيغة</th><th>الحجم</th></tr>
+    <tr><td>برطمانات زجاجية</td><td class="ltr" style="text-align:right">300 جرام – 1.7 كجم</td></tr>
+    <tr><td>علب صفيح</td><td>تُؤكَّد أثناء عرض السعر</td></tr>
+    <tr><td>دِلاء بلاستيكية</td><td class="ltr" style="text-align:right">1 – 10 كجم</td></tr>
+    <tr><td>براميل خشبية / بلاستيكية</td><td class="ltr" style="text-align:right">50 – 200 كجم</td></tr>
+    <tr><td>أكياس مفرّغة من الهواء</td><td>تُؤكَّد أثناء عرض السعر</td></tr>
+  </table>
+  <p class="pdf-caption">لا تتوفر بعد صور توضيحية حقيقية لصيغ التغليف في هذا الكتالوج — تبيّن أن الصور المستخدمة سابقًا لهذه الصيغ مولّدة بالذكاء الاصطناعي، وقد أُزيلت من الموقع ومن هذا المستند. ستُضاف صور تغليف حقيقية عند توفرها.</p>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 3</span></div>
+</section>
+
+<!-- PAGE 4: GREEN OLIVES -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>الشركة الثلاثية</span></div>
+    <span class="pdf-section-label">مواصفات المنتج</span>
+  </div>
+  <h1 class="pdf-h1">الزيتون الأخضر</h1>
+
+  <div class="product-row">
+    <img src="/assets/olive-aggizi-BuhWRZTd.jpg" alt="زيتون عجيزي أخضر" />
+    <div class="body">
+      <p class="product-name">زيتون عجيزي أخضر</p>
+      <p class="pdf-p">الصنف المصري الأكثر تصديرًا. قوام متماسك، محلول ملحي معتدل، ولون أخضر زاهٍ. يُزرع في دلتا النيل.</p>
+      <p class="product-meta"><b>الصيغ:</b> كامل، منزوع النواة، مكسّر &nbsp;·&nbsp; <b>العيار:</b> <span class="ltr">141/160 – 231/260</span></p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/olive-toffahi-SpdiHPHF.jpg" alt="زيتون تفاحي أخضر" />
+    <div class="body">
+      <p class="product-name">زيتون تفاحي أخضر</p>
+      <p class="pdf-p">صنف مصري فاخر من الفيوم. نسبة لحم إلى نواة عالية، ونكهة تميل قليلًا للحلاوة.</p>
+      <p class="product-meta"><b>الصيغ:</b> كامل، منزوع النواة، محشو &nbsp;·&nbsp; <b>العيار:</b> <span class="ltr">101/110 – 161/180</span></p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/olive-hamed-DhlKuQ55.jpg" alt="زيتون حامد أخضر" />
+    <div class="body">
+      <p class="product-name">زيتون حامد أخضر</p>
+      <p class="pdf-p">زيتون كبير العيار من الساحل الشمالي لمصر. مكسّر ومتبّل بالأعشاب. منتج مرغوب في أسواق الاستيراد بالشرق الأوسط.</p>
+      <p class="product-meta"><b>الصيغ:</b> مكسّر، متبّل &nbsp;·&nbsp; <b>العيار:</b> <span class="ltr">161/180 – 261/290</span></p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/olive-manzanilla-vwgGqjiA.jpg" alt="زيتون مانزانيلا أخضر" />
+    <div class="body">
+      <p class="product-name">زيتون مانزانيلا أخضر</p>
+      <p class="pdf-p">الصنف الإسباني المعترف به عالميًا، يُزرع ويُعالج في مصر.</p>
+      <p class="product-meta"><b>الصيغ:</b> كامل، منزوع النواة، محشو (فلفل أحمر، لوز، أو ثوم) &nbsp;·&nbsp; <b>العيار:</b> <span class="ltr">101/110 – 231/260</span></p>
+    </div>
+  </div>
+  <p class="pdf-caption">معايير المحلول الملحي/الرقم الهيدروجيني وأحجام التغليف لكل منتج: تُؤكَّد أثناء عرض السعر — غير منشورة لهذه الأصناف في الوقت الحالي.</p>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 4</span></div>
+</section>
+
+<!-- PAGE 5: BLACK OLIVES & STUFFED VARIETIES -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>الشركة الثلاثية</span></div>
+    <span class="pdf-section-label">مواصفات المنتج</span>
+  </div>
+  <h1 class="pdf-h1">الزيتون الأسود والأصناف المحشوة</h1>
+
+  <div class="product-row">
+    <img src="/assets/olive-black-CzV0ukvu.jpg" alt="زيتون أسود طبيعي" />
+    <div class="body">
+      <p class="product-name">زيتون أسود طبيعي</p>
+      <p class="pdf-p">زيتون أسود مصري ينضج طبيعيًا. دون غلوكونات الحديد أو ألوان صناعية.</p>
+      <p class="product-meta"><b>الصيغ:</b> كامل، مقطع، منزوع النواة — في محلول ملحي أو معبأ بالتفريغ &nbsp;·&nbsp; <b>العيار:</b> <span class="ltr">141/160 – 261/290</span></p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-oxidized-black.svg" alt="زيتون أسود مؤكسد — صورة قيد التجهيز" />
+    <div class="body">
+      <p class="product-name">زيتون أسود مؤكسد</p>
+      <p class="pdf-p">زيتون أسود بطريقة كاليفورنيا، يُصبغ عبر أكسدة متحكم بها للحصول على لون أسود موحّد ونكهة ناعمة معتدلة. مثالي لتغطية البيتزا وخدمات الأغذية وعلب التجزئة.</p>
+      <p class="product-meta"><b>الصيغ:</b> كامل، منزوع النواة، مقطع &nbsp;·&nbsp; <b>العيار:</b> تُؤكَّد أثناء عرض السعر</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-stuffed.svg" alt="زيتون أخضر محشو — صورة قيد التجهيز" />
+    <div class="body">
+      <p class="product-name">زيتون أخضر محشو بالفلفل</p>
+      <p class="pdf-p">زيتون مانزانيلا وعجيزي فاخر، محشو بالفلفل الأحمر أو اللوز أو الثوم أو الليمون في منشأتنا الشريكة. متاح بالبرطمان الزجاجي والعلب المعدنية لسوق التجزئة وخدمات الأغذية الأوروبية.</p>
+      <p class="product-meta"><b>الصيغ:</b> محشو (فلفل أحمر، لوز، ثوم، أو ليمون) &nbsp;·&nbsp; <b>العيار:</b> تُؤكَّد أثناء عرض السعر &nbsp;·&nbsp; <b>التغليف:</b> برطمانات زجاجية وعلب معدنية</p>
+    </div>
+  </div>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 5</span></div>
+</section>
+
+<!-- PAGE 6: SPECIALTY, PEPPERS & ANTIPASTO -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>الشركة الثلاثية</span></div>
+    <span class="pdf-section-label">مواصفات المنتج</span>
+  </div>
+  <h1 class="pdf-h1">المنتجات المميزة والفلفل والأنتيباستو</h1>
+
+  <div class="product-row">
+    <img src="/assets/illus-artichoke.svg" alt="قلوب أرضي شوكي متبّلة — صورة قيد التجهيز" />
+    <div class="body">
+      <p class="product-name">قلوب أرضي شوكي متبّلة</p>
+      <p class="pdf-p">قلوب أرضي شوكي طرية متبّلة بالزيت والأعشاب المتوسطية. خط أنتيباستو فاخر يكمّل تشكيلة الزيتون لدينا لمحلات الأطعمة الفاخرة والتجزئة وخدمات الأغذية.</p>
+      <p class="product-meta"><b>الصيغ:</b> أرباع، قلوب كاملة، مشوية &nbsp;·&nbsp; ليست منتجًا مصنَّفًا بالعيار</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-pepperoncini.svg" alt="فلفل بيبرونشيني — صورة قيد التجهيز" />
+    <div class="body">
+      <p class="product-name">فلفل بيبرونشيني</p>
+      <p class="pdf-p">فلفل أخضر ذهبي معتدل الحرارة ولاذع، مخلل في محلول ملحي (بطريقة يونانية ذهبية). فلفل أنتيباستو وسندوتشات متعدد الاستخدامات، مطلوب بقوة في أسواق التجزئة الأوروبية وأمريكا الشمالية.</p>
+      <p class="product-meta"><b>الصيغ:</b> كامل، مخلل &nbsp;·&nbsp; ليست منتجًا مصنَّفًا بالعيار</p>
+    </div>
+  </div>
+  <div class="product-row">
+    <img src="/assets/illus-jalapeno.svg" alt="فلفل خالبينو مقطّع — صورة قيد التجهيز" />
+    <div class="body">
+      <p class="product-name">فلفل خالبينو مقطّع</p>
+      <p class="pdf-p">حلقات فلفل خالبينو أخضر مقرمشة، مخللة لتمنح حرارة متوسطة ونكهة زاهية. خط إنتاج مرتفع الطلب لخدمات الأغذية في الناتشوز والبيتزا والمطبخ المكسيكي-الأمريكي.</p>
+      <p class="product-meta"><b>الصيغ:</b> حلقات مقطعة، كامل &nbsp;·&nbsp; ليست منتجًا مصنَّفًا بالعيار</p>
+    </div>
+  </div>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 6</span></div>
+</section>
+
+<!-- PAGE 7: PRIVATE LABEL -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>الشركة الثلاثية</span></div>
+    <span class="pdf-section-label">العلامة الخاصة</span>
+  </div>
+  <h1 class="pdf-h1">العلامة الخاصة والتخصيص</h1>
+  <p class="pdf-p">علامتك التجارية، وتصميم تغليفك، ومنتجنا الجاهز للتصدير. نقدم خدمة كاملة من التصميم إلى الرف بالعلامة الخاصة عبر صيغ الزجاج والصفيح والدِلاء والبراميل، متولّين الطباعة والتعبئة ومستندات التصدير. يُؤكَّد الحد الأدنى للكمية، ومواصفات التصميم الفني، ومتطلبات الملصقات للتغليف بالعلامة الخاصة والمخصص لكل مشروع على حدة أثناء عرض السعر، حيث تعتمد على الصيغة وطريقة الطباعة والحجم الذي تحتاجه.</p>
+
+  <h2 class="pdf-h2">إرشادات القنوات</h2>
+  <ul class="pdf-list">
+    <li>زيتون أسود مؤكسد — تغطية البيتزا، خدمات الأغذية، علب التجزئة</li>
+    <li>زيتون أخضر محشو بالفلفل — التجزئة الأوروبية وخدمات الأغذية</li>
+    <li>قلوب أرضي شوكي متبّلة — محلات الأطعمة الفاخرة، والتجزئة، وخدمات الأغذية</li>
+  </ul>
+  <p class="pdf-caption">إرشادات القنوات المنظّمة ("الأنسب لـ") غير منشورة لكل منتج — تظهر هنا فقط حيث يحددها الموقع.</p>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 7</span></div>
+</section>
+
+<!-- PAGE 8: LOGISTICS & TRADE TERMS -->
+<section class="pdf-page">
+  <div class="pdf-eyebrow">
+    <div class="pdf-brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" /><span>الشركة الثلاثية</span></div>
+    <span class="pdf-section-label">اللوجستيات والشروط التجارية</span>
+  </div>
+  <h1 class="pdf-h1">اللوجستيات وتحميل الحاويات والشروط التجارية</h1>
+
+  <table class="pdf-table">
+    <tr><th style="width:26%">البند</th><th>التفاصيل</th></tr>
+    <tr><td>الحد الأدنى للطلب</td><td class="ltr" style="text-align:right">1 × 20ft container (~16–18 MT)</td></tr>
+    <tr><td>شروط التسليم (Incoterms)</td><td class="ltr" style="text-align:right">FOB Alexandria &middot; CIF &middot; CFR</td></tr>
+    <tr><td>شروط الدفع</td><td>مرنة، تُؤكَّد وفق كل علاقة مشترٍ — عادةً 30% دفعة تحويل بنكي مقدّمًا، و70% مقابل نسخة بوليصة الشحن، مع اعتماد مستندي (L/C) عند الاطلاع وشروط أخرى قابلة للتفاوض للشركاء الراسخين.</td></tr>
+    <tr><td>العينات</td><td>العينات متاحة؛ لا توجد شحنة تجريبية. تتكون عبوات العينات من عدد قليل من علب الصنف (أو الأصناف) المطلوبة، بإجمالي يصل إلى 5 كجم. أي تقدّم بعد مرحلة العينة ينتقل مباشرة إلى التعاقد بالحد الأدنى القياسي للطلب، حاوية واحدة مقاس 20 قدمًا (FCL).</td></tr>
+    <tr><td>مدة التسليم الاسترشادية</td><td>3–4 أسابيع من الطلب إلى الشحن</td></tr>
+    <tr><td>العملة</td><td class="ltr" style="text-align:right">USD أو EUR</td></tr>
+    <tr><td>التصنيف الجمركي (HS)</td><td>يختلف حسب سوق الوجهة — أكّد رمز HS المعمول به ومعدل الرسوم مع وسيط الجمارك الخاص بك.</td></tr>
+  </table>
+  <p class="pdf-p">تُجهَّز مستندات التصدير القياسية لكل طلب: فاتورة تجارية، وقائمة تعبئة، وشهادة منشأ، وشهادة صحية أو نباتية، وبوليصة شحن.</p>
+
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 8A</span></div>
+</section>
+
+<!-- PAGE 9: CONTACT -->
+<section class="pdf-page">
+  <div class="contact-page">
+    <img src="/assets/logo-BJ1TOn9V.png" alt="" />
+    <div class="brandline">الشركة الثلاثية</div>
+    <div class="brandsub">للتنمية الصناعية</div>
+
+    <div class="contact-block">
+      <div class="label">جهة تواصل المبيعات</div>
+      <div class="value">Mohamed Abdullah، المبيعات</div>
+    </div>
+    <div class="contact-block">
+      <div class="label">المكتب الرئيسي</div>
+      <div class="value">التجمع الخامس، ميدان العروبة، القاهرة، مصر</div>
+    </div>
+    <div class="contact-block">
+      <div class="label">منشأة المعالجة الشريكة</div>
+      <div class="value">منطقة العاشر من رمضان الصناعية</div>
+    </div>
+    <div class="contact-block">
+      <div class="label">التواصل</div>
+      <div class="value ltr">sales@olivesegypt.com &middot; +20 100 604 5961</div>
+    </div>
+    <div class="contact-cta">اطلب عرض سعر ← olivesegypt.com/ar/contact</div>
+  </div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 8B</span></div>
+</section>
+
+</body>
+</html>
