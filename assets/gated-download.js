@@ -25,6 +25,23 @@
 //     </div>
 //   </form>
 (function () {
+  var STRINGS = {
+    en: {
+      success: 'Thank you — your guide is ready below.',
+      rateLimited: 'Too many requests — please try again in a little while.',
+      generic: 'Something went wrong. Please try again, or email sales@olivesegypt.com directly.',
+      network: 'Network error — please try again, or email sales@olivesegypt.com directly.'
+    },
+    ar: {
+      success: 'شكرًا لك — الدليل جاهز أدناه.',
+      rateLimited: 'عدد كبير جدًا من الطلبات — يرجى المحاولة مرة أخرى بعد قليل.',
+      generic: 'حدث خطأ ما. يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
+      network: 'خطأ في الشبكة — يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.'
+    }
+  };
+  var LANG = (document.documentElement.lang === 'ar') ? 'ar' : 'en';
+  var T = STRINGS[LANG];
+
   function field(form, name) {
     return form.querySelector('[data-field="' + name + '"]');
   }
@@ -86,20 +103,20 @@
       }).then(function (result) {
         if (submitBtn) submitBtn.disabled = false;
         if (result.ok && result.data && result.data.ok) {
-          showStatus('success', 'Thank you — your guide is ready below.');
+          showStatus('success', T.success);
           if (link) link.setAttribute('href', guideUrl);
           if (reveal) reveal.classList.remove('hidden');
           form.querySelectorAll('input, select, button[type="submit"]').forEach(function (el) {
             el.disabled = true;
           });
         } else if (result.data && result.data.error === 'Too many requests. Please try again later.') {
-          showStatus('error', 'Too many requests — please try again in a little while.');
+          showStatus('error', T.rateLimited);
         } else {
-          showStatus('error', 'Something went wrong. Please try again, or email sales@olivesegypt.com directly.');
+          showStatus('error', T.generic);
         }
       }).catch(function () {
         if (submitBtn) submitBtn.disabled = false;
-        showStatus('error', 'Network error — please try again, or email sales@olivesegypt.com directly.');
+        showStatus('error', T.network);
       });
     });
   }
