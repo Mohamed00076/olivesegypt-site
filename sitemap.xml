@@ -309,10 +309,22 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/downloads" />  </url>
   <url>
     <loc>https://olivesegypt.com/media</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/how-we-work</loc>
     <lastmod>2026-09-04</lastmod>
@@ -357,44 +369,128 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/sample" />  </url>
   <url>
     <loc>https://olivesegypt.com/media/choosing-a-trusted-olive-exporter</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/choosing-a-trusted-olive-exporter" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/choosing-a-trusted-olive-exporter" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/choosing-a-trusted-olive-exporter" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/choosing-a-trusted-olive-exporter" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media/choosing-a-trusted-olive-exporter</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/choosing-a-trusted-olive-exporter" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/choosing-a-trusted-olive-exporter" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/choosing-a-trusted-olive-exporter" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/media/health-benefits-of-table-olives</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/health-benefits-of-table-olives" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/health-benefits-of-table-olives" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/health-benefits-of-table-olives" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/health-benefits-of-table-olives" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media/health-benefits-of-table-olives</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/health-benefits-of-table-olives" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/health-benefits-of-table-olives" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/health-benefits-of-table-olives" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/media/olives-in-everyday-cooking</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/olives-in-everyday-cooking" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/olives-in-everyday-cooking" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/olives-in-everyday-cooking" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/olives-in-everyday-cooking" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media/olives-in-everyday-cooking</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/olives-in-everyday-cooking" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/olives-in-everyday-cooking" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/olives-in-everyday-cooking" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/media/how-to-import-egyptian-table-olives</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/how-to-import-egyptian-table-olives" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/how-to-import-egyptian-table-olives" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/how-to-import-egyptian-table-olives" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/how-to-import-egyptian-table-olives" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media/how-to-import-egyptian-table-olives</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/how-to-import-egyptian-table-olives" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/how-to-import-egyptian-table-olives" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/how-to-import-egyptian-table-olives" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/media/egyptian-olive-prices-2026</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/egyptian-olive-prices-2026" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/egyptian-olive-prices-2026" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/egyptian-olive-prices-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/egyptian-olive-prices-2026" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media/egyptian-olive-prices-2026</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/egyptian-olive-prices-2026" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/egyptian-olive-prices-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/egyptian-olive-prices-2026" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/media/green-vs-black-vs-oxidized-olives</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/green-vs-black-vs-oxidized-olives" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/green-vs-black-vs-oxidized-olives" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/green-vs-black-vs-oxidized-olives" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/green-vs-black-vs-oxidized-olives" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media/green-vs-black-vs-oxidized-olives</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/green-vs-black-vs-oxidized-olives" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/green-vs-black-vs-oxidized-olives" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/green-vs-black-vs-oxidized-olives" />
+  </url>
   <url>
     <loc>https://olivesegypt.com/media/olive-export-packaging-guide</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/olive-export-packaging-guide" />  </url>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/olive-export-packaging-guide" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/olive-export-packaging-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/olive-export-packaging-guide" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/ar/media/olive-export-packaging-guide</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/olive-export-packaging-guide" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/olive-export-packaging-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/olive-export-packaging-guide" />
+  </url>
 </urlset>
