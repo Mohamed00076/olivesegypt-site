@@ -3,9 +3,11 @@ Allow: /
 Disallow: /dashboard
 Disallow: /login
 Disallow: /letterhead
+Disallow: /ar/letterhead
 Disallow: /quotation
 Disallow: /invoice
 Disallow: /business-card
+Disallow: /ar/business-card
 Disallow: /catalog/print
 Disallow: /ar/catalog/print
 Disallow: /downloads/pricing-packaging-guide
