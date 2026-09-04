@@ -441,6 +441,271 @@ it to main like before" (informal).
 
 ---
 
+## Deploy 4 — Arabic localization rollout (PRs #43–#50)
+
+- **Merge commits (8, in merge order):**
+  `0a70b82f081789b221dc86530b0750f3ad9f0bca` (#43),
+  `1855a5375af93aa5fbcf092b957c094fc9eb60bf` (#44),
+  `49b3e8ba50f62bcfc382ec5b51b14d86bd8fa2ec` (#50),
+  `4e9169c45aa4aefddc24f922fce7eebf9dcec4e9` (#45),
+  `849a27fdb3deeb6913d17222748e2530529bef97` (#46),
+  `1a7f88c0b7591af92f84a459af937d6317291e5b` (#47),
+  `dd9772c9ae8c3486191f58ea31ab5b023f662c54` (#48),
+  `8798d5842af66879550e1b9f9b34d6f14c05580b` (#49)
+- **Merged:** 2026-09-04, 16:08–16:14 (UTC+3), all eight in one session
+- **Covers:** full Arabic (`/ar/`) localization of the site per explicit
+  request ("i want to add arabic lang to my website... a real arabic
+  content that is also seo and aeo optimized... make sure its added to
+  all pages, also make all my catalogues product sheets company profile
+  all the downloadable pdfs, arabic version") — every page, both product
+  catalogs, all 11 product spec sheets, company profile, contact/sample
+  forms, all `/resources/*` and `/media/*` content, the downloads hub and
+  its 3 gated buyer guides, the business card, the letterhead, and the
+  downloadable B2B export-catalog PDF now have a live Arabic counterpart.
+  Approval for this batch of eight: **explicit, written, following the
+  form this document's title names** — the user sent the literal message
+  "PRODUCTION DEPLOYMENT REQUEST" as a standalone instruction, not folded
+  into a merge request or informal chat approval like Deploys 1–3.
+  Individual PR merges themselves were separately authorized in three
+  rounds ("merge 43 44 50", "merge 45 46", "merge 47 48 49").
+
+### Complete changed-file list (57 files, diffed `ab731a2..8798d58`)
+
+```
+ ar/business-card/index.html                        |  93 +++++
+ ar/catalog/print/index.html                        | 419 +++++++++++++++++++++
+ ar/contact/index.html                              |   2 +-
+ ar/downloads/buyers-guide/index.html               | 122 ++++++
+ ar/downloads/index.html                            | 118 ++++++
+ ar/downloads/origin-comparison-guide/index.html    |  99 +++++
+ ar/downloads/pricing-packaging-guide/index.html    | 101 +++++
+ ar/how-we-work/index.html                          |   2 +-
+ ar/index.html                                      |   2 +-
+ ar/letterhead/index.html                           |  71 ++++
+ ar/media/choosing-a-trusted-olive-exporter/index.html | 129 +++++++
+ ar/media/egyptian-olive-prices-2026/index.html     | 129 +++++++
+ ar/media/green-vs-black-vs-oxidized-olives/index.html | 129 +++++++
+ ar/media/health-benefits-of-table-olives/index.html | 129 +++++++
+ ar/media/how-to-import-egyptian-table-olives/index.html | 129 +++++++
+ ar/media/index.html                                | 137 +++++++
+ ar/media/olive-export-packaging-guide/index.html   | 129 +++++++
+ ar/media/olives-in-everyday-cooking/index.html     | 129 +++++++
+ ar/privacy/index.html                              | 144 +++++++
+ ar/resources/certifications/index.html             | 129 +++++++
+ ar/resources/export-markets/index.html             | 129 +++++++
+ ar/resources/faq/index.html                        | 136 +++++++
+ ar/resources/index.html                            | 117 ++++++
+ ar/resources/packaging/index.html                  | 132 +++++++
+ ar/resources/pricing/index.html                    | 152 ++++++++
+ ar/resources/why-egyptian-olives/index.html        | 161 ++++++++
+ ar/sample/index.html                               | 226 +++++++++++
+ assets/gated-download.js                           |  25 +-
+ business-card/index.html                           |   3 +
+ catalog/print/index.html                           |   3 +
+ downloads/buyers-guide/index.html                  |   3 +
+ downloads/index.html                               |   6 +-
+ downloads/origin-comparison-guide/index.html       |   3 +
+ downloads/pricing-packaging-guide/index.html       |   3 +
+ downloads/triple-company-export-catalog-2026-ar.pdf | Bin 0 -> 815245 bytes
+ letterhead/index.html                              |   4 +
+ media/choosing-a-trusted-olive-exporter/index.html |   4 +-
+ media/egyptian-olive-prices-2026/index.html        |   4 +-
+ media/green-vs-black-vs-oxidized-olives/index.html |   4 +-
+ media/health-benefits-of-table-olives/index.html   |   4 +-
+ media/how-to-import-egyptian-table-olives/index.html |   4 +-
+ media/index.html                                   |   4 +-
+ media/olive-export-packaging-guide/index.html      |   4 +-
+ media/olives-in-everyday-cooking/index.html        |   4 +-
+ privacy/index.html                                 |   3 +-
+ resources/certifications/index.html                |   3 +-
+ resources/export-markets/index.html                |   3 +-
+ resources/faq/index.html                           |   3 +-
+ resources/index.html                               |   3 +-
+ resources/packaging/index.html                     |   3 +-
+ resources/pricing/index.html                       |   3 +-
+ resources/why-egyptian-olives/index.html           |   3 +-
+ robots.txt                                         |   6 +
+ sample/index.html                                  |   4 +-
+ scripts/export-catalog-source-ar.html              | 359 ++++++++++++++++++
+ scripts/generate-export-catalog-pdf.js             |  17 +-
+ sitemap.xml                                        | 288 ++++++++++++--
+ 57 files changed, 4101 insertions(+), 74 deletions(-)
+```
+
+### Staging URL and test method
+
+No Netlify deploy-preview build succeeded for any of the 8 PRs before
+merge — every one hit the same account-wide Netlify build-credit
+exhaustion documented on every PR this session (`netlify/stirring-manatee
+-ca2643/deploy-preview: failure`, standing comment posted on each PR
+explaining this is a billing issue, not a code issue). The user confirmed
+separately, after all 8 merges, that "the netlify issue is sorted" — this
+was **not** independently re-verified against a live deploy-preview
+build for any of these 8 PRs before or after that confirmation; no new
+deploy-preview run was triggered or observed for this batch.
+
+Test method actually used, in place of a deploy-preview build, for every
+file in this batch:
+- HTML tag-balance check (Python `HTMLParser`, stack-based) on every
+  new/touched file.
+- `xml.dom.minidom.parse()` on `sitemap.xml` after every batch (final:
+  65 URLs).
+- `json.loads()` on every `<script type="application/ld+json">` block.
+- `node -c` syntax check on `assets/gated-download.js`.
+- Playwright (headless Chromium, local `python3 -m http.server`) screen-
+  shots of every new Arabic page at production-representative viewport
+  widths, checking `document.documentElement.scrollWidth` against the
+  viewport width to catch the RTL horizontal-overflow bug (see below).
+- One full end-to-end form submission (Pricing & Packaging Guide gated
+  form) against a **mocked** `/api/leads` response, on both the English
+  and Arabic `/downloads` pages, to confirm the localized JS status
+  text — not tested against the real Netlify Function.
+- The Arabic export-catalog PDF was rendered via the actual production
+  generation script (`scripts/generate-export-catalog-pdf.js`, headless
+  Chromium via Playwright, same settings as the English file) and
+  visually inspected page-by-page (PyMuPDF render to PNG) — this is the
+  one deliverable in this deploy that got genuine rendered-output
+  inspection, closing part of Outstanding item 3 below.
+
+**Not done, same gap as every prior deploy:** any of this tested against
+an actual Netlify deploy-preview or production build. Everything above
+is source-level and local-render verification only.
+
+### Evidence-register summary
+
+Not evidence-register-driven — this is a translation batch, not a new
+factual claim. Every fact translated into Arabic (product specs,
+company-profile paragraphs, commercial terms, the Confirmed/TODO badge
+split on the privacy page, the Egypt-production statistics with their
+FAO/IOC sourcing caveat) is the same value already live and approved in
+English (or, for the FAQ/stats/product-spec content, already shipped in
+Arabic on an earlier page and reused verbatim here for consistency) — no
+new certificate, statistic, or completed-export claim was introduced.
+
+One pre-existing discrepancy was carried through unchanged and flagged,
+not resolved: `media/egyptian-olive-prices-2026` (English, not touched by
+this deploy) still uses "indicative FOB reference ranges" language that
+`resources/pricing` dropped earlier in the engagement for being stale;
+the Arabic translation matches the current live English rather than
+silently correcting it.
+
+### Claim-removal / semantic review
+
+N/A — translation of already-approved content, not new copy. No new
+entries for the claim-removal register (which, per the Outstanding list
+below, still doesn't exist as a dedicated tracked file).
+
+### Route/redirect/sitemap/robots/canonical/hreflang/schema/PDF/form/privacy/analytics/performance results
+
+- **Sitemap**: 52 → 65 URLs (18 → 24 under `/ar/`, plus the pre-existing
+  English pairs' hreflang blocks completed). Parses as valid XML; not
+  independently re-diffed against the A0 canonical-route table this
+  round (that closeout was Deploy 3's).
+- **Robots.txt**: 6 new `Disallow: /ar/...` lines added, mirroring each
+  existing English noindex rule 1:1 (`/ar/letterhead`,
+  `/ar/business-card`, `/ar/catalog/print`, and the 3
+  `/ar/downloads/*-guide` paths). Not re-verified against production.
+- **Canonical/hreflang**: every new Arabic page and its English
+  counterpart carry reciprocal `en`/`ar`/`x-default` hreflang; validated
+  in source, not tested live.
+- **JSON-LD**: every new Arabic page's `Organization` +
+  `BreadcrumbList` (and, for articles, `Article`) blocks parse as valid
+  JSON; not checked for duplicate emission across layouts.
+- **PDFs**: the Arabic export-catalog PDF is a genuinely rendered binary,
+  visually inspected (see above) — the first PDF deliverable in this
+  project's history to get that. `ar/catalog/print`, `ar/business-card`,
+  `ar/letterhead` remain client-side-printable HTML, same as their
+  English counterparts always have been — their actual rendered PDF
+  output has still never been inspected by anyone, English or Arabic.
+- **Forms**: the Arabic sample form and the 3 Arabic gated-guide forms
+  post to the same existing Netlify Functions (`/api/inquiries`,
+  `/api/leads`) with unchanged field `id`/`name` attributes and
+  backend-facing values — integration-tested only via a mocked fetch
+  response (see Staging URL section above), not against the live
+  functions.
+- **Privacy/consent**: the Arabic privacy page translates the existing
+  Key Facts table (14 rows, Confirmed/TODO badges) exactly — no badge
+  was moved from TODO to Confirmed or vice versa. Not re-tested against
+  production.
+- **Analytics**: unaffected — no changes to `assets/analytics.js` or any
+  analytics Netlify Function in this deploy.
+- **Performance**: not tested.
+
+### RTL-specific verification (new for this deploy, no English-deploy equivalent)
+
+A real bug was found and fixed during this rollout, worth recording
+here since it's a defect class specific to Arabic/RTL pages that
+wouldn't show up in any English-focused test: any element hidden
+off-screen via `position:absolute;left:-9999px` (the honeypot-field
+pattern used on every form) inflates `document.documentElement
+.scrollWidth` to ~11000px specifically under `dir="rtl"` — confirmed
+empirically (LTR unaffected at 1280px; RTL with `left:-9999px` blew up
+to 11279px; RTL with `right:-9999px` stayed correctly at 1280px). Fixed
+on the page it was first found (`ar/contact`, a prior deploy) and
+applied proactively to every honeypot field built in this deploy
+(`ar/sample`, all 3 gated-guide forms on `ar/downloads`). Verified via
+`scrollWidth` check on every new Arabic page — all reported the correct
+viewport width, none showed the bug.
+
+### Staging-vs-production diff plan
+
+Same as every prior deploy — one Netlify site serves both preview and
+production from the same build. No routes, HTML, metadata, JSON-LD, or
+assets are expected to differ between them for this deploy. What's
+**still not confirmed, and could not be checked from this session**:
+whether `olivesegypt.com` actually resolves to this Netlify site at
+all. This session's network egress is blocked for `olivesegypt.com`
+specifically (`EGRESS_BLOCKED` from both a direct `curl` and a
+`WebFetch` attempt made during this deployment) — that block is this
+sandbox's own network policy, not evidence about the domain's DNS state
+one way or the other. The parked-domain/DNS question Deploy 1 raised has
+not been re-checked by anyone, human or model, since that record was
+written.
+
+### Rollback
+
+```
+git revert -m 1 8798d5842af66879550e1b9f9b34d6f14c05580b
+git revert -m 1 dd9772c9ae8c3486191f58ea31ab5b023f662c54
+git revert -m 1 1a7f88c0b7591af92f84a459af937d6317291e5b
+git revert -m 1 849a27fdb3deeb6913d17222748e2530529bef97
+git revert -m 1 4e9169c45aa4aefddc24f922fce7eebf9dcec4e9
+git revert -m 1 49b3e8ba50f62bcfc382ec5b51b14d86bd8fa2ec
+git revert -m 1 1855a5375af93aa5fbcf092b957c094fc9eb60bf
+git revert -m 1 0a70b82f081789b221dc86530b0750f3ad9f0bca
+```
+In reverse merge order (most recent first) since each merge commit has
+two parents. Reverting all 8 removes every `/ar/` page and the Arabic
+PDF; the pre-existing English site is untouched either way since no
+English content was altered beyond hreflang/switcher-link additions and
+one missing-dropdown-option bugfix each on `sample`, `contact`, and
+`company-profile` (the latter two from earlier deploys, not this one).
+
+### Exact production action taken
+
+Merged PRs #43, #44, #50 (independent, no shared base), then #45 → #46
+(rebasing #46's PR base from `claude/arabic-sample-privacy` to `main`
+after #45 merged), then #47 → #48 → #49 (same rebase-then-merge pattern
+down the stack), all via GitHub's merge API, method "merge". Approval:
+three explicit written instructions naming PR numbers ("merge 43 44
+50", "merge 45 46", "merge 47 48 49"), followed by a separate, later,
+standalone written instruction — "PRODUCTION DEPLOYMENT REQUEST" — with
+no new code changes attached to it. No additional production action
+exists to take in response to that request beyond what merging already
+did: this repository's Netlify site auto-builds from `main` on every
+push (`netlify.toml` `[build]` block, unchanged across all 4 deploys in
+this record), so every one of the 8 merges above already queued a
+production build attempt at merge time. This session has no Netlify
+API or dashboard access and cannot confirm whether those build attempts
+(a) ran after the billing block was lifted, (b) succeeded, or (c) are
+what's currently being served at the production domain. If any of the
+8 build attempts is still sitting in a failed state from before the
+billing fix, Netlify does not auto-retry a failed build on its own —
+a fresh push or a manual "Trigger deploy" from the Netlify dashboard
+would be needed, and only the site owner can do the latter from here.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -451,13 +716,24 @@ last sync. It is not part of the changed-file scope of any deploy above.
 
 1. **Section D has never been run against actual production**, for any
    deploy, because production's own reachability is unconfirmed (parked
-   domain/DNS issue). This is the single largest gap this record surfaces.
+   domain/DNS issue). Still true after Deploy 4 — this session's network
+   egress to `olivesegypt.com` is itself blocked (sandbox policy, not
+   evidence about the domain), so even that limited check couldn't be
+   attempted this time.
 2. **No dedicated claim-removal register file** exists for A2, despite
    being explicitly required. The removals themselves are verified (see
    Deploy 1's table above); the tracking artifact is not.
-3. **PDF-generation output** (`company-profile`, `letterhead`,
-   `business-card`, `catalog/print`) has never been visually inspected by
-   anyone as rendered output — only as source HTML.
+3. **PDF-generation output** — **partially resolved by Deploy 4**: the
+   Arabic export-catalog PDF was rendered and visually inspected
+   page-by-page, the first PDF in this project to get that. The English
+   export-catalog PDF, and all four of `company-profile`, `letterhead`,
+   `business-card`, `catalog/print` (both languages), remain unverified
+   as rendered output — only checked as source HTML.
 4. **Certificates remain unverified** — nothing certificate-dependent has
    been published, per A1/Rule 3, and that has not changed since
    `evidence-needed.md` was written.
+5. **Whether the Netlify production build for any/all of the 8 Deploy 4
+   merges actually succeeded is unconfirmed** — this session has no
+   Netlify API or dashboard access. The site owner should check the
+   Netlify dashboard directly and, if the latest production deploy shows
+   failed or stale, trigger a fresh one manually.
