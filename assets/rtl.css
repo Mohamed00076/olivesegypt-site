@@ -1,0 +1,16 @@
+/* RTL support stylesheet — loaded only on Arabic (/ar/*) pages, alongside
+   the shared compiled Tailwind bundle (assets/index-Dw0yUE42.css).
+   The compiled bundle only includes utility classes actually used on the
+   English pages, so a handful of classes used by the Arabic templates
+   (mirrored/responsive directional utilities) are missing from it and are
+   supplied here instead, in Tailwind's own output format so they merge in
+   cleanly rather than diverging from the design system. Add to this file
+   as more Arabic pages introduce new directional utility classes. */
+
+.pr-4 { padding-right: calc(var(--spacing) * 4); }
+.border-r { border-right-style: var(--tw-border-style); border-right-width: 1px; }
+
+@media (min-width: 640px) {
+  .sm\:pr-4 { padding-right: calc(var(--spacing) * 4); }
+  .sm\:border-r { border-right-style: var(--tw-border-style); border-right-width: 1px; }
+}
