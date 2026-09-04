@@ -17,10 +17,32 @@
  * refresh" mechanism when paired with a periodic Netlify scheduled
  * function hitting a build hook (see netlify/functions/geo-refresh.js).
  *
+ * geo/ is persisted across builds by the netlify-plugin-cache build
+ * plugin (see netlify.toml) so this script doesn't have to re-download
+ * and re-extract an ~8-9MB file on every single build -- including
+ * every PR deploy preview -- when nothing about it has changed. It
+ * skips the download whenever geo/.fetched-at (also cached, restored
+ * alongside the .mmdb file) says the existing copy is under MAX_AGE_MS
+ * old. This uses a sidecar timestamp file rather than the .mmdb's own
+ * filesystem mtime deliberately -- whether a cache-restore step
+ * preserves original mtimes isn't something to depend on.
+ *
+ * MAX_AGE_MS is currently set to 1 day rather than the ~1 week the geo-
+ * refresh scheduled function's cadence implies -- deliberately, while
+ * the site is under heavy active development with many deploys per
+ * day. A day-old ceiling still means at most one real download per day
+ * no matter how many builds happen that day, which is most of the
+ * savings this change was for. Once things settle back down to mostly
+ * occasional blog/article updates, bump this back to a week (matching
+ * geo-refresh again) so quiet periods don't force daily downloads for
+ * no reason.
+ *
  * Must never fail the whole site build over a geo-data hiccup: any
  * download/extract failure is logged and the script exits 0, leaving
- * geo/ empty. The runtime geo lookup (_geo_lib.js) already treats a
- * missing database as "no country data," not an error.
+ * geo/ in whatever state it was already in (empty on a first build,
+ * or the last good cached copy otherwise). The runtime geo lookup
+ * (_geo_lib.js) already treats a missing database as "no country
+ * data," not an error.
  */
 
 const fs = require('fs');
@@ -32,8 +54,17 @@ const { execFileSync } = require('child_process');
 const MIRROR_URL = 'https://raw.githubusercontent.com/GitSquared/node-geolite2-redist/master/redist/GeoLite2-Country.tar.gz';
 const GEO_DIR = path.resolve(__dirname, '..', 'geo');
 const DEST_MMDB = path.join(GEO_DIR, 'GeoLite2-Country.mmdb');
+const FETCHED_AT_FILE = path.join(GEO_DIR, '.fetched-at');
 const TMP_TAR = path.join(GEO_DIR, '.download.tar.gz');
 const TMP_EXTRACT = path.join(GEO_DIR, '.extract');
+const MAX_AGE_MS = 1 * 24 * 60 * 60 * 1000; // 1 day for now -- see note above; bump to a week later
+
+function cachedCopyIsFresh() {
+  if (!fs.existsSync(DEST_MMDB) || !fs.existsSync(FETCHED_AT_FILE)) return false;
+  const fetchedAt = Number(fs.readFileSync(FETCHED_AT_FILE, 'utf8').trim());
+  if (!Number.isFinite(fetchedAt)) return false;
+  return Date.now() - fetchedAt < MAX_AGE_MS;
+}
 
 function download(url, dest, redirectsLeft = 5) {
   return new Promise((resolve, reject) => {
@@ -57,6 +88,12 @@ function download(url, dest, redirectsLeft = 5) {
 async function main() {
   fs.mkdirSync(GEO_DIR, { recursive: true });
 
+  if (cachedCopyIsFresh()) {
+    const ageDays = ((Date.now() - Number(fs.readFileSync(FETCHED_AT_FILE, 'utf8').trim())) / (24 * 60 * 60 * 1000)).toFixed(1);
+    console.log(`[build-geo] cached geo database is ${ageDays} days old -- skipping download.`);
+    return;
+  }
+
   console.log('[build-geo] downloading GeoLite2-Country from the free redistribution mirror...');
   await download(MIRROR_URL, TMP_TAR);
 
@@ -70,6 +107,7 @@ async function main() {
 
   const mmdbSrc = path.join(TMP_EXTRACT, versionDir, 'GeoLite2-Country.mmdb');
   fs.copyFileSync(mmdbSrc, DEST_MMDB);
+  fs.writeFileSync(FETCHED_AT_FILE, String(Date.now()));
 
   const sizeMb = (fs.statSync(DEST_MMDB).size / (1024 * 1024)).toFixed(1);
   console.log(`[build-geo] wrote ${DEST_MMDB} (${sizeMb} MB, from ${versionDir})`);
