@@ -6,8 +6,9 @@
     "check:locale-links": "node scripts/check-locale-links.js",
     "check:email-lib": "node scripts/check-email-lib.js",
     "check:locale-switch": "node scripts/check-locale-switch.js",
-    "test": "node scripts/check-locale-links.js && node scripts/check-email-lib.js && node scripts/check-product-order.js",
-    "check:product-order": "node scripts/check-product-order.js"
+    "test": "node scripts/check-locale-links.js && node scripts/check-email-lib.js && node scripts/check-product-order.js && node scripts/check-nav-footer.js",
+    "check:product-order": "node scripts/check-product-order.js",
+    "check:nav-footer": "node scripts/check-nav-footer.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "0.10.4",

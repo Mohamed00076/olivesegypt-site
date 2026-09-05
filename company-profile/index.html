@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <script defer src="/assets/consent.js"></script>
     <script defer src="/assets/locale-switch.js"></script>
+    <script defer src="/assets/site-nav.js"></script>
     <script defer src="/assets/analytics.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -69,21 +70,10 @@
     <meta name="theme-color" content="#3f4f2b" />
   </head>
   <body>
-    <header class="relative w-full border-b border-border bg-background">
-      <div class="container flex h-16 max-w-screen-2xl items-center justify-between gap-4 mx-auto px-4">
-        <a href="/" class="flex items-center gap-2 shrink-0">
+    <header class="relative sticky top-0 z-50 w-full border-b border-border bg-background shadow-sm"><div class="container flex h-16 max-w-screen-2xl items-center justify-between gap-4 mx-auto px-4"><a href="/" class="flex items-center gap-2 shrink-0">
           <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" class="h-8 w-8 object-contain shrink-0" width="512" height="512"/>
           <span class="font-serif text-sm sm:text-[15px] font-bold tracking-tight text-primary whitespace-nowrap">TRIPLE COMPANY</span>
-        </a>
-        <nav class="hidden lg:flex gap-4 text-sm font-medium">
-          <a href="/catalog" class="text-muted-foreground hover:text-foreground">Catalog</a>
-          <a href="/how-we-work" class="text-muted-foreground hover:text-foreground">How We Work</a>
-          <a href="/downloads" class="text-muted-foreground hover:text-foreground">Downloads</a>
-          <a href="/contact" class="text-muted-foreground hover:text-foreground">Contact</a>
-        </nav>
-        <div class="flex items-center gap-2 shrink-0"><a href="/ar/company-profile" hreflang="ar" lang="ar" dir="rtl" class="hidden lg:flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground border border-border rounded-md px-2.5 py-1.5">AR</a><button id="mobile-menu-toggle" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors border border-transparent h-9 w-9 lg:hidden" type="button" aria-expanded="false" aria-controls="mobile-menu-panel"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu h-5 w-5" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg><span class="sr-only">Toggle menu</span></button><div id="mobile-menu-panel" hidden class="lg:hidden border-t border-border bg-background"><nav class="flex flex-col px-4 py-3"><a href="/catalog" class="py-2 text-sm font-medium text-foreground">Catalog</a><a href="/how-we-work" class="py-2 text-sm font-medium text-foreground">How We Work</a><a href="/downloads" class="py-2 text-sm font-medium text-foreground">Downloads</a><a href="/contact" class="py-2 text-sm font-medium text-foreground">Contact</a><div class="flex gap-2 mt-2 pt-2 border-t border-border"><a href="/ar/company-profile" hreflang="ar" lang="ar" dir="rtl" class="flex-1 text-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground">AR</a></div></nav></div></div>
-      </div>
-    </header>
+        </a><nav class="tc-nav" aria-label="Primary"><div class="tc-nav-item"><a class="tc-nav-link" href="/catalog">Products</a></div><div class="tc-nav-item"><button type="button" class="tc-nav-trigger" aria-expanded="false" aria-controls="nav-quality">Quality &amp; Documents<svg class="tc-nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="tc-nav-panel" id="nav-quality" hidden><a href="/resources/certifications">Certifications</a><a href="/downloads">Downloads &amp; Documents</a><a href="/company-profile">Company Profile</a></div></div><div class="tc-nav-item"><button type="button" class="tc-nav-trigger" aria-expanded="false" aria-controls="nav-resources">Resources<svg class="tc-nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="tc-nav-panel" id="nav-resources" hidden><a href="/downloads">Buyer Guides</a><a href="/resources/packaging">Packaging</a><a href="/resources/pricing">Pricing</a><a href="/resources/faq">FAQ</a><a href="/resources/why-egyptian-olives">Why Egyptian Olives</a><a href="/resources/export-markets">Export Markets</a><a href="/how-we-work">How We Work</a></div></div><div class="tc-nav-item"><button type="button" class="tc-nav-trigger" aria-expanded="false" aria-controls="nav-media">Media Center<svg class="tc-nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="tc-nav-panel" id="nav-media" hidden><a href="/media/news">Company News</a><a href="/media/blog">Olive Trade Blog</a><a href="/media/inquiries">Media Inquiries</a></div></div><div class="tc-nav-item"><a class="tc-nav-link" href="/about">About</a></div></nav><div class="flex items-center gap-2 md:gap-3 shrink-0"><a href="/ar/company-profile" hreflang="ar" lang="ar" dir="rtl" class="hidden lg:flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground border border-border rounded-md px-2.5 py-1.5 whitespace-nowrap">AR</a><div class="hidden md:flex items-center gap-2"><a href="/contact" class="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground tc-cta-primary shadow transition-colors hover:bg-primary/90">Request a Quote</a></div><button id="mobile-menu-toggle" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors border border-transparent h-9 w-9 lg:hidden" type="button" aria-expanded="false" aria-controls="mobile-menu-panel"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu h-5 w-5" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg><span class="sr-only">Toggle menu</span></button><div id="mobile-menu-panel" hidden class="lg:hidden border-t border-border bg-background"><nav class="flex flex-col px-4 py-3" aria-label="Primary"><a href="/catalog" class="py-2 text-sm font-medium text-foreground">Products</a><button type="button" class="tc-drawer-trigger flex items-center justify-between py-2 text-sm font-medium text-foreground" aria-expanded="false" aria-controls="drawer-quality">Quality &amp; Documents<svg class="tc-nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="drawer-quality" hidden class="flex flex-col"><a href="/resources/certifications" class="py-2 ps-4 text-sm text-muted-foreground">Certifications</a><a href="/downloads" class="py-2 ps-4 text-sm text-muted-foreground">Downloads &amp; Documents</a><a href="/company-profile" class="py-2 ps-4 text-sm text-muted-foreground">Company Profile</a></div><button type="button" class="tc-drawer-trigger flex items-center justify-between py-2 text-sm font-medium text-foreground" aria-expanded="false" aria-controls="drawer-resources">Resources<svg class="tc-nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="drawer-resources" hidden class="flex flex-col"><a href="/downloads" class="py-2 ps-4 text-sm text-muted-foreground">Buyer Guides</a><a href="/resources/packaging" class="py-2 ps-4 text-sm text-muted-foreground">Packaging</a><a href="/resources/pricing" class="py-2 ps-4 text-sm text-muted-foreground">Pricing</a><a href="/resources/faq" class="py-2 ps-4 text-sm text-muted-foreground">FAQ</a><a href="/resources/why-egyptian-olives" class="py-2 ps-4 text-sm text-muted-foreground">Why Egyptian Olives</a><a href="/resources/export-markets" class="py-2 ps-4 text-sm text-muted-foreground">Export Markets</a><a href="/how-we-work" class="py-2 ps-4 text-sm text-muted-foreground">How We Work</a></div><button type="button" class="tc-drawer-trigger flex items-center justify-between py-2 text-sm font-medium text-foreground" aria-expanded="false" aria-controls="drawer-media">Media Center<svg class="tc-nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="drawer-media" hidden class="flex flex-col"><a href="/media/news" class="py-2 ps-4 text-sm text-muted-foreground">Company News</a><a href="/media/blog" class="py-2 ps-4 text-sm text-muted-foreground">Olive Trade Blog</a><a href="/media/inquiries" class="py-2 ps-4 text-sm text-muted-foreground">Media Inquiries</a></div><a href="/about" class="py-2 text-sm font-medium text-foreground">About</a><div class="flex gap-2 mt-2 pt-2 border-t border-border"><a href="/ar/company-profile" hreflang="ar" lang="ar" dir="rtl" class="flex-1 text-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground">AR</a><a href="/contact" class="flex-1 text-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground tc-cta-primary">Request a Quote</a></div></nav></div></div></div></header>
 
     <main class="container max-w-3xl mx-auto px-4 py-12">
       <p class="doc-meta no-print">
@@ -161,53 +151,7 @@
       <p class="doc-meta mt-8 no-print">This page can be saved as a PDF using your browser's print function (page numbers and source URLs are included in the print layout).</p>
     </main>
 
-    <footer class="w-full border-t border-border py-8 mt-8">
-      <div class="container max-w-screen-2xl mx-auto px-4 text-sm text-muted-foreground">
-        &copy; 2026 Triple Company for Industrial Development. All rights reserved. Website: olivesegypt.com
-      </div>
-    </footer>
+    <footer class="w-full border-t border-border py-12 mt-12"><div class="container max-w-screen-2xl mx-auto px-4"><div class="tc-footer-cols"><div class="tc-footer-col"><h3>Products</h3><ul><li><a href="/catalog">Products</a></li><li><a href="/downloads">Full Catalog</a></li><li><a href="/catalog/print">Product Specifications</a></li></ul></div><div class="tc-footer-col"><h3>Quality &amp; Documents</h3><ul><li><a href="/resources/certifications">Certifications</a></li><li><a href="/downloads">Downloads &amp; Documents</a></li><li><a href="/company-profile">Company Profile</a></li></ul></div><div class="tc-footer-col"><h3>Resources</h3><ul><li><a href="/downloads">Buyer Guides</a></li><li><a href="/resources/faq">FAQ</a></li><li><a href="/how-we-work">How We Work</a></li></ul></div><div class="tc-footer-col"><h3>Media Center</h3><ul><li><a href="/media/news">Company News</a></li><li><a href="/media/blog">Olive Trade Blog</a></li><li><a href="/media/inquiries">Media Inquiries</a></li></ul></div><div class="tc-footer-col"><h3>Contact</h3><ul><li><a href="/contact">Contact</a></li><li><a href="/sample">Request a Sample</a></li><li><a href="https://wa.me/201006045961" rel="noopener" target="_blank">WhatsApp</a></li></ul></div></div><div class="mt-10 pt-6 border-t border-border flex flex-col gap-3"><p class="font-serif font-bold text-primary">Triple Company for Industrial Development</p><p class="text-sm text-muted-foreground max-w-2xl">An Egyptian table-olive supplier based in Cairo, Egypt, preparing for international export via approved partner arrangements.</p><p class="text-sm text-muted-foreground"><span dir="ltr">sales@olivesegypt.com</span> &middot; <span dir="ltr">+20 100 604 5961</span></p><div class="flex flex-wrap items-center gap-4 pt-2"><a href="/privacy" class="text-xs text-muted-foreground hover:text-foreground">Privacy</a><span class="text-xs text-muted-foreground">&copy; Triple Company for Industrial Development. All rights reserved. Website: olivesegypt.com</span></div></div></div></footer>
     <div class="print-footer"></div>
-
-    <script>
-      // Part 2B mobile drawer behaviour, reused verbatim on this page's simpler
-      // header (see assets/index-Dw0yUE42.css for the positioning rules).
-      (function () {
-        'use strict';
-        var menuBtn = document.getElementById('mobile-menu-toggle');
-        var menuPanel = document.getElementById('mobile-menu-panel');
-        if (!menuBtn || !menuPanel) return;
-        menuBtn.addEventListener('click', function () {
-          var isHidden = menuPanel.hasAttribute('hidden');
-          if (isHidden) {
-            menuPanel.removeAttribute('hidden');
-            menuBtn.setAttribute('aria-expanded', 'true');
-            var firstLink = menuPanel.querySelector('a');
-            if (firstLink) firstLink.focus();
-          } else {
-            menuPanel.setAttribute('hidden', '');
-            menuBtn.setAttribute('aria-expanded', 'false');
-          }
-        });
-        menuPanel.querySelectorAll('a').forEach(function (a) {
-          a.addEventListener('click', function () {
-            menuPanel.setAttribute('hidden', '');
-            menuBtn.setAttribute('aria-expanded', 'false');
-          });
-        });
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && !menuPanel.hasAttribute('hidden')) {
-            menuPanel.setAttribute('hidden', '');
-            menuBtn.setAttribute('aria-expanded', 'false');
-            menuBtn.focus();
-          }
-        });
-        document.addEventListener('click', function (e) {
-          if (menuPanel.hasAttribute('hidden')) return;
-          if (menuPanel.contains(e.target) || menuBtn.contains(e.target)) return;
-          menuPanel.setAttribute('hidden', '');
-          menuBtn.setAttribute('aria-expanded', 'false');
-        });
-      })();
-    </script>
   </body>
 </html>
