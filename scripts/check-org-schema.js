@@ -58,14 +58,34 @@ function jsonLd(html) {
   return out;
 }
 
+/*
+ * Every node, at any depth. The first version of this file only looked at
+ * top-level nodes, which meant the organisation nodes nested inside an
+ * Article's author/publisher were invisible to it -- and those are exactly
+ * where an unlinked second copy of the company hides.
+ */
 function nodes(doc) {
-  return Array.isArray(doc) ? doc : [doc];
+  const out = [];
+  (function walk(n) {
+    if (Array.isArray(n)) return n.forEach(walk);
+    if (!n || typeof n !== 'object') return;
+    out.push(n);
+    Object.values(n).forEach(walk);
+  })(doc);
+  return out;
 }
 
+// The full definition -- the node that actually describes the company, as
+// opposed to a reference that merely names it (an Article's publisher, say).
 function isOrgDefinition(n) {
   if (!n || typeof n !== 'object' || n['@id'] !== ORG_ID) return false;
   const t = [].concat(n['@type']);
-  return (t.includes('Organization') || t.includes('Wholesaler')) && 'name' in n;
+  if (!(t.includes('Organization') || t.includes('Wholesaler'))) return false;
+  return 'description' in n || 'address' in n || 'contactPoint' in n;
+}
+
+function isOrganizationNode(n) {
+  return n && typeof n === 'object' && [].concat(n['@type']).includes('Organization');
 }
 
 // ---- one definition, and it is on the homepage ---------------------------
@@ -142,6 +162,49 @@ if (org) {
   }
 }
 
+// ---- every node claiming this @id must agree with the definition --------
+//
+// A reference that names the company is fine; a reference that names it
+// *differently* is the 53-definitions problem in miniature.
+if (org) {
+  const canonicalLogo = typeof org.logo === 'string' ? org.logo : (org.logo || {}).url;
+  for (const f of files) {
+    const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
+    for (const doc of jsonLd(html)) {
+      if (doc.__parseError) continue;
+      for (const n of nodes(doc)) {
+        if (!n || typeof n !== 'object' || n['@id'] !== ORG_ID || n === org) continue;
+        if ('name' in n && n.name !== org.name) {
+          problems.push(`${f}: a node claiming the canonical @id calls the company "${n.name}", not "${org.name}"`);
+        }
+        const l = typeof n.logo === 'string' ? n.logo : (n.logo || {}).url;
+        if (l && l !== canonicalLogo) {
+          problems.push(`${f}: a node claiming the canonical @id uses logo ${l}, not ${canonicalLogo}`);
+        }
+      }
+    }
+  }
+}
+
+// ---- Organization nodes with no @id at all ------------------------------
+//
+// Counted and reported rather than failed: 14 of these exist today, on the
+// seven Arabic article pages (author + publisher), naming the company in
+// Arabic with no link to the canonical entity. Linking them changes what an
+// Arabic page says about the company, which is pending the owner's review of
+// the Arabic structured-data audit (docs/arabic-schema-audit.md). When that
+// lands, this becomes a hard failure.
+const anonymous = [];
+for (const f of files) {
+  const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
+  for (const doc of jsonLd(html)) {
+    if (doc.__parseError) continue;
+    for (const n of nodes(doc)) {
+      if (isOrganizationNode(n) && !n['@id'] && n.name) anonymous.push(f);
+    }
+  }
+}
+
 // ---- WebSite references the organisation, never re-describes it ----------
 const IDENTITY_FIELDS = ['logo', 'address', 'contactPoint', 'email', 'telephone', 'sameAs'];
 let websites = 0;
@@ -168,8 +231,10 @@ if (websites === 0) problems.push('no WebSite node found on the site');
 
 if (problems.length === 0) {
   console.log(
-    `org-schema OK -- one Organization definition (index.html), ${websites} WebSite node(s) ` +
-    `referencing it by @id, logo resolves in the publish directory.`
+    `org-schema OK -- one Organization definition (index.html), every node claiming that @id ` +
+    `agrees with it, ${websites} WebSite node(s) referencing it, logo resolves in the publish ` +
+    `directory.\n              note: ${anonymous.length} Organization node(s) carry no @id ` +
+    `(Arabic article author/publisher) -- tracked in docs/arabic-schema-audit.md, pending review.`
   );
   process.exit(0);
 }
