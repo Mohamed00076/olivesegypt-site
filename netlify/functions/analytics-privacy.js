@@ -11,7 +11,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { parseCookies, verifySession, COOKIE_NAME, readJsonBody, json } = require('./_lib');
-const { ensureSchema, auditLog, clean } = require('./_analytics_lib');
+const { ensureSchema, auditLog, clean, MIN_RETENTION_DAYS, MAX_RETENTION_DAYS } = require('./_analytics_lib');
 
 function connectionString() {
   return (
@@ -40,8 +40,16 @@ async function handleGetPolicy(sql) {
 
 async function handleSetPolicy(sql, body, actor) {
   const days = Number(body.data_retention_days);
-  if (!Number.isFinite(days) || days < 1 || days > 3650) {
-    return json(400, { ok: false, error: 'data_retention_days must be a number between 1 and 3650' });
+  // The lower bound used to be 1. A 1 typed here would have had the nightly
+  // purge destroy thirteen months of analytics on its next run; the floor is
+  // now the same one analytics-retention.js refuses to act below, so the
+  // form and the delete agree instead of the form permitting what the delete
+  // will silently decline to do.
+  if (!Number.isFinite(days) || days < MIN_RETENTION_DAYS || days > MAX_RETENTION_DAYS) {
+    return json(400, {
+      ok: false,
+      error: `data_retention_days must be a number between ${MIN_RETENTION_DAYS} and ${MAX_RETENTION_DAYS}`,
+    });
   }
   await sql`
     INSERT INTO analytics_settings (key, value, updated_at)

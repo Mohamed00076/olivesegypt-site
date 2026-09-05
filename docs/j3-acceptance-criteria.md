@@ -222,8 +222,8 @@ them together.
 `data_retention_days` (default 395).
 
 **Endpoints**: `netlify/functions/analytics-privacy.js` — `GET` returns
-the current retention policy; `PATCH` updates it (1–3650 days,
-audit-logged); `POST` with `action: "delete_visitor"` deletes a
+the current retention policy; `PATCH` updates it (30–3650 days,
+audit-logged — the lower bound was 1 until 2026-09-05, see below); `POST` with `action: "delete_visitor"` deletes a
 visitor's data, **requiring `?confirmed=1` server-side**, same
 defense-in-depth pattern as the CRM's bulk delete/export (not just a
 client `confirm()` dialog). `netlify/functions/analytics-retention.js`
@@ -269,3 +269,23 @@ a successful deletion shows the right status message.
    confirm (via dev tools → Application → Local Storage) that a new,
    different `tc-analytics-visitor` value appears rather than the old
    one being reused.
+
+
+**Purge guards (added 2026-09-05).** As first written, the nightly purge
+checked only that `data_retention_days` was a finite number ≥ 1. A `1`
+typed into the admin field — a plausible slip, and the field accepted it —
+would have destroyed thirteen months of analytics on the next unattended
+run. There was no cap on a single run, no way to preview a policy change,
+and no record afterwards: the audit log captured the *setting change* but
+nothing captured the purge that acted on it. Four things changed:
+
+| Guard | Effect |
+| --- | --- |
+| `MIN_RETENTION_DAYS = 30` (in `_analytics_lib.js`, shared) | The form refuses to store a smaller value and the purge refuses to act on one, so the two cannot disagree. A sub-floor value already in the database is declined, not clamped — acting on a number nobody meant to type is the failure mode, whatever value it is acted on with. |
+| `MAX_DELETES_PER_RUN = 50000` per table | The delete runs against a bounded `SELECT … ORDER BY … LIMIT`, so a run cannot take a whole table in one statement. A capped run says so and the next run continues. |
+| `ANALYTICS_RETENTION_DRY_RUN=1` | Counts what it would delete and deletes nothing. The way to check a policy change before it runs for real. |
+| An audit row for every outcome | Including refusals and dry runs. Function logs rotate; `analytics_audit_log` does not. |
+
+Covered by `scripts/check-retention-guards.js` (in `npm test`, 24
+assertions), which stubs the driver and inspects the statements the
+function would have run.

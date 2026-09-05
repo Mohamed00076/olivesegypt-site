@@ -27,9 +27,27 @@ const SKIP_DIRS = new Set([
 
 const AR_PREFIX = '/ar';
 
+/*
+ * Routes that exist but have no index.html to find, because a Netlify
+ * function serves them (netlify.toml rewrites the path). Today that is the
+ * three gated guides in both locales: their HTML moved into the functions
+ * bundle so that the gate is a real check rather than an honour system, and
+ * a filesystem walk can no longer see them.
+ *
+ * Listing them here keeps the map honest -- they are still public routes,
+ * still one-for-one across locales, and still something a link should be
+ * allowed to point at. It is the one hand-maintained entry in an otherwise
+ * derived map, so it stays as small as possible.
+ */
+const FUNCTION_ROUTES = [
+  '/downloads/buyers-guide',
+  '/downloads/origin-comparison-guide',
+  '/downloads/pricing-packaging-guide',
+].flatMap((r) => [r, AR_PREFIX + r]);
+
 /** Every public route on disk, e.g. '/', '/catalog', '/ar/products/hamed-green-olives'. */
 function listRoutes(root = ROOT) {
-  const out = [];
+  const out = [...FUNCTION_ROUTES];
   (function walk(dir) {
     let entries;
     try {
@@ -77,6 +95,20 @@ function href(route) {
   return route === '/' ? '/' : route === AR_PREFIX ? '/ar/' : route;
 }
 
+/**
+ * The file holding a route's HTML. Almost always <route>/index.html, but the
+ * gated guides in FUNCTION_ROUTES live in the functions bundle instead, so
+ * anything that wants to read a page has to ask rather than assume.
+ */
+function pageFile(route, root = ROOT) {
+  if (FUNCTION_ROUTES.includes(route)) {
+    const locale = isArabic(route) ? 'ar' : 'en';
+    const slug = route.split('/').filter(Boolean).pop();
+    return path.join(root, 'netlify', 'functions', '_guides', locale, `${slug}.html`);
+  }
+  return path.join(root, route === '/' ? '' : route.slice(1), 'index.html');
+}
+
 /** Normalise an href back to a route for comparison: strips query, hash, trailing slash. */
 function routeOf(hrefValue) {
   const p = String(hrefValue).split('?')[0].split('#')[0];
@@ -97,6 +129,6 @@ function buildMap(root = ROOT) {
 }
 
 module.exports = {
-  ROOT, SKIP_DIRS, AR_PREFIX,
-  listRoutes, isArabic, toArabic, toEnglish, href, routeOf, buildMap,
+  ROOT, SKIP_DIRS, AR_PREFIX, FUNCTION_ROUTES,
+  listRoutes, isArabic, toArabic, toEnglish, href, routeOf, pageFile, buildMap,
 };

@@ -44,10 +44,18 @@ None are committed. All are read from `process.env`. Required in Production:
 | `DATABASE_URL` | Postgres connection string (contact inquiries) |
 | `ADMIN_USERNAME` | Dashboard login username |
 | `ADMIN_PASSWORD_HASH` | `scrypt:<saltHex>:<hashHex>` — never a plaintext password |
-| `SESSION_SECRET` | HMAC key signing the `tc_session` cookie |
+| `SESSION_SECRET` | HMAC key signing the `tc_session` cookie. Also the root of the separate, derived key that signs gated-guide tokens — with it unset, `/downloads/*-guide` serves 503 rather than serving ungated, so the three guides are unreachable until it is present. |
 | `UMAMI_URL` | Base URL of the Umami instance |
 | `UMAMI_USERNAME` / `UMAMI_PASSWORD` | Umami API credentials |
 | `UMAMI_WEBSITE_ID` | Umami site ID for olivesegypt.com |
+
+Optional:
+
+| Variable | Purpose |
+| --- | --- |
+| `ANALYTICS_RETENTION_DRY_RUN` | `1`/`true` makes the nightly purge count what it would delete and delete nothing. Use it to check a retention-policy change before it runs for real. |
+| `LEADS_NOTIFY` | `1`/`true` turns on the internal notification email for gated-guide leads. Off by default. |
+| `NOTIFY_DRY_RUN` | `1`/`true` makes the email adapter log instead of send. |
 
 Netlify's Neon integration (if enabled) may also inject `POSTGRES_*` / `PG*` /
 `NEON_PROJECT_ID` automatically. For the connection the code tries, in order:

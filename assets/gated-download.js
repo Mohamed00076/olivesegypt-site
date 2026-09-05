@@ -8,6 +8,11 @@
 // post-success behavior differ: instead of a plain thank-you message,
 // a successful submit reveals a link to the requested guide page.
 //
+// That reveal is presentation only. The gate itself is server-side: the
+// guide pages are no longer static files, and the function serving them
+// requires a short-lived signed token that only a successful POST
+// /api/leads issues. Nothing here decides whether a guide opens.
+//
 // Markup contract, scoped per-<form> so more than one of these can live
 // on the same page (e.g. the /downloads hub) without id collisions:
 //
@@ -104,7 +109,19 @@
         if (submitBtn) submitBtn.disabled = false;
         if (result.ok && result.data && result.data.ok) {
           showStatus('success', T.success);
-          if (link) link.setAttribute('href', guideUrl);
+          // The guide is served by a function that requires a signed
+          // token (netlify/functions/guide.js). The main carrier is an
+          // HttpOnly cookie set on this same response, which this script
+          // cannot see and does not need to; the token echoed in the
+          // JSON is the fallback for browsers that refuse first-party
+          // cookies, and rides on the link instead.
+          if (link) {
+            var href = guideUrl;
+            if (result.data.guide_token) {
+              href += (href.indexOf('?') >= 0 ? '&' : '?') + 't=' + encodeURIComponent(result.data.guide_token);
+            }
+            link.setAttribute('href', href);
+          }
           if (reveal) reveal.classList.remove('hidden');
           form.querySelectorAll('input, select, button[type="submit"]').forEach(function (el) {
             el.disabled = true;

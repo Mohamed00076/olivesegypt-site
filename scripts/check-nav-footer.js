@@ -30,10 +30,13 @@ const ROOT = path.join(__dirname, '..');
 const SKIP_DIRS = new Set(['node_modules', '.git', 'netlify', 'scripts', 'assets', 'docs', 'admin', 'crm']);
 
 // Print/hand-over pages keep minimal chrome by design.
+//
+// The three gated guides used to be listed here too. They are no longer
+// files on disk -- guide.js serves them from the functions bundle against a
+// signed token -- so this walk cannot reach them and an entry for them would
+// only be a comment pretending to be a check.
 const UTILITY = new Set([
   '/business-card', '/letterhead', '/catalog/print',
-  '/downloads/buyers-guide', '/downloads/origin-comparison-guide',
-  '/downloads/pricing-packaging-guide',
 ]);
 
 const EXPECTED_NAV = {
