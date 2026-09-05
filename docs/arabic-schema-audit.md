@@ -1,8 +1,9 @@
 # Arabic structured-data audit — 2026-09-05
 
-Read-only audit of every Arabic route, requested before any fix. **Nothing in
-§4 has been changed.** The two gaps found there need a decision, and one of
-them needs Arabic copy that is not mine to invent.
+Read-only audit of every Arabic route, requested before any fix.
+
+**Status: §4.2 was reviewed and resolved on 2026-09-05 — option 2, see the
+resolution note there. §4.1 (product identifiers) is still open.**
 
 Scope: all **42 Arabic routes with a page on disk**. (The route map counts 45;
 the three gated guides are served from the functions bundle and have no
@@ -18,7 +19,7 @@ twins, and are `noindex` + `Disallow` by design.)
 | Arabic routes with **no structured data at all** | 3 | correct — see §2 |
 | Arabic routes **already correct** | 39 | §3 |
 | Arabic routes carrying **English content where Arabic belongs** | **0** | §3 |
-| Real gaps found | 2 | §4 |
+| Real gaps found | 2 | §4 — one resolved, one open |
 
 The headline finding is that the thing most likely to be wrong — Arabic pages
 serving English structured data — **is not happening anywhere.** Every Arabic
@@ -115,9 +116,9 @@ locale-specific content.
 
 ---
 
-## 4. The two real gaps — not fixed, pending review
+## 4. The two real gaps
 
-### 4.1 English and Arabic products look like unrelated products
+### 4.1 English and Arabic products look like unrelated products — STILL OPEN
 
 Every Arabic product page and its English twin describe the same physical
 product, and **nothing in the markup says so**:
@@ -144,7 +145,7 @@ repository.
 **Needs your say-so** because it adds properties to 22 pages, not because it
 needs new content.
 
-### 4.2 Fourteen Organization nodes that do not link to the company
+### 4.2 Fourteen Organization nodes that do not link to the company — RESOLVED
 
 Each of the seven Arabic article pages carries two anonymous Organization
 nodes — an `author` and a `publisher` — naming the company in Arabic with **no
@@ -163,28 +164,33 @@ the homepage, whose `name` is `Triple Company for Industrial Development`.
 These fourteen nodes are unlinked copies of the same company under a different
 name.
 
-**This one carries a real decision, which is why it is not fixed here.**
-Linking them to the canonical `@id` means the name on those nodes becomes the
-English legal name, because `alternateName` was excluded from the canonical
-Organization on 2026-09-05 — so there is currently nowhere in structured data
-that the Arabic legal name is allowed to live. Three ways out:
+### Resolved 2026-09-05 — option 2
 
-1. **Link and use the English name.** One consistent entity. The Arabic legal
-   name disappears from structured data entirely.
-2. **Link, and restore `alternateName`** on the canonical Organization with
-   `الشركة الثلاثية للتنمية الصناعية`. One consistent entity, and the Arabic
-   legal name is expressed where schema.org expects it. Requires reversing
-   part of the 2026-09-05 instruction.
-3. **Leave them.** Fourteen unlinked nodes continue to name the company
-   differently to its canonical definition.
+The owner chose to link them **and** restore `alternateName`, and confirmed
+that the registered company name is the English one:
+`Triple Company for Industrial Development`. That settles the modelling — the
+Arabic name is an alternate, not a `legalName`, so `alternateName` is the
+correct property for it rather than the more specific one.
 
-Recommendation: **2**. It is the only option that keeps one entity *and* keeps
-the Arabic legal name — which this project has treated as the company's real
-name throughout, not a translation.
+The canonical Organization now carries:
 
-The English articles gained Article schema in this same change (they had none
-while the Arabic ones did) and their author/publisher nodes already carry the
-canonical `@id`, so whichever way this goes, only the Arabic seven move.
+```json
+"name": "Triple Company for Industrial Development",
+"alternateName": ["Triple Company", "الشركة الثلاثية للتنمية الصناعية"]
+```
+
+Both values are restored, not just the Arabic one. "Triple Company" was
+briefly written off here as an informal alias; it is displayed in the header
+of all 87 pages, so it is a name the company actively uses in public and there
+is no reason to withhold it from an entity that is meant to be findable.
+
+All fourteen Arabic article nodes now carry the canonical `@id`, the canonical
+name and the one logo — the same shape the English articles already use. The
+Arabic name is not repeated on them: anything merging by `@id` finds it on the
+canonical definition, which is the point of having one.
+
+**Site-wide result: 29 Organization nodes, all 29 linked to the canonical
+`@id`, zero unlinked.**
 
 ---
 
@@ -196,5 +202,11 @@ the earlier version could not see an Organization inside an Article's
 if any node claiming the canonical `@id` disagrees with the definition on
 `name` or `logo`, and reports the count of `@id`-less Organization nodes.
 
-That count is reported rather than failed **only** until §4.2 is decided. Once
-it is, the check should fail on any Organization node without an `@id`.
+Since §4.2 was resolved, an Organization node that names the company without
+claiming the canonical `@id` is a **hard failure**, not a note. The check also
+requires `alternateName` to carry the Arabic name — that is now the only place
+in the site's structured data it exists, so losing it silently is exactly the
+regression worth guarding.
+
+Both were confirmed by injection: dropping the Arabic name from
+`alternateName`, and unlinking one Arabic publisher, each fail the check.
