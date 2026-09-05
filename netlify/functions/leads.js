@@ -10,9 +10,17 @@
 // until [the owner approves] a real lead destination" -- e.g. wiring
 // this up to a live mailing list or CRM. Do not repoint this at a
 // production destination without that approval.
+//
+// Phase 7 note: an internal notification email for these leads exists
+// below but is OFF unless LEADS_NOTIFY is set to 1/true. Turning it on is
+// exactly the "wire this up to a real destination" step the paragraph
+// above reserves for the owner, so it is a deliberate switch rather than
+// a default. The database write is unchanged either way, and a failed or
+// disabled notification never affects the response the visitor gets.
 
 const { neon } = require('@neondatabase/serverless');
 const { readJsonBody, json } = require('./_lib');
+const { sendNotification } = require('./_email_lib');
 
 function connectionString() {
   return (
@@ -116,6 +124,36 @@ async function checkRateLimit(sql, ip, email) {
   return (rows[0] && rows[0].n) || 0;
 }
 
+// Plain text only, and deliberately narrow: the fields a person needs to
+// decide whether to follow up, not the whole row. No client IP, no
+// consent flag -- those live in the database for the record, but do not
+// belong in an inbox.
+function leadEmailText(f) {
+  const lines = [
+    'New gated-guide download on olivesegypt.com',
+    '',
+    'Guide: ' + f.segment,
+    'Email: ' + f.email,
+    'Company: ' + f.companyName,
+    'Country / region: ' + f.countryRegion,
+    'Buyer type: ' + f.buyerType,
+  ];
+  if (f.targetMarket) lines.push('Target market: ' + f.targetMarket);
+  if (f.variety) lines.push('Variety: ' + f.variety);
+  if (f.format) lines.push('Format: ' + f.format);
+  if (f.packSize) lines.push('Pack size: ' + f.packSize);
+  if (f.volume) lines.push('Volume: ' + f.volume);
+  if (f.certificationRequirements) lines.push('Certifications: ' + f.certificationRequirements);
+  if (f.launchDate) lines.push('Launch date: ' + f.launchDate);
+  lines.push('', 'Submitted from: ' + f.sourcePage);
+  return lines.join('\n');
+}
+
+function leadsNotifyEnabled() {
+  const v = String(process.env.LEADS_NOTIFY || '').toLowerCase();
+  return v === '1' || v === 'true' || v === 'yes';
+}
+
 async function handlePost(event, sql) {
   const body = readJsonBody(event);
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -180,6 +218,26 @@ async function handlePost(event, sql) {
        ${targetMarket}, ${variety}, ${format}, ${packSize}, ${volume}, ${certificationRequirements}, ${launchDate},
        ${ip})
   `;
+
+  // Off by default -- see the header note. Awaited so it finishes before
+  // the execution context is frozen, but its failure is swallowed: a lead
+  // that reached the database must never come back to the visitor as an
+  // error because an email did not go out.
+  if (leadsNotifyEnabled()) {
+    try {
+      await sendNotification(
+        `New gated-guide download — ${companyName} (${segment})`,
+        leadEmailText({
+          email, companyName, countryRegion, buyerType, sourcePage, segment,
+          targetMarket, variety, format, packSize, volume,
+          certificationRequirements, launchDate,
+        }),
+        { replyTo: email, formType: `lead:${segment}` }
+      );
+    } catch (err) {
+      console.error('[leads] notification email failed:', err?.message ?? err);
+    }
+  }
 
   return json(200, { ok: true });
 }
