@@ -19,6 +19,7 @@
  *   - product count consistency (the visible "11 varieties" claims)
  *   - the export-PDF sources, which are grouped by category on purpose and
  *     are pinned to that grouping rather than to the canonical order
+ *   - product identity across locales: same productID, different @id
  */
 
 const fs = require('fs');
@@ -132,6 +133,85 @@ for (const f of COUNT_FILES) {
 }
 
 /*
+ * Product identity across locales.
+ *
+ * Until 2026-09-05 the English and Arabic product pages carried Product nodes
+ * with a name, a description and nothing else -- no @id, no identifier, no
+ * url, no image. Zero of the eleven pairs shared anything, so to a consumer of
+ * structured data the site listed twenty-two unrelated products rather than
+ * eleven in two languages (docs/arabic-schema-audit.md §4.1).
+ *
+ * The fix has two halves that must both hold, and they pull in opposite
+ * directions:
+ *
+ *   - productID is the SAME across a pair. That is what says "one product".
+ *   - @id is DIFFERENT across a pair. A shared @id would merge the two into a
+ *     single node carrying an English and an Arabic name for one thing, which
+ *     is exactly the contradiction the Organization schema spent three pull
+ *     requests removing.
+ */
+const ORIGIN = 'https://olivesegypt.com';
+
+function productNode(html) {
+  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    let d;
+    try { d = JSON.parse(m[1]); } catch { continue; }
+    if (d && d['@type'] === 'Product') return d;
+  }
+  return null;
+}
+
+for (const { key, dir } of require('./product-order').PRODUCTS) {
+  const pair = {};
+  for (const [locale, file] of [['en', `products/${dir}/index.html`], ['ar', `ar/products/${dir}/index.html`]]) {
+    const html = read(file);
+    if (html === null) { problems.push(`${file}: not found`); continue; }
+    const p = productNode(html);
+    if (!p) { problems.push(`${file}: no Product schema`); continue; }
+    pair[locale] = p;
+
+    const base = locale === 'ar' ? `${ORIGIN}/ar/products/${dir}` : `${ORIGIN}/products/${dir}`;
+    if (p.productID !== key) {
+      problems.push(`${file}: productID is ${JSON.stringify(p.productID)}, expected ${JSON.stringify(key)}`);
+    }
+    if (p['@id'] !== `${base}#product`) {
+      problems.push(`${file}: @id is ${JSON.stringify(p['@id'])}, expected "${base}#product"`);
+    }
+    if (p.url !== base) {
+      problems.push(`${file}: url is ${JSON.stringify(p.url)}, expected "${base}"`);
+    }
+    if (p.inLanguage !== locale) {
+      problems.push(`${file}: inLanguage is ${JSON.stringify(p.inLanguage)}, expected ${JSON.stringify(locale)}`);
+    }
+    if (typeof p.image !== 'string' || !p.image.startsWith(`${ORIGIN}/assets/`)) {
+      problems.push(`${file}: image is ${JSON.stringify(p.image)}, expected an asset URL`);
+    } else {
+      const rel = p.image.slice(ORIGIN.length + 1);
+      if (!fs.existsSync(path.join(ROOT, rel))) {
+        problems.push(`${file}: image ${p.image} is not a file in the publish directory`);
+      }
+    }
+    // A commercial identifier would be a claim about codes this company has
+    // not published. productID carries the internal key instead.
+    for (const bad of ['sku', 'gtin', 'gtin13', 'mpn']) {
+      if (bad in p) problems.push(`${file}: "${bad}" asserts a commercial code that has not been supplied`);
+    }
+  }
+
+  if (pair.en && pair.ar) {
+    if (pair.en.productID !== pair.ar.productID) {
+      problems.push(`${dir}: the locales disagree on productID (${pair.en.productID} vs ${pair.ar.productID})`);
+    }
+    if (pair.en['@id'] === pair.ar['@id']) {
+      problems.push(`${dir}: both locales share the @id ${pair.en['@id']}; that merges an English and an Arabic name into one node`);
+    }
+    if (pair.en.name === pair.ar.name) {
+      problems.push(`${dir}: the Arabic page repeats the English product name`);
+    }
+  }
+}
+
+/*
  * The two export-catalogue PDFs are the one deliberate exception to the
  * canonical order, decided by the owner on 2026-09-05: they are grouped by
  * category (Green Olives / Black Olives & Stuffed / Specialty & Peppers)
@@ -183,7 +263,8 @@ for (const [file, sectionHeading, first, second] of PDF_SOURCES) {
 if (problems.length === 0) {
   console.log(
     `product-order OK -- ${CHECKS.length} surfaces match the canonical ${COUNT}-product order, ` +
-    `and both PDF sources keep Kalamata first in the black-olive section.`
+    `both PDF sources keep Kalamata first in the black-olive section, and all ` +
+    `${COUNT} product pairs share a productID while keeping separate @ids.`
   );
   process.exit(0);
 }
