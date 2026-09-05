@@ -2,6 +2,10 @@
   "name": "triple-company-static-site",
   "private": true,
   "type": "commonjs",
+  "scripts": {
+    "check:locale-links": "node scripts/check-locale-links.js",
+    "test": "node scripts/check-locale-links.js"
+  },
   "dependencies": {
     "@neondatabase/serverless": "0.10.4",
     "google-auth-library": "^11.0.2",
