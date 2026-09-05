@@ -99,11 +99,24 @@ async function sendEmail(to, subject, text, opts) {
   const formType = options.formType || 'unspecified';
   const list = (Array.isArray(to) ? to : [to]).map((s) => String(s || '').trim()).filter(Boolean);
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey || list.length === 0) {
+  if (list.length === 0) {
+    console.log(`[email] form=${formType} status=skipped reason=no recipient`);
+    return false;
+  }
+
+  // The dry-run adapter is checked before the credential, deliberately: its
+  // whole purpose is to exercise this path on a machine that has no key.
+  if (isDryRun()) {
     console.log(
-      `[email] form=${formType} status=skipped reason=${!apiKey ? 'RESEND_API_KEY not set' : 'no recipient'}`
+      `[email] form=${formType} status=dry-run recipients=${list.length} ` +
+      `subject_len=${String(subject || '').length} body_len=${String(text || '').length}`
     );
+    return true;
+  }
+
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.log(`[email] form=${formType} status=skipped reason=RESEND_API_KEY not set`);
     return false;
   }
 
@@ -119,14 +132,6 @@ async function sendEmail(to, subject, text, opts) {
 
   const payload = { from, to: list, subject, text };
   if (options.replyTo) payload.reply_to = options.replyTo;
-
-  if (isDryRun()) {
-    console.log(
-      `[email] form=${formType} status=dry-run recipients=${list.length} ` +
-      `subject_len=${String(subject || '').length} body_len=${String(text || '').length}`
-    );
-    return true;
-  }
 
   // One retry, and only for transient conditions. A 4xx (bad sender,
   // unverified domain, malformed address) will fail identically on a

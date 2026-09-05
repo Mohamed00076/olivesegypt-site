@@ -96,6 +96,20 @@ function rel(){ console.log=realLog; console.error=realErr; }
  cap(); r=await m.sendEmail('user@corp.com','Reset','link'); rel(); global.fetch=realFetch;
  t('legacy sendEmail(to,subject,text) still works', r===true);
 
+ // 10b. dry run must work with NO api key at all -- that is the whole point
+ // of a staging adapter, and the earlier ordering (credential checked first)
+ // made the documented behaviour false.
+ clearEnv(); m=fresh({NOTIFY_EMAIL:'a@x.com',NOTIFY_DRY_RUN:'1'});
+ const noFetch=global.fetch; let hits=0; global.fetch=async()=>{hits++;throw new Error('should not be called');};
+ cap(); r=await m.sendNotification('s','b',{formType:'connectivity-test'}); rel(); global.fetch=noFetch;
+ t('dry run works with no RESEND_API_KEY', r===true && hits===0, `r=${r} calls=${hits}`);
+ t('   and logs dry-run, not skipped', logs.some(([,l])=>l.includes('status=dry-run')), JSON.stringify(logs));
+
+ // 10c. no recipient is still reported as skipped, even in dry run
+ clearEnv(); m=fresh({NOTIFY_DRY_RUN:'1'});
+ cap(); r=await m.sendNotification('s','b',{formType:'connectivity-test'}); rel();
+ t('dry run with no recipient still fails closed', r===false);
+
  // 11. LEADS_NOTIFY gate (leads.js keeps notifications off by default)
  const leadsGate = (v) => {
    const s = String(v || '').toLowerCase();
