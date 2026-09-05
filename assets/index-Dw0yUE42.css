@@ -225,3 +225,124 @@ header .container {
   padding-left: max(1.25rem, env(safe-area-inset-left));
   padding-right: max(1.25rem, env(safe-area-inset-right));
 }
+
+/* Navigation and footer redesign (2026-09-05): six-item primary nav with
+   three dropdowns, and one shared five-column footer, replacing four nav
+   variants and five footer variants across the site.
+
+   Written as explicit CSS rather than Tailwind utilities on purpose. This
+   stylesheet is a fixed compiled artifact -- utilities that were never used
+   in the original source simply are not in it, and there is no build step to
+   regenerate it. `lg:grid-cols-5` (which a five-column footer would want) is
+   one such absentee, and an earlier pass on this site shipped `lg:inline-flex`
+   before discovering the same thing. Everything below uses the design tokens
+   the stylesheet already defines, so it works in both themes and both
+   directions without depending on which utilities happened to be compiled. */
+
+/* ---- primary nav: dropdowns ---------------------------------------------- */
+
+.tc-nav { display: none; }
+@media (min-width: 1024px) { .tc-nav { display: flex; align-items: center; gap: 1.25rem; } }
+
+.tc-nav-item { position: relative; }
+
+.tc-nav-link,
+.tc-nav-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  color: hsl(var(--muted-foreground));
+  background: none;
+  border: 0;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.tc-nav-link:hover,
+.tc-nav-trigger:hover,
+.tc-nav-trigger[aria-expanded="true"] { color: hsl(var(--foreground)); }
+.tc-nav-link:focus-visible,
+.tc-nav-trigger:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.tc-nav-caret { width: 0.75rem; height: 0.75rem; transition: transform 0.15s; }
+.tc-nav-trigger[aria-expanded="true"] .tc-nav-caret { transform: rotate(180deg); }
+
+/* The panel is absolutely positioned against its .tc-nav-item, which is
+   position:relative -- so it never depends on the header's own positioning,
+   which differs between this site's two header templates. */
+.tc-nav-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline-start: 0;          /* logical: flips automatically under rtl */
+  z-index: 60;
+  min-width: 15rem;
+  padding: 0.5rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  background: hsl(var(--background));
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.18);
+}
+.tc-nav-panel[hidden] { display: none; }
+.tc-nav-panel a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+  white-space: nowrap;
+  min-height: 44px;              /* tap target */
+  display: flex;
+  align-items: center;
+}
+.tc-nav-panel a:hover { background: hsl(var(--accent)); }
+.tc-nav-panel a:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: -2px;
+}
+
+/* ---- shared footer -------------------------------------------------------- */
+
+.tc-footer-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+@media (min-width: 640px)  { .tc-footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .tc-footer-cols { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+.tc-footer-col h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.75rem;
+}
+.tc-footer-col ul { list-style: none; margin: 0; padding: 0; }
+.tc-footer-col li + li { margin-top: 0.125rem; }
+.tc-footer-col a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.15s;
+}
+.tc-footer-col a:hover { color: hsl(var(--foreground)); }
+.tc-footer-col a:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Long Arabic labels wrap rather than forcing the column wider. */
+[dir="rtl"] .tc-footer-col a,
+[dir="rtl"] .tc-nav-panel a { white-space: normal; }
