@@ -4,7 +4,8 @@
   "type": "commonjs",
   "scripts": {
     "check:locale-links": "node scripts/check-locale-links.js",
-    "test": "node scripts/check-locale-links.js"
+    "test": "node scripts/check-locale-links.js && node scripts/check-email-lib.js",
+    "check:email-lib": "node scripts/check-email-lib.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "0.10.4",

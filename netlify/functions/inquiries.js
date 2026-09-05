@@ -166,7 +166,10 @@ async function handlePost(event, sql) {
       inquiryEmailText({
         name, email, company, country, phone,
         productInterest, estimatedVolume, requestType, message, sourcePage,
-      })
+      }),
+      // Reply-To is the enquirer, so hitting reply in the shared mailbox
+      // answers the buyer rather than the site's own sender address.
+      { replyTo: email, formType: requestType ? `inquiry:${requestType}` : 'inquiry' }
     );
   } catch (err) {
     console.error('[inquiries] notification email failed:', err?.message ?? err);
