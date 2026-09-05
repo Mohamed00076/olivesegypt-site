@@ -27,7 +27,13 @@
   # under the 50MB unzipped function bundle limit (country-level file is
   # ~8-9MB) -- GeoLite2-City was ruled out specifically because it isn't
   # (see docs/j2-acceptance-criteria.md).
-  included_files = ["geo/**"]
+  #
+  # The three gated guides (both locales) are bundled here too. They used
+  # to be static pages in the publish directory, which is exactly why the
+  # gate never gated anything -- anyone with the URL read them without
+  # filling the form. They are now served only by guide.js, against a
+  # signed token, and there is no copy left in the published root.
+  included_files = ["geo/**", "netlify/functions/_guides/**"]
 
 # Section J Phase 2 -- optional "scheduled auto-refresh": POSTs to a
 # Netlify Build Hook weekly, which triggers a fresh deploy (re-running
@@ -260,6 +266,105 @@
   from = "/api/kpi-dashboard"
   to = "/.netlify/functions/kpi-dashboard"
   status = 200
+  force = true
+
+
+# Section C gated guides -- the real gate (2026-09-05).
+#
+# Until now these three pages were plain static HTML at guessable URLs and
+# the form only revealed a link client-side, so the "gate" recorded a lead
+# from whoever happened to fill it and let everyone else straight through
+# (docs/downloads-and-gating.md §3). The pages have moved into the
+# functions bundle and are served only by guide.js, which requires a
+# short-lived signed token issued by POST /api/leads.
+#
+# force = true so these win even if a stray file ever reappears at one of
+# these paths; both the bare and trailing-slash forms are listed because
+# there is no longer a directory for Netlify to resolve either against.
+# The ?g= parameter is a fallback identifier -- guide.js reads the request
+# path first.
+
+[[redirects]]
+  from = "/downloads/buyers-guide"
+  to = "/.netlify/functions/guide?g=buyers_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/buyers-guide/"
+  to = "/.netlify/functions/guide?g=buyers_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/buyers-guide"
+  to = "/.netlify/functions/guide?g=buyers_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/buyers-guide/"
+  to = "/.netlify/functions/guide?g=buyers_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/origin-comparison-guide"
+  to = "/.netlify/functions/guide?g=origin_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/origin-comparison-guide/"
+  to = "/.netlify/functions/guide?g=origin_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/origin-comparison-guide"
+  to = "/.netlify/functions/guide?g=origin_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/origin-comparison-guide/"
+  to = "/.netlify/functions/guide?g=origin_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/pricing-packaging-guide"
+  to = "/.netlify/functions/guide?g=pricing_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/pricing-packaging-guide/"
+  to = "/.netlify/functions/guide?g=pricing_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/pricing-packaging-guide"
+  to = "/.netlify/functions/guide?g=pricing_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/pricing-packaging-guide/"
+  to = "/.netlify/functions/guide?g=pricing_guide"
+  status = 200
+  force = true
+
+
+# The publish directory is the repo root, so without this the function
+# sources themselves are reachable as static files -- including the
+# _guides/ directory the rules above exist to keep private. No page ever
+# links into /netlify/, so a flat 404 costs nothing.
+[[redirects]]
+  from = "/netlify/*"
+  to = "/index.html"
+  status = 404
   force = true
 
 # A0 canonical-route audit (re-checked 2026-09-02): these four /media/

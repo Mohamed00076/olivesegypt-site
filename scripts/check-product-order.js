@@ -17,6 +17,8 @@
  *   - the visible product grid on /catalog and /ar/catalog
  *   - the print catalogues, via data-slug
  *   - product count consistency (the visible "11 varieties" claims)
+ *   - the export-PDF sources, which are grouped by category on purpose and
+ *     are pinned to that grouping rather than to the canonical order
  */
 
 const fs = require('fs');
@@ -129,8 +131,60 @@ for (const f of COUNT_FILES) {
   if (wrong.length) problems.push(`${f}: states ${[...new Set(wrong)].join(', ')} varieties, expected ${COUNT}`);
 }
 
+/*
+ * The two export-catalogue PDFs are the one deliberate exception to the
+ * canonical order, decided by the owner on 2026-09-05: they are grouped by
+ * category (Green Olives / Black Olives & Stuffed / Specialty & Peppers)
+ * rather than run in the site's priority order, and Kalamata leads the Black
+ * Olives section rather than sitting second overall.
+ *
+ * That is a decision, not drift -- so it is pinned here rather than left to
+ * be "corrected" by a later pass that notices the two orders disagree. The
+ * check is on the PDF *sources*: the built PDFs are regenerated from them,
+ * and Arabic PDF text extraction transposes lam-alef pairs, which makes
+ * reading the artefact an unreliable way to assert anything about wording.
+ */
+const PDF_SOURCES = [
+  ['export-catalog-source.html', 'Black Olives &amp; Stuffed Varieties', 'Kalamata Olives', 'Natural Black Olives'],
+  ['export-catalog-source-ar.html', 'الزيتون الأسود والأصناف المحشوة', 'زيتون كالاماتا', 'زيتون أسود طبيعي'],
+];
+for (const [file, sectionHeading, first, second] of PDF_SOURCES) {
+  const html = read(path.join('scripts', file));
+  if (html === null) {
+    problems.push(`scripts/${file}: not found`);
+    continue;
+  }
+  // The same words appear earlier in the cover table of contents, so match
+  // the <h1> that opens the section rather than the first occurrence.
+  const start = html.indexOf(`<h1 class="pdf-h1">${sectionHeading}</h1>`);
+  if (start === -1) {
+    problems.push(`scripts/${file}: no "${sectionHeading}" section heading`);
+    continue;
+  }
+  const section = html.slice(start, html.indexOf('<div class="pdf-footer"', start));
+  const names = [...section.matchAll(/<p class="product-name">([^<]+)<\/p>/g)].map((m) => m[1].trim());
+  if (names[0] !== first) {
+    problems.push(`scripts/${file}: the black-olive section leads with "${names[0]}", expected "${first}"`);
+  }
+  // Also pin the summary table on the specifications page, which is a
+  // separate list of the same products and drifted from the sections once
+  // before.
+  const rows = [...html.matchAll(/<tr><td>([^<]+)<\/td>/g)].map((m) => m[1].trim());
+  const iFirst = rows.indexOf(first);
+  const iSecond = rows.indexOf(second);
+  if (iFirst === -1 || iSecond === -1 || iSecond !== iFirst + 1) {
+    problems.push(
+      `scripts/${file}: the summary table should list "${first}" immediately before "${second}" ` +
+      `(found at ${iFirst} and ${iSecond})`
+    );
+  }
+}
+
 if (problems.length === 0) {
-  console.log(`product-order OK -- ${CHECKS.length} surfaces match the canonical ${COUNT}-product order.`);
+  console.log(
+    `product-order OK -- ${CHECKS.length} surfaces match the canonical ${COUNT}-product order, ` +
+    `and both PDF sources keep Kalamata first in the black-olive section.`
+  );
   process.exit(0);
 }
 

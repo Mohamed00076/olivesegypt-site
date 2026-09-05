@@ -39,8 +39,11 @@ function add(kind, page, detail) {
   violations.push({ kind, page, detail });
 }
 
+// Not every route is <route>/index.html any more -- the gated guides are
+// served from the functions bundle -- so the map is asked where a page lives
+// rather than the path being assumed here.
 function pageFile(route) {
-  return path.join(ROOT, route === '/' ? '' : route.slice(1), 'index.html');
+  return M.pageFile(route, ROOT);
 }
 
 /** Strip the tags whose job is to point at the other locale. */

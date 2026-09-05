@@ -21,6 +21,9 @@
 const { neon } = require('@neondatabase/serverless');
 const { readJsonBody, json } = require('./_lib');
 const { sendNotification } = require('./_email_lib');
+const {
+  GUIDES, URL_TTL_SECONDS, COOKIE_TTL_SECONDS, signGuideToken, guideCookie,
+} = require('./_guide_token');
 
 function connectionString() {
   return (
@@ -149,6 +152,39 @@ function leadEmailText(f) {
   return lines.join('\n');
 }
 
+/*
+ * A successful lead for one of the three gated guides is what unlocks
+ * that guide -- see netlify/functions/guide.js. Two tokens go back: one
+ * in an HttpOnly cookie (24h, cannot be copied out of the browser) and
+ * one in the JSON for the client to hang on the download link (1h,
+ * because a URL can be shared). Segments that are not guides
+ * ('market_report', 'private_label') get neither, and nothing about the
+ * response shape changes for them.
+ *
+ * If SESSION_SECRET is missing the lead is still saved and the visitor
+ * still gets ok:true -- their submission is not the thing that failed --
+ * but no token is minted, and guide.js will refuse rather than serve
+ * ungated. The log line below is the operator's signal.
+ */
+function guideGrant(segment) {
+  if (!GUIDES[segment]) return {};
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) {
+    console.error(`[leads] SESSION_SECRET is not set -- cannot unlock guide '${segment}' for this lead.`);
+    return {};
+  }
+  const token = signGuideToken(segment, secret, URL_TTL_SECONDS);
+  return token ? { guide_token: token } : {};
+}
+
+function guideHeaders(segment) {
+  if (!GUIDES[segment]) return {};
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) return {};
+  const token = signGuideToken(segment, secret, COOKIE_TTL_SECONDS);
+  return token ? { 'Set-Cookie': guideCookie(token) } : {};
+}
+
 function leadsNotifyEnabled() {
   const v = String(process.env.LEADS_NOTIFY || '').toLowerCase();
   return v === '1' || v === 'true' || v === 'yes';
@@ -239,7 +275,7 @@ async function handlePost(event, sql) {
     }
   }
 
-  return json(200, { ok: true });
+  return json(200, { ok: true, ...guideGrant(segment) }, guideHeaders(segment));
 }
 
 exports.handler = async (event) => {

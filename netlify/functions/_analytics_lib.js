@@ -1,6 +1,17 @@
 'use strict';
 
 /*
+ * The shortest retention window this project will act on. Shared by
+ * analytics-privacy.js (which refuses to store a smaller one) and
+ * analytics-retention.js (which refuses to purge against one), so the form
+ * and the nightly delete cannot disagree about what is acceptable. See the
+ * guard notes at the top of analytics-retention.js for why there is a floor
+ * at all.
+ */
+const MIN_RETENTION_DAYS = 30;
+const MAX_RETENTION_DAYS = 3650;
+
+/*
  * Section J Phase 1 -- shared schema, attribution, and bot-scoring helpers
  * for the site's own custom event pipeline. This is deliberately separate
  * from Umami: Umami stays untouched as the pageview/session stats source
@@ -411,6 +422,8 @@ module.exports = {
   ensureSchema,
   logIngestError,
   auditLog,
+  MIN_RETENTION_DAYS,
+  MAX_RETENTION_DAYS,
   computeAttribution,
   parseReferrerDomain,
   scoreBotConfidence,
