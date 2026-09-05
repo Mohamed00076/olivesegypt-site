@@ -1,0 +1,15 @@
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="زيتون أخضر محشو — صورة قيد التجهيز">
+  <rect width="900" height="900" fill="#3d5a2e"/>
+  <g transform="translate(450,370)">
+    <!-- three green olives, one cut open to show the pimiento stuffing, on a pick -->
+    <line x1="-120" y1="20" x2="130" y2="-40" stroke="#c9a84c" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="-90" cy="14" r="42" fill="#5a7a4a"/>
+    <circle cx="-90" cy="14" r="12" fill="#3d5a2e"/>
+    <circle cx="10" cy="-6" r="48" fill="#6c8d5a"/>
+    <path d="M-8,-6 a20,10 0 1,0 40,0 a20,10 0 1,0 -40,0 Z" fill="#c9a84c" transform="rotate(-8 12 -6)"/>
+    <circle cx="105" cy="-28" r="38" fill="#5a7a4a"/>
+    <circle cx="105" cy="-28" r="11" fill="#3d5a2e"/>
+    <ellipse cx="150" cy="-70" rx="24" ry="10" fill="#5a7a4a" transform="rotate(-25 150 -70)" opacity="0.85"/>
+  </g>
+  <text x="450" y="610" text-anchor="middle" direction="rtl" font-family="'Noto Naskh Arabic', 'Amiri', 'Traditional Arabic', 'Geeza Pro', 'Arabic Typesetting', serif" font-size="40" fill="#f5f0e1">صورة المنتج قيد التجهيز</text>
+</svg>

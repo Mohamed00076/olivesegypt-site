@@ -1,0 +1,12 @@
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="صورة المنتج قيد التجهيز">
+  <rect width="900" height="900" fill="#3d5a2e"/>
+  <g transform="translate(450,380)">
+    <ellipse cx="-40" cy="-60" rx="70" ry="26" fill="#5a7a4a" transform="rotate(-30 -40 -60)"/>
+    <ellipse cx="40" cy="-70" rx="65" ry="24" fill="#5a7a4a" transform="rotate(20 40 -70)"/>
+    <ellipse cx="0" cy="-20" rx="75" ry="28" fill="#5a7a4a" transform="rotate(-5 0 -20)"/>
+    <line x1="0" y1="-90" x2="0" y2="70" stroke="#c9a84c" stroke-width="4"/>
+    <circle cx="10" cy="40" r="26" fill="#c9a84c"/>
+    <circle cx="-35" cy="55" r="22" fill="#c9a84c"/>
+  </g>
+  <text x="450" y="590" text-anchor="middle" direction="rtl" font-family="'Noto Naskh Arabic', 'Amiri', 'Traditional Arabic', 'Geeza Pro', 'Arabic Typesetting', serif" font-size="40" fill="#f5f0e1">صورة المنتج قيد التجهيز</text>
+</svg>
