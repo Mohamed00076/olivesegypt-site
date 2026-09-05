@@ -92,6 +92,22 @@ unchanged either way.
 `node scripts/check-email-lib.js` (part of `npm test`) covers the library's
 behaviour offline, with `fetch` stubbed — no key needed and nothing sent.
 
+For a live end-to-end check, `scripts/send-test-email.js` sends one message
+through this same library rather than through a parallel snippet, so a success
+there means the real forms can deliver too:
+
+```
+# no key needed, sends nothing
+NOTIFY_DRY_RUN=1 NOTIFY_EMAIL=you@example.com node scripts/send-test-email.js
+
+# real send
+RESEND_API_KEY=re_... NOTIFY_FROM_EMAIL='...' NOTIFY_EMAIL='...' \
+  node scripts/send-test-email.js
+```
+
+The key is read from the environment and never written to disk. **This
+repository is public — a committed key is a leaked key.**
+
 ## 7. Still missing
 
 Known gaps, not addressed by this pass:
