@@ -220,6 +220,29 @@ for (const f of files) {
   }
 }
 
+// ---- one Facebook URL for the site --------------------------------------
+//
+// The site carried three different Facebook URLs at once: a share/redirect
+// shortlink in sameAs, a vanity URL in the homepage Like widget, and the
+// profile URL the owner actually supplied. sameAs is meant to name the
+// canonical profile, and a widget pointing somewhere else undermines exactly
+// the association sameAs exists to make.
+if (org) {
+  const fb = [].concat(org.sameAs || []).filter((u) => /facebook\.com/.test(u));
+  if (fb.length !== 1) {
+    problems.push(`sameAs carries ${fb.length} Facebook URL(s); expected exactly 1`);
+  } else {
+    if (/facebook\.com\/share\//.test(fb[0])) {
+      problems.push(`sameAs uses a Facebook share/redirect link (${fb[0]}); it should name the profile itself`);
+    }
+    const home = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    const widget = (home.match(/data-href['"],\s*'([^']*facebook[^']*)'/) || [])[1];
+    if (widget && widget !== fb[0]) {
+      problems.push(`the homepage Like widget points at ${widget} while sameAs names ${fb[0]}`);
+    }
+  }
+}
+
 // ---- WebSite references the organisation, never re-describes it ----------
 const IDENTITY_FIELDS = ['logo', 'address', 'contactPoint', 'email', 'telephone', 'sameAs'];
 let websites = 0;
