@@ -24,6 +24,7 @@ const { sendNotification } = require('./_email_lib');
 const {
   GUIDES, URL_TTL_SECONDS, COOKIE_TTL_SECONDS, signGuideToken, guideCookie,
 } = require('./_guide_token');
+const { ensureOptOutSchema, isOptedOut, resubscribe } = require('./_optout_lib');
 
 function connectionString() {
   return (
@@ -149,6 +150,13 @@ function leadEmailText(f) {
   if (f.certificationRequirements) lines.push('Certifications: ' + f.certificationRequirements);
   if (f.launchDate) lines.push('Launch date: ' + f.launchDate);
   lines.push('', 'Submitted from: ' + f.sourcePage);
+  if (f.liftedOptOut) {
+    lines.push(
+      '',
+      'Note: this address had previously unsubscribed. The consent box on this',
+      'submission lifted that, so contacting them about this request is fine.'
+    );
+  }
   return lines.join('\n');
 }
 
@@ -244,6 +252,27 @@ async function handlePost(event, sql) {
   const certificationRequirements = optional(body.certification_requirements, MAX.certification_requirements);
   const launchDate = optional(body.launch_date, MAX.launch_date);
 
+  /*
+   * Someone who previously asked not to be contacted, and has now ticked
+   * the consent box on a new request, is asking to be contacted about that
+   * request. Their earlier opt-out is lifted and both facts stay in
+   * contact_opt_out_events, so the trail shows the opt-out, the date, and
+   * the later submission that reversed it -- rather than the site quietly
+   * holding a stale "do not contact" against a person actively asking for
+   * something, or quietly forgetting they ever opted out.
+   */
+  let liftedOptOut = false;
+  try {
+    if (await isOptedOut(sql, email)) {
+      await resubscribe(sql, email, sourcePage, ip);
+      liftedOptOut = true;
+      console.log(`[leads] a previous opt-out was lifted by a new consented submission (form=${segment})`);
+    }
+  } catch (err) {
+    // Never fail a lead over the opt-out bookkeeping.
+    console.error('[leads] opt-out check failed:', err?.message ?? err);
+  }
+
   await sql`
     INSERT INTO leads_staging
       (email, company_name, country_region, buyer_type, consent, source_page, segment,
@@ -266,7 +295,7 @@ async function handlePost(event, sql) {
         leadEmailText({
           email, companyName, countryRegion, buyerType, sourcePage, segment,
           targetMarket, variety, format, packSize, volume,
-          certificationRequirements, launchDate,
+          certificationRequirements, launchDate, liftedOptOut,
         }),
         { replyTo: email, formType: `lead:${segment}` }
       );
@@ -294,6 +323,7 @@ exports.handler = async (event) => {
 
   try {
     await ensureSchema(sql);
+    await ensureOptOutSchema(sql);
     return await handlePost(event, sql);
   } catch (err) {
     console.error('[leads] db error:', err?.message ?? err);

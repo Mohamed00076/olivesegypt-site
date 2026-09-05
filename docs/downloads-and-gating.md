@@ -151,13 +151,13 @@ Equivalent wording, and the consent value is stored with the row.
 
 **Gaps:**
 
-- The consent label does not link to the privacy policy, and does not say how
-  long the data is kept. `/privacy` and `/ar/privacy` both exist.
-- There is no unsubscribe mechanism anywhere in the codebase, though the label
-  promises one. That is a promise the site cannot currently keep. **Still
-  open as of 2026-09-05** — it needs a decision about where the promise
-  should be met (a real unsubscribe endpoint, or a reply-to address named in
-  the label), not just a code change.
+- ~~The consent label does not link to the privacy policy~~ — it now links to
+  both `/privacy` and `/unsubscribe` (Arabic to the Arabic pair). It still
+  does not state a retention period in the label itself, because
+  `leads_staging` still has no retention policy to state; the privacy page it
+  links to says what is known.
+- ~~There is no unsubscribe mechanism anywhere in the codebase, though the
+  label promises one.~~ **Built 2026-09-05** — see §7.
 - `leads_staging` has no retention policy. The analytics tables have a daily
   purge (`analytics-retention`, 395 days); leads have none. Still open — note
   that the analytics purge itself gained a floor, a per-run cap, a dry-run
@@ -182,3 +182,61 @@ every page's own `<meta name="robots">`:
 
 (The eight "guide" matches in `sitemap.xml` are the public
 `/media/olive-export-packaging-guide` article, not the gated guides.)
+
+## 7. The unsubscribe — built 2026-09-05
+
+Every lead form carried "I can unsubscribe at any time" from the beginning
+and nothing anywhere could honour it. There was no page, no endpoint and no
+column. That is now the whole of what was built:
+
+| | |
+| --- | --- |
+| Pages | `/unsubscribe`, `/ar/unsubscribe` — one field, one button, no confirmation step and no reason-picker |
+| Endpoint | `POST /api/unsubscribe` → `netlify/functions/unsubscribe.js` |
+| Tables | `contact_opt_outs` (current state, one row per address) and `contact_opt_out_events` (append-only trail) |
+| Reachable from | the consent label on all 7 forms, the footer of all 76 content pages, and the privacy page's rights section |
+| Enforcement helper | `isOptedOut(sql, email)` in `_optout_lib.js`, for whatever sends mail next |
+
+### Three decisions worth stating plainly
+
+**It is not email-verified.** Anyone can opt out any address from the public
+form. The harm of an unwanted opt-out is that a sales email does not go out —
+recoverable, visible in the events table, and reversible by an admin. The harm
+of a verification step is that the promise is not honoured until the person
+completes a second action, which is the defect this closes. There is also no
+outbound mail to a lead's own address today, so a confirmation link could not
+be delivered. Bulk abuse is bounded by an IP rate limit (20/hour).
+
+**Opting someone back IN is admin-only.** That is the direction that could
+undo a person's own choice, so the public endpoint refuses it. An admin can do
+it for someone who says they never asked to be removed.
+
+**A new consented submission lifts an earlier opt-out.** Someone who ticks the
+consent box on a fresh request is asking to be contacted about that request.
+Both facts stay in `contact_opt_out_events` — the site neither holds a stale
+"do not contact" against a person actively asking for something, nor quietly
+forgets they once opted out. The internal notification email says so when it
+happens.
+
+### What it does not do
+
+It does not delete anything. An opt-out stops contact; it does not remove a
+quotation, sample request or order, which are kept in order to do the work
+that was asked for. The privacy page says this, and so does the unsubscribe
+page itself.
+
+### Verified by
+
+`scripts/check-unsubscribe.js` (in `npm test`, 43 assertions) against an
+in-memory store that actually holds rows, so an opt-out is written and read
+back rather than merely "a statement was issued". It asserts the promise
+resolves — every consent label links to a page that exists, in its own locale,
+carrying a working form — as well as the endpoint's behaviour, including that
+a person's address never reaches the logs.
+
+Plus an end-to-end run through a real browser in both locales: the page
+renders RTL correctly with no overflow at 390px, a malformed address is
+refused by the browser, an address the browser lets through (`a@b`) is caught
+by the script, a real submission reaches the store, the form closes afterwards,
+the consent label's link loads the page, and `?email=` pre-fills the field
+without ever opting anyone out on its own. 18/18.

@@ -57,6 +57,32 @@ Optional:
 | `LEADS_NOTIFY` | `1`/`true` turns on the internal notification email for gated-guide leads. Off by default. |
 | `NOTIFY_DRY_RUN` | `1`/`true` makes the email adapter log instead of send. |
 
+### Unsubscribe
+
+Every lead form promises "I can unsubscribe at any time." `/unsubscribe` and
+`/ar/unsubscribe` are what that points at; `POST /api/unsubscribe` records it
+in `contact_opt_outs` (current state) and `contact_opt_out_events`
+(append-only trail).
+
+**Before sending anything to a lead's own address, check the list.**
+`isOptedOut(sql, email)` in `netlify/functions/_optout_lib.js` is the one call
+that needs making. Nothing currently emails leads directly — `LEADS_NOTIFY`
+sends to your own inbox, not theirs — so nothing enforces it yet by necessity
+rather than by choice.
+
+To read the list while signed in to `/admin/analytics`:
+
+```
+GET /api/unsubscribe?list=1
+```
+
+Opting an address back in is admin-only, for someone who says they never asked
+to be removed:
+
+```
+POST /api/unsubscribe   { "email": "…", "action": "resubscribe" }
+```
+
 Netlify's Neon integration (if enabled) may also inject `POSTGRES_*` / `PG*` /
 `NEON_PROJECT_ID` automatically. For the connection the code tries, in order:
 `DATABASE_URL` → `POSTGRES_URL` → `POSTGRES_URL_NON_POOLING` → `DATABASE_URL_UNPOOLED`,
