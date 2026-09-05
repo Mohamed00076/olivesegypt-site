@@ -48,6 +48,16 @@ const EXPECTED_NAV = {
 EXPECTED_NAV.ar = EXPECTED_NAV.en.map((r) => '/ar' + r);
 
 const EXPECTED_FOOTER_COLS = 5;
+
+// One head-office address, written the same way everywhere. The stale lists
+// are the forms that were actually found in use, so a partial revert is
+// caught rather than merely a missing footer line.
+const ADDRESS = {
+  en: 'Ouroba Square (\u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629), 5th Settlement, New Cairo, Cairo, Egypt',
+  ar: '\u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629\u060c \u0627\u0644\u062a\u062c\u0645\u0639 \u0627\u0644\u062e\u0627\u0645\u0633\u060c \u0627\u0644\u0642\u0627\u0647\u0631\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629\u060c \u0627\u0644\u0642\u0627\u0647\u0631\u0629\u060c \u0645\u0635\u0631',
+  staleEn: ['5th Settlement, Ouroba Square', '5th Settlement, Cairo<br/>'],
+  staleAr: ['\u0627\u0644\u062a\u062c\u0645\u0639 \u0627\u0644\u062e\u0627\u0645\u0633\u060c \u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629'],
+};
 const problems = [];
 
 function routes() {
@@ -132,6 +142,21 @@ for (const route of routes()) {
     }
   }
 
+  // --- the head-office address -------------------------------------------
+  //
+  // Five different visible forms of one address were live at once before
+  // 2026-09-05 -- three English, two Arabic -- and the shortest of them was on
+  // /contact, the page a buyer actually reads. None of them named New Cairo.
+  // One string per locale now, and the footer carries it on every page.
+  const wantAddress = lang === 'ar' ? ADDRESS.ar : ADDRESS.en;
+  if (!footer.includes(wantAddress)) {
+    problems.push(`${route}: the footer does not carry the head-office address`);
+  }
+  const strays = (lang === 'ar' ? ADDRESS.staleAr : ADDRESS.staleEn).filter((old) => html.includes(old));
+  if (strays.length) {
+    problems.push(`${route}: an older form of the address is still here: ${strays.join(' | ')}`);
+  }
+
   // --- locale integrity of the shared chrome -----------------------------
   if (lang === 'ar') {
     const chrome = header + footer;
@@ -147,7 +172,8 @@ for (const route of routes()) {
 }
 
 if (problems.length === 0) {
-  console.log('nav-footer OK -- shared navigation and footer consistent across all content pages.');
+  console.log('nav-footer OK -- shared navigation and footer consistent across all content pages, ' +
+              'each carrying the one head-office address.');
   process.exit(0);
 }
 console.error(`nav-footer FAILED -- ${problems.length} problem(s):\n`);
