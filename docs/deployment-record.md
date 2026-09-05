@@ -205,7 +205,10 @@ before or after merge.
   experience," fabricated stats) — removed.
 - **Kalamata** — removed from all public product listings and CRM code
   (one comment in `crm-buyers.js` documents the exclusion; not a live
-  reference).
+  reference). **Superseded:** Kalamata was reintroduced on 2026-09-04 (PR #38)
+  and its product data was approved field by field on 2026-09-05. It is live at
+  position 2 as of Deploy 5. This paragraph records the state at Deploy 1 and is
+  left unedited for that reason.
 - **The 4 unresolved sitemap URLs + the SPA-bundle-only document routes**
   — resolved by the rebuild itself: none of the 4 phantom `/media/` URLs
   were carried into the new site (confirmed absent from current sitemap
@@ -228,7 +231,7 @@ the current repo state as a check:
 
 | Claim | Found in current repo? |
 | --- | --- |
-| "Kalamata" (public pages) | No (one code comment only, not public-facing) |
+| "Kalamata" (public pages) | No, at Deploy 1 (one code comment only, not public-facing). Reintroduced 2026-09-04, approved 2026-09-05 — see Deploy 5. |
 | "Olives Egypt" as brand name | No |
 | "Export Manager" (job title) | No |
 | "15+ years" / "15 years" experience | No |
@@ -703,6 +706,139 @@ what's currently being served at the production domain. If any of the
 billing fix, Netlify does not auto-retry a failed build on its own —
 a fresh push or a manual "Trigger deploy" from the Netlify dashboard
 would be needed, and only the site owner can do the latter from here.
+
+---
+
+## Deploy 5 — Nine-phase bilingual audit remediation (PRs #51–#62)
+
+**Date:** 2026-09-05
+**Production commit:** `687608bd2712995d44bc34c26fe30e6ec00167b1`
+**Previous recorded deploy:** `8798d584` (Deploy 4)
+**Delta:** 28 commits, 12 merged pull requests, 110 files changed (+4,157 / -1,039)
+**Approval:** twelve explicit written merge instructions naming PR numbers, then
+a standalone `PRODUCTION DEPLOYMENT REQUEST`, then explicit approval —
+"approved, keep it live".
+
+### Correction carried forward from this session
+
+Throughout the session leading to this deploy I repeatedly told the site owner
+"nothing is deployed". **That was wrong.** This site auto-builds from `main` on
+every push (`netlify.toml` `[build]`, unchanged since Deploy 1), so all twelve
+merges queued production builds at merge time. Deploy 4's own entry in this file
+states that mechanism plainly; I wrote it and then contradicted it for the rest
+of the session. The accurate statement is that merging queues a build this
+session cannot observe — not that the work is unpublished. Recorded here because
+the owner made merge decisions while holding a belief I had given them.
+
+### What shipped, by phase
+
+| Phase | PR | Substance |
+| --- | --- | --- |
+| 1 | #53 | Canonical locale route map; **246 wrong-locale links fixed** across 35 pages. The primary "اطلب عرض سعر" CTA on all 34 Arabic pages was landing on the English contact form. Arabic gated forms were serving the English guides. |
+| 5 | #54 | Mobile navigation for **25 pages that had none** — all 22 product pages plus `/ar/catalog` and both company-profile pages. Scope gap from the 2026-09-02 fix, which covered only 22 shared-header pages. |
+| 6 | #55 | Arabic placeholder imagery. All **seven** placeholder SVGs carried English "Product photography pending"; 35 references across 11 Arabic surfaces, 6 occurrences inside the Arabic PDF. |
+| 4 (partial) | #56 | خالبينو to **هالبينو** for jalapeno, 37 occurrences across 13 files plus the Arabic PDF. |
+| 7 | #57, #60 | Multi-recipient routing, Reply-To, bounded retries, structured logging, dry-run adapter, 30 offline tests. Root cause identified: the Resend sandbox sender only delivers to the account's own address. |
+| 2 | #58 | Language persistence and scroll restoration, scoped to deliberate switches only. |
+| 8, 9 | #59 | Verification documents. Found: the gated guides do not gate; the repository is public. |
+| 3 | #61, #62 | Kalamata approvals applied field by field; one canonical product order; real photograph. |
+| — | #51, #52 | Deploy 4 record; hreflang mapping defects. |
+
+### Defects found that were not in the original brief
+
+- **`/catalog` disagreed with itself** — the visible grid ordered products
+  differently from the ItemList JSON-LD on the same page.
+- **`/ar/catalog` had Kalamata at position 7** while every other surface had it
+  11th. Three different product orders were live simultaneously.
+- **Both catalogue PDFs contained only 10 products** — Kalamata was absent from
+  the product pages and the quick-matrix table, while the site advertised 11
+  varieties. Found on 2026-09-05; the Arabic PDF regenerated in Phase 6 had the
+  same gap, checked for placeholder text but never for product count.
+- **`lg:inline-flex` is not in the compiled Tailwind stylesheet.** A first pass
+  used it and silently hid the language switcher at every width on 25 pages.
+- **The dry-run email adapter required an API key**, contradicting its own
+  documentation. Caught by writing a script that used it.
+
+### Testing method
+
+No deploy preview was ever green during this work, so none was used. Verification
+was local throughout: Playwright at 320/360/375/390/412/768/1024 in both locales,
+rendered-image inspection of both PDFs, offline test suites, HTML tag-balance
+checks on every changed page, and before/after comparison against `origin/main`
+whenever a change might have introduced a regression (which caught a 6px overflow
+that had not existed before).
+
+### Route / sitemap / robots / canonical / hreflang / schema / PDF results
+
+| Check | Result |
+| --- | --- |
+| Locale links | 80 routes (40 en / 40 ar), 0 violations |
+| Email library | 30/30 |
+| Product order | 8 surfaces match canonical |
+| hreflang | 80/80 pages carry exactly 3 tags |
+| Canonical | 80/80 pages |
+| JSON-LD | 148 blocks, 0 invalid |
+| Sitemap vs robots | 68 URLs against 18 rules, 0 conflicts |
+| Netlify functions | 35/35 parse |
+| PDFs | EN 10p/569KB, AR 10p/861KB, both 11 products |
+
+`netlify.toml`, `robots.txt`, `sitemap.xml`, the shared stylesheet, `consent.js`
+and `analytics.js` were **not changed** by this deploy.
+
+### Staging-vs-production diff plan
+
+None available — deploy previews failed on every PR from #43 onward. The
+`netlify-plugin-cache` devDependency the owner added (`249f284`, `fe91d69`) is
+the likely cause and may have resolved it, but no green preview was ever
+observed from this session.
+
+### Rollback
+
+```
+git revert -m 1 687608b 47b1e74 58a6ddc c9ce774 1e2caa0 5eb1fc9 \
+                e9726e4 60315cd 79ce621 8b4bcc1 c303f70 7b7c195
+git push origin main
+```
+
+Single-PR revert: `git revert -m 1 <that PR's merge sha>`.
+
+### Backup manifest
+
+All twelve source branches remain on `origin`; none deleted. Three binaries
+cannot be reconstructed from text: `assets/olive-kalamata.jpg` (58KB) and both
+catalogue PDFs (583KB / 883KB). `assets/illus-kalamata.svg` and
+`illus-kalamata-ar.svg` were deliberately retained rather than deleted, as the
+rollback path for the photograph.
+
+### Exact production action taken
+
+**None by this session, because none exists.** The site auto-builds from `main`,
+so each of the twelve merges queued its own production build. This session has no
+Netlify API or dashboard access and outbound egress to `olivesegypt.com` is
+blocked by policy, so it cannot confirm whether those builds ran, succeeded, or
+are what is currently served. Netlify does not auto-retry a failed build; if any
+build is still failed from before the billing fix, a fresh push or a manual
+"Trigger deploy" is required, and only the owner can do that.
+
+### Known limitations shipped with this deploy
+
+- Arabic PDF text layer transposes lam-alef pairs — copy-paste and in-PDF search
+  return garbled Arabic. Rendering is correct. Chromium print-to-PDF, not the
+  source HTML.
+- The three gated guides are reachable by direct URL; the form unlocks nothing
+  server-side. Not a security issue (marketing collateral) but lead capture is
+  optional in practice, so lead numbers understate readership.
+- The consent label promises an unsubscribe the site has no mechanism for, links
+  to no privacy policy, and states no retention period. `leads_staging` has no
+  retention policy.
+- The Kalamata photograph is a 671x310 screenshot, upscaled about ten per cent on
+  the product page, and reads red/burgundy against approved copy saying "deep
+  purple-black".
+- Email cannot deliver to more than one mailbox until `olivesegypt.com` is
+  verified in Resend and `NOTIFY_FROM_EMAIL` is set.
+- `analytics-retention` deletes data and carries no guard; its safety rests on
+  Netlify not exposing scheduled functions over HTTP.
+- No Latin-script legal name appears anywhere in the Arabic catalogue PDF.
 
 ---
 
