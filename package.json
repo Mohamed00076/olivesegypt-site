@@ -6,11 +6,12 @@
     "check:locale-links": "node scripts/check-locale-links.js",
     "check:email-lib": "node scripts/check-email-lib.js",
     "check:locale-switch": "node scripts/check-locale-switch.js",
-    "test": "node scripts/check-locale-links.js && node scripts/check-email-lib.js && node scripts/check-product-order.js && node scripts/check-nav-footer.js && node scripts/check-guide-gate.js && node scripts/check-retention-guards.js",
+    "test": "node scripts/check-locale-links.js && node scripts/check-email-lib.js && node scripts/check-product-order.js && node scripts/check-nav-footer.js && node scripts/check-guide-gate.js && node scripts/check-retention-guards.js && node scripts/check-unsubscribe.js",
     "check:product-order": "node scripts/check-product-order.js",
     "check:nav-footer": "node scripts/check-nav-footer.js",
     "check:guide-gate": "node scripts/check-guide-gate.js",
-    "check:retention-guards": "node scripts/check-retention-guards.js"
+    "check:retention-guards": "node scripts/check-retention-guards.js",
+    "check:unsubscribe": "node scripts/check-unsubscribe.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "0.10.4",

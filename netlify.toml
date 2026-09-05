@@ -130,6 +130,15 @@
   status = 200
   force = true
 
+# The unsubscribe endpoint behind the consent line on every lead form.
+# Before this the forms promised "you can unsubscribe at any time" and
+# nothing anywhere could honour it.
+[[redirects]]
+  from = "/api/unsubscribe"
+  to = "/.netlify/functions/unsubscribe"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/api/consent"
   to = "/.netlify/functions/consent"
