@@ -2,8 +2,7 @@
 
 Read-only audit of every Arabic route, requested before any fix.
 
-**Status: §4.2 was reviewed and resolved on 2026-09-05 — option 2, see the
-resolution note there. §4.1 (product identifiers) is still open.**
+**Status: both gaps in §4 were reviewed and resolved on 2026-09-05.**
 
 Scope: all **42 Arabic routes with a page on disk**. (The route map counts 45;
 the three gated guides are served from the functions bundle and have no
@@ -19,7 +18,7 @@ twins, and are `noindex` + `Disallow` by design.)
 | Arabic routes with **no structured data at all** | 3 | correct — see §2 |
 | Arabic routes **already correct** | 39 | §3 |
 | Arabic routes carrying **English content where Arabic belongs** | **0** | §3 |
-| Real gaps found | 2 | §4 — one resolved, one open |
+| Real gaps found | 2 | §4 — both resolved |
 
 The headline finding is that the thing most likely to be wrong — Arabic pages
 serving English structured data — **is not happening anywhere.** Every Arabic
@@ -118,7 +117,7 @@ locale-specific content.
 
 ## 4. The two real gaps
 
-### 4.1 English and Arabic products look like unrelated products — STILL OPEN
+### 4.1 English and Arabic products look like unrelated products — RESOLVED
 
 Every Arabic product page and its English twin describe the same physical
 product, and **nothing in the markup says so**:
@@ -142,8 +141,24 @@ the same `productID` in both locales, plus a locale-specific `url` and the
 product's existing `image`, links the pairs using only values already in the
 repository.
 
-**Needs your say-so** because it adds properties to 22 pages, not because it
-needs new content.
+#### Resolved 2026-09-05
+
+Each of the 22 Product nodes now carries `productID`, `@id`, `url`, `image`
+and `inLanguage`, built entirely from values already in the repository — the
+canonical key from `scripts/product-order.js`, the page's own canonical URL,
+and the product photograph the page already displays. No new copy.
+
+The two halves pull in opposite directions and both matter:
+
+| | Across an EN/AR pair |
+| --- | --- |
+| `productID` | **the same** — this is what says "one product" |
+| `@id` | **different** — a shared `@id` would merge the pair into one node holding an English *and* an Arabic name for the same thing, which is precisely the contradiction the Organization schema spent three pull requests removing |
+
+No `sku`, `gtin` or `mpn`. Those denote real commercial codes; the company has
+not supplied any, and `productID` carrying the internal key is honest where an
+invented SKU would not be. `scripts/check-product-order.js` fails if one
+appears.
 
 ### 4.2 Fourteen Organization nodes that do not link to the company — RESOLVED
 
