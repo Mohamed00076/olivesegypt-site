@@ -36,10 +36,20 @@ const ORIGIN = 'https://olivesegypt.com';
 // say-so, not a developer's judgement -- the excluded ones were named
 // individually in the instruction.
 const ALLOWED_KEYS = new Set([
-  '@context', '@type', '@id', 'name', 'url', 'logo', 'description',
-  'address', 'email', 'contactPoint', 'sameAs',
+  '@context', '@type', '@id', 'name', 'alternateName', 'url', 'logo',
+  'description', 'address', 'email', 'contactPoint', 'sameAs',
 ]);
-const FORBIDDEN_KEYS = ['foundingDate', 'alternateName', 'areaServed'];
+const FORBIDDEN_KEYS = ['foundingDate', 'areaServed'];
+
+/*
+ * alternateName was excluded on 2026-09-05 and restored on 2026-09-05 once it
+ * became clear what the exclusion had taken with it. The registered company
+ * name is the English one -- owner-confirmed -- so the Arabic name is an
+ * alternate rather than a legalName, and this is the only place in the site's
+ * structured data it is allowed to exist. Without it the Arabic name appears
+ * nowhere at all, on a bilingual site whose home market is Egypt.
+ */
+const ARABIC_NAME = 'الشركة الثلاثية للتنمية الصناعية';
 
 const problems = [];
 const files = execSync('git ls-files "*index.html"', { cwd: ROOT }).toString().trim().split('\n');
@@ -124,8 +134,11 @@ if (org) {
   if (extra.length) {
     problems.push(`unapproved field(s) added: ${extra.join(', ')} -- these need the owner's approval`);
   }
-  for (const k of ['name', 'url', 'logo', 'description', 'address', 'email', 'contactPoint', 'sameAs']) {
+  for (const k of ['name', 'alternateName', 'url', 'logo', 'description', 'address', 'email', 'contactPoint', 'sameAs']) {
     if (!(k in org)) problems.push(`required field "${k}" is missing`);
+  }
+  if (![].concat(org.alternateName || []).includes(ARABIC_NAME)) {
+    problems.push(`alternateName does not carry the Arabic name ${ARABIC_NAME}; it exists nowhere else in the site's structured data`);
   }
 
   // ---- the logo must be a real file in the publish directory -------------
@@ -188,19 +201,21 @@ if (org) {
 
 // ---- Organization nodes with no @id at all ------------------------------
 //
-// Counted and reported rather than failed: 14 of these exist today, on the
-// seven Arabic article pages (author + publisher), naming the company in
-// Arabic with no link to the canonical entity. Linking them changes what an
-// Arabic page says about the company, which is pending the owner's review of
-// the Arabic structured-data audit (docs/arabic-schema-audit.md). When that
-// lands, this becomes a hard failure.
+// There is one company. A node that names it without claiming the canonical
+// @id is a second, unlinked copy of it -- which is how fourteen of these came
+// to sit on the Arabic article pages naming the company in Arabic while the
+// canonical definition called it something else. Reported as a note until the
+// owner reviewed the Arabic schema audit; a hard failure since.
 const anonymous = [];
 for (const f of files) {
   const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
   for (const doc of jsonLd(html)) {
     if (doc.__parseError) continue;
     for (const n of nodes(doc)) {
-      if (isOrganizationNode(n) && !n['@id'] && n.name) anonymous.push(f);
+      if (isOrganizationNode(n) && !n['@id'] && n.name) {
+        anonymous.push(f);
+        problems.push(`${f}: an Organization node names the company ("${n.name}") without claiming the canonical @id`);
+      }
     }
   }
 }
@@ -233,8 +248,7 @@ if (problems.length === 0) {
   console.log(
     `org-schema OK -- one Organization definition (index.html), every node claiming that @id ` +
     `agrees with it, ${websites} WebSite node(s) referencing it, logo resolves in the publish ` +
-    `directory.\n              note: ${anonymous.length} Organization node(s) carry no @id ` +
-    `(Arabic article author/publisher) -- tracked in docs/arabic-schema-audit.md, pending review.`
+    `directory, and no unlinked copy of the company anywhere.`
   );
   process.exit(0);
 }
