@@ -281,6 +281,12 @@ if (org) {
   }
 }
 
+// The short form each locale uses in its page titles and visible prose.
+// These are already among the Organization's alternateName values; the check
+// above proves that, and the WebSite node has to agree with them.
+const SHORT_NAME_EN = 'Triple Company';
+const SHORT_NAME_AR = '\u0627\u0644\u0634\u0631\u0643\u0629 \u0627\u0644\u062b\u0644\u0627\u062b\u064a\u0629';
+
 // ---- WebSite references the organisation, never re-describes it ----------
 const IDENTITY_FIELDS = ['logo', 'address', 'contactPoint', 'email', 'telephone', 'sameAs'];
 let websites = 0;
@@ -299,6 +305,39 @@ for (const f of files) {
       const dup = IDENTITY_FIELDS.filter((k) => k in n);
       if (dup.length) {
         problems.push(`${f}: WebSite carries organisation field(s) of its own: ${dup.join(', ')}`);
+      }
+
+      /*
+       * The site name Google prints above a search result.
+       *
+       * On 2026-09-06 that result read "olivesegypt.com" -- the bare domain --
+       * where a competitor's read as their company name. The domain is what
+       * Google falls back to when it is not confident, and it has a structural
+       * reason not to be here: the brand has no relationship to the domain,
+       * where nile-food.com / Nile Food Industries reinforces itself.
+       *
+       * That leaves giving Google every signal it documents, and the WebSite
+       * node is the first one it reads. name carries the legal identity;
+       * alternateName is the property Google's own site-name documentation
+       * names for the shorter form -- which matters here because the visible
+       * <title> ends "| Triple Company" while name is the full legal entity.
+       * Without alternateName those two disagree and Google is left to guess.
+       *
+       * This is not the organisation re-describing itself (see IDENTITY_FIELDS
+       * above): it is the site declaring what it is called.
+       */
+      const expected = f.startsWith('ar/') ? SHORT_NAME_AR : SHORT_NAME_EN;
+      const alt = [].concat(n.alternateName || []);
+      if (alt.length === 0) {
+        problems.push(
+          `${f}: WebSite has no alternateName, so the short form the page title uses is declared ` +
+          `nowhere -- this is the field Google reads for the site name above a search result`
+        );
+      } else if (!alt.includes(expected)) {
+        problems.push(
+          `${f}: WebSite alternateName is ${JSON.stringify(alt)} but this locale's short form is ` +
+          `"${expected}", which is what the page title and the visible prose use`
+        );
       }
     }
   }
