@@ -78,7 +78,7 @@ def head(slug, title_raw, description_raw, keywords, extra_jsonld=""):
     <meta name="DC.language" content="en" />
     <link rel="alternate" hreflang="en" href="{canonical}" />
     <link rel="alternate" hreflang="x-default" href="{canonical}" />
-    <meta property="og:site_name" content="Triple Company Export Specialist" />
+    <meta property="og:site_name" content="Triple Company for Industrial Development" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Triple Company premium Egyptian table olives export" />
@@ -250,7 +250,7 @@ c5_main = hero(
 <p class="text-muted-foreground leading-relaxed mb-3">Every order is prepared with standard export documentation — commercial invoice, packing list, certificate of origin, phytosanitary or health certificate, and bill of lading. Import duty and tariff treatment (including the correct HS classification for table olives in your destination market) varies by country and can change; we recommend confirming the applicable HS code and duty rate with your own customs broker for your specific market rather than relying on a general figure.</p>
 
 <h2 class="text-2xl font-serif font-bold text-foreground mb-4">Private label &amp; OEM across regions</h2>
-<p class="text-muted-foreground leading-relaxed">For buyers building a private-label or OEM olive range for any of these regions, we support full design-to-shelf private label service across glass, tin, bucket, and barrel formats. Tell us your target market and we'll confirm packaging, MOQ, and lead time for that region.</p>
+<p class="text-muted-foreground leading-relaxed">For buyers building a private-label or OEM olive range for any of these regions, we support private-label packaging across glass, tin, bucket, and barrel formats, and can help with label design on request. Tell us your target market and we'll confirm packaging, MOQ, and lead time for that region.</p>
 </div></section>''' + cta_block(
     "Buying for Africa, the Middle East, or Asia?",
     "Tell us your destination market and requirements — we'll send a tailored offer.",
@@ -290,7 +290,7 @@ c3_main = hero(
 <div class="rounded-2xl border border-border bg-card p-6"><h3 class="font-semibold text-foreground mb-2">Variety range</h3><p class="text-sm text-muted-foreground leading-relaxed">Egypt grows both signature local varieties (Aggizi, Toffahi, Hamed) and internationally recognized varieties like Manzanilla, giving buyers a way to source a familiar variety from a competitively priced, less saturated origin.</p></div>
 <div class="rounded-2xl border border-border bg-card p-6"><h3 class="font-semibold text-foreground mb-2">Harvest timing</h3><p class="text-sm text-muted-foreground leading-relaxed">Egypt's autumn harvest window means fresh-season supply is available on a different calendar than some other Mediterranean origins — useful for buyers managing year-round inventory across multiple sourcing regions.</p></div>
 <div class="rounded-2xl border border-border bg-card p-6"><h3 class="font-semibold text-foreground mb-2">Cost position</h3><p class="text-sm text-muted-foreground leading-relaxed">FOB Alexandria pricing is generally competitive relative to established Mediterranean origins, which is part of why global demand for Egyptian olives has grown. Exact competitiveness depends on your specific variety, caliber, and packaging — request a current quote to compare.</p></div>
-<div class="rounded-2xl border border-border bg-card p-6"><h3 class="font-semibold text-foreground mb-2">Co-packing &amp; OEM capacity</h3><p class="text-sm text-muted-foreground leading-relaxed">Buyers looking for a contract packing or white-label olive manufacturer can work with our partner facility on private label formats across glass, tin, bucket, and barrel — full design-to-shelf service.</p></div>
+<div class="rounded-2xl border border-border bg-card p-6"><h3 class="font-semibold text-foreground mb-2">Co-packing &amp; OEM capacity</h3><p class="text-sm text-muted-foreground leading-relaxed">Buyers looking for a contract packing or white-label olive manufacturer can work with our partner facility on private label formats across glass, tin, bucket, and barrel, with label design help available on request.</p></div>
 </div>
 
 <p class="text-xs text-muted-foreground border-t border-border pt-4">Industry figures above are sourced from FAO and International Olive Council (IOC) reporting on Egyptian production. Company-specific claims elsewhere on this site are kept separate and are not implied by these industry statistics.</p>
@@ -335,7 +335,7 @@ c1_main = hero(
 
 <h2 class="text-2xl font-serif font-bold text-foreground mb-4">Private label &amp; OEM packaging</h2>
 <div class="rounded-2xl border border-primary/20 bg-primary/5 p-6 md:p-8">
-<p class="text-base text-foreground leading-relaxed mb-3">Your brand, your packaging design, our export-ready product. We support full design-to-shelf private label service across glass, tin, bucket, and barrel formats, handling printing, filling, and export documentation.</p>
+<p class="text-base text-foreground leading-relaxed mb-3">Your brand, your packaging design, our export-ready product. We support private-label packaging across glass, tin, bucket, and barrel formats, handling printing, filling, and export documentation. We can help with label design on request.</p>
 <p class="text-sm text-muted-foreground leading-relaxed">Minimum order quantity, artwork specifications, and labeling requirements for private-label and custom packaging are confirmed per project during quotation, since they depend on the format, print method, and volume you need. Tell us what you have in mind and we'll confirm exactly what's possible.</p>
 </div>
 </div></section>''' + cta_block(
@@ -451,7 +451,7 @@ def write_hub():
     <meta name="DC.language" content="en" />
     <link rel="alternate" hreflang="en" href="{canonical}" />
     <link rel="alternate" hreflang="x-default" href="{canonical}" />
-    <meta property="og:site_name" content="Triple Company Export Specialist" />
+    <meta property="og:site_name" content="Triple Company for Industrial Development" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Triple Company premium Egyptian table olives export" />
