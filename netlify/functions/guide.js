@@ -1,13 +1,15 @@
 'use strict';
 
 /*
- * Serves the three gated guides, in both locales, and only to a visitor
- * holding a valid token from POST /api/leads.
+ * Serves every gated asset, in both locales, and only to a visitor holding a
+ * valid token from POST /api/leads. Seven are HTML pages; the eighth is the
+ * technical export catalogue PDF, gated on the owner's instruction of
+ * 2026-09-06 after being a direct public download.
  *
- * The guide HTML no longer sits in the published directory at all -- it
- * lives in _guides/ inside the functions bundle, so there is no static
- * copy for anyone to reach around this check. netlify.toml rewrites the
- * six guide routes here with force = true.
+ * None of them sits in the published directory -- they live in _guides/
+ * inside the functions bundle, so there is no static copy for anyone to reach
+ * around this check. netlify.toml rewrites every guide route here with
+ * force = true.
  *
  * A token arrives either in the tc_guide cookie (preferred) or as ?t= on
  * the URL (the fallback for browsers that refuse first-party cookies --
@@ -23,7 +25,7 @@
 const fs = require('fs');
 const path = require('path');
 const { parseCookies } = require('./_lib');
-const { GUIDES, COOKIE_NAME, verifyGuideToken } = require('./_guide_token');
+const { GUIDES, COOKIE_NAME, verifyGuideToken, guideFile } = require('./_guide_token');
 
 // route slug -> the segment whose token opens it
 const SLUG_TO_SEGMENT = Object.fromEntries(
@@ -141,14 +143,31 @@ exports.handler = async (event) => {
     return htmlResponse(403, noticePage(locale, t.body, true));
   }
 
-  const file = path.join(__dirname, '_guides', locale, `${GUIDES[segment]}.html`);
-  let html;
+  const asset = guideFile(segment);
+  const file = path.join(__dirname, '_guides', locale, asset.name);
+  let body;
   try {
-    html = fs.readFileSync(file, 'utf8');
+    // A PDF has to be read as bytes and handed back base64-encoded; reading it
+    // as utf8 would corrupt it silently and hand the visitor a broken file.
+    body = fs.readFileSync(file, asset.ext === 'pdf' ? null : 'utf8');
   } catch (err) {
     console.error('[guide] could not read', file, err?.message ?? err);
     return htmlResponse(500, noticePage(locale, t.unavailable, false));
   }
 
-  return htmlResponse(200, event.httpMethod === 'HEAD' ? '' : html);
+  if (asset.ext === 'pdf') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': asset.type,
+        'Content-Disposition': `attachment; filename="${GUIDES[segment]}-${locale}.pdf"`,
+        'Cache-Control': 'private, no-store, max-age=0',
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+      body: event.httpMethod === 'HEAD' ? '' : body.toString('base64'),
+      isBase64Encoded: event.httpMethod !== 'HEAD',
+    };
+  }
+
+  return htmlResponse(200, event.httpMethod === 'HEAD' ? '' : body);
 };

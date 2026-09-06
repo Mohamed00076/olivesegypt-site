@@ -265,6 +265,39 @@ for (const f of files) {
     }
   }
 }
+// ---- no Product claims a brand ------------------------------------------
+//
+// Owner, 2026-09-06: "we don't have a brand so far, we are looking forward to
+// do private label OEM for now." A Brand node asserts a brand this company
+// does not have. 77 of them were live in three different spellings, including
+// ten written by scripts/generate-product-pages.py, so a hand-fix alone would
+// have lasted until the next regeneration.
+//
+// brand is optional on schema.org Product, and a private-label / OEM supplier
+// genuinely puts no brand of its own on the goods. If that changes, this
+// check is the right place to record the decision.
+{
+  const branded = [];
+  for (const f of files) {
+    const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
+    for (const doc of jsonLd(html)) {
+      if (doc.__parseError) continue;
+      for (const n of nodes(doc)) {
+        if (n && typeof n === 'object' && 'brand' in n) {
+          const b = n.brand;
+          branded.push(`${f} (${(b && b.name) || b})`);
+        }
+      }
+    }
+  }
+  if (branded.length) {
+    problems.push(
+      `${branded.length} Product node(s) claim a brand, but the company has none and supplies ` +
+      `private label / OEM: ${[...new Set(branded)].slice(0, 4).join(', ')}${branded.length > 4 ? ' ...' : ''}`
+    );
+  }
+}
+
 if (websites === 0) problems.push('no WebSite node found on the site');
 
 if (problems.length === 0) {

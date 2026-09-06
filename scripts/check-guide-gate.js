@@ -76,7 +76,7 @@ function get(mod, requestPath, { cookie, query } = {}) {
   t('no gated guide is still a static file in the publish root', leaked.length === 0, leaked.join(', '));
 
   const bundled = ['en', 'ar'].flatMap((loc) =>
-    Object.values(T.GUIDES).map((slug) => path.join(FN, '_guides', loc, `${slug}.html`))
+    Object.keys(T.GUIDES).map((seg) => path.join(FN, '_guides', loc, T.guideFile(seg).name))
   );
   t(`all ${Object.keys(T.GUIDES).length} guides are present in both locales of the functions bundle`,
     bundled.every((f) => fs.existsSync(f)),
@@ -97,9 +97,11 @@ function get(mod, requestPath, { cookie, query } = {}) {
   // that path, which is the exact failure being fixed.
   const guideRuleBlock = toml.slice(toml.indexOf('/downloads/buyers-guide'), toml.indexOf('# The publish directory is the repo root'));
   const wantRules = Object.keys(T.GUIDES).length * 4;
+  const guideRules = guideRuleBlock.split('[[redirects]]')
+    .filter((b) => /to = "\/\.netlify\/functions\/guide/.test(b));
   t(`all ${wantRules} guide rewrites are force = true`,
-    (guideRuleBlock.match(/force = true/g) || []).length === wantRules,
-    (guideRuleBlock.match(/force = true/g) || []).length);
+    guideRules.length === wantRules && guideRules.every((b) => /force = true/.test(b)),
+    `${guideRules.length} rule(s), ${guideRules.filter((b) => /force = true/.test(b)).length} forced`);
   t('function sources are not served as static files', toml.includes('from = "/netlify/*"'));
 
   // ---- 3. token layer ----------------------------------------------------
@@ -247,8 +249,13 @@ function get(mod, requestPath, { cookie, query } = {}) {
         const res = await get(mod, `/downloads/${slug}`, { query: { g: seg, ...extra } });
         if (res.statusCode !== want) bad.push(`${seg} with ${what}: ${res.statusCode} (wanted ${want})`);
         // a 200 must be that guide's own document, not another one
-        if (want === 200 && res.statusCode === 200 && !res.body.includes(slug)) {
-          bad.push(`${seg} opened but did not serve ${slug}`);
+        if (want === 200 && res.statusCode === 200) {
+          const asset = T.guideFile(seg);
+          const served = asset.ext === 'pdf'
+            // base64 of a PDF starts with the %PDF- magic bytes
+            ? res.isBase64Encoded === true && res.body.startsWith('JVBERi0')
+            : res.body.includes(slug);
+          if (!served) bad.push(`${seg} opened but did not serve its ${asset.ext}`);
         }
       }
     }

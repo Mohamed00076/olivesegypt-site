@@ -143,7 +143,7 @@ for (const f of [...pages, ...generators]) {
 //   python3 -m http.server 8899 &
 //   node scripts/generate-export-catalog-pdf.js
 //   SOURCE_FILE=scripts/export-catalog-source-ar.html \
-//   OUT_FILE=downloads/triple-company-export-catalog-2026-ar.pdf \
+//   OUT_FILE=netlify/functions/_guides/ar/export-catalog.pdf \
 //   node scripts/generate-export-catalog-pdf.js
 
 if (problems.length === 0) {
