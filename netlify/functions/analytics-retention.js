@@ -51,6 +51,34 @@ const { ensureSchema, auditLog, MIN_RETENTION_DAYS } = require('./_analytics_lib
 
 const DEFAULT_RETENTION_DAYS = 395;
 
+/*
+ * Contact data -- the `inquiries` table behind /contact and /sample, and
+ * `leads_staging` behind the gated downloads and the private-label brief --
+ * was never purged at all. Names, business emails, phone numbers and message
+ * bodies were kept indefinitely while /privacy told visitors they could ask
+ * for deletion. That gap is what this covers.
+ *
+ * It gets its own setting and its own floor rather than reusing the analytics
+ * number, because it is a different kind of record with a different driver.
+ * 395 days of analytics is a reasonable analytics window; 395 days applied to
+ * `inquiries` would delete the company's own sales enquiry history at 13
+ * months, which nobody asked for.
+ *
+ * 1825 days (5 years) is a PLACEHOLDER pending the owner's legal answer -- the
+ * same status the /privacy page gives it. The floor exists so that a typo in
+ * the admin form cannot turn a retention policy into a data loss event: a
+ * value below it refuses the whole run rather than acting on it.
+ */
+const DEFAULT_CONTACT_RETENTION_DAYS = 1825;
+const MIN_CONTACT_RETENTION_DAYS = 365;
+
+/*
+ * Never purged, deliberately: the suppression list has to outlive the data it
+ * suppresses. Deleting someone's opt-out record because it got old is how a
+ * site starts emailing again the person who asked it to stop.
+ */
+const NEVER_PURGE = ['contact_opt_outs', 'contact_opt_out_events', 'consent_log', 'analytics_audit_log'];
+
 // MIN_RETENTION_DAYS lives in _analytics_lib.js because the admin form
 // validates against the same number -- see the note there. It is not a legal
 // figure: it is a floor low enough never to obstruct a real policy (the
@@ -88,6 +116,16 @@ async function record(sql, outcome, detail) {
 async function readRetentionDays(sql) {
   const rows = await sql`SELECT value FROM analytics_settings WHERE key = 'data_retention_days'`;
   return rows[0] ? Number(rows[0].value) : DEFAULT_RETENTION_DAYS;
+}
+
+async function readContactRetentionDays(sql) {
+  await sql`
+    INSERT INTO analytics_settings (key, value)
+    VALUES ('contact_retention_days', ${String(DEFAULT_CONTACT_RETENTION_DAYS)}::jsonb)
+    ON CONFLICT (key) DO NOTHING
+  `;
+  const rows = await sql`SELECT value FROM analytics_settings WHERE key = 'contact_retention_days'`;
+  return rows[0] ? Number(rows[0].value) : DEFAULT_CONTACT_RETENTION_DAYS;
 }
 
 /*
@@ -147,13 +185,23 @@ exports.handler = async () => {
       );
     }
 
+    // Contact data has its own window; a refusal there must not stop the
+    // analytics purge, and vice versa, so it is resolved separately.
+    const contactDays = await readContactRetentionDays(sql);
+    const contactUsable =
+      Number.isFinite(contactDays) && contactDays >= MIN_CONTACT_RETENTION_DAYS;
+
     if (isDryRun()) {
       const events = await countOlderThan(sql, 'analytics_events', 'occurred_at', days);
       const sessions = await countOlderThan(sql, 'analytics_sessions', 'started_at', days);
+      const inq = contactUsable ? await countOlderThan(sql, 'inquiries', 'created_at', contactDays) : 0;
+      const leads = contactUsable ? await countOlderThan(sql, 'leads_staging', 'created_at', contactDays) : 0;
       return await record(
         sql, 'dry-run',
-        `would delete ${events} event(s) and ${sessions} session(s) older than ${days} days ` +
-        `(cap ${MAX_DELETES_PER_RUN} per table per run); nothing deleted`
+        `would delete ${events} event(s) and ${sessions} session(s) older than ${days} days, ` +
+        `and ${inq} inquiry/inquiries and ${leads} lead(s) older than ${contactDays} days` +
+        (contactUsable ? '' : ` (contact purge REFUSED: contact_retention_days=${JSON.stringify(contactDays)} is below the ${MIN_CONTACT_RETENTION_DAYS}-day floor)`) +
+        `; nothing deleted`
       );
     }
 
@@ -161,13 +209,32 @@ exports.handler = async () => {
     const deletedSessions = await purge(sql, 'analytics_sessions', 'started_at', 'session_id', days, MAX_DELETES_PER_RUN);
     const deletedCache = await sql`DELETE FROM ip_org_cache WHERE expires_at < now() RETURNING ip_hash`;
 
+    // Contact data. Refused rather than clamped, for the same reason as
+    // above: acting on a number nobody meant to type is the failure mode.
+    let deletedInquiries = 0;
+    let deletedLeads = 0;
+    let contactNote;
+    if (!contactUsable) {
+      contactNote =
+        `contact purge REFUSED: contact_retention_days=${JSON.stringify(contactDays)} is below the ` +
+        `${MIN_CONTACT_RETENTION_DAYS}-day floor; no inquiry or lead rows deleted`;
+    } else {
+      deletedInquiries = await purge(sql, 'inquiries', 'created_at', 'id', contactDays, MAX_DELETES_PER_RUN);
+      deletedLeads = await purge(sql, 'leads_staging', 'created_at', 'id', contactDays, MAX_DELETES_PER_RUN);
+      contactNote =
+        `purged ${deletedInquiries} inquiry/inquiries and ${deletedLeads} lead(s) older than ${contactDays} days. ` +
+        `Suppression and consent records are never purged (${NEVER_PURGE.join(', ')})`;
+    }
+
     const capped = [];
     if (deletedEvents >= MAX_DELETES_PER_RUN) capped.push('analytics_events');
     if (deletedSessions >= MAX_DELETES_PER_RUN) capped.push('analytics_sessions');
+    if (deletedInquiries >= MAX_DELETES_PER_RUN) capped.push('inquiries');
+    if (deletedLeads >= MAX_DELETES_PER_RUN) capped.push('leads_staging');
 
     let detail =
       `purged ${deletedEvents} event(s), ${deletedSessions} session(s) older than ${days} days; ` +
-      `${deletedCache.length} expired org-cache row(s)`;
+      `${deletedCache.length} expired org-cache row(s). ${contactNote}`;
     if (capped.length) {
       // Worth saying out loud: a capped run means rows were left behind on
       // purpose, and the next run picks them up. Silence here would read as
