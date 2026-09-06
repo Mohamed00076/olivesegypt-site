@@ -90,6 +90,23 @@ const BANNED = [
    * word in Arabic (\u0645\u0639\u062a\u0645\u062f), so this is the phrase most likely to drift
    * back in.
    */
+  /*
+   * "End-to-end export logistics" implies the destination side as well. What
+   * this company actually does, in the page's own words, is "complete export
+   * documentation, certificate of origin, health certificate, and port
+   * handling -- arranged for each container". Incoterms are confirmed per
+   * order, so it does not undertake to carry the goods to the buyer.
+   *
+   * Both locales carried it: three English meta descriptions plus the card
+   * heading, and the Arabic card heading "\u0644\u0648\u062c\u0633\u062a\u064a\u0627\u062a \u0634\u0627\u0645\u0644\u0629" -- comprehensive
+   * logistics -- which says the same thing. Checking only the English side
+   * would have left half the claim live.
+   */
+  { pattern: /end[-\s]to[-\s]end (export )?logistics/i,
+    why: 'implies destination-side logistics; the company handles export documentation and port handling' },
+  { pattern: /\u0644\u0648\u062c\u0633\u062a\u064a\u0627\u062a \u0634\u0627\u0645\u0644\u0629/,
+    why: 'the Arabic form of the same claim' },
+
   { pattern: /certified partner facilit(y|ies)/i,
     why: 'no partner certificate has been verified yet; the approved wording is "approved partner facility"' },
 ];

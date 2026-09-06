@@ -27,6 +27,7 @@ const FN = path.join(ROOT, 'netlify', 'functions');
 // ---- stubbed driver ------------------------------------------------------
 let statements = [];
 let settingsValue = 395;
+let contactSettingsValue = 1825;
 let deleteRowCount = 3;
 
 function text(strings) {
@@ -35,7 +36,10 @@ function text(strings) {
 
 function respond(sqlText) {
   if (/FROM analytics_settings/i.test(sqlText)) {
-    return settingsValue === undefined ? [] : [{ value: settingsValue }];
+    // The two windows are separate settings; the stub has to tell them apart
+    // or a test for one silently exercises the other.
+    const v = /contact_retention_days/.test(sqlText) ? contactSettingsValue : settingsValue;
+    return v === undefined ? [] : [{ value: v }];
   }
   if (/count\(\*\)/i.test(sqlText)) return [{ n: deleteRowCount }];
   if (/^\s*DELETE/i.test(sqlText)) return new Array(deleteRowCount).fill({ id: 1 });
@@ -78,6 +82,7 @@ function freshRetention(env) {
 async function run(opts) {
   statements = [];
   settingsValue = 'settings' in opts ? opts.settings : 395;
+  contactSettingsValue = 'contactSettings' in opts ? opts.contactSettings : 1825;
   deleteRowCount = 'rows' in opts ? opts.rows : 3;
   const mod = freshRetention(opts.env);
   const quiet = { log: console.log, warn: console.warn };
@@ -88,6 +93,8 @@ async function run(opts) {
 }
 
 const deletes = (list) => list.filter((s) => /^\s*DELETE\s+FROM\s+analytics_/i.test(s.text));
+const contactDeletes = (list) =>
+  list.filter((s) => /DELETE\s+FROM\s+(inquiries|leads_staging)\b/i.test(s.text));
 const audits = (list) => list.filter((s) => /INSERT INTO analytics_audit_log/i.test(s.text));
 
 (async () => {
@@ -156,6 +163,47 @@ const audits = (list) => list.filter((s) => /INSERT INTO analytics_audit_log/i.t
   t('the admin field will not even accept a value below the floor',
     adminSrc.includes(`id="j-retention-days" min="${MIN}"`),
     (adminSrc.match(/id="j-retention-days"[^>]*/) || [])[0]);
+
+  // ---- 7. contact data: the gap that existed until 2026-09-06 -----------
+  //
+  // `inquiries` and `leads_staging` hold names, business emails, phone
+  // numbers and message bodies, and were never purged at all while /privacy
+  // told visitors they could ask for deletion.
+  r = await run({ settings: 395, contactSettings: 1825, rows: 3 });
+  t('a normal run now purges contact data too',
+    contactDeletes(r.statements).length === 2, contactDeletes(r.statements).length);
+  t('   and still purges the analytics tables', deletes(r.statements).length === 2);
+  t('   the audit row names both outcomes',
+    /inquir/i.test(r.res.body) && /lead/i.test(r.res.body), r.res.body);
+
+  // the contact floor, which is deliberately much higher than the analytics
+  // one: an enquiry deleted after a month is worse than not deleting it
+  r = await run({ settings: 395, contactSettings: 30, rows: 3 });
+  t('a contact window below the floor deletes no contact rows',
+    contactDeletes(r.statements).length === 0, contactDeletes(r.statements).length);
+  t('   and says REFUSED rather than passing silently',
+    /REFUSED/.test(r.res.body), r.res.body);
+  t('   but does NOT stop the analytics purge',
+    deletes(r.statements).length === 2, deletes(r.statements).length);
+  t('   and still writes exactly one audit row', audits(r.statements).length === 1);
+
+  // the suppression list has to outlive the data it suppresses
+  r = await run({ settings: 395, contactSettings: 1825, rows: 3 });
+  const forbidden = r.statements.filter((s) =>
+    /DELETE\s+FROM\s+(contact_opt_outs|contact_opt_out_events|consent_log|analytics_audit_log)\b/i.test(s.text));
+  t('the suppression, consent and audit tables are never purged',
+    forbidden.length === 0, forbidden.map((x) => x.text).join(' | '));
+
+  // a contact purge must be bounded the same way the analytics one is
+  // Checked per statement, not against the concatenation of both: joining
+  // them lets one bounded DELETE satisfy the pattern for an unbounded one
+  // sitting right next to it. The first version of this assertion did exactly
+  // that, and passed when `inquiries` was rewritten as a bare DELETE.
+  const unbounded = contactDeletes(r.statements)
+    .filter((x) => !(/IN \(\s*SELECT/i.test(x.text) && /LIMIT/i.test(x.text)));
+  t('every contact purge deletes by id from a LIMITed subquery, not a bare DELETE',
+    contactDeletes(r.statements).length === 2 && unbounded.length === 0,
+    unbounded.map((x) => x.text.replace(/\s+/g, ' ').slice(0, 90)).join(' | ') || 'none');
 
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
