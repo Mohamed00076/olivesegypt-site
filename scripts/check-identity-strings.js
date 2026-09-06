@@ -81,6 +81,17 @@ const BANNED = [
     why: 'the domain written as a brand name; the company is "Triple Company for Industrial Development"' },
   { pattern: /Olives Egypt/,
     why: 'the domain written as a brand name; the company is "Triple Company for Industrial Development"' },
+
+  /*
+   * The partner processing facility is *approved* -- vetted and used by this
+   * company. Whether it is *certified*, by whom, to what scope and until
+   * when, is exactly what is still being verified against the certificate
+   * documents. The two words are one keystroke apart in English and the same
+   * word in Arabic (\u0645\u0639\u062a\u0645\u062f), so this is the phrase most likely to drift
+   * back in.
+   */
+  { pattern: /certified partner facilit(y|ies)/i,
+    why: 'no partner certificate has been verified yet; the approved wording is "approved partner facility"' },
 ];
 
 const problems = [];
