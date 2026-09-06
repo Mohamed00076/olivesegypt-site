@@ -51,6 +51,19 @@ const FORBIDDEN_KEYS = ['foundingDate', 'areaServed'];
  */
 const ARABIC_NAME = 'الشركة الثلاثية للتنمية الصناعية';
 
+/*
+ * The short forms. Both are how the site actually refers to the company in
+ * visible prose -- "Triple Company" in 61 files, "الشركة الثلاثية" in 53 --
+ * so alternateName is where they belong: it is the property for another name
+ * for the same entity, which is exactly what an informal short form is.
+ *
+ * This is not the same thing as the Product `brand` removed on 2026-09-06.
+ * brand asserts a brand on the goods, which this company does not have while
+ * it supplies private label and OEM. alternateName asserts only that the
+ * company is also called this, which is plainly true.
+ */
+const SHORT_NAMES = ['Triple Company', 'الشركة الثلاثية'];
+
 const problems = [];
 const files = execSync('git ls-files "*index.html"', { cwd: ROOT }).toString().trim().split('\n');
 
@@ -137,8 +150,14 @@ if (org) {
   for (const k of ['name', 'alternateName', 'url', 'logo', 'description', 'address', 'email', 'contactPoint', 'sameAs']) {
     if (!(k in org)) problems.push(`required field "${k}" is missing`);
   }
-  if (![].concat(org.alternateName || []).includes(ARABIC_NAME)) {
+  const alts = [].concat(org.alternateName || []);
+  if (!alts.includes(ARABIC_NAME)) {
     problems.push(`alternateName does not carry the Arabic name ${ARABIC_NAME}; it exists nowhere else in the site's structured data`);
+  }
+  for (const short of SHORT_NAMES) {
+    if (!alts.includes(short)) {
+      problems.push(`alternateName does not carry the short form "${short}", which the site uses in visible prose`);
+    }
   }
 
   // ---- the logo must be a real file in the publish directory -------------
