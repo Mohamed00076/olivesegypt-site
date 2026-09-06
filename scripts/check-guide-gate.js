@@ -78,7 +78,7 @@ function get(mod, requestPath, { cookie, query } = {}) {
   const bundled = ['en', 'ar'].flatMap((loc) =>
     Object.values(T.GUIDES).map((slug) => path.join(FN, '_guides', loc, `${slug}.html`))
   );
-  t('all six guides are present in the functions bundle',
+  t(`all ${Object.keys(T.GUIDES).length} guides are present in both locales of the functions bundle`,
     bundled.every((f) => fs.existsSync(f)),
     bundled.filter((f) => !fs.existsSync(f)).join(', '));
 
@@ -91,13 +91,14 @@ function get(mod, requestPath, { cookie, query } = {}) {
     }
   }
   const missingRule = wanted.filter((r) => !toml.includes(`from = "${r}"`));
-  t('netlify.toml rewrites all 12 guide paths (bare and trailing slash)',
+  t(`netlify.toml rewrites all ${Object.keys(T.GUIDES).length * 4} guide paths (both locales, bare and trailing slash)`,
     missingRule.length === 0, missingRule.join(', '));
   // A rule without force = true loses to any file that ever reappears at
   // that path, which is the exact failure being fixed.
   const guideRuleBlock = toml.slice(toml.indexOf('/downloads/buyers-guide'), toml.indexOf('# The publish directory is the repo root'));
-  t('every guide rewrite is force = true',
-    (guideRuleBlock.match(/force = true/g) || []).length === 12,
+  const wantRules = Object.keys(T.GUIDES).length * 4;
+  t(`all ${wantRules} guide rewrites are force = true`,
+    (guideRuleBlock.match(/force = true/g) || []).length === wantRules,
     (guideRuleBlock.match(/force = true/g) || []).length);
   t('function sources are not served as static files', toml.includes('from = "/netlify/*"'));
 
@@ -220,6 +221,40 @@ function get(mod, requestPath, { cookie, query } = {}) {
   payload = JSON.parse(out.body);
   t('with no secret the lead still saves but no token is issued',
     out.statusCode === 200 && payload.ok === true && !payload.guide_token && !out.headers['Set-Cookie'], out.body);
+
+  // ---- every asset in the map, not just a representative one ------------
+  //
+  // The checks above prove the mechanism. This proves it is actually wired to
+  // each guide: a new asset added to GUIDES with a missing file, a missing
+  // rewrite, or a segment that signs a token for the wrong slug would pass
+  // everything above and fail here. Added when Part E took the map from three
+  // guides to seven.
+  {
+    const mod = freshGuide({ SESSION_SECRET: SECRET });
+    const segments = Object.keys(T.GUIDES);
+    let bad = [];
+    for (const seg of segments) {
+      const slug = T.GUIDES[seg];
+      const other = segments.find((x) => x !== seg);
+
+      const cases = [
+        ['no token', {}, 403],
+        ['its own token', { t: T.signGuideToken(seg, SECRET, T.URL_TTL_SECONDS) }, 200],
+        ['another guide\'s token', { t: T.signGuideToken(other, SECRET, T.URL_TTL_SECONDS) }, 403],
+        ['an expired token', { t: T.signGuideToken(seg, SECRET, -60) }, 403],
+      ];
+      for (const [what, extra, want] of cases) {
+        const res = await get(mod, `/downloads/${slug}`, { query: { g: seg, ...extra } });
+        if (res.statusCode !== want) bad.push(`${seg} with ${what}: ${res.statusCode} (wanted ${want})`);
+        // a 200 must be that guide's own document, not another one
+        if (want === 200 && res.statusCode === 200 && !res.body.includes(slug)) {
+          bad.push(`${seg} opened but did not serve ${slug}`);
+        }
+      }
+    }
+    t(`all ${segments.length} guides individually: gated, openable, and not interchangeable`,
+      bad.length === 0, bad.join(' | '));
+  }
 
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

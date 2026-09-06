@@ -45,6 +45,13 @@ const GUIDES = {
   buyers_guide: 'buyers-guide',
   origin_guide: 'origin-comparison-guide',
   pricing_guide: 'pricing-packaging-guide',
+  // Part E: audience-segmented assets. Same mechanism, same one-token-one-
+  // guide rule -- asking for the packaging overview does not hand over the
+  // private-label brochure.
+  company_overview: 'company-overview',
+  private_label_brochure: 'private-label-brochure',
+  packaging_guide: 'packaging-overview',
+  export_docs_checklist: 'export-documentation-checklist',
 };
 
 function b64url(buf) {

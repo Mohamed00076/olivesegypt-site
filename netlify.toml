@@ -365,6 +365,104 @@
   status = 200
   force = true
 
+# Part E: the four audience-segmented assets, same gate, same mechanism.
+
+[[redirects]]
+  from = "/downloads/company-overview"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/company-overview/"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/company-overview"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/company-overview/"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/private-label-brochure"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/private-label-brochure/"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/private-label-brochure"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/private-label-brochure/"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/packaging-overview"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/packaging-overview/"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/packaging-overview"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/packaging-overview/"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/export-documentation-checklist"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/export-documentation-checklist/"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/export-documentation-checklist"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/export-documentation-checklist/"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
 
 # The publish directory is the repo root, so without this the function
 # sources themselves are reachable as static files -- including the

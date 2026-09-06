@@ -43,6 +43,11 @@ const FUNCTION_ROUTES = [
   '/downloads/buyers-guide',
   '/downloads/origin-comparison-guide',
   '/downloads/pricing-packaging-guide',
+  // Part E
+  '/downloads/company-overview',
+  '/downloads/private-label-brochure',
+  '/downloads/packaging-overview',
+  '/downloads/export-documentation-checklist',
 ].flatMap((r) => [r, AR_PREFIX + r]);
 
 /** Every public route on disk, e.g. '/', '/catalog', '/ar/products/hamed-green-olives'. */

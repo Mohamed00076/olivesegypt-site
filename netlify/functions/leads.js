@@ -73,7 +73,9 @@ const BUYER_TYPES = new Set(['importer', 'distributor', 'retail_chain', 'food_se
 // attributable to which specific asset was requested. No new
 // destination, no new validation path, no change to any existing
 // segment's behavior.
-const SEGMENTS = new Set(['market_report', 'private_label', 'pricing_guide', 'origin_guide', 'buyers_guide']);
+const SEGMENTS = new Set(['market_report', 'private_label', 'pricing_guide', 'origin_guide',
+                          'buyers_guide', 'company_overview', 'private_label_brochure',
+                          'packaging_guide', 'export_docs_checklist']);
 
 // Used only in the internal notification subject line, so a private-label
 // brief does not arrive announcing itself as a guide download.
@@ -83,6 +85,10 @@ const SEGMENT_LABELS = {
   pricing_guide: 'guide download',
   origin_guide: 'guide download',
   buyers_guide: 'guide download',
+  company_overview: 'company-overview download',
+  private_label_brochure: 'private-label brochure download',
+  packaging_guide: 'packaging-overview download',
+  export_docs_checklist: 'export-documentation checklist download',
 };
 
 const RATE_LIMIT_WINDOW_MINUTES = 60;
