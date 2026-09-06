@@ -45,7 +45,31 @@ const GUIDES = {
   buyers_guide: 'buyers-guide',
   origin_guide: 'origin-comparison-guide',
   pricing_guide: 'pricing-packaging-guide',
+  // Part E: audience-segmented assets. Same mechanism, same one-token-one-
+  // guide rule -- asking for the packaging overview does not hand over the
+  // private-label brochure.
+  company_overview: 'company-overview',
+  private_label_brochure: 'private-label-brochure',
+  packaging_guide: 'packaging-overview',
+  export_docs_checklist: 'export-documentation-checklist',
+  // The technical export catalogue. Gated on the owner's instruction of
+  // 2026-09-06; it was previously a direct public PDF.
+  catalog_pdf: 'export-catalog',
 };
+
+/*
+ * Every guide is an HTML page except the export catalogue, which is the
+ * generated PDF. Kept as a map rather than a filename guess so guide.js
+ * cannot end up serving a PDF with a text/html content type, or reading a
+ * binary as utf8.
+ */
+const GUIDE_EXT = { catalog_pdf: 'pdf' };
+const GUIDE_TYPE = { pdf: 'application/pdf', html: 'text/html; charset=utf-8' };
+
+function guideFile(segment) {
+  const ext = GUIDE_EXT[segment] || 'html';
+  return { name: `${GUIDES[segment]}.${ext}`, ext, type: GUIDE_TYPE[ext] };
+}
 
 function b64url(buf) {
   return Buffer.from(buf).toString('base64')
@@ -120,6 +144,7 @@ function guideCookie(token) {
 }
 
 module.exports = {
+  GUIDE_EXT, guideFile,
   GUIDES,
   COOKIE_NAME,
   COOKIE_TTL_SECONDS,

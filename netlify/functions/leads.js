@@ -49,6 +49,7 @@ const MAX = {
   volume: 120,
   certification_requirements: 300,
   launch_date: 60,
+  incoterm: 60,
 };
 
 // Every field this endpoint will ever accept. Anything outside this set
@@ -60,7 +61,7 @@ const ALLOWED_KEYS = new Set([
   'source_page', 'segment',
   // Private-label variant (optional, only meaningful when segment === 'private_label')
   'target_market', 'variety', 'format', 'pack_size', 'volume',
-  'certification_requirements', 'launch_date',
+  'certification_requirements', 'launch_date', 'incoterm',
   // Honeypot -- a real visitor never sees or fills this field.
   'website',
 ]);
@@ -72,7 +73,24 @@ const BUYER_TYPES = new Set(['importer', 'distributor', 'retail_chain', 'food_se
 // attributable to which specific asset was requested. No new
 // destination, no new validation path, no change to any existing
 // segment's behavior.
-const SEGMENTS = new Set(['market_report', 'private_label', 'pricing_guide', 'origin_guide', 'buyers_guide']);
+const SEGMENTS = new Set(['market_report', 'private_label', 'pricing_guide', 'origin_guide',
+                          'buyers_guide', 'company_overview', 'private_label_brochure',
+                          'packaging_guide', 'export_docs_checklist', 'catalog_pdf']);
+
+// Used only in the internal notification subject line, so a private-label
+// brief does not arrive announcing itself as a guide download.
+const SEGMENT_LABELS = {
+  market_report: 'market-brief signup',
+  private_label: 'private-label brief',
+  pricing_guide: 'guide download',
+  origin_guide: 'guide download',
+  buyers_guide: 'guide download',
+  company_overview: 'company-overview download',
+  private_label_brochure: 'private-label brochure download',
+  packaging_guide: 'packaging-overview download',
+  export_docs_checklist: 'export-documentation checklist download',
+  catalog_pdf: 'export catalogue (PDF) download',
+};
 
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 const RATE_LIMIT_MAX_PER_WINDOW = 5;
@@ -114,9 +132,17 @@ async function ensureSchema(sql) {
       volume                      text,
       certification_requirements  text,
       launch_date                 text,
+      incoterm                    text,
       client_ip                   text
     )
   `;
+  /*
+   * CREATE TABLE IF NOT EXISTS does nothing to a table that already exists,
+   * so a column added after the first deploy needs its own statement. Additive
+   * and idempotent: no default, no backfill, no rewrite of existing rows,
+   * which stay NULL for a field their form never had.
+   */
+  await sql`ALTER TABLE leads_staging ADD COLUMN IF NOT EXISTS incoterm text`;
 }
 
 async function checkRateLimit(sql, ip, email) {
@@ -134,9 +160,9 @@ async function checkRateLimit(sql, ip, email) {
 // belong in an inbox.
 function leadEmailText(f) {
   const lines = [
-    'New gated-guide download on olivesegypt.com',
+    'New lead on olivesegypt.com',
     '',
-    'Guide: ' + f.segment,
+    'Segment: ' + f.segment,
     'Email: ' + f.email,
     'Company: ' + f.companyName,
     'Country / region: ' + f.countryRegion,
@@ -149,6 +175,7 @@ function leadEmailText(f) {
   if (f.volume) lines.push('Volume: ' + f.volume);
   if (f.certificationRequirements) lines.push('Certifications: ' + f.certificationRequirements);
   if (f.launchDate) lines.push('Launch date: ' + f.launchDate);
+  if (f.incoterm) lines.push('Preferred Incoterm: ' + f.incoterm);
   lines.push('', 'Submitted from: ' + f.sourcePage);
   if (f.liftedOptOut) {
     lines.push(
@@ -251,6 +278,7 @@ async function handlePost(event, sql) {
   const volume = optional(body.volume, MAX.volume);
   const certificationRequirements = optional(body.certification_requirements, MAX.certification_requirements);
   const launchDate = optional(body.launch_date, MAX.launch_date);
+  const incoterm = optional(body.incoterm, MAX.incoterm);
 
   /*
    * Someone who previously asked not to be contacted, and has now ticked
@@ -277,11 +305,11 @@ async function handlePost(event, sql) {
     INSERT INTO leads_staging
       (email, company_name, country_region, buyer_type, consent, source_page, segment,
        target_market, variety, format, pack_size, volume, certification_requirements, launch_date,
-       client_ip)
+       incoterm, client_ip)
     VALUES
       (${email}, ${companyName}, ${countryRegion}, ${buyerType}, ${consent}, ${sourcePage}, ${segment},
        ${targetMarket}, ${variety}, ${format}, ${packSize}, ${volume}, ${certificationRequirements}, ${launchDate},
-       ${ip})
+       ${incoterm}, ${ip})
   `;
 
   // Off by default -- see the header note. Awaited so it finishes before
@@ -291,11 +319,11 @@ async function handlePost(event, sql) {
   if (leadsNotifyEnabled()) {
     try {
       await sendNotification(
-        `New gated-guide download — ${companyName} (${segment})`,
+        `New ${SEGMENT_LABELS[segment] || 'lead'} — ${companyName} (${segment})`,
         leadEmailText({
           email, companyName, countryRegion, buyerType, sourcePage, segment,
           targetMarket, variety, format, packSize, volume,
-          certificationRequirements, launchDate, liftedOptOut,
+          certificationRequirements, launchDate, incoterm, liftedOptOut,
         }),
         { replyTo: email, formType: `lead:${segment}` }
       );

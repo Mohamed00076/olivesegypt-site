@@ -365,6 +365,147 @@
   status = 200
   force = true
 
+# Part E: the four audience-segmented assets, same gate, same mechanism.
+
+[[redirects]]
+  from = "/downloads/company-overview"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/company-overview/"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/company-overview"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/company-overview/"
+  to = "/.netlify/functions/guide?g=company_overview"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/private-label-brochure"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/private-label-brochure/"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/private-label-brochure"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/private-label-brochure/"
+  to = "/.netlify/functions/guide?g=private_label_brochure"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/packaging-overview"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/packaging-overview/"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/packaging-overview"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/packaging-overview/"
+  to = "/.netlify/functions/guide?g=packaging_guide"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/export-documentation-checklist"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/export-documentation-checklist/"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/export-documentation-checklist"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/export-documentation-checklist/"
+  to = "/.netlify/functions/guide?g=export_docs_checklist"
+  status = 200
+  force = true
+
+# The technical export catalogue, gated 2026-09-06. Previously a direct
+# public PDF at /downloads/triple-company-export-catalog-2026.pdf.
+
+[[redirects]]
+  from = "/downloads/export-catalog"
+  to = "/.netlify/functions/guide?g=catalog_pdf"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/export-catalog/"
+  to = "/.netlify/functions/guide?g=catalog_pdf"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/export-catalog"
+  to = "/.netlify/functions/guide?g=catalog_pdf"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ar/downloads/export-catalog/"
+  to = "/.netlify/functions/guide?g=catalog_pdf"
+  status = 200
+  force = true
+
+# The old public catalogue URLs. The files no longer exist in the publish
+# root, so these would 404; a permanent redirect to the downloads hub is
+# what an indexed or bookmarked link deserves.
+
+[[redirects]]
+  from = "/downloads/triple-company-export-catalog-2026.pdf"
+  to = "/downloads"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/downloads/triple-company-export-catalog-2026-ar.pdf"
+  to = "/ar/downloads"
+  status = 301
+  force = true
+
 
 # The publish directory is the repo root, so without this the function
 # sources themselves are reachable as static files -- including the
