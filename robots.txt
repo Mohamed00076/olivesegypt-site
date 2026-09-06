@@ -16,6 +16,16 @@ Disallow: /downloads/origin-comparison-guide
 Disallow: /ar/downloads/origin-comparison-guide
 Disallow: /downloads/buyers-guide
 Disallow: /ar/downloads/buyers-guide
+Disallow: /downloads/company-overview
+Disallow: /ar/downloads/company-overview
+Disallow: /downloads/private-label-brochure
+Disallow: /ar/downloads/private-label-brochure
+Disallow: /downloads/packaging-overview
+Disallow: /ar/downloads/packaging-overview
+Disallow: /downloads/export-documentation-checklist
+Disallow: /ar/downloads/export-documentation-checklist
+Disallow: /downloads/export-catalog
+Disallow: /ar/downloads/export-catalog
 Disallow: /admin
 Disallow: /crm
 
