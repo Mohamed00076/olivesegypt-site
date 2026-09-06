@@ -422,3 +422,10 @@ header .container {
   color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
 }
+
+/* focus:ring-primary is used by every lead form on the site -- the three
+   gated-guide forms on /downloads have asked for it since they were built --
+   but it is not in the compiled bundle, so those inputs fell back to the
+   default ring colour on focus. Supplied here in Tailwind's own output form,
+   alongside the other utilities this prebuilt file is missing. */
+.focus\:ring-primary:focus { --tw-ring-color: hsl(var(--primary)); }
