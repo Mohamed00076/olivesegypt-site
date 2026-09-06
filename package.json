@@ -6,7 +6,7 @@
     "check:locale-links": "node scripts/check-locale-links.js",
     "check:email-lib": "node scripts/check-email-lib.js",
     "check:locale-switch": "node scripts/check-locale-switch.js",
-    "test": "node scripts/check-locale-links.js && node scripts/check-email-lib.js && node scripts/check-product-order.js && node scripts/check-nav-footer.js && node scripts/check-guide-gate.js && node scripts/check-retention-guards.js && node scripts/check-unsubscribe.js && node scripts/check-org-schema.js && node scripts/check-identity-strings.js",
+    "test": "node scripts/check-locale-links.js && node scripts/check-email-lib.js && node scripts/check-product-order.js && node scripts/check-product-facets.js && node scripts/check-nav-footer.js && node scripts/check-guide-gate.js && node scripts/check-lead-fields.js && node scripts/check-inquiry-forms.js && node scripts/check-retention-guards.js && node scripts/check-unsubscribe.js && node scripts/check-org-schema.js && node scripts/check-identity-strings.js",
     "check:product-order": "node scripts/check-product-order.js",
     "check:nav-footer": "node scripts/check-nav-footer.js",
     "check:guide-gate": "node scripts/check-guide-gate.js",

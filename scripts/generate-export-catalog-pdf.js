@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-// Regenerates downloads/triple-company-export-catalog-2026.pdf from
+// Regenerates netlify/functions/_guides/en/export-catalog.pdf from
 // scripts/export-catalog-source.html by printing it with headless
 // Chromium (same producer as the original file -- Skia/PDF via
 // HeadlessChrome -- so this is a like-for-like rebuild, not a
@@ -26,7 +26,7 @@
 // a different source/destination pair -- e.g. the Arabic catalog:
 //
 //   SOURCE_FILE=scripts/export-catalog-source-ar.html \
-//   OUT_FILE=downloads/triple-company-export-catalog-2026-ar.pdf \
+//   OUT_FILE=netlify/functions/_guides/ar/export-catalog.pdf \
 //   node scripts/generate-export-catalog-pdf.js
 //
 // Both default to the English catalog, so existing invocations are
@@ -37,7 +37,10 @@ const { chromium } = require('playwright');
 
 const PORT = process.env.PORT || 8899;
 const SOURCE_FILE = process.env.SOURCE_FILE || 'scripts/export-catalog-source.html';
-const OUT_FILE = process.env.OUT_FILE || 'downloads/triple-company-export-catalog-2026.pdf';
+// The catalogue is gated (owner instruction, 2026-09-06), so it is written
+// into the functions bundle, not the publish root. A copy in downloads/
+// would be reachable without a token and make the gate decoration.
+const OUT_FILE = process.env.OUT_FILE || 'netlify/functions/_guides/en/export-catalog.pdf';
 const SOURCE_URL = `http://127.0.0.1:${PORT}/${SOURCE_FILE}`;
 const OUT_PATH = path.join(__dirname, '..', OUT_FILE);
 

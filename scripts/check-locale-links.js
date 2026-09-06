@@ -63,6 +63,12 @@ const ANCHOR = /<a\b([^>]*)href="(\/[^"]*)"([^>]*)>/gi;
 const DATA_URL = /\b(data-guide-url)="(\/[^"]*)"/gi;
 
 for (const route of map.routes) {
+  // The export catalogue is a PDF, not a page. It has no links to check, and
+  // reading it as utf8 to search for hrefs would find nothing while looking
+  // like coverage. Its locale pairing is still checked below with every other
+  // route; only the link scan is skipped.
+  if (!M.isHtmlRoute(route)) continue;
+
   const raw = fs.readFileSync(pageFile(route), 'utf8');
   const html = stripCrossLocaleTags(raw);
   const arabicPage = M.isArabic(route);

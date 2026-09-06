@@ -43,6 +43,12 @@ const FUNCTION_ROUTES = [
   '/downloads/buyers-guide',
   '/downloads/origin-comparison-guide',
   '/downloads/pricing-packaging-guide',
+  // Part E
+  '/downloads/company-overview',
+  '/downloads/private-label-brochure',
+  '/downloads/packaging-overview',
+  '/downloads/export-documentation-checklist',
+  '/downloads/export-catalog',
 ].flatMap((r) => [r, AR_PREFIX + r]);
 
 /** Every public route on disk, e.g. '/', '/catalog', '/ar/products/hamed-green-olives'. */
@@ -87,6 +93,24 @@ function toEnglish(route) {
   return route === AR_PREFIX ? '/' : route.slice(AR_PREFIX.length);
 }
 
+/*
+ * Not every gated asset is a page. The export catalogue is the generated PDF,
+ * so anything that walks routes looking for links, headings or meta tags has
+ * to be able to ask rather than assume -- reading a PDF as utf8 and searching
+ * it for hrefs finds nothing and means nothing.
+ */
+const GUIDE_EXT = { 'export-catalog': 'pdf' };
+
+function guideExt(slug) {
+  return GUIDE_EXT[slug] || 'html';
+}
+
+/** True when a route's file is HTML that can be parsed for links and meta. */
+function isHtmlRoute(route) {
+  if (!FUNCTION_ROUTES.includes(route)) return true;
+  return guideExt(route.split('/').filter(Boolean).pop()) === 'html';
+}
+
 /**
  * How a route is written in an href. The site's convention, measured across
  * every page: no trailing slash, except the two locale roots.
@@ -104,7 +128,7 @@ function pageFile(route, root = ROOT) {
   if (FUNCTION_ROUTES.includes(route)) {
     const locale = isArabic(route) ? 'ar' : 'en';
     const slug = route.split('/').filter(Boolean).pop();
-    return path.join(root, 'netlify', 'functions', '_guides', locale, `${slug}.html`);
+    return path.join(root, 'netlify', 'functions', '_guides', locale, `${slug}.${guideExt(slug)}`);
   }
   return path.join(root, route === '/' ? '' : route.slice(1), 'index.html');
 }
@@ -129,6 +153,6 @@ function buildMap(root = ROOT) {
 }
 
 module.exports = {
-  ROOT, SKIP_DIRS, AR_PREFIX, FUNCTION_ROUTES,
+  ROOT, SKIP_DIRS, AR_PREFIX, FUNCTION_ROUTES, isHtmlRoute, guideExt,
   listRoutes, isArabic, toArabic, toEnglish, href, routeOf, pageFile, buildMap,
 };

@@ -1,12 +1,18 @@
 'use strict';
 
-// Shared handler for gated PDF download forms (Part C: pricing/packaging
-// guide, origin/comparison guide, buyer's guide). Reuses the exact same
-// backend as the homepage "Get the Market Brief" form (POST /api/leads,
-// see netlify/functions/leads.js) -- same staging table, same validation,
-// same honeypot + rate limiting. Only the `segment` value and the
-// post-success behavior differ: instead of a plain thank-you message,
-// a successful submit reveals a link to the requested guide page.
+// Shared handler for every lead form on the site. Two modes, one
+// implementation -- the shared-infrastructure rule for this project is that
+// a new form is a new declaration, never a new form system.
+//
+//   data-gated-download="<segment>"  a gated PDF. On success it reveals a
+//                                    link to the guide (Part C).
+//   data-lead-form="<segment>"       an ordinary enquiry, e.g. the
+//                                    private-label brief (Part D). Same
+//                                    submit, same errors, no reveal.
+//
+// Both post to POST /api/leads (netlify/functions/leads.js) -- same staging
+// table, same validation, same honeypot, same rate limiting. Only the
+// `segment` value and the post-success behaviour differ.
 //
 // That reveal is presentation only. The gate itself is server-side: the
 // guide pages are no longer static files, and the function serving them
@@ -33,12 +39,14 @@
   var STRINGS = {
     en: {
       success: 'Thank you — your guide is ready below.',
+      sent: 'Thank you — we have your brief and will come back to you.',
       rateLimited: 'Too many requests — please try again in a little while.',
       generic: 'Something went wrong. Please try again, or email sales@olivesegypt.com directly.',
       network: 'Network error — please try again, or email sales@olivesegypt.com directly.'
     },
     ar: {
       success: 'شكرًا لك — الدليل جاهز أدناه.',
+      sent: 'شكرًا لك — وصلنا موجزك وسنعاود التواصل معك.',
       rateLimited: 'عدد كبير جدًا من الطلبات — يرجى المحاولة مرة أخرى بعد قليل.',
       generic: 'حدث خطأ ما. يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
       network: 'خطأ في الشبكة — يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.'
@@ -52,9 +60,14 @@
   }
 
   function initForm(form) {
-    var segment = form.getAttribute('data-gated-download');
+    var gated = form.hasAttribute('data-gated-download');
+    var segment = gated ? form.getAttribute('data-gated-download')
+                        : form.getAttribute('data-lead-form');
     var guideUrl = form.getAttribute('data-guide-url');
-    if (!segment || !guideUrl) return;
+    // a gated form without somewhere to send the visitor is a broken gate,
+    // not a plain enquiry form -- refuse to wire it up rather than silently
+    // degrade it into one
+    if (!segment || (gated && !guideUrl)) return;
 
     var submitBtn = form.querySelector('[data-role="submit"]');
     var status = form.querySelector('[data-role="status"]');
@@ -84,6 +97,13 @@
       var consentEl = field(form, 'consent');
       var websiteEl = field(form, 'website');
 
+      // Optional fields. Only the ones this particular form actually
+      // renders are sent; the endpoint rejects any key outside its allow
+      // list, so a typo here fails loudly rather than being dropped.
+      var OPTIONAL = ['target_market', 'variety', 'format', 'pack_size',
+                      'volume', 'certification_requirements', 'launch_date',
+                      'incoterm'];
+
       var payload = {
         email: emailEl ? emailEl.value.trim() : '',
         company_name: companyEl ? companyEl.value.trim() : '',
@@ -94,6 +114,11 @@
         segment: segment,
         website: websiteEl ? websiteEl.value : ''
       };
+
+      OPTIONAL.forEach(function (name) {
+        var el = field(form, name);
+        if (el && el.value.trim()) payload[name] = el.value.trim();
+      });
 
       if (submitBtn) submitBtn.disabled = true;
 
@@ -108,7 +133,7 @@
       }).then(function (result) {
         if (submitBtn) submitBtn.disabled = false;
         if (result.ok && result.data && result.data.ok) {
-          showStatus('success', T.success);
+          showStatus('success', gated ? T.success : T.sent);
           // The guide is served by a function that requires a signed
           // token (netlify/functions/guide.js). The main carrier is an
           // HttpOnly cookie set on this same response, which this script
@@ -139,8 +164,8 @@
   }
 
   function init() {
-    var forms = document.querySelectorAll('form[data-gated-download]');
-    forms.forEach(initForm);
+    var forms = document.querySelectorAll('form[data-gated-download], form[data-lead-form]');
+    Array.prototype.forEach.call(forms, initForm);
   }
 
   if (document.readyState === 'loading') {

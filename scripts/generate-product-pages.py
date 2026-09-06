@@ -154,7 +154,6 @@ PAGE_TMPL = """<!DOCTYPE html>
       "@type": "Product",
       "name": "{name}",
       "description": "{profile}",
-      "brand": {{ "@type": "Brand", "name": "Triple Company" }},
       "countryOfOrigin": "Egypt",
       "offers": {{
         "@type": "Offer",

@@ -141,12 +141,65 @@
     '.tc-cat-desc{font-size:12px;color:#666;margin-top:2px;}' +
     '.tc-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}' +
     '.tc-btn-modal-secondary{background:transparent;color:#1c2416;border-color:#1c241633;}' +
-    '#tc-consent-reopen{position:fixed;left:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
+    '#tc-consent-reopen{position:fixed;inset-inline-start:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
     '.dark #tc-consent-modal{background:hsl(var(--card));color:hsl(var(--card-foreground));}' +
     '.dark .tc-modal-subtext{color:hsl(var(--muted-foreground));}' +
     '.dark .tc-cat{border-top-color:hsl(var(--card-border));}' +
     '.dark .tc-cat-desc{color:hsl(var(--muted-foreground));}' +
     '.dark .tc-btn-modal-secondary{color:hsl(var(--card-foreground));border-color:hsl(var(--card-border));}';
+
+  /*
+   * Every visible string, per locale.
+   *
+   * This file used to contain no Arabic and never read the page language, so
+   * an Arabic visitor was asked for analytics consent in English. Consent
+   * that the person cannot read is not meaningfully given.
+   *
+   * The privacy link is per-locale for the same reason: pointing an Arabic
+   * reader at the English /privacy page to explain what is collected has the
+   * same problem in miniature.
+   */
+  var STRINGS = {
+    en: {
+      bannerLabel: 'Cookie consent',
+      body: 'We use analytics, only with your consent, to understand site traffic. Strictly necessary functions (like this form) always work regardless of your choice. See our ',
+      privacy: 'Privacy page',
+      privacyHref: '/privacy',
+      reject: 'Reject Non-Essential',
+      manage: 'Manage Preferences',
+      accept: 'Accept All',
+      reopen: '\uD83C\uDF6A Cookie Preferences',
+      modalTitle: 'Cookie Preferences',
+      modalSubtext: "Choose what we're allowed to use. You can change this anytime.",
+      necessary: 'Strictly Necessary',
+      necessaryDesc: 'Required for the site to function (forms, navigation). Always on.',
+      necessaryAria: 'Strictly Necessary (always on)',
+      analytics: 'Analytics',
+      analyticsDesc: 'Helps us understand site traffic. Off unless you turn it on.',
+      cancel: 'Cancel',
+      save: 'Save Preferences'
+    },
+    ar: {
+      bannerLabel: 'الموافقة على الكوكيز',
+      body: 'نستخدم أدوات تحليلات، بموافقتك وحدها، لفهم حركة الزيارات على الموقع. أما الوظائف الضرورية تمامًا (مثل هذا النموذج) فتعمل دائمًا مهما كان اختيارك. اطّلع على ',
+      privacy: 'صفحة الخصوصية',
+      privacyHref: '/ar/privacy',
+      reject: 'رفض غير الضروري',
+      manage: 'إدارة التفضيلات',
+      accept: 'قبول الكل',
+      reopen: '\uD83C\uDF6A تفضيلات الكوكيز',
+      modalTitle: 'تفضيلات الكوكيز',
+      modalSubtext: 'اختر ما يُسمح لنا باستخدامه. ويمكنك تغيير ذلك في أي وقت.',
+      necessary: 'ضروري تمامًا',
+      necessaryDesc: 'لازم لعمل الموقع (النماذج والتنقل). مفعّل دائمًا.',
+      necessaryAria: 'ضروري تمامًا (مفعّل دائمًا)',
+      analytics: 'التحليلات',
+      analyticsDesc: 'تساعدنا على فهم حركة الزيارات. معطّل ما لم تفعّله أنت.',
+      cancel: 'إلغاء',
+      save: 'حفظ التفضيلات'
+    }
+  };
+  var T = STRINGS[document.documentElement.lang === 'ar' ? 'ar' : 'en'];
 
   function injectStyle() {
     if (document.getElementById('tc-consent-style')) return;
@@ -179,7 +232,7 @@
     var btn = document.createElement('button');
     btn.id = 'tc-consent-reopen';
     btn.type = 'button';
-    btn.textContent = '🍪 Cookie Preferences';
+    btn.textContent = T.reopen;
     btn.addEventListener('click', openPreferencesModal);
     document.body.appendChild(btn);
   }
@@ -198,19 +251,19 @@
     overlay.id = 'tc-consent-modal-overlay';
     overlay.innerHTML =
       '<div id="tc-consent-modal" role="dialog" aria-modal="true" aria-labelledby="tc-consent-modal-title">' +
-        '<h2 id="tc-consent-modal-title">Cookie Preferences</h2>' +
-        '<p class="tc-modal-subtext">Choose what we\'re allowed to use. You can change this anytime.</p>' +
+        '<h2 id="tc-consent-modal-title">' + T.modalTitle + '</h2>' +
+        '<p class="tc-modal-subtext">' + T.modalSubtext + '</p>' +
         '<div class="tc-cat">' +
-          '<div><div class="tc-cat-label">Strictly Necessary</div><div class="tc-cat-desc">Required for the site to function (forms, navigation). Always on.</div></div>' +
-          '<input type="checkbox" checked disabled aria-label="Strictly Necessary (always on)"/>' +
+          '<div><div class="tc-cat-label">' + T.necessary + '</div><div class="tc-cat-desc">' + T.necessaryDesc + '</div></div>' +
+          '<input type="checkbox" checked disabled aria-label="' + T.necessaryAria + '"/>' +
         '</div>' +
         '<div class="tc-cat">' +
-          '<div><div class="tc-cat-label">Analytics</div><div class="tc-cat-desc">Helps us understand site traffic. Off unless you turn it on.</div></div>' +
-          '<input type="checkbox" id="tc-consent-analytics-toggle"' + (analyticsChecked ? ' checked' : '') + ' aria-label="Analytics"/>' +
+          '<div><div class="tc-cat-label">' + T.analytics + '</div><div class="tc-cat-desc">' + T.analyticsDesc + '</div></div>' +
+          '<input type="checkbox" id="tc-consent-analytics-toggle"' + (analyticsChecked ? ' checked' : '') + ' aria-label="' + T.analytics + '"/>' +
         '</div>' +
         '<div class="tc-modal-actions">' +
-          '<button type="button" class="tc-btn tc-btn-modal-secondary" id="tc-consent-modal-cancel">Cancel</button>' +
-          '<button type="button" class="tc-btn tc-btn-primary" id="tc-consent-modal-save">Save Preferences</button>' +
+          '<button type="button" class="tc-btn tc-btn-modal-secondary" id="tc-consent-modal-cancel">' + T.cancel + '</button>' +
+          '<button type="button" class="tc-btn tc-btn-primary" id="tc-consent-modal-save">' + T.save + '</button>' +
         '</div>' +
       '</div>';
     document.body.appendChild(overlay);
@@ -231,13 +284,13 @@
     var banner = document.createElement('div');
     banner.id = 'tc-consent-banner';
     banner.setAttribute('role', 'region');
-    banner.setAttribute('aria-label', 'Cookie consent');
+    banner.setAttribute('aria-label', T.bannerLabel);
     banner.innerHTML =
       '<div class="tc-row">' +
-        '<p>We use analytics, only with your consent, to understand site traffic. Strictly necessary functions (like this form) always work regardless of your choice. See our <a href="/privacy">Privacy page</a>.</p>' +
-        '<button type="button" class="tc-btn tc-btn-secondary" id="tc-consent-reject">Reject Non-Essential</button>' +
-        '<button type="button" class="tc-btn tc-btn-secondary" id="tc-consent-manage">Manage Preferences</button>' +
-        '<button type="button" class="tc-btn tc-btn-primary" id="tc-consent-accept">Accept All</button>' +
+        '<p>' + T.body + '<a href="' + T.privacyHref + '">' + T.privacy + '</a>.</p>' +
+        '<button type="button" class="tc-btn tc-btn-secondary" id="tc-consent-reject">' + T.reject + '</button>' +
+        '<button type="button" class="tc-btn tc-btn-secondary" id="tc-consent-manage">' + T.manage + '</button>' +
+        '<button type="button" class="tc-btn tc-btn-primary" id="tc-consent-accept">' + T.accept + '</button>' +
       '</div>';
     document.body.appendChild(banner);
     shiftFabForBanner(banner.offsetHeight);
