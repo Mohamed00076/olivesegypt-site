@@ -24,6 +24,12 @@
  *      design is offered *if the customer requests it*. That is a conditional
  *      offer, so the absolute is gone and this stops it coming back.
  *
+ *   3. Operating Rule 1, re-confirmed 2026-09-06: "olivesegypt.com" is the
+ *      website's domain and never the company's name. The sweep found zero
+ *      violations -- no page, schema node, alt attribute, email template,
+ *      form message or PDF used it as an identity -- so this rule guards a
+ *      clean state rather than fixing a dirty one.
+ *
  * The header taglines ("Premium Export Specialists", and the Arabic
  * equivalent) are deliberately NOT checked. They are descriptive subtitles
  * beneath the company name, they appear in no schema or meta field, and the
@@ -57,6 +63,24 @@ const BANNED = [
     why: 'same overstatement, shorter form' },
   { pattern: /Triple Company Export Specialist/i,
     why: 'not the company name; the approved name is "Triple Company for Industrial Development"' },
+
+  /*
+   * Operating Rule 1: olivesegypt.com is the website's domain, never the
+   * company's name. Case-SENSITIVE on the capitalised forms on purpose --
+   * the meta keywords legitimately carry lowercase phrases like "wholesale
+   * olives Egypt" and "Manzanilla olives Egypt", which are search terms about
+   * olives from Egypt, not a brand. A case-insensitive rule here would fail
+   * on 19 pages for no reason.
+   *
+   * "olivesegypt.com" itself is untouched by this: it appears ~12 times per
+   * catalogue PDF and throughout the site as a URL, an email domain, and in
+   * phrases like "New inquiry received on olivesegypt.com" -- all correct
+   * references to the website.
+   */
+  { pattern: /OlivesEgypt/,
+    why: 'the domain written as a brand name; the company is "Triple Company for Industrial Development"' },
+  { pattern: /Olives Egypt/,
+    why: 'the domain written as a brand name; the company is "Triple Company for Industrial Development"' },
 ];
 
 const problems = [];
@@ -64,7 +88,15 @@ const tracked = execSync('git ls-files', { cwd: ROOT }).toString().trim().split(
 const pages = tracked.filter((f) => f.endsWith('.html'));
 // The generators are the reason this file exists: a page fixed by hand is
 // only fixed until the next regeneration.
-const generators = tracked.filter((f) => f.endsWith('.py') || (f.endsWith('.js') && f.startsWith('scripts/')));
+//
+// This file excludes itself. It has to name the banned strings in order to
+// look for them, so scanning its own source finds every one of them and
+// fails on the checker rather than on anything it is checking. That is not a
+// hypothetical: the first version did exactly this and broke `npm test`.
+const SELF = 'scripts/check-identity-strings.js';
+const generators = tracked.filter(
+  (f) => f !== SELF && (f.endsWith('.py') || (f.endsWith('.js') && f.startsWith('scripts/')))
+);
 
 // ---- og:site_name, on pages and in whatever writes them -----------------
 for (const f of [...pages, ...generators]) {
