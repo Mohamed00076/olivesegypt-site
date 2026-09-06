@@ -203,26 +203,76 @@ for (const rel of [...referenced].filter((r) => r.endsWith('.png')).sort()) {
   }
 }
 
-// ---- 3. favicon.ico shows the same artwork as favicon-48.png -------------
-const ICO = 'favicon.ico';
-const REFERENCE = 'favicon-48.png';
+// ---- 3. each family carries its own artwork ------------------------------
+//
+// There are deliberately two.
+//
+// The full logo is a tall lockup: two colour bars, an olive, and fine
+// branches. It resolves from about 96px up. Below roughly 48px the branches
+// collapse and it reads as a smudge -- which is what the tab showed once the
+// red placeholder was replaced with the real thing.
+//
+// So the small icons are a 96x96 crop of that same artwork, centred on the
+// olive at the top of the mark: the one element with enough mass to survive
+// 16 pixels. Nothing is drawn, moved or recoloured; favicon-mark.png is a
+// window onto icon-512.png and nothing else. The large icons stay the
+// complete logo, because at 180px and up the whole lockup is the point.
+//
+// Two families means a mismatch between them is now normal, so the drift
+// check runs inside each family rather than across them. Comparing the tab
+// icon to the app icon would fail on a difference that is intentional --
+// which is how a check earns the reputation of something to be silenced.
+const FAMILIES = [
+  { name: 'small (tab and bookmark)', reference: 'assets/favicon-mark.png',
+    members: ['favicon-48.png'], ico: 'favicon.ico' },
+  { name: 'large (home screen and app)', reference: 'icon-512.png',
+    members: ['favicon-96.png', 'icon-192.png', 'apple-touch-icon.png'], ico: null },
+];
 
-if (!fs.existsSync(path.join(ROOT, ICO))) {
-  problems.push(`${ICO} is missing; browsers request it from the site root whether or not it is linked`);
-} else if (!decoded.has(REFERENCE)) {
-  problems.push(`${REFERENCE} is not referenced anywhere, so there is nothing to compare ${ICO} against`);
-} else {
-  const reference = signature(decoded.get(REFERENCE));
-  const entries = readIco(fs.readFileSync(path.join(ROOT, ICO)), ICO);
+// 0-255 per channel. The same artwork at 16px and 96px lands well under this;
+// two different pictures came in above 120 when this was tested.
+const DRIFT_LIMIT = 24;
 
+for (const family of FAMILIES) {
+  const referencePath = path.join(ROOT, family.reference);
+  if (!fs.existsSync(referencePath)) {
+    problems.push(`${family.reference} is missing, so the ${family.name} icons cannot be verified`);
+    continue;
+  }
+  const referenceImg = decodePng(fs.readFileSync(referencePath), family.reference);
+  const reference = signature(referenceImg);
+
+  if (flatness(referenceImg) > FLAT_LIMIT) {
+    problems.push(`${family.reference} is a flat fill, so it cannot be the reference for anything`);
+  }
+
+  for (const rel of family.members) {
+    if (!decoded.has(rel)) continue;   // missing, already reported
+    const diff = meanDifference(signature(decoded.get(rel)), reference);
+    if (diff > DRIFT_LIMIT) {
+      problems.push(
+        `${rel} does not look like ${family.reference} (mean channel difference ` +
+        `${diff.toFixed(1)}, limit ${DRIFT_LIMIT}) -- the ${family.name} icons have drifted apart`
+      );
+    }
+  }
+
+  if (!family.ico) continue;
+
+  const icoPath = path.join(ROOT, family.ico);
+  if (!fs.existsSync(icoPath)) {
+    problems.push(`${family.ico} is missing; browsers request it from the site root whether or not it is linked`);
+    continue;
+  }
+  const entries = readIco(fs.readFileSync(icoPath), family.ico);
   if (entries.length === 0) {
-    problems.push(`${ICO} contains no images`);
+    problems.push(`${family.ico} contains no images`);
   }
   for (const entry of entries) {
-    const label = `${ICO} (${entry.width}x${entry.height})`;
+    const label = `${family.ico} (${entry.width}x${entry.height})`;
     if (entry.blob.readUInt32BE(0) !== 0x89504e47) {
-      // A BMP-packed .ico is legal and readable by browsers; this check just
-      // cannot compare it, and silently skipping is how the bug survived.
+      // A BMP-packed .ico is legal and browsers read it; this check simply
+      // cannot compare one, and skipping in silence is how the bug survived.
       problems.push(`${label} is not PNG-packed, so its artwork cannot be verified here`);
       continue;
     }
@@ -233,24 +283,85 @@ if (!fs.existsSync(path.join(ROOT, ICO))) {
       problems.push(`${label} is ${(flat * 100).toFixed(0)}% a single colour -- this is the red-square placeholder bug`);
     }
 
-    // 0-255 per channel; the same artwork at 16px vs 48px lands well under 20
     const diff = meanDifference(signature(img), reference);
-    if (diff > 24) {
+    if (diff > DRIFT_LIMIT) {
       problems.push(
-        `${label} does not look like ${REFERENCE} (mean channel difference ${diff.toFixed(1)}, limit 24) ` +
-        `-- the tab icon has drifted from the logo the rest of the site uses`
+        `${label} does not look like ${family.reference} (mean channel difference ` +
+        `${diff.toFixed(1)}, limit ${DRIFT_LIMIT}) -- the tab icon has drifted from the logo`
       );
     }
   }
 }
 
+// ---- 4. the small mark is a crop of the logo, not a separate drawing -----
+//
+// The whole justification for a second piece of artwork is that it is not a
+// second piece of artwork -- it is a window onto the first. That claim has to
+// be enforced, or "crop of the logo" quietly becomes "whatever someone drew
+// that looks vaguely similar". So: slide the mark's 96x96 footprint over
+// icon-512.png and require an exact-enough match somewhere in it.
+{
+  const MARK = 'assets/favicon-mark.png';
+  const SOURCE = 'icon-512.png';
+  const markPath = path.join(ROOT, MARK);
+  const sourcePath = path.join(ROOT, SOURCE);
+
+  if (fs.existsSync(markPath) && fs.existsSync(sourcePath)) {
+    const mark = decodePng(fs.readFileSync(markPath), MARK);
+    const source = decodePng(fs.readFileSync(sourcePath), SOURCE);
+    const markSig = signature(mark);
+
+    // lift a mark-sized window out of the source and signature it the same way
+    const windowAt = (left, top) => {
+      const win = { width: mark.width, height: mark.height, channels: source.channels,
+                    pixels: Buffer.alloc(mark.width * mark.height * source.channels) };
+      for (let y = 0; y < mark.height; y++) {
+        source.pixels.copy(
+          win.pixels, y * mark.width * source.channels,
+          ((top + y) * source.width + left) * source.channels,
+          ((top + y) * source.width + left + mark.width) * source.channels
+        );
+      }
+      return meanDifference(signature(win), markSig);
+    };
+
+    // Coarse sweep, then refine pixel by pixel around the best hit. A single
+    // pass at step 1 would be ~174k windows; this is a few hundred and still
+    // lands on the exact origin.
+    let best = Infinity;
+    let bestAt = [0, 0];
+    const search = (step, x0, y0, x1, y1) => {
+      for (let top = Math.max(0, y0); top <= Math.min(y1, source.height - mark.height); top += step) {
+        for (let left = Math.max(0, x0); left <= Math.min(x1, source.width - mark.width); left += step) {
+          const diff = windowAt(left, top);
+          if (diff < best) { best = diff; bestAt = [left, top]; }
+        }
+      }
+    };
+    search(4, 0, 0, source.width, source.height);
+    search(1, bestAt[0] - 4, bestAt[1] - 4, bestAt[0] + 4, bestAt[1] + 4);
+
+    // A genuine crop lands at essentially zero. Anything drawn by hand, even
+    // in the same style, does not come close.
+    if (best > 2) {
+      problems.push(
+        `${MARK} is not a crop of ${SOURCE} (closest window differs by ${best.toFixed(1)}) -- ` +
+        `the small icons must be the company's own logo, not separate artwork`
+      );
+    } else {
+      console.log(`  ${MARK} matches ${SOURCE} at ${bestAt.join(',')} (difference ${best.toFixed(2)})`);
+    }
+  }
+}
+
 if (problems.length === 0) {
-  const sizes = readIco(fs.readFileSync(path.join(ROOT, ICO)), ICO)
+  const sizes = readIco(fs.readFileSync(path.join(ROOT, 'favicon.ico')), 'favicon.ico')
     .map((e) => `${e.width}x${e.height}`)
     .join(', ');
   console.log(
-    `favicons OK -- ${referenced.size} referenced icon(s) all present, none is a flat fill, and ` +
-    `favicon.ico (${sizes}) carries the same artwork as ${REFERENCE}.`
+    `favicons OK -- ${referenced.size} referenced icon(s) all present, none is a flat fill, ` +
+    `favicon.ico (${sizes}) and favicon-48.png carry the cropped olive mark, and the 96/192/512/apple ` +
+    `icons carry the full logo. Both families internally consistent.`
   );
   process.exit(0);
 }
