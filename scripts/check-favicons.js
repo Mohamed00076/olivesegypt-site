@@ -354,6 +354,96 @@ for (const family of FAMILIES) {
   }
 }
 
+// ---- 5. the small icons are a linear-light area average of the mark ------
+//
+// Rule 4 pins WHICH artwork the small icons come from. This pins HOW they
+// were made, which is the other half of the quality.
+//
+// An sRGB value is a perceptual encoding, not a quantity of light, so
+// averaging those codes -- the default in every image tool -- averages the
+// wrong thing and the white highlight on the olive comes out grey. The mark
+// is 96px precisely so that 16, 32 and 48 all divide it exactly: each output
+// pixel is one n-by-n block, and a linear-light area average of that block is
+// not an approximation of the right answer, it is the right answer.
+//
+// Without this rule, regenerating the icons with any ordinary tool would
+// silently undo that and nothing would look obviously broken. See
+// scripts/build-favicons.py.
+{
+  const MARK = 'assets/favicon-mark.png';
+  const markPath = path.join(ROOT, MARK);
+
+  if (fs.existsSync(markPath)) {
+    const mark = decodePng(fs.readFileSync(markPath), MARK);
+
+    const toLinear = new Array(256);
+    for (let i = 0; i < 256; i++) {
+      const v = i / 255;
+      toLinear[i] = v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    }
+    const toSrgb = (x) => {
+      x = x < 0 ? 0 : x > 1 ? 1 : x;
+      return Math.round(255 * (x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055));
+    };
+
+    const areaAverage = (size) => {
+      const n = mark.width / size;
+      const out = Buffer.alloc(size * size * 3);
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const acc = [0, 0, 0];
+          for (let j = 0; j < n; j++) {
+            for (let i = 0; i < n; i++) {
+              const p = ((y * n + j) * mark.width + (x * n + i)) * mark.channels;
+              for (let c = 0; c < 3; c++) acc[c] += toLinear[mark.pixels[p + c]];
+            }
+          }
+          for (let c = 0; c < 3; c++) out[(y * size + x) * 3 + c] = toSrgb(acc[c] / (n * n));
+        }
+      }
+      return out;
+    };
+
+    const worstAgainst = (img, expected) => {
+      let worst = 0;
+      for (let i = 0; i < img.width * img.height; i++) {
+        for (let c = 0; c < 3; c++) {
+          const got = img.pixels[i * img.channels + c];
+          worst = Math.max(worst, Math.abs(got - expected[i * 3 + c]));
+        }
+      }
+      return worst;
+    };
+
+    // 1 level of slack for rounding between the generator and this check;
+    // a differently-resampled icon lands 30-50 levels out.
+    const SLACK = 1;
+    const shipped = [];
+    if (decoded.has('favicon-48.png')) shipped.push(['favicon-48.png', decoded.get('favicon-48.png')]);
+    for (const entry of fs.existsSync(path.join(ROOT, 'favicon.ico'))
+      ? readIco(fs.readFileSync(path.join(ROOT, 'favicon.ico')), 'favicon.ico')
+      : []) {
+      if (entry.blob.readUInt32BE(0) !== 0x89504e47) continue;   // already reported
+      shipped.push([`favicon.ico (${entry.width}x${entry.height})`,
+                    decodePng(entry.blob, `favicon.ico ${entry.width}`)]);
+    }
+
+    for (const [label, img] of shipped) {
+      if (img.width !== img.height || mark.width % img.width) {
+        problems.push(`${label} is ${img.width}x${img.height}, which ${MARK} does not divide evenly`);
+        continue;
+      }
+      const worst = worstAgainst(img, areaAverage(img.width));
+      if (worst > SLACK) {
+        problems.push(
+          `${label} is not a linear-light area average of ${MARK} (worst channel off by ${worst}) -- ` +
+          `regenerate with scripts/build-favicons.py rather than a default resize`
+        );
+      }
+    }
+  }
+}
+
 if (problems.length === 0) {
   const sizes = readIco(fs.readFileSync(path.join(ROOT, 'favicon.ico')), 'favicon.ico')
     .map((e) => `${e.width}x${e.height}`)

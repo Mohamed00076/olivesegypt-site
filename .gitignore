@@ -6,3 +6,6 @@ node_modules
 # Fetched at build time by scripts/build-geo.js -- never committed
 # (redownloaded fresh on every deploy so it stays reasonably current)
 /geo/
+
+# Python bytecode, from scripts/build-favicons.py
+__pycache__/
