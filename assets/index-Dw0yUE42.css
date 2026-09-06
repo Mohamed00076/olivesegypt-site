@@ -346,3 +346,79 @@ header .container {
 /* Long Arabic labels wrap rather than forcing the column wider. */
 [dir="rtl"] .tc-footer-col a,
 [dir="rtl"] .tc-nav-panel a { white-space: normal; }
+
+/* ---- catalogue filtering (Part B) ---------------------------------------- */
+/*
+   The variety row's markup pre-dates this: buttons carrying data-filter,
+   aria-pressed and a hard-coded "active" utility class on whichever button
+   happened to be first. Nothing ever bound to them. assets/catalog-filter.js
+   now drives both rows and toggles .is-active, so the active state is styled
+   here once rather than baked into one button's class attribute.
+*/
+.tc-catalog-filters { flex-wrap: wrap; }
+
+.filter-btn.is-active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.tc-facet-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+}
+/* The floating "Read Our Insights" panel is position:fixed at the right edge,
+   vertically centred, z-40 -- above this sticky bar. Without this the last
+   chip sits underneath it on a typical desktop viewport and cannot be
+   clicked. Reserving the panel's width forces the row to wrap clear of it.
+   (The panel overlaps ordinary prose on other pages too; that is pre-existing
+   and left alone. What is not acceptable is it covering a control.) */
+@media (min-width: 1024px) {
+  .tc-facet-row { padding-inline-end: 17rem; }
+}
+
+.tc-facet-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0.375rem 0.875rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 9999px;
+  background: hsl(var(--card));
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.tc-facet-chip:hover { color: hsl(var(--foreground)); border-color: hsl(var(--primary) / 0.4); }
+.tc-facet-chip.is-active {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.tc-facet-chip:focus-visible,
+.filter-btn:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.tc-facet-clear {
+  font-size: 0.75rem;
+  text-decoration: underline;
+  color: hsl(var(--muted-foreground));
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+.tc-facet-clear:hover { color: hsl(var(--foreground)); }
+
+.tc-catalog-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
