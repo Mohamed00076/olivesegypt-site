@@ -59,6 +59,16 @@ const ADDRESS = {
   staleEn: ['5th Settlement, Ouroba Square', '5th Settlement, Cairo<br/>'],
   staleAr: ['\u0627\u0644\u062a\u062c\u0645\u0639 \u0627\u0644\u062e\u0627\u0645\u0633\u060c \u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629'],
 };
+// The tint classes the stylesheet actually defines. Read from the CSS rather
+// than hard-coded, so adding a network is one place, not two.
+const TINTS = new Set(
+  [...fs.readFileSync(path.join(ROOT, 'assets/index-Dw0yUE42.css'), 'utf8')
+       .matchAll(/^\.(tc-social-[a-z0-9]+)\s*\{[^}]*--tc-social-rgb\s*:/gm)].map((m) => m[1])
+);
+if (TINTS.size === 0) {
+  throw new Error('no --tc-social-rgb tint classes found in the stylesheet; this check would pass vacuously');
+}
+
 const problems = [];
 
 function routes() {
@@ -130,6 +140,41 @@ for (const route of routes()) {
   for (const id of triggers) {
     if (!header.includes(`id="${id}"`)) {
       problems.push(`${route}: dropdown trigger points at #${id}, which does not exist`);
+    }
+  }
+
+  // --- the social button --------------------------------------------------
+  //
+  // The site carried four social links in the footer until the 2026-09-05
+  // footer consolidation dropped them, and nobody noticed for a day. Only
+  // Facebook is back (the other three used a handle the owner confirmed is
+  // dead), and it lives in the shared header beside the language switcher.
+  // A social link that survives on some pages and not others is the same
+  // class of bug as the five different footers.
+  // Checked against the header WITHOUT the drawer. The mobile drawer lives
+  // inside <header>, so testing the whole element passes while the desktop
+  // button is missing -- the first version of this check did exactly that and
+  // did not notice the button being deleted.
+  const headerChrome = drawer ? header.split(drawer).join('') : header;
+  if (!/data-social="facebook"/.test(headerChrome)) {
+    problems.push(`${route}: the desktop header has no Facebook button`);
+  }
+  if (drawer && !/data-social="facebook"/.test(drawer)) {
+    problems.push(`${route}: the mobile drawer has no Facebook link`);
+  }
+
+  // Every social button gets its colour from a tint class -- .tc-social on its
+  // own defines no --tc-social-rgb, so it renders as a transparent box with an
+  // invisible glyph. That is the failure mode waiting for whoever adds
+  // Instagram or LinkedIn next: the button appears in the markup, the page
+  // looks fine to a script counting anchors, and a visitor sees nothing.
+  for (const m of html.matchAll(/class="([^"]*\btc-social(?:-wide)?\b[^"]*)"/g)) {
+    const classes = m[1].split(/\s+/);
+    if (!classes.some((c) => TINTS.has(c))) {
+      problems.push(
+        `${route}: a social button carries no tint class, so it has no colour and its glyph ` +
+        `is invisible (classes: ${m[1]}; known tints: ${[...TINTS].join(', ')})`
+      );
     }
   }
 

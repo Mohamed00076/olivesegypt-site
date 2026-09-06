@@ -259,6 +259,25 @@ if (org) {
     if (widget && widget !== fb[0]) {
       problems.push(`the homepage Like widget points at ${widget} while sameAs names ${fb[0]}`);
     }
+
+    // The header button is the third place this URL appears. All three have to
+    // be the same profile, or sameAs is asserting an association the visible
+    // button contradicts.
+    const buttons = new Set();
+    for (const f of files) {
+      const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
+      for (const m of html.matchAll(/<a href="([^"]+)"[^>]*data-social="facebook"/g)) {
+        buttons.add(m[1]);
+      }
+    }
+    if (buttons.size > 1) {
+      problems.push(`the Facebook header button points at ${buttons.size} different URLs: ${[...buttons].join(', ')}`);
+    }
+    for (const u of buttons) {
+      if (u !== fb[0]) {
+        problems.push(`the Facebook header button points at ${u} while sameAs names ${fb[0]}`);
+      }
+    }
   }
 }
 
