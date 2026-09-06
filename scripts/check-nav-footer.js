@@ -133,6 +133,26 @@ for (const route of routes()) {
     }
   }
 
+  // --- the social button --------------------------------------------------
+  //
+  // The site carried four social links in the footer until the 2026-09-05
+  // footer consolidation dropped them, and nobody noticed for a day. Only
+  // Facebook is back (the other three used a handle the owner confirmed is
+  // dead), and it lives in the shared header beside the language switcher.
+  // A social link that survives on some pages and not others is the same
+  // class of bug as the five different footers.
+  // Checked against the header WITHOUT the drawer. The mobile drawer lives
+  // inside <header>, so testing the whole element passes while the desktop
+  // button is missing -- the first version of this check did exactly that and
+  // did not notice the button being deleted.
+  const headerChrome = drawer ? header.split(drawer).join('') : header;
+  if (!/data-social="facebook"/.test(headerChrome)) {
+    problems.push(`${route}: the desktop header has no Facebook button`);
+  }
+  if (drawer && !/data-social="facebook"/.test(drawer)) {
+    problems.push(`${route}: the mobile drawer has no Facebook link`);
+  }
+
   // --- footer ------------------------------------------------------------
   if (!/tc-footer-cols/.test(footer)) {
     problems.push(`${route}: missing the shared footer`);

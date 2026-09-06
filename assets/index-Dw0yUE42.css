@@ -444,3 +444,50 @@ header .container {
   color: hsl(var(--primary));
 }
 .tc-intent-badge[hidden] { display: none; }
+
+/* ---- social buttons in the shared header --------------------------------
+   The Facebook button is drawn in Facebook's own blue rather than the site
+   palette. That is deliberate: the point of a social button is instant
+   recognition, and a muted olive glyph in a green header is not recognised at
+   a glance. The circle shape keeps it from competing with the rectangular
+   "Request a Quote" CTA sitting beside it. */
+.tc-social-fb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  background: #1877f2;
+  color: #fff;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 1px 3px rgba(24, 119, 242, 0.35);
+}
+.tc-social-fb:hover {
+  background: #1465d8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(24, 119, 242, 0.45);
+}
+.tc-social-fb:focus-visible {
+  outline: 2px solid #1877f2;
+  outline-offset: 2px;
+}
+.tc-social-fb svg { width: 20px; height: 20px; }
+
+/* In the mobile drawer it sits in a row of full-width buttons, so it takes
+   the row shape but keeps the brand colour and reads as a labelled button. */
+.tc-social-fb-wide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  background: #1877f2;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.tc-social-fb-wide:hover { background: #1465d8; }
+.tc-social-fb-wide svg { width: 16px; height: 16px; }
