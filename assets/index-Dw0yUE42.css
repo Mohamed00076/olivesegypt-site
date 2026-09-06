@@ -429,3 +429,18 @@ header .container {
    default ring colour on focus. Supplied here in Tailwind's own output form,
    alongside the other utilities this prebuilt file is missing. */
 .focus\:ring-primary:focus { --tw-ring-color: hsl(var(--primary)); }
+
+/* Part F: the badge that tells a visitor which intent they arrived with. */
+.tc-intent-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  background: hsl(var(--primary) / 0.1);
+  border: 1px solid hsl(var(--primary) / 0.25);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+.tc-intent-badge[hidden] { display: none; }
