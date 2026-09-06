@@ -59,6 +59,16 @@ const ADDRESS = {
   staleEn: ['5th Settlement, Ouroba Square', '5th Settlement, Cairo<br/>'],
   staleAr: ['\u0627\u0644\u062a\u062c\u0645\u0639 \u0627\u0644\u062e\u0627\u0645\u0633\u060c \u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629'],
 };
+// The tint classes the stylesheet actually defines. Read from the CSS rather
+// than hard-coded, so adding a network is one place, not two.
+const TINTS = new Set(
+  [...fs.readFileSync(path.join(ROOT, 'assets/index-Dw0yUE42.css'), 'utf8')
+       .matchAll(/^\.(tc-social-[a-z0-9]+)\s*\{[^}]*--tc-social-rgb\s*:/gm)].map((m) => m[1])
+);
+if (TINTS.size === 0) {
+  throw new Error('no --tc-social-rgb tint classes found in the stylesheet; this check would pass vacuously');
+}
+
 const problems = [];
 
 function routes() {
@@ -151,6 +161,21 @@ for (const route of routes()) {
   }
   if (drawer && !/data-social="facebook"/.test(drawer)) {
     problems.push(`${route}: the mobile drawer has no Facebook link`);
+  }
+
+  // Every social button gets its colour from a tint class -- .tc-social on its
+  // own defines no --tc-social-rgb, so it renders as a transparent box with an
+  // invisible glyph. That is the failure mode waiting for whoever adds
+  // Instagram or LinkedIn next: the button appears in the markup, the page
+  // looks fine to a script counting anchors, and a visitor sees nothing.
+  for (const m of html.matchAll(/class="([^"]*\btc-social(?:-wide)?\b[^"]*)"/g)) {
+    const classes = m[1].split(/\s+/);
+    if (!classes.some((c) => TINTS.has(c))) {
+      problems.push(
+        `${route}: a social button carries no tint class, so it has no colour and its glyph ` +
+        `is invisible (classes: ${m[1]}; known tints: ${[...TINTS].join(', ')})`
+      );
+    }
   }
 
   // --- footer ------------------------------------------------------------

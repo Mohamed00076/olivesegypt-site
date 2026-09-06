@@ -451,43 +451,62 @@ header .container {
    recognition, and a muted olive glyph in a green header is not recognised at
    a glance. The circle shape keeps it from competing with the rectangular
    "Request a Quote" CTA sitting beside it. */
-.tc-social-fb {
+/* Header social buttons.
+ *
+ * One base shape, one tint per network. The owner picked this over a solid
+ * brand-blue circle because more networks are coming and a row of saturated
+ * circles would shout louder than the "Request a Quote" CTA next to it.
+ *
+ * So the colour lives entirely in two custom properties. Adding Instagram or
+ * LinkedIn later is a two-line tint block, not a new component -- and nothing
+ * about the shape, size or spacing can drift between them.
+ *
+ * The tint is redefined under .dark rather than only the glyph colour: a 12%
+ * wash of a mid blue disappears against a near-black header, so dark mode
+ * lightens the whole pair. Contrast is measured in scripts/, not eyeballed.
+ */
+.tc-social {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 9999px;
-  background: #1877f2;
-  color: #fff;
+  border-radius: 10px;
   flex-shrink: 0;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  box-shadow: 0 1px 3px rgba(24, 119, 242, 0.35);
+  background: rgba(var(--tc-social-rgb), 0.12);
+  border: 1px solid rgba(var(--tc-social-rgb), 0.24);
+  color: var(--tc-social-ink);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
-.tc-social-fb:hover {
-  background: #1465d8;
+.tc-social:hover {
+  background: rgba(var(--tc-social-rgb), 0.2);
+  border-color: rgba(var(--tc-social-rgb), 0.45);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(24, 119, 242, 0.45);
 }
-.tc-social-fb:focus-visible {
-  outline: 2px solid #1877f2;
+.tc-social:focus-visible {
+  outline: 2px solid var(--tc-social-ink);
   outline-offset: 2px;
 }
-.tc-social-fb svg { width: 20px; height: 20px; }
+.tc-social svg { width: 19px; height: 19px; }
 
-/* In the mobile drawer it sits in a row of full-width buttons, so it takes
-   the row shape but keeps the brand colour and reads as a labelled button. */
-.tc-social-fb-wide {
+/* In the mobile drawer the same button sits in a row of full-width controls,
+   so it takes the row shape and gains a label, but keeps its tint. */
+.tc-social-wide {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.375rem;
-  background: #1877f2;
-  color: #fff;
+  background: rgba(var(--tc-social-rgb), 0.12);
+  border: 1px solid rgba(var(--tc-social-rgb), 0.24);
+  color: var(--tc-social-ink);
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
 }
-.tc-social-fb-wide:hover { background: #1465d8; }
-.tc-social-fb-wide svg { width: 16px; height: 16px; }
+.tc-social-wide:hover { background: rgba(var(--tc-social-rgb), 0.2); }
+.tc-social-wide svg { width: 16px; height: 16px; }
+
+/* --- tints ------------------------------------------------------------- */
+.tc-social-fb { --tc-social-rgb: 24, 119, 242; --tc-social-ink: #1877f2; }
+.dark .tc-social-fb { --tc-social-rgb: 122, 182, 255; --tc-social-ink: #7ab6ff; }
