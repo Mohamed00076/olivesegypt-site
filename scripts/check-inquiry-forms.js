@@ -130,6 +130,35 @@ for (const file of ['contact/index.html', 'ar/contact/index.html']) {
   }
 }
 
+// ---- the consent banner speaks the page's language ----------------------
+//
+// assets/consent.js contained no Arabic at all and never read the page
+// language, so every Arabic visitor was asked for analytics consent in
+// English. Consent someone cannot read is not meaningfully given, so this is
+// a compliance problem, not a cosmetic one.
+{
+  const consent = fs.readFileSync(path.join(ROOT, 'assets/consent.js'), 'utf8');
+  const arabic = [...consent].filter((c) => c >= '\u0600' && c <= '\u06FF').length;
+
+  if (!/documentElement\.lang/.test(consent)) {
+    problems.push('assets/consent.js never reads the page language, so it cannot localise itself');
+  }
+  if (arabic < 100) {
+    problems.push(`assets/consent.js carries only ${arabic} Arabic characters; the Arabic strings are missing`);
+  }
+  // both privacy destinations must exist, or one locale is sent to the other's page
+  for (const href of ["'/privacy'", "'/ar/privacy'"]) {
+    if (!consent.includes(href)) {
+      problems.push(`assets/consent.js has no ${href} privacy link, so one locale points at the other's page`);
+    }
+  }
+  // the reopen pill is pinned to a corner; a physical property puts it in the
+  // wrong one under rtl
+  if (/#tc-consent-reopen\{position:fixed;left:/.test(consent)) {
+    problems.push('the consent reopen control uses a physical left offset, which is the wrong corner under rtl');
+  }
+}
+
 if (INTENTS.length === 0) {
   problems.push(`${HANDLER}: no intents parsed -- this check would pass vacuously`);
 }
