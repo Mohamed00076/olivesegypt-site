@@ -94,6 +94,25 @@ const BANNED = [
     why: 'no partner certificate has been verified yet; the approved wording is "approved partner facility"' },
 ];
 
+/*
+ * Developer placeholders must never reach a published page.
+ *
+ * The English /privacy page carried the literal word TODO thirteen times, in
+ * six table rows, on the live site -- effective date, raw-event retention,
+ * consent-record retention among them. The facts really were unconfirmed and
+ * saying so is right; showing a buyer the developer's own marker for it is
+ * not. The Arabic page rendered exactly the same state properly, which is why
+ * nothing caught it: only one of the two locales was wrong.
+ *
+ * Checked on pages only. A TODO in a script or a comment is a note to a
+ * developer, which is what it is for.
+ */
+// XXX is deliberately absent: the Arabic contact and sample forms use
+// placeholder="+20 1XX XXX XXXX" as a phone-format hint, which is a correct
+// use of the letter, not a developer marker. A check with a standing false
+// positive is a check people learn to ignore.
+const PLACEHOLDERS = /\bTODO\b|\bFIXME\b|Lorem ipsum/i;
+
 const problems = [];
 const tracked = execSync('git ls-files', { cwd: ROOT }).toString().trim().split('\n');
 const pages = tracked.filter((f) => f.endsWith('.html'));
@@ -105,6 +124,14 @@ const pages = tracked.filter((f) => f.endsWith('.html'));
 // fails on the checker rather than on anything it is checking. That is not a
 // hypothetical: the first version did exactly this and broke `npm test`.
 const SELF = 'scripts/check-identity-strings.js';
+for (const f of pages) {
+  const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const m = html.match(PLACEHOLDERS);
+  if (m) {
+    problems.push(`${f}: shows the developer placeholder "${m[0]}" to visitors`);
+  }
+}
+
 const generators = tracked.filter(
   (f) => f !== SELF && (f.endsWith('.py') || (f.endsWith('.js') && f.startsWith('scripts/')))
 );
