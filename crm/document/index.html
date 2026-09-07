@@ -74,15 +74,67 @@
 
         <!-- Letters only. A letter shares the recipient, the numbering and
              the permanent record with a quotation, and none of the pricing. -->
+        <!-- Letters only.
+             This was a subject and one free-text box. A quotation has a
+             proper filling structure and a letter did not, which is exactly
+             the complaint: a blank textarea makes every letter a fresh act of
+             composition, so the salutation gets forgotten, the sign-off is
+             inconsistent, and nobody remembers the enclosures. Each part of a
+             business letter now has a field asking for it. -->
         <div class="crm-card" id="letter-card" style="display:none;">
           <h2>Letter</h2>
+
           <div class="crm-field">
             <label for="l-subject">Subject <span class="crm-muted">(optional)</span></label>
             <input id="l-subject" maxlength="300" placeholder="e.g. Confirmation of sample dispatch" />
           </div>
+
+          <div class="crm-field">
+            <label for="l-salutation">Salutation</label>
+            <input id="l-salutation" maxlength="120" list="salutation-suggestions" placeholder="Dear Sir or Madam," />
+            <datalist id="salutation-suggestions">
+              <option value="Dear Sir or Madam,"></option>
+              <option value="Dear Sirs,"></option>
+              <option value="To whom it may concern,"></option>
+            </datalist>
+          </div>
+
           <div class="crm-field">
             <label for="l-body">Body</label>
-            <textarea id="l-body" rows="16" maxlength="20000" placeholder="Dear&hellip;"></textarea>
+            <textarea id="l-body" rows="14" maxlength="20000"
+              placeholder="One paragraph per block. Leave a blank line between paragraphs."></textarea>
+          </div>
+
+          <div class="crm-grid crm-grid-3">
+            <div class="crm-field">
+              <label for="l-closing">Closing</label>
+              <select id="l-closing">
+                <option value="Yours sincerely,">Yours sincerely,</option>
+                <option value="Yours faithfully,">Yours faithfully,</option>
+                <option value="Kind regards,">Kind regards,</option>
+                <option value="Best regards,">Best regards,</option>
+                <option value="">(none)</option>
+              </select>
+            </div>
+            <div class="crm-field">
+              <label for="l-signatory">Signed by</label>
+              <input id="l-signatory" maxlength="200" placeholder="Full name" autocomplete="name" />
+            </div>
+            <div class="crm-field">
+              <label for="l-signatory-title">Title</label>
+              <input id="l-signatory-title" maxlength="200" placeholder="e.g. Export Manager" />
+            </div>
+          </div>
+
+          <div class="crm-grid crm-grid-2">
+            <div class="crm-field">
+              <label for="l-enclosures">Enclosures <span class="crm-muted">(optional)</span></label>
+              <input id="l-enclosures" maxlength="500" placeholder="e.g. Quotation Q-2026-000001, product spec sheet" />
+            </div>
+            <div class="crm-field">
+              <label for="l-cc">cc <span class="crm-muted">(optional)</span></label>
+              <input id="l-cc" maxlength="500" placeholder="Anyone else copied in" />
+            </div>
           </div>
         </div>
 
@@ -228,6 +280,12 @@
             }
             payload.subject = document.getElementById('l-subject').value.trim();
             payload.body = letterBody;
+            payload.salutation = document.getElementById('l-salutation').value.trim();
+            payload.closing = document.getElementById('l-closing').value;
+            payload.signatory_name = document.getElementById('l-signatory').value.trim();
+            payload.signatory_title = document.getElementById('l-signatory-title').value.trim();
+            payload.enclosures = document.getElementById('l-enclosures').value.trim();
+            payload.cc = document.getElementById('l-cc').value.trim();
           } else {
             payload.currency = document.getElementById('currency').value.trim().toUpperCase() || 'USD';
             payload.incoterm = document.getElementById('incoterm').value.trim();
@@ -275,6 +333,15 @@
             // letter, and a form that shows fields it will not send is how
             // people end up believing they set something.
             document.getElementById('letter-card').style.display = '';
+
+            /*
+             * Prefill what we already know. The signatory is whoever is
+             * logged in -- they are the one writing it -- and the salutation
+             * is filled in from the recipient's contact name once that is
+             * known, below. Defaults that are usually right beat an empty
+             * field the writer has to think about every time.
+             */
+            if (CRM.user) document.getElementById('l-signatory').value = CRM.user;
             document.getElementById('details-card').style.display = 'none';
             document.getElementById('line-items-card').style.display = 'none';
           } else {
@@ -305,6 +372,9 @@
               (b.contact_email ? CRM.escapeHtml(b.contact_email) + ' &middot; ' : '') +
               (b.contact_phone ? CRM.escapeHtml(b.contact_phone) : '') + '<br/>' +
               CRM.escapeHtml(b.country_region || '');
+            if (isLetter && b.contact_name) {
+              document.getElementById('l-salutation').value = 'Dear ' + b.contact_name + ',';
+            }
             if (b.incoterm) document.getElementById('incoterm').value = b.incoterm;
             document.getElementById('buyer-card').style.display = '';
             document.getElementById('doc-form').style.display = '';

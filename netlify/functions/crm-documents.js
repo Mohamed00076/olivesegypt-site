@@ -76,7 +76,25 @@ const MAX = {
   line_description: 300, line_unit: 30,
   buyer_company_name: 300, buyer_contact_name: 200, buyer_country: 40, buyer_address: 500,
   subject: 300, body: 20000,
+  salutation: 120, closing: 80, signatory_name: 200, signatory_title: 200,
+  enclosures: 500, cc: 500,
 };
+
+/*
+ * The parts of a business letter, in the order they are read.
+ *
+ * The first version of letters gave you a subject and one free-text box. The
+ * owner's objection was that a quotation has a proper filling structure and a
+ * letter did not -- and they were right: a blank textarea makes every letter
+ * a fresh act of composition, so the salutation gets forgotten, the sign-off
+ * is inconsistent, and nobody remembers to note the enclosures.
+ *
+ * Only body is required. Everything else is optional, because a short note
+ * legitimately has no enclosures and an internal memo may not need a formal
+ * close -- but each one now has a field asking for it rather than depending
+ * on the writer to remember the convention.
+ */
+const LETTER_FIELDS = ['salutation', 'closing', 'signatory_name', 'signatory_title', 'enclosures', 'cc'];
 const MAX_LINE_ITEMS = 50;
 
 function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v); }
@@ -121,6 +139,15 @@ async function ensureSchema(sql) {
   // CREATE above will not add a column to a table that already exists.
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS subject text`;
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS body text`;
+
+  // The structured letter parts (2026-09-07). All nullable: only the body is
+  // required, so an existing letter written before this simply has none.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS salutation text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS closing text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS signatory_name text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS signatory_title text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS enclosures text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS cc text`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
@@ -234,6 +261,8 @@ async function handleCreate(event, sql, actor) {
   let incoterm = null;
   let subject = null;
   let letterBody = null;
+  const letterParts = {};
+  LETTER_FIELDS.forEach(function (f) { letterParts[f] = null; });
 
   if (priced) {
     lineItems = validateLineItems(body.line_items);
@@ -256,6 +285,7 @@ async function handleCreate(event, sql, actor) {
     letterBody = clean(body.body, MAX.body);
     if (!letterBody) return json(400, { ok: false, error: 'Validation failed', fields: ['body'] });
     subject = optional(body.subject, MAX.subject);
+    LETTER_FIELDS.forEach(function (f) { letterParts[f] = optional(body[f], MAX[f]); });
   }
 
   const notes = optional(body.notes, MAX.notes);
@@ -271,12 +301,16 @@ async function handleCreate(event, sql, actor) {
     INSERT INTO crm_documents (
       created_by, buyer_id, doc_type, doc_number,
       buyer_company_name, buyer_contact_name, buyer_country, buyer_address,
-      currency, incoterm, valid_until, due_date, notes, subject, body, line_items, subtotal, total
+      currency, incoterm, valid_until, due_date, notes, subject, body,
+      salutation, closing, signatory_name, signatory_title, enclosures, cc,
+      line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
       ${companyName}, ${contactName},
       ${country}, ${buyerAddress},
       ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody},
+      ${letterParts.salutation}, ${letterParts.closing}, ${letterParts.signatory_name},
+      ${letterParts.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )
     RETURNING id, created_at

@@ -71,7 +71,18 @@
 
       /* letter ---------------------------------------------------------- */
       .doc-letter-subject { font-size: 14px; font-weight: 700; margin-bottom: 18px; }
+      .doc-letter-salutation { font-size: 12.5px; margin-bottom: 14px; }
       .doc-letter-body { white-space: pre-wrap; line-height: 1.85; font-size: 12.5px; max-width: 15.5cm; }
+      /* The sign-off block. The gap under the closing is where a signature
+         goes on a printed copy, so it is deliberate space, not padding. */
+      .doc-letter-signoff { margin-top: 26px; font-size: 12.5px; }
+      .doc-letter-signature { margin-top: 42px; }
+      .doc-letter-name { font-weight: 700; }
+      .doc-letter-title, .doc-letter-org { font-size: 11px; color: hsl(var(--muted-foreground)); }
+      .doc-letter-annex { margin-top: 26px; padding-top: 12px; border-top: 1px solid hsl(var(--border)); font-size: 10.5px; }
+      .doc-letter-annex > div { display: flex; gap: 10px; margin-bottom: 3px; }
+      .doc-letter-annex dt { min-width: 34px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 9px; color: hsl(var(--muted-foreground)); padding-top: 1px; }
+      .doc-letter-annex dd { margin: 0; }
 
       /* notes + footer --------------------------------------------------- */
       .doc-note-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.16em; color: hsl(var(--muted-foreground)); margin-bottom: 5px; }
@@ -173,7 +184,20 @@
         <!-- Letters render here instead of the table below. -->
         <div id="letter-block" style="display:none;">
           <div id="letter-subject" class="doc-letter-subject" style="display:none;"></div>
+          <div id="letter-salutation" class="doc-letter-salutation" style="display:none;"></div>
           <div id="letter-body" class="doc-letter-body"></div>
+          <div id="letter-signoff" class="doc-letter-signoff" style="display:none;">
+            <div id="letter-closing"></div>
+            <div class="doc-letter-signature">
+              <div id="letter-signatory" class="doc-letter-name"></div>
+              <div id="letter-signatory-title" class="doc-letter-title"></div>
+              <div class="doc-letter-org">Triple Company for Industrial Development</div>
+            </div>
+          </div>
+          <dl class="doc-letter-annex" id="letter-annex" style="display:none;">
+            <div id="letter-enc-row" style="display:none;"><dt>Enc.</dt><dd id="letter-enclosures"></dd></div>
+            <div id="letter-cc-row" style="display:none;"><dt>cc</dt><dd id="letter-cc"></dd></div>
+          </dl>
         </div>
 
         <table class="doc-table" id="doc-table">
@@ -267,6 +291,33 @@
               subj.style.display = '';
             }
             document.getElementById('letter-body').textContent = d.body || '';
+
+            /*
+             * Each part appears only if it was written. A letter with no
+             * enclosures should not print an empty "Enc." line, and one
+             * without a named signatory should not leave a blank where a name
+             * belongs -- an obviously unfinished document is worse than a
+             * plainer one.
+             */
+            function put(id, value, row) {
+              if (!value) return false;
+              document.getElementById(id).textContent = value;
+              if (row) document.getElementById(row).style.display = '';
+              return true;
+            }
+
+            put('letter-salutation', d.salutation, 'letter-salutation');
+
+            var closing = put('letter-closing', d.closing);
+            var name = put('letter-signatory', d.signatory_name);
+            var title = put('letter-signatory-title', d.signatory_title);
+            if (closing || name || title) {
+              document.getElementById('letter-signoff').style.display = '';
+            }
+
+            var enc = put('letter-enclosures', d.enclosures, 'letter-enc-row');
+            var cc = put('letter-cc', d.cc, 'letter-cc-row');
+            if (enc || cc) document.getElementById('letter-annex').style.display = '';
             // "Bill To" on a letter is wrong on a document going to a customer.
             document.getElementById('recipient-label').textContent = 'To';
           }
