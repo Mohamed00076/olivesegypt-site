@@ -115,3 +115,14 @@ label { font-size: 12px; font-weight: 700; color: var(--crm-muted); display: blo
    beside it because it is the one that saves nothing -- see CRM.renderNav. */
 .crm-nav-aside { opacity: 0.75; font-style: italic; }
 .crm-nav-aside:hover { opacity: 1; }
+
+/* Switch between the two views of the buyer list. Kanban used to be its own
+   nav entry; it is the same records in a different shape, so it belongs to
+   the Buyers page rather than beside it. */
+.crm-viewlink { font-size: 13px; font-weight: 600; color: hsl(var(--primary)); white-space: nowrap; }
+.crm-viewlink:hover { text-decoration: underline; }
+
+/* An enquiry's message, in the expanded row of the inbox. pre-wrap because a
+   buyer's line breaks are part of what they wrote. */
+.crm-inquiry-message { white-space: pre-wrap; line-height: 1.65; margin: 10px 0 12px; padding: 10px 12px; background: hsl(var(--muted) / 0.4); border-radius: 6px; }
+.detail-row td { background: hsl(var(--muted) / 0.15); }

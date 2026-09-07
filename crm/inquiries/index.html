@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enquiries | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+<link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-flex-between" style="margin-bottom:16px;">
+        <h1 style="margin:0;">Enquiries</h1>
+        <div class="crm-flex">
+          <span class="crm-muted" id="count"></span>
+        </div>
+      </div>
+
+      <p class="crm-muted" style="margin-top:0;">
+        Everything sent through the website&rsquo;s contact and sample forms, newest first.
+      </p>
+
+      <div id="status" class="crm-status" style="display:none;"></div>
+
+      <div class="crm-card">
+        <div class="crm-flex" style="margin-bottom:12px;">
+          <input type="search" id="filter" placeholder="Filter by name, company, country or message&hellip;" style="flex:1;min-width:0;" />
+        </div>
+        <div id="list"><p class="crm-muted">Loading&hellip;</p></div>
+      </div>
+    </div>
+
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        /*
+         * The enquiries this site collects, finally on a screen.
+         *
+         * Every submission has always been written to the database before
+         * anything else happens, so none were ever lost. But the notification
+         * email is off unless RESEND_API_KEY and NOTIFY_EMAIL are set, and
+         * until now nothing in the site read GET /api/inquiries -- so a buyer
+         * could send a quote request and nobody would ever see it. From the
+         * owner's side that is indistinguishable from no enquiries arriving,
+         * which is exactly what they concluded.
+         *
+         * Hence the banner below when the list is empty: "none yet" and
+         * "nobody is being told" are different problems and must not look the
+         * same twice over.
+         */
+
+        var rows = [];
+
+        function showStatus(msg, ok) {
+          var el = document.getElementById('status');
+          el.textContent = msg;
+          el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
+          el.style.display = msg ? 'block' : 'none';
+        }
+
+        function esc(v) { return CRM.escapeHtml(v == null ? '' : String(v)); }
+
+        function render(list) {
+          var el = document.getElementById('list');
+          if (!list.length) {
+            el.innerHTML = rows.length
+              ? '<p class="crm-muted">Nothing matches that filter.</p>'
+              : '<p class="crm-muted">No enquiries have been received yet.</p>';
+            return;
+          }
+
+          var html = '<table><thead><tr>' +
+            '<th>Received</th><th>From</th><th>Country</th><th>Asked for</th><th></th>' +
+            '</tr></thead><tbody>';
+
+          list.forEach(function (r) {
+            var who = esc(r.company || r.name || '(no name given)');
+            var sub = r.company && r.name ? esc(r.name) : '';
+            html += '<tr>' +
+              '<td>' + CRM.fmtDate(r.created_at) + '</td>' +
+              '<td><strong>' + who + '</strong>' + (sub ? '<br/><span class="crm-muted">' + sub + '</span>' : '') +
+                (r.email ? '<br/><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '') + '</td>' +
+              '<td>' + esc(r.country) + '</td>' +
+              '<td>' + esc(r.request_type || 'Enquiry') + '</td>' +
+              '<td><button type="button" class="crm-btn crm-btn-secondary detail-btn" data-id="' + esc(r.id) + '">Open</button></td>' +
+              '</tr>' +
+              '<tr class="detail-row" id="detail-' + esc(r.id) + '" style="display:none;"><td colspan="5">' +
+                (r.product_interest ? '<div><span class="crm-muted">Product:</span> ' + esc(r.product_interest) + '</div>' : '') +
+                (r.estimated_volume ? '<div><span class="crm-muted">Volume:</span> ' + esc(r.estimated_volume) + '</div>' : '') +
+                (r.phone ? '<div><span class="crm-muted">Phone:</span> <span dir="ltr">' + esc(r.phone) + '</span></div>' : '') +
+                (r.source_page ? '<div><span class="crm-muted">Sent from:</span> ' + esc(r.source_page) + '</div>' : '') +
+                '<div class="crm-inquiry-message">' + esc(r.message) + '</div>' +
+                (r.email
+                  ? '<a class="crm-btn crm-btn-primary" href="mailto:' + esc(r.email) +
+                    '?subject=' + encodeURIComponent('Re: your enquiry to Triple Company') + '">Reply by email</a>'
+                  : '') +
+              '</td></tr>';
+          });
+
+          html += '</tbody></table>';
+          el.innerHTML = html;
+
+          el.querySelectorAll('.detail-btn').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var row = document.getElementById('detail-' + b.getAttribute('data-id'));
+              var open = row.style.display !== 'none';
+              row.style.display = open ? 'none' : '';
+              b.textContent = open ? 'Open' : 'Close';
+            });
+          });
+        }
+
+        function applyFilter() {
+          var q = document.getElementById('filter').value.trim().toLowerCase();
+          if (!q) { render(rows); return; }
+          render(rows.filter(function (r) {
+            return ['name', 'company', 'country', 'message', 'email', 'request_type'].some(function (k) {
+              return String(r[k] || '').toLowerCase().indexOf(q) !== -1;
+            });
+          }));
+        }
+
+        CRM.requireAuth().then(function () {
+          CRM.renderNav('Enquiries');
+          document.getElementById('filter').addEventListener('input', applyFilter);
+
+          CRM.fetchJson('/api/inquiries').then(function (result) {
+            if (!result.ok) {
+              document.getElementById('list').innerHTML = '';
+              showStatus((result.data && result.data.error) || 'Could not load enquiries.', false);
+              return;
+            }
+            rows = Array.isArray(result.data) ? result.data : [];
+            document.getElementById('count').textContent =
+              rows.length === 1 ? '1 enquiry' : rows.length + ' enquiries';
+            applyFilter();
+          });
+        }).catch(function (e) {
+          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+        });
+      })();
+    </script>
+  </body>
+</html>

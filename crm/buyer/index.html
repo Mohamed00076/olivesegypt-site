@@ -399,7 +399,7 @@
 
         populateSelects();
         CRM.requireAuth().then(function () {
-          CRM.renderNav(isNew ? 'Add Buyer' : '');
+          CRM.renderNav('Buyers');
           if (isNew) {
             document.getElementById('page-title').textContent = 'Add Buyer';
             toggleLostReason();

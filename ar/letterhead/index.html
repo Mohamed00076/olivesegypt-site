@@ -16,11 +16,34 @@
     <link rel="stylesheet" href="/assets/rtl.css">
 
     <style>
-      .sheet { max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; background: #fff; box-shadow: 0 1px 8px rgba(0,0,0,0.1); padding: 2cm; display: flex; flex-direction: column; }
-      .lh-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid hsl(var(--primary)); padding-bottom: 1rem; margin-bottom: 2rem; }
-      .lh-body { flex: 1; outline: none; min-height: 14cm; }
-      .lh-body[contenteditable]:empty:before { content: attr(data-placeholder); color: #999; }
-      .lh-footer { border-top: 1px solid hsl(var(--border)); padding-top: 0.75rem; margin-top: 2rem; font-size: 10px; color: hsl(var(--muted-foreground)); text-align: center; }
+      /* Same sheet system as crm/document/view -- see the notes there. This
+         page is the unsaved quick letterhead, so it shares the masthead,
+         rule and footer but keeps its contenteditable body.
+
+         text-align:end rather than right: this stylesheet is shared with the
+         Arabic letterhead, where the contact block sits on the left and a
+         physical property would align it against the wrong edge. */
+      .sheet {
+        max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; padding: 1.8cm 2cm;
+        background: #fff; box-shadow: 0 2px 24px rgba(24, 32, 16, 0.10);
+        display: flex; flex-direction: column;
+        font-size: 13px; line-height: 1.55; color: #20241a;
+      }
+      .doc-masthead { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding-bottom: 14px; }
+      .doc-mark { display: flex; align-items: center; gap: 12px; }
+      .doc-mark img { width: 46px; height: 46px; object-fit: contain; flex-shrink: 0; }
+      .doc-wordmark { font-family: 'Playfair Display', Georgia, serif; font-size: 19px; font-weight: 700; color: hsl(var(--primary)); line-height: 1.1; }
+      .doc-tagline { font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.18em; color: hsl(var(--muted-foreground)); margin-top: 3px; }
+      .doc-contact { text-align: end; font-size: 10.5px; line-height: 1.7; color: hsl(var(--muted-foreground)); max-width: 8.8cm; }
+      .doc-rule { height: 2px; background: hsl(var(--primary)); margin-bottom: 30px; }
+      .lh-body { flex: 1; outline: none; min-height: 14cm; line-height: 1.85; font-size: 12.5px; max-width: 15.5cm; }
+      .lh-body[contenteditable]:empty:before { content: attr(data-placeholder); color: #9aa08f; }
+      .doc-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid hsl(var(--border)); display: flex; justify-content: space-between; gap: 1rem; font-size: 9px; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); }
+      /* The toolbar above the sheet. It used max-w-screen-md, which is not in
+         the compiled stylesheet and so did nothing: the bar ran the full
+         window width above a 21cm sheet. Pre-existing; matching the sheet is
+         the point of a toolbar that belongs to it. */
+      .doc-toolbar { max-width: 21cm; }
       @media print {
         .no-print { display: none !important; }
         /*
@@ -52,7 +75,7 @@
   </head>
   <body class="bg-muted/30">
     <div class="no-print sticky top-0 z-10 bg-background border-b border-border py-3 mb-2">
-      <div class="container max-w-screen-md mx-auto px-4 flex items-center justify-between">
+      <div class="container doc-toolbar mx-auto px-4 flex items-center justify-between">
         <a href="/ar/" class="text-sm font-semibold text-primary">الشركة الثلاثية &rarr;</a>
         <div class="flex gap-2">
           <button onclick="document.querySelector('.lh-body').innerHTML=''" class="text-sm px-3 py-1.5 rounded-md border border-border">مسح</button>
@@ -63,25 +86,30 @@
 
     <div class="sheet">
       <h1 class="sr-only">الشركة الثلاثية للتنمية الصناعية &mdash; نموذج الترويسة الرسمية</h1>
-      <div class="lh-header">
-        <div class="flex items-center gap-3">
-          <img src="/assets/logo-BJ1TOn9V.png" alt="شعار الشركة الثلاثية للتنمية الصناعية" class="h-12 w-12 object-contain" width="512" height="512"/>
+      <div class="doc-masthead">
+        <div class="doc-mark">
+          <img src="/assets/logo-BJ1TOn9V.png" alt="شعار الشركة الثلاثية للتنمية الصناعية" width="512" height="512"/>
           <div>
-            <div class="font-serif text-lg font-bold text-primary leading-tight">الشركة الثلاثية</div>
-            <div class="text-[10px] uppercase tracking-widest text-muted-foreground">للتنمية الصناعية</div>
+            <div class="doc-wordmark">الشركة الثلاثية</div>
+            <div class="doc-tagline">للتنمية الصناعية</div>
           </div>
         </div>
-        <div class="text-left text-xs text-muted-foreground leading-relaxed">
-          ميدان العروبة، التجمع الخامس، القاهرة الجديدة، القاهرة، مصر<br/>
-          القاهرة، مصر<br/>
+        <!-- One canonical address, per C-22. This block used to repeat
+             "القاهرة، مصر" on its own line after the full address already
+             ended with it. The email and phone stay in a dir="ltr" span so
+             the digits are not reordered on an RTL page. -->
+        <div class="doc-contact">
+          ميدان العروبة، التجمع الخامس،<br/>
+          القاهرة الجديدة، القاهرة، مصر<br/>
           <span dir="ltr">sales@olivesegypt.com &middot; +20 100 604 5961</span>
         </div>
       </div>
-
+      <div class="doc-rule"></div>
       <div class="lh-body" contenteditable="true" data-placeholder="اضغط هنا لكتابة خطابك..."></div>
 
-      <div class="lh-footer">
-        الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com &middot; مستند مُعَدّ بواسطة الشركة الثلاثية للتنمية الصناعية
+      <div class="doc-foot">
+        <span>الشركة الثلاثية للتنمية الصناعية</span>
+        <span dir="ltr">olivesegypt.com</span>
       </div>
     </div>
   </body>

@@ -18,6 +18,12 @@
   <body>
     <div class="crm-container">
       <h1>Dashboard</h1>
+      <!-- Enquiries first, because they are the only thing on this page that
+           somebody outside the company is waiting on. Everything below is
+           our own pipeline, which can wait a minute; a buyer who filled in
+           the contact form cannot tell whether anyone has seen it. -->
+      <div id="inbox-card"></div>
+
       <div id="dashboard-content">
         <p class="crm-muted">Loading…</p>
       </div>
@@ -44,8 +50,46 @@
           return html;
         }
 
+        function renderInbox(list) {
+          var card = document.getElementById('inbox-card');
+          if (!list.length) {
+            card.innerHTML = '<div class="crm-card"><h2>Enquiries</h2>' +
+              '<p class="crm-muted">Nothing received yet. Enquiries from the website\u2019s ' +
+              'contact and sample forms appear here.</p></div>';
+            return;
+          }
+          var recent = list.slice(0, 5);
+          var rowsHtml = recent.map(function (r) {
+            return '<tr>' +
+              '<td>' + CRM.fmtDate(r.created_at) + '</td>' +
+              '<td><strong>' + CRM.escapeHtml(r.company || r.name || '(no name given)') + '</strong></td>' +
+              '<td>' + CRM.escapeHtml(r.country || '') + '</td>' +
+              '<td>' + CRM.escapeHtml(r.request_type || 'Enquiry') + '</td>' +
+              '</tr>';
+          }).join('');
+          card.innerHTML = '<div class="crm-card">' +
+            '<div class="crm-flex-between" style="margin-bottom:10px;">' +
+              '<h2 style="margin:0;">Enquiries (' + list.length + ')</h2>' +
+              '<a href="/crm/inquiries/" class="crm-viewlink">See all &rarr;</a>' +
+            '</div>' +
+            '<table><thead><tr><th>Received</th><th>From</th><th>Country</th><th>Asked for</th></tr></thead>' +
+            '<tbody>' + rowsHtml + '</tbody></table>' +
+            (list.length > recent.length
+              ? '<p class="crm-muted" style="margin-bottom:0;">Showing the ' + recent.length +
+                ' most recent.</p>'
+              : '') +
+          '</div>';
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Dashboard');
+
+          // Fetched separately and deliberately not chained: if the enquiries
+          // call fails, the pipeline below must still render, and vice versa.
+          CRM.fetchJson('/api/inquiries').then(function (res) {
+            renderInbox(res.ok && Array.isArray(res.data) ? res.data : []);
+          }).catch(function () { renderInbox([]); });
+
           return CRM.fetchJson('/api/crm/dashboard');
         }).then(function (result) {
           var d = result.data;

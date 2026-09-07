@@ -2,6 +2,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
+const { requireCrmSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
 
 function connectionString() {
@@ -178,11 +179,32 @@ async function handlePost(event, sql) {
   return json(200, { ok: true });
 }
 
+/*
+ * Either session may read enquiries.
+ *
+ * This endpoint accepted only the /admin/analytics session, which meant a
+ * page under /crm/ could not read it -- and so the enquiries this site
+ * collects were stored correctly and displayed nowhere. The owner went
+ * looking for them and found no screen anywhere.
+ *
+ * CRM staff already see the full buyers table, which holds the same class of
+ * personal data about the same people, so letting them read enquiries is
+ * consistent with the access they have rather than a widening of it. It stays
+ * deny-by-default: no valid session of either kind still returns 401 before
+ * a single row is read.
+ */
+function readerSession(event) {
+  const adminSecret = process.env.SESSION_SECRET;
+  if (adminSecret) {
+    const token = parseCookies(event.headers)[COOKIE_NAME];
+    const session = token ? verifySession(token, adminSecret) : null;
+    if (session) return session;
+  }
+  return requireCrmSession(event);
+}
+
 async function handleGet(event, sql) {
-  const SESSION_SECRET = process.env.SESSION_SECRET;
-  const token = SESSION_SECRET ? parseCookies(event.headers)[COOKIE_NAME] : null;
-  const session = token ? verifySession(token, SESSION_SECRET) : null;
-  if (!session) {
+  if (!readerSession(event)) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }
 
