@@ -15,6 +15,11 @@
       .li-table .remove-btn { background: none; border: none; color: var(--crm-danger); cursor: pointer; font-size: 16px; padding: 4px 8px; }
       .totals-row td { border-top: 2px solid var(--crm-border); border-bottom: none; padding-top: 10px; font-weight: 700; }
       .totals-row.grand td { font-size: 16px; color: var(--crm-primary); }
+      /* The line-item inputs set their own 13px, which is below the 16px at
+         which iOS Safari zooms the page in on focus and does not zoom back
+         out -- so adding a line to a quotation on a phone left the form
+         magnified. */
+      @media (max-width: 760px) { .li-table input { font-size: 16px; } }
     </style>
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
