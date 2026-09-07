@@ -27,6 +27,20 @@
  * at creation time (buyer_company_name etc. below), not read live from
  * `buyers` on every view -- an issued document must not silently change
  * if the buyer's CRM record is edited later.
+ *
+ * buyer_id is OPTIONAL (2026-09-07). It was NOT NULL, and /crm/document
+ * refused to load without a ?buyer_id= in the URL, so quoting a company
+ * meant first creating a CRM buyer record for them. The owner asked for the
+ * opposite: "make it independent, not related to buyers and adding buyers
+ * first". Most quotations go out before anyone is a buyer -- that is what a
+ * quotation is for -- and forcing a CRM record first turns a two-minute job
+ * into data entry, or worse, pushes the work off the system entirely.
+ *
+ * So a document now takes either a buyer_id (details copied from that
+ * record, as before) or a typed-in company name. Nothing else changes: the
+ * snapshot columns were always the source of truth for what a document
+ * says, so an unlinked document is not a lesser one -- it simply has no
+ * back-reference. Linking one later is a matter of setting buyer_id.
  */
 
 const { neon } = require('@neondatabase/serverless');
@@ -81,6 +95,15 @@ async function ensureSchema(sql) {
       voided_by            text
     )
   `;
+  /*
+   * CREATE TABLE IF NOT EXISTS above does nothing to a table that already
+   * exists, so an already-deployed crm_documents keeps its NOT NULL until
+   * this runs. Dropping a NOT NULL is idempotent in Postgres -- it succeeds
+   * whether or not the constraint is still there -- so this is safe on every
+   * invocation and needs no version tracking.
+   */
+  await sql`ALTER TABLE crm_documents ALTER COLUMN buyer_id DROP NOT NULL`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
       id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -140,12 +163,51 @@ async function handleCreate(event, sql, actor) {
   const docType = clean(body.doc_type, 20);
   if (!DOC_TYPES.has(docType)) return json(400, { ok: false, error: 'Validation failed', fields: ['doc_type'] });
 
-  const buyerId = parseInt(body.buyer_id, 10);
-  if (!Number.isFinite(buyerId)) return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_id'] });
+  /*
+   * Two ways to say who a document is for, and exactly one is required.
+   *
+   *   buyer_id            -- copy the details off an existing CRM record
+   *   buyer_company_name  -- type them in, with no CRM record at all
+   *
+   * The second is the common case: a quotation usually goes out before the
+   * recipient is a buyer. Whichever route is taken, the same four snapshot
+   * columns get written, so nothing downstream -- the printed sheet, the
+   * list, the void flow -- needs to know which was used.
+   */
+  const hasBuyerId = body.buyer_id !== undefined && body.buyer_id !== null && body.buyer_id !== '';
+  let buyerId = null;
+  let companyName;
+  let contactName;
+  let country;
+  let buyerAddress;
 
-  const buyerRows = await sql`SELECT company_name, contact_name, country_region, contact_email, contact_phone FROM buyers WHERE id = ${buyerId} LIMIT 1`;
-  if (!buyerRows[0]) return json(400, { ok: false, error: 'Buyer not found', fields: ['buyer_id'] });
-  const buyer = buyerRows[0];
+  if (hasBuyerId) {
+    buyerId = parseInt(body.buyer_id, 10);
+    if (!Number.isFinite(buyerId)) return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_id'] });
+
+    const buyerRows = await sql`SELECT company_name, contact_name, country_region, contact_email, contact_phone FROM buyers WHERE id = ${buyerId} LIMIT 1`;
+    if (!buyerRows[0]) return json(400, { ok: false, error: 'Buyer not found', fields: ['buyer_id'] });
+    const buyer = buyerRows[0];
+
+    companyName = clean(buyer.company_name, MAX.buyer_company_name);
+    contactName = optional(buyer.contact_name, MAX.buyer_contact_name);
+    country = optional(buyer.country_region, MAX.buyer_country);
+    buyerAddress = optional(
+      [buyer.contact_email, buyer.contact_phone].filter(Boolean).join(' \u00b7 '),
+      MAX.buyer_address
+    );
+  } else {
+    // A document has to say who it is for. Everything else about the
+    // recipient is optional -- a quotation with just a company name on it is
+    // a normal thing to send.
+    companyName = clean(body.buyer_company_name, MAX.buyer_company_name);
+    if (!companyName) {
+      return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_company_name'] });
+    }
+    contactName = optional(body.buyer_contact_name, MAX.buyer_contact_name);
+    country = optional(body.buyer_country, MAX.buyer_country);
+    buyerAddress = optional(body.buyer_address, MAX.buyer_address);
+  }
 
   const lineItems = validateLineItems(body.line_items);
   if (!lineItems) return json(400, { ok: false, error: 'Validation failed', fields: ['line_items'] });
@@ -163,8 +225,6 @@ async function handleCreate(event, sql, actor) {
   const subtotal = Math.round(lineItems.reduce((sum, li) => sum + li.quantity * li.unit_price, 0) * 100) / 100;
   const total = subtotal;
 
-  const buyerAddress = [buyer.contact_email, buyer.contact_phone].filter(Boolean).join(' · ');
-
   const rows = await sql`
     INSERT INTO crm_documents (
       created_by, buyer_id, doc_type, doc_number,
@@ -172,8 +232,8 @@ async function handleCreate(event, sql, actor) {
       currency, incoterm, valid_until, due_date, notes, line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
-      ${clean(buyer.company_name, MAX.buyer_company_name)}, ${optional(buyer.contact_name, MAX.buyer_contact_name)},
-      ${optional(buyer.country_region, MAX.buyer_country)}, ${optional(buyerAddress, MAX.buyer_address)},
+      ${companyName}, ${contactName},
+      ${country}, ${buyerAddress},
       ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes},
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )

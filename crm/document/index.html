@@ -32,14 +32,44 @@
       </div>
 
       <div id="status" class="crm-status" style="display:none;"></div>
-      <div id="buyer-missing" class="crm-status crm-status-error" style="display:none;">
-        No buyer selected — open this page from a buyer's "New Quotation" or "New Invoice" button.
-      </div>
-
       <form id="doc-form" style="display:none;">
-        <div class="crm-card">
-          <h2>Buyer</h2>
-          <div id="buyer-summary" class="crm-muted"></div>
+        <!-- Shown when the page was opened from a buyer record: their details
+             are copied onto the document and are not editable here, because an
+             issued document snapshots the buyer as they were at the time. -->
+        <div class="crm-card" id="buyer-card" style="display:none;">
+          <div class="crm-flex-between">
+            <h2 style="margin:0;">Buyer</h2>
+            <a href="/crm/document/" class="crm-muted" style="font-size:13px;">Issue without a buyer instead</a>
+          </div>
+          <div id="buyer-summary" class="crm-muted" style="margin-top:8px;"></div>
+        </div>
+
+        <!-- The default. A quotation usually goes out before the recipient is
+             a buyer, so nothing has to exist in the CRM first. -->
+        <div class="crm-card" id="recipient-card" style="display:none;">
+          <h2>Recipient</h2>
+          <p class="crm-muted" style="margin-top:0;">
+            Type who this document is for. No CRM record is needed &mdash; or
+            <a href="/crm/buyers/">pick an existing buyer</a> to fill it in from their record.
+          </p>
+          <div class="crm-grid crm-grid-2">
+            <div class="crm-field">
+              <label for="r-company">Company name</label>
+              <input id="r-company" maxlength="300" autocomplete="organization" />
+            </div>
+            <div class="crm-field">
+              <label for="r-contact">Contact name</label>
+              <input id="r-contact" maxlength="200" autocomplete="name" />
+            </div>
+            <div class="crm-field">
+              <label for="r-country">Country or region</label>
+              <input id="r-country" maxlength="40" />
+            </div>
+            <div class="crm-field">
+              <label for="r-address">Email, phone or address</label>
+              <input id="r-address" maxlength="500" />
+            </div>
+          </div>
         </div>
 
         <div class="crm-card">
@@ -162,14 +192,37 @@
             if (!(lines[i].quantity > 0)) { showStatus('Every line needs a quantity greater than zero.', false); return; }
             if (!(lines[i].unit_price >= 0)) { showStatus('Every line needs a unit price.', false); return; }
           }
+          /*
+           * Exactly one of these two goes to the server. When a buyer is
+           * linked the server reads their details off the record and ignores
+           * anything typed here, so sending both would only be misleading.
+           */
           var payload = {
             doc_type: docType,
-            buyer_id: Number(buyerId),
             currency: document.getElementById('currency').value.trim().toUpperCase() || 'USD',
             incoterm: document.getElementById('incoterm').value.trim(),
             notes: document.getElementById('notes').value.trim(),
             line_items: lines,
           };
+          if (buyerId) {
+            payload.buyer_id = Number(buyerId);
+          } else {
+            // Validated here rather than with a required attribute: the field
+            // sits in a card that is display:none on the buyer-linked path,
+            // and browsers refuse to submit a form containing an invalid
+            // control they cannot scroll to.
+            var company = document.getElementById('r-company').value.trim();
+            if (!company) {
+              showStatus('Enter the company this document is for.', false);
+              document.getElementById('r-company').focus();
+              return;
+            }
+            payload.buyer_company_name = company;
+            payload.buyer_contact_name = document.getElementById('r-contact').value.trim();
+            payload.buyer_country = document.getElementById('r-country').value.trim();
+            payload.buyer_address = document.getElementById('r-address').value.trim();
+          }
+
           if (docType === 'quotation') payload.valid_until = document.getElementById('date-input').value || null;
           else payload.due_date = document.getElementById('date-input').value || null;
 
@@ -194,6 +247,16 @@
             var o = document.createElement('option'); o.value = p[1]; suggestions.appendChild(o);
           });
 
+          if (!buyerId) {
+            // Standalone: nothing to fetch, so the form is usable immediately.
+            document.getElementById('recipient-card').style.display = '';
+            document.getElementById('doc-form').style.display = '';
+            addLine(null);
+            recalc();
+            document.getElementById('r-company').focus();
+            return;
+          }
+
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
             if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
             var b = result.data;
@@ -206,6 +269,7 @@
               (b.contact_phone ? CRM.escapeHtml(b.contact_phone) : '') + '<br/>' +
               CRM.escapeHtml(b.country_region || '');
             if (b.incoterm) document.getElementById('incoterm').value = b.incoterm;
+            document.getElementById('buyer-card').style.display = '';
             document.getElementById('doc-form').style.display = '';
             var firstProduct = Array.isArray(b.product_interest) && b.product_interest.length
               ? (CRM.PRODUCTS.find(function (p) { return p[0] === b.product_interest[0]; }) || [])[1]
@@ -215,16 +279,17 @@
           });
         }
 
-        if (!buyerId) {
-          document.getElementById('buyer-missing').style.display = 'block';
-        } else {
-          CRM.requireAuth().then(function () {
-            CRM.renderNav('');
-            init();
-          }).catch(function (e) {
-            if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
-          });
-        }
+        /*
+         * This used to be `if (!buyerId) show a dead end`. The page could only
+         * be reached from a buyer's New Quotation button, which is exactly
+         * what made issuing a document feel buried. It now always loads.
+         */
+        CRM.requireAuth().then(function () {
+          CRM.renderNav(docType === 'invoice' ? 'New Invoice' : 'New Quotation');
+          init();
+        }).catch(function (e) {
+          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+        });
       })();
     </script>
   </body>

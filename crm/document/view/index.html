@@ -129,7 +129,21 @@
         }
 
         function render(d) {
-          document.getElementById('back-link').href = '/crm/buyer/?id=' + d.buyer_id;
+          /*
+           * A document no longer necessarily has a buyer. Before this, the
+           * link was built unconditionally and an unlinked document sent you
+           * to /crm/buyer/?id=null -- a broken page, reachable only after
+           * successfully issuing something, which is the worst moment to hit
+           * a dead link.
+           */
+          var back = document.getElementById('back-link');
+          if (d.buyer_id) {
+            back.href = '/crm/buyer/?id=' + d.buyer_id;
+            back.textContent = '\u2190 Back to buyer';
+          } else {
+            back.href = '/crm/documents/';
+            back.textContent = '\u2190 Back to documents';
+          }
           document.getElementById('doc-title-type').textContent = d.doc_type === 'invoice' ? 'INVOICE' : 'QUOTATION';
           document.getElementById('doc-number').textContent = d.doc_number;
           document.title = d.doc_number + ' | Triple Company for Industrial Development';

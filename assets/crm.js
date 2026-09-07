@@ -73,10 +73,23 @@
   };
 
   CRM.renderNav = function (active) {
+    /*
+     * Documents were reachable only from inside a buyer record, and nothing
+     * in this nav mentioned them -- so issuing a quotation meant knowing that
+     * you first had to find or create a buyer. The owner asked for them to be
+     * "more visible and simply accessible", and independent of buyers.
+     *
+     * The two most common actions therefore get their own entries, ahead of
+     * Add Buyer: in this business a quotation usually precedes the buyer
+     * record, not the other way round.
+     */
     var links = [
       ['/crm/', 'Dashboard'],
       ['/crm/buyers/', 'Buyers'],
       ['/crm/kanban/', 'Kanban'],
+      ['/crm/document/', 'New Quotation'],
+      ['/crm/document/?type=invoice', 'New Invoice'],
+      ['/crm/documents/', 'Documents'],
       ['/crm/buyer/?new=1', 'Add Buyer'],
     ];
     var html = '<div class="crm-header"><div class="crm-brand">Triple Company &middot; Buyer CRM</div><div class="crm-nav">';
