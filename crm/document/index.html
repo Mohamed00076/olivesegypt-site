@@ -38,6 +38,24 @@
 
       <div id="status" class="crm-status" style="display:none;"></div>
       <form id="doc-form" style="display:none;">
+        <!-- Language comes first because it is not a formatting switch applied
+             at the end: it changes the closings offered, the direction you
+             type in, and the sheet the document is printed on. Deciding it
+             after writing the letter means rewriting the letter. -->
+        <div class="crm-card" id="language-card">
+          <div class="crm-field" style="max-width:340px;">
+            <label for="doc-language">Document language</label>
+            <select id="doc-language">
+              <option value="en" selected>English</option>
+              <option value="ar">العربية &mdash; Arabic</option>
+            </select>
+          </div>
+          <p class="crm-muted" style="font-size:12px;margin:0;">
+            Sets the printed sheet: its labels, its direction, and how the date
+            is written. What you type is printed exactly as you type it.
+          </p>
+        </div>
+
         <!-- Shown when the page was opened from a buyer record: their details
              are copied onto the document and are not editable here, because an
              issued document snapshots the buyer as they were at the time. -->
@@ -60,7 +78,7 @@
           <div class="crm-grid crm-grid-2">
             <div class="crm-field">
               <label for="r-company">Company name</label>
-              <input id="r-company" maxlength="300" autocomplete="organization" />
+              <input id="r-company" maxlength="300" dir="auto" autocomplete="organization" />
             </div>
             <div class="crm-field">
               <label for="r-contact">Contact name</label>
@@ -91,12 +109,12 @@
 
           <div class="crm-field">
             <label for="l-subject">Subject <span class="crm-muted">(optional)</span></label>
-            <input id="l-subject" maxlength="300" placeholder="e.g. Confirmation of sample dispatch" />
+            <input id="l-subject" maxlength="300" dir="auto" placeholder="e.g. Confirmation of sample dispatch" />
           </div>
 
           <div class="crm-field">
             <label for="l-salutation">Salutation</label>
-            <input id="l-salutation" maxlength="120" list="salutation-suggestions" placeholder="Dear Sir or Madam," />
+            <input id="l-salutation" maxlength="120" dir="auto" list="salutation-suggestions" placeholder="Dear Sir or Madam," />
             <datalist id="salutation-suggestions">
               <option value="Dear Sir or Madam,"></option>
               <option value="Dear Sirs,"></option>
@@ -106,7 +124,7 @@
 
           <div class="crm-field">
             <label for="l-body">Body</label>
-            <textarea id="l-body" rows="14" maxlength="20000"
+            <textarea id="l-body" rows="14" maxlength="20000" dir="auto"
               placeholder="One paragraph per block. Leave a blank line between paragraphs."></textarea>
           </div>
 
@@ -134,11 +152,11 @@
           <div class="crm-grid crm-grid-2">
             <div class="crm-field">
               <label for="l-enclosures">Enclosures <span class="crm-muted">(optional)</span></label>
-              <input id="l-enclosures" maxlength="500" placeholder="e.g. Quotation Q-2026-000001, product spec sheet" />
+              <input id="l-enclosures" maxlength="500" dir="auto" placeholder="e.g. Quotation Q-2026-000001, product spec sheet" />
             </div>
             <div class="crm-field">
               <label for="l-cc">cc <span class="crm-muted">(optional)</span></label>
-              <input id="l-cc" maxlength="500" placeholder="Anyone else copied in" />
+              <input id="l-cc" maxlength="500" dir="auto" placeholder="Anyone else copied in" />
             </div>
           </div>
         </div>
@@ -161,7 +179,7 @@
           </div>
           <div class="crm-field">
             <label for="notes">Notes (payment terms, packaging, shipping details, etc.)</label>
-            <textarea id="notes" rows="3" maxlength="2000"></textarea>
+            <textarea id="notes" rows="3" maxlength="2000" dir="auto"></textarea>
           </div>
         </div>
 
@@ -274,7 +292,11 @@
            * linked the server reads their details off the record and ignores
            * anything typed here, so sending both would only be misleading.
            */
-          var payload = { doc_type: docType, notes: document.getElementById('notes').value.trim() };
+          var payload = {
+            doc_type: docType,
+            language: document.getElementById('doc-language').value,
+            notes: document.getElementById('notes').value.trim(),
+          };
 
           if (isLetter) {
             var letterBody = document.getElementById('l-body').value.trim();
@@ -353,6 +375,12 @@
             document.getElementById('date-label').textContent = docType === 'invoice' ? 'Due Date' : 'Valid Until';
           }
 
+          var langSelect = document.getElementById('doc-language');
+          applyLetterLanguage(langSelect.value);
+          langSelect.addEventListener('change', function () {
+            applyLetterLanguage(langSelect.value);
+          });
+
           var suggestions = document.getElementById('product-suggestions');
           CRM.PRODUCTS.forEach(function (p) {
             var o = document.createElement('option'); o.value = p[1]; suggestions.appendChild(o);
@@ -378,7 +406,8 @@
               (b.contact_phone ? CRM.escapeHtml(b.contact_phone) : '') + '<br/>' +
               CRM.escapeHtml(b.country_region || '');
             if (isLetter && b.contact_name) {
-              document.getElementById('l-salutation').value = 'Dear ' + b.contact_name + ',';
+              var phrases = LETTER_PHRASES[langSelect.value] || LETTER_PHRASES.en;
+              document.getElementById('l-salutation').value = phrases.dearPrefix(b.contact_name);
             }
             if (b.incoterm) document.getElementById('incoterm').value = b.incoterm;
             document.getElementById('buyer-card').style.display = '';
@@ -391,6 +420,73 @@
               recalc();
             }
           });
+        }
+
+        /*
+         * The letter's fixed phrases follow the document's language.
+         *
+         * These are saved words, not decoration: the closing is stored on the
+         * document and printed on the sheet. Leaving the English list in place
+         * for an Arabic letter would end it "Yours sincerely," under an Arabic
+         * signature -- the one part of the page the writer is least likely to
+         * re-read, because they chose it from a menu.
+         *
+         * The Arabic openings and closings are the ordinary formal ones used
+         * in Egyptian commercial correspondence. A writer can type anything
+         * else into the salutation; only the closing is a fixed list, and it
+         * offers "(none)" for a letter that should not carry one.
+         */
+        var LETTER_PHRASES = {
+          en: {
+            salutations: ['Dear Sir or Madam,', 'Dear Sirs,', 'To whom it may concern,'],
+            closings: [
+              ['Yours sincerely,', 'Yours sincerely,'],
+              ['Yours faithfully,', 'Yours faithfully,'],
+              ['Kind regards,', 'Kind regards,'],
+              ['Best regards,', 'Best regards,'],
+              ['', '(none)'],
+            ],
+            dearPrefix: function (name) { return 'Dear ' + name + ','; },
+          },
+          ar: {
+            salutations: ['السادة المحترمون،', 'تحية طيبة وبعد،', 'حضرة السيد المحترم،'],
+            closings: [
+              ['وتفضلوا بقبول فائق الاحترام،', 'وتفضلوا بقبول فائق الاحترام،'],
+              ['مع خالص التقدير،', 'مع خالص التقدير،'],
+              ['مع أطيب التحيات،', 'مع أطيب التحيات،'],
+              ['', '(بدون)'],
+            ],
+            dearPrefix: function (name) { return 'السيد/ ' + name + ' المحترم،'; },
+          },
+        };
+
+        function applyLetterLanguage(language) {
+          var p = LETTER_PHRASES[language] || LETTER_PHRASES.en;
+
+          var list = document.getElementById('salutation-suggestions');
+          list.innerHTML = '';
+          p.salutations.forEach(function (s) {
+            var o = document.createElement('option'); o.value = s; list.appendChild(o);
+          });
+
+          /*
+           * Whatever the writer had chosen is kept if the new language offers
+           * it, and otherwise falls back to that language's first closing --
+           * never to a blank, which would silently drop the sign-off.
+           */
+          var sel = document.getElementById('l-closing');
+          var previous = sel.value;
+          sel.innerHTML = '';
+          p.closings.forEach(function (pair) {
+            var o = document.createElement('option');
+            o.value = pair[0]; o.textContent = pair[1];
+            sel.appendChild(o);
+          });
+          var keep = p.closings.some(function (pair) { return pair[0] === previous; });
+          sel.value = keep ? previous : p.closings[0][0];
+
+          var sal = document.getElementById('l-salutation');
+          sal.placeholder = p.salutations[0];
         }
 
         /*

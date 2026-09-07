@@ -53,6 +53,9 @@ let nextId = 100;
 
 function fakeSql(strings, ...vals) {
   const q = Array.isArray(strings) ? strings.join('?') : String(strings);
+  // Every statement, kept so the schema migrations can be asserted on
+  // directly rather than inferred from their effects.
+  fakeSql.statements.push(q);
 
   if (/^\s*ALTER TABLE crm_documents ALTER COLUMN buyer_id DROP NOT NULL/i.test(q.trim())) {
     db.altered = true;
@@ -108,6 +111,7 @@ function fakeSql(strings, ...vals) {
 
   return Promise.resolve([]);
 }
+fakeSql.statements = [];
 fakeSql.query = () => Promise.resolve([]);
 
 const neonId = require.resolve('@neondatabase/serverless');
@@ -374,6 +378,56 @@ function create(body, { cookie = COOKIE } = {}) {
     t('over-long parts are truncated to their limits',
       res.statusCode === 200 && doc.signatory_name.length === 200 && doc.closing.length === 80,
       JSON.stringify([doc.signatory_name.length, doc.closing.length]));
+  }
+
+  // ---- the document's language ----------------------------------------
+  //
+  // The language is not a display preference: it is stored on the row and it
+  // decides which sheet a buyer receives. The failure that matters is silent
+  // -- a document that should have gone out in Arabic going out in English,
+  // with nothing anywhere to say so -- so an unrecognised value is refused
+  // rather than defaulted, and an absent one is English on purpose.
+  {
+    const res = await create({
+      doc_type: 'quotation', buyer_company_name: 'Cairo Distributor', language: 'ar', line_items: LINE_ITEMS,
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('a document can be issued in Arabic', res.statusCode === 200 && doc.language === 'ar', doc.language);
+  }
+  {
+    const res = await create({
+      doc_type: 'letter', buyer_company_name: 'X', body: 'نص الخطاب.', language: 'ar',
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('   letters too', res.statusCode === 200 && doc.language === 'ar', doc.language);
+  }
+  {
+    await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    const doc = db.documents[db.documents.length - 1];
+    t('a document that says nothing about language is English',
+      doc.language === 'en', doc.language);
+  }
+  {
+    // Whatever this was meant to be, printing English silently is the one
+    // outcome that must not happen: it sends the wrong document with no trace.
+    const res = await create({
+      doc_type: 'quotation', buyer_company_name: 'X', language: 'fr', line_items: LINE_ITEMS,
+    });
+    t('an unsupported language is refused, not quietly defaulted',
+      res.statusCode === 400 && /language/.test(res.body), res.body);
+  }
+  {
+    const res = await create({
+      doc_type: 'quotation', buyer_company_name: 'X', language: 'AR', line_items: LINE_ITEMS,
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('   and a capitalised one is accepted, not refused on case',
+      res.statusCode === 200 && doc.language === 'ar', res.body);
+  }
+  {
+    const stmts = fakeSql.statements.filter((s) => /ADD COLUMN IF NOT EXISTS language/i.test(s));
+    t('the language column is added idempotently, with a default so old rows read English',
+      stmts.length > 0 && /DEFAULT 'en'/i.test(stmts[0]) && /NOT NULL/i.test(stmts[0]), stmts[0]);
   }
 
   // ---- everything else the handler validated, it still validates -------
