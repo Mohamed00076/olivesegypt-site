@@ -91,3 +91,64 @@ Postgres connection strings.
 - **Live URLs were not confirmed by visiting them.** Outbound access to
   `olivesegypt.com` is blocked by policy in the environment this was written
   in, so the deployed addresses can only be confirmed by you or from Netlify.
+
+## 6. Recovering access
+
+Added 2026-09-07, after the owner was locked out of `/admin/analytics` and
+there was no documented way back in. Nothing below is a credential; every
+script name and environment-variable name here is already readable in this
+public repository, and no value appears.
+
+### Which failure you are looking at
+
+`/admin/analytics` returns exactly two distinguishable errors, and telling
+them apart is most of the diagnosis:
+
+| Message | Meaning |
+| --- | --- |
+| **Server not configured** | one of `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, `SESSION_SECRET` is unset |
+| **Incorrect username or password** | all three are set; the credentials do not match |
+| **Too many attempts** | 20 tries per 15 minutes per IP; wait, it is not a lockout |
+
+The second message is deliberately identical whether the username, the
+password, or both are wrong — saying which half was right would halve an
+attacker's work. The cost is that the owner cannot tell either, so:
+
+    node scripts/admin-password.js check '<password>' '<hash from Netlify>'
+
+resolves it offline against the hash already stored. MATCH means the password
+is right and `ADMIN_USERNAME` is the problem. NO MATCH means set a new one:
+
+    node scripts/admin-password.js set '<new password>'
+
+then paste the printed hash into `ADMIN_PASSWORD_HASH` **and redeploy** —
+Netlify injects environment variables at deploy time, so saving alone changes
+nothing and the old password keeps working.
+
+### CRM
+
+CRM accounts are rows in `crm_users`, not environment variables, so the route
+back in is the same one that creates them:
+
+    DATABASE_URL=postgres://... node scripts/crm-create-user.js <username> <password> "Display Name" <email>
+
+Re-running it with an existing username resets that user's password. This
+works with no email configuration at all, which is why it remains the reliable
+path even when self-service "forgot password" is unavailable.
+
+### The failures that look like something else
+
+All of these produce the same "Incorrect username or password", and none is
+visible on screen:
+
+- **whitespace** in `ADMIN_USERNAME` — the comparison is exact bytes, so
+  `admin ` never equals `admin`, and a paste into Netlify picks up trailing
+  newlines silently
+- **case** — `Admin` never equals `admin`
+- **a hash pasted short** — Netlify truncates long values on screen; four
+  missing characters is enough, and the value still looks plausible
+- **not redeploying** after changing a variable
+
+`scripts/admin-password.js` checks for each of these and names them, rather
+than reporting a generic mismatch that sends you off to change a password that
+was never wrong.
