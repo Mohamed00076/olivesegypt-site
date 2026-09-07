@@ -91,6 +91,7 @@
    */
   CRM.NAV = [
     ['/crm/', 'Dashboard'],
+    ['/crm/inquiries/', 'Enquiries'],
     ['/crm/buyers/', 'Buyers'],
     ['/crm/documents/', 'Documents'],
     ['/letterhead', 'Letterhead'],

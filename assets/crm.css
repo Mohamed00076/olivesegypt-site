@@ -121,3 +121,8 @@ label { font-size: 12px; font-weight: 700; color: var(--crm-muted); display: blo
    the Buyers page rather than beside it. */
 .crm-viewlink { font-size: 13px; font-weight: 600; color: hsl(var(--primary)); white-space: nowrap; }
 .crm-viewlink:hover { text-decoration: underline; }
+
+/* An enquiry's message, in the expanded row of the inbox. pre-wrap because a
+   buyer's line breaks are part of what they wrote. */
+.crm-inquiry-message { white-space: pre-wrap; line-height: 1.65; margin: 10px 0 12px; padding: 10px 12px; background: hsl(var(--muted) / 0.4); border-radius: 6px; }
+.detail-row td { background: hsl(var(--muted) / 0.15); }
