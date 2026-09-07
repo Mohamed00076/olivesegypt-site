@@ -24,18 +24,29 @@ body {
   color: var(--crm-text);
 }
 a { color: var(--crm-primary); }
+/*
+ * The header had a fixed 56px height and flex-wrap on the header itself, but
+ * the nav inside it could not wrap -- so on a phone the five nav links plus
+ * Sign out came to 496px inside a 390px screen, and the whole page scrolled
+ * sideways. Letterhead and the row-level buttons in every table sat off the
+ * right edge, unreachable: not ugly, unusable.
+ *
+ * min-height rather than height, and a nav that wraps, so the bar grows to
+ * fit its links instead of hiding them.
+ */
 .crm-header {
   background: var(--crm-primary-dark);
   color: #f4f2e8;
-  padding: 0 20px;
+  padding: 6px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
+  min-height: 56px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .crm-header .crm-brand { font-weight: 700; font-size: 15px; }
-.crm-nav { display: flex; gap: 4px; align-items: center; }
+.crm-nav { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 .crm-nav a, .crm-nav button {
   color: #e9e7dd; text-decoration: none; font-size: 13px; font-weight: 600;
   padding: 8px 12px; border-radius: 6px; background: none; border: none; cursor: pointer;
@@ -124,5 +135,50 @@ label { font-size: 12px; font-weight: 700; color: var(--crm-muted); display: blo
 
 /* An enquiry's message, in the expanded row of the inbox. pre-wrap because a
    buyer's line breaks are part of what they wrote. */
-.crm-inquiry-message { white-space: pre-wrap; line-height: 1.65; margin: 10px 0 12px; padding: 10px 12px; background: hsl(var(--muted) / 0.4); border-radius: 6px; }
-.detail-row td { background: hsl(var(--muted) / 0.15); }
+/*
+ * These three rules were written as hsl(var(--primary)) and
+ * hsl(var(--muted) / 0.4), copied from the marketing site's Tailwind theme.
+ * CRM pages do not load that stylesheet -- this file is deliberately
+ * standalone -- so those custom properties are undefined here and all three
+ * declarations were simply dropped by the browser: the enquiry message and
+ * the expanded row had no background at all. Mine, from the enquiries inbox.
+ * Confirmed by reading the computed style, which returned rgba(0, 0, 0, 0).
+ */
+.crm-inquiry-message { white-space: pre-wrap; line-height: 1.65; margin: 10px 0 12px; padding: 10px 12px; background: #f2f0e8; border-radius: 6px; }
+.detail-row td { background: #faf9f4; }
+
+/* ------------------------------------------------------------------------
+   Phones.
+
+   The CRM is a working tool used away from a desk -- an enquiry answered
+   from the warehouse, a quotation checked at an exhibition -- so these are
+   not cosmetic adjustments.
+   ------------------------------------------------------------------------ */
+@media (max-width: 760px) {
+  /*
+   * Tables are the CRM's main content and several are wider than a phone.
+   * Scrolling the table inside its card is right; scrolling the whole page
+   * sideways is not, because then the header, the page title and every other
+   * card move too, and nothing lines up with the screen edge any more.
+   */
+  .crm-card { overflow-x: auto; }
+
+  /*
+   * 16px is the threshold below which iOS Safari zooms the page in when a
+   * field is focused, and it does not zoom back out afterwards -- so one tap
+   * on a search box leaves the whole CRM magnified and scrolled sideways.
+   * The buyer form has eleven such fields.
+   */
+  input, select, textarea { font-size: 16px; }
+
+  /*
+   * Tap targets. The nav links were 31px tall and the buttons 33px, against
+   * a 44px minimum -- small enough that hitting Buyers rather than Documents
+   * is a matter of luck.
+   */
+  .crm-nav a, .crm-nav button {
+    display: inline-flex; align-items: center;
+    min-height: 44px; padding: 8px 14px;
+  }
+  .crm-btn { min-height: 44px; padding: 8px 16px; }
+}

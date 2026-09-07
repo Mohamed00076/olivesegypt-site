@@ -235,6 +235,36 @@
     tr.inq-new td { background: #fbf6df; }
     .inq-msg { max-width: 320px; white-space: normal; word-break: break-word; }
     #inq-search { flex: 1; min-width: 220px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+
+    /* ---------------------------------------------------------------------
+       Phones.
+
+       This page did not scroll sideways -- the one-column grid at 760px
+       already handled that -- but two things made it awkward to use rather
+       than to look at, and both are one rule each.
+       --------------------------------------------------------------------- */
+    @media (max-width: 760px) {
+      /*
+       * Below 16px, iOS Safari zooms the page in when a field is focused and
+       * does not zoom back out. On this page that means tapping the KPI
+       * threshold box or the enquiry search leaves the whole dashboard
+       * magnified, with the charts running off the side.
+       */
+      input, select, textarea, #inq-search, .j-threshold input, select.j-select { font-size: 16px; }
+
+      /*
+       * The range buttons -- 7 days / 30 days / 90 days, first-touch /
+       * last-touch -- were 31px tall and sit side by side. They are the
+       * controls this page is driven by.
+       */
+      .range-btn, .j-btn-sm {
+        display: inline-flex; align-items: center;
+        min-height: 44px; padding: 6px 14px;
+      }
+
+      /* Wide tables scroll inside their card, not by moving the page. */
+      .card { overflow-x: auto; }
+    }
   </style>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
