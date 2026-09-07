@@ -115,3 +115,9 @@ label { font-size: 12px; font-weight: 700; color: var(--crm-muted); display: blo
    beside it because it is the one that saves nothing -- see CRM.renderNav. */
 .crm-nav-aside { opacity: 0.75; font-style: italic; }
 .crm-nav-aside:hover { opacity: 1; }
+
+/* Switch between the two views of the buyer list. Kanban used to be its own
+   nav entry; it is the same records in a different shape, so it belongs to
+   the Buyers page rather than beside it. */
+.crm-viewlink { font-size: 13px; font-weight: 600; color: hsl(var(--primary)); white-space: nowrap; }
+.crm-viewlink:hover { text-decoration: underline; }

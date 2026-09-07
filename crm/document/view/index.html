@@ -11,21 +11,84 @@
     <link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
 
     <style>
-      .sheet { max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; background: #fff; box-shadow: 0 1px 8px rgba(0,0,0,0.1); padding: 2cm; display: flex; flex-direction: column; position: relative; }
-      .lh-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid hsl(var(--primary)); padding-bottom: 1rem; margin-bottom: 2rem; }
-      .lh-body { flex: 1; }
-      .lh-footer { border-top: 1px solid hsl(var(--border)); padding-top: 0.75rem; margin-top: 2rem; font-size: 10px; color: hsl(var(--muted-foreground)); text-align: center; }
-      .doc-table { width: 100%; font-size: 13px; border-collapse: collapse; margin-bottom: 1.5rem; }
-      .doc-table th { text-align: left; padding: 6px 4px; border-bottom: 2px solid hsl(var(--primary)); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: hsl(var(--muted-foreground)); }
-      .doc-table td { padding: 8px 4px; border-bottom: 1px solid hsl(var(--border)); vertical-align: top; }
+      /* ------------------------------------------------------------------
+         The printed sheet. Redesigned 2026-09-07: the previous layout was a
+         serif heading, four loose lines of metadata and a table whose totals
+         hung off a tfoot row spanning four columns. It read like a form
+         printout rather than a document from a supplier.
+
+         The structure now follows what a buyer actually looks for, in order:
+         who sent it (masthead), what it is and its reference (band), who it
+         is for (recipient), what it says (table or letter), what it comes to
+         (totals). Everything is set in one type scale with a single accent
+         colour, and the whole thing is built to sit on one A4 page.
+         ------------------------------------------------------------------ */
+      .sheet {
+        max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; padding: 1.8cm 2cm;
+        background: #fff; box-shadow: 0 2px 24px rgba(24, 32, 16, 0.10);
+        display: flex; flex-direction: column; position: relative;
+        font-size: 13px; line-height: 1.55; color: #20241a;
+      }
+
+      /* masthead ------------------------------------------------------- */
+      .doc-masthead { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding-bottom: 14px; }
+      .doc-mark { display: flex; align-items: center; gap: 12px; }
+      .doc-mark img { width: 46px; height: 46px; object-fit: contain; flex-shrink: 0; }
+      .doc-wordmark { font-family: 'Playfair Display', Georgia, serif; font-size: 19px; font-weight: 700; color: hsl(var(--primary)); line-height: 1.1; }
+      .doc-tagline { font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.18em; color: hsl(var(--muted-foreground)); margin-top: 3px; }
+      .doc-contact { text-align: end; font-size: 10.5px; line-height: 1.7; color: hsl(var(--muted-foreground)); max-width: 8.8cm; }
+      .doc-rule { height: 2px; background: hsl(var(--primary)); margin-bottom: 26px; }
+
+      /* title band ----------------------------------------------------- */
+      .doc-band { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-bottom: 26px; }
+      .doc-kind { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.22em; color: hsl(var(--muted-foreground)); margin-bottom: 5px; }
+      .doc-no { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; font-weight: 700; color: hsl(var(--primary)); line-height: 1; }
+      /* A letter's reference: present for the record, not a headline. */
+      .doc-ref { font-size: 10.5px; letter-spacing: 0.06em; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+      .doc-meta { display: grid; grid-template-columns: auto auto; gap: 4px 16px; margin: 0; }
+      .doc-meta dt { font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: hsl(var(--muted-foreground)); }
+      .doc-meta dd { margin: 0; font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+
+      /* recipient ------------------------------------------------------- */
+      .doc-to { border-left: 3px solid hsl(var(--primary)); padding: 2px 0 2px 14px; margin-bottom: 26px; }
+      .doc-to-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; color: hsl(var(--muted-foreground)); margin-bottom: 5px; }
+      .doc-to-name { font-size: 15px; font-weight: 700; }
+      .doc-to-line { font-size: 11px; color: hsl(var(--muted-foreground)); }
+
+      /* line items ------------------------------------------------------ */
+      .doc-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 18px; }
+      .doc-table th { text-align: left; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--muted-foreground)); padding: 0 8px 8px; border-bottom: 1.5px solid hsl(var(--primary)); }
+      .doc-table td { padding: 11px 8px; border-bottom: 1px solid hsl(var(--border)); vertical-align: top; }
+      .doc-table th:first-child, .doc-table td:first-child { padding-left: 0; }
+      .doc-table th:last-child, .doc-table td:last-child { padding-right: 0; }
       .doc-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-      .doc-table tfoot td { border-bottom: none; padding-top: 10px; }
-      .doc-total-row td { font-weight: 700; font-size: 16px; color: hsl(var(--primary)); }
+
+      /* totals: a block of its own, not a row spanning the table -------- */
+      .doc-totals { margin-left: auto; width: 7.6cm; margin-bottom: 22px; }
+      .doc-totals > div { display: flex; justify-content: space-between; gap: 1rem; padding: 5px 0; font-size: 12px; }
+      .doc-totals .doc-grand { border-top: 2px solid hsl(var(--primary)); margin-top: 4px; padding-top: 10px; font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 700; color: hsl(var(--primary)); }
+      .doc-totals .num { font-variant-numeric: tabular-nums; }
+
+      /* letter ---------------------------------------------------------- */
+      .doc-letter-subject { font-size: 14px; font-weight: 700; margin-bottom: 18px; }
+      .doc-letter-body { white-space: pre-wrap; line-height: 1.85; font-size: 12.5px; max-width: 15.5cm; }
+
+      /* notes + footer --------------------------------------------------- */
+      .doc-note-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.16em; color: hsl(var(--muted-foreground)); margin-bottom: 5px; }
+      .doc-notes { font-size: 11px; line-height: 1.7; white-space: pre-wrap; color: #3a4030; }
+      .lh-body { flex: 1; }
+      .doc-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid hsl(var(--border)); display: flex; justify-content: space-between; gap: 1rem; font-size: 9px; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); }
+
       .void-stamp {
         position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-18deg);
         font-size: 90px; font-weight: 800; color: rgba(163, 49, 42, 0.28); border: 8px solid rgba(163, 49, 42, 0.28);
         padding: 4px 30px; letter-spacing: 0.1em; pointer-events: none; text-transform: uppercase; z-index: 5;
       }
+      /* The toolbar above the sheet. It used max-w-screen-md, which is not in
+         the compiled stylesheet and so did nothing: the bar ran the full
+         window width above a 21cm sheet. Pre-existing; matching the sheet is
+         the point of a toolbar that belongs to it. */
+      .doc-toolbar { max-width: 21cm; }
       @media print {
         .no-print { display: none !important; }
         /*
@@ -58,7 +121,7 @@
   </head>
   <body class="bg-muted/30">
     <div class="no-print sticky top-0 z-10 bg-background border-b border-border py-3 mb-2">
-      <div class="container max-w-screen-md mx-auto px-4 flex items-center justify-between">
+      <div class="container doc-toolbar mx-auto px-4 flex items-center justify-between">
         <a href="#" id="back-link" class="text-sm font-semibold text-primary">&larr; Back to buyer</a>
         <div class="flex gap-2">
           <button id="void-btn" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;">Void</button>
@@ -67,68 +130,73 @@
       </div>
     </div>
 
-    <div id="load-status" class="container max-w-screen-md mx-auto px-4 text-sm text-muted-foreground"></div>
+    <div id="load-status" class="container doc-toolbar mx-auto px-4 text-sm text-muted-foreground"></div>
 
     <div class="sheet" id="sheet" style="display:none;">
       <div class="void-stamp" id="void-stamp" style="display:none;">Void</div>
-      <div class="lh-header">
-        <div class="flex items-center gap-3">
-          <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" class="h-12 w-12 object-contain" width="512" height="512"/>
+      <div class="doc-masthead">
+        <div class="doc-mark">
+          <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" width="512" height="512"/>
           <div>
-            <div class="font-serif text-lg font-bold text-primary leading-tight">TRIPLE COMPANY</div>
-            <div class="text-[10px] uppercase tracking-widest text-muted-foreground">for Industrial Development</div>
+            <div class="doc-wordmark">TRIPLE COMPANY</div>
+            <div class="doc-tagline">for Industrial Development</div>
           </div>
         </div>
-        <div class="text-right text-xs text-muted-foreground leading-relaxed">
-          Ouroba Square (ميدان العروبة), 5th Settlement, New Cairo, Cairo, Egypt<br/>
-          Cairo, Egypt<br/>
+        <!-- One canonical address, per C-22. This block used to repeat
+             "Cairo, Egypt" on its own line after the full address already
+             ended with it, on every document sent to a buyer. -->
+        <div class="doc-contact">
+          Ouroba Square (&#1605;&#1610;&#1583;&#1575;&#1606; &#1575;&#1604;&#1593;&#1585;&#1608;&#1576;&#1577;), 5th Settlement,<br/>
+          New Cairo, Cairo, Egypt<br/>
           sales@olivesegypt.com &middot; +20 100 604 5961
         </div>
       </div>
+      <div class="doc-rule"></div>
 
       <div class="lh-body">
-        <div class="flex items-start justify-between mb-8">
+        <div class="doc-band">
           <div>
-            <h1 class="font-serif text-2xl font-bold text-primary" id="doc-title-type">QUOTATION</h1>
-            <div class="text-sm text-muted-foreground" id="doc-number"></div>
+            <div class="doc-kind" id="doc-title-type">Quotation</div>
+            <div class="doc-no" id="doc-number"></div>
           </div>
-          <div class="text-right text-xs text-muted-foreground leading-relaxed">
-            <div>Date: <span id="doc-date"></span></div>
-            <div id="doc-date-row"></div>
-          </div>
+          <dl class="doc-meta" id="doc-meta"></dl>
         </div>
 
-        <div class="mb-6">
-          <div class="text-[10px] uppercase tracking-widest text-muted-foreground mb-1" id="recipient-label">Bill To</div>
-          <div class="font-semibold" id="buyer-company"></div>
-          <div class="text-xs text-muted-foreground" id="buyer-contact"></div>
-          <div class="text-xs text-muted-foreground" id="buyer-address"></div>
-          <div class="text-xs text-muted-foreground" id="buyer-country"></div>
+        <div class="doc-to">
+          <div class="doc-to-label" id="recipient-label">Bill To</div>
+          <div class="doc-to-name" id="buyer-company"></div>
+          <div class="doc-to-line" id="buyer-contact"></div>
+          <div class="doc-to-line" id="buyer-address"></div>
+          <div class="doc-to-line" id="buyer-country"></div>
         </div>
 
         <!-- Letters render here instead of the table below. -->
         <div id="letter-block" style="display:none;">
-          <div id="letter-subject" class="font-semibold mb-4" style="display:none;"></div>
-          <div id="letter-body" style="white-space:pre-wrap; line-height:1.7;"></div>
+          <div id="letter-subject" class="doc-letter-subject" style="display:none;"></div>
+          <div id="letter-body" class="doc-letter-body"></div>
         </div>
 
         <table class="doc-table" id="doc-table">
           <thead>
-            <tr><th>Description</th><th>Unit</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Total</th></tr>
+            <tr><th>Description</th><th>Unit</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Amount</th></tr>
           </thead>
           <tbody id="li-tbody"></tbody>
-          <tfoot>
-            <tr><td colspan="4" class="num" style="text-align:right;">Subtotal</td><td class="num" id="doc-subtotal"></td></tr>
-            <tr class="doc-total-row"><td colspan="4" class="num" style="text-align:right;">Total</td><td class="num" id="doc-total"></td></tr>
-          </tfoot>
         </table>
 
-        <div id="doc-incoterm-row" class="text-xs text-muted-foreground mb-2"></div>
-        <div id="doc-notes" class="text-xs text-muted-foreground" style="white-space:pre-wrap;"></div>
+        <div class="doc-totals" id="doc-totals">
+          <div><span>Subtotal</span><span class="num" id="doc-subtotal"></span></div>
+          <div class="doc-grand"><span>Total</span><span class="num" id="doc-total"></span></div>
+        </div>
+
+        <div id="doc-notes-block" style="display:none;">
+          <div class="doc-note-label">Notes</div>
+          <div class="doc-notes" id="doc-notes"></div>
+        </div>
       </div>
 
-      <div class="lh-footer">
-        Triple Company for Industrial Development &middot; olivesegypt.com &middot; Document prepared by Triple Company for Industrial Development
+      <div class="doc-foot">
+        <span>Triple Company for Industrial Development</span>
+        <span>olivesegypt.com</span>
       </div>
     </div>
 
@@ -165,9 +233,23 @@
             back.href = '/crm/documents/';
             back.textContent = '\u2190 Back to documents';
           }
-          var TITLES = { invoice: 'INVOICE', letter: 'LETTER', quotation: 'QUOTATION' };
+          var TITLES = { invoice: 'Invoice', quotation: 'Quotation' };
           var isLetter = d.doc_type === 'letter';
-          document.getElementById('doc-title-type').textContent = TITLES[d.doc_type] || 'DOCUMENT';
+          /*
+           * A quotation says QUOTATION at the top because the reader needs to
+           * know what kind of document they are holding. A letter does not:
+           * it is obvious from the fact that it opens "Dear ...", and a
+           * business letter that announces itself as LETTER reads as a
+           * template rather than correspondence. So the kind label is dropped
+           * for letters and the reference becomes a quiet "Ref" line instead
+           * of a headline number.
+           */
+          var kindEl = document.getElementById('doc-title-type');
+          if (isLetter) {
+            kindEl.style.display = 'none';
+          } else {
+            kindEl.textContent = TITLES[d.doc_type] || 'Document';
+          }
 
           if (isLetter) {
             /*
@@ -177,6 +259,7 @@
              * letter, on a document going to a customer.
              */
             document.getElementById('doc-table').style.display = 'none';
+            document.getElementById('doc-totals').style.display = 'none';
             document.getElementById('letter-block').style.display = '';
             if (d.subject) {
               var subj = document.getElementById('letter-subject');
@@ -187,15 +270,29 @@
             // "Bill To" on a letter is wrong on a document going to a customer.
             document.getElementById('recipient-label').textContent = 'To';
           }
-          document.getElementById('doc-number').textContent = d.doc_number;
+          var noEl = document.getElementById('doc-number');
+          noEl.className = isLetter ? 'doc-ref' : 'doc-no';
+          noEl.textContent = isLetter ? 'Ref: ' + d.doc_number : d.doc_number;
           document.title = d.doc_number + ' | Triple Company for Industrial Development';
-          document.getElementById('doc-date').textContent = fmtDate(d.created_at);
+          /*
+           * One meta grid, built from whatever this document actually has,
+           * instead of three fixed lines scattered around the page -- a
+           * quotation's validity sat beside the date while its incoterm sat
+           * under the table, and a letter rendered empty slots for both.
+           */
+          var meta = [['Date', fmtDate(d.created_at)]];
+          if (d.doc_type === 'invoice' && d.due_date) meta.push(['Due', fmtDate(d.due_date)]);
+          if (d.doc_type === 'quotation' && d.valid_until) meta.push(['Valid until', fmtDate(d.valid_until)]);
+          if (d.incoterm) meta.push(['Incoterm', d.incoterm]);
+          if (!isLetter && d.currency) meta.push(['Currency', d.currency]);
 
-          if (d.doc_type === 'invoice' && d.due_date) {
-            document.getElementById('doc-date-row').textContent = 'Due: ' + fmtDate(d.due_date);
-          } else if (d.doc_type === 'quotation' && d.valid_until) {
-            document.getElementById('doc-date-row').textContent = 'Valid until: ' + fmtDate(d.valid_until);
-          }
+          var dl = document.getElementById('doc-meta');
+          dl.innerHTML = '';
+          meta.forEach(function (pair) {
+            var dt = document.createElement('dt'); dt.textContent = pair[0];
+            var dd = document.createElement('dd'); dd.textContent = pair[1];
+            dl.appendChild(dt); dl.appendChild(dd);
+          });
 
           document.getElementById('buyer-company').textContent = d.buyer_company_name;
           document.getElementById('buyer-contact').textContent = d.buyer_contact_name || '';
@@ -221,7 +318,7 @@
             document.getElementById('doc-total').textContent = fmtMoney(d.total, d.currency);
           }
 
-          if (d.incoterm) document.getElementById('doc-incoterm-row').textContent = 'Incoterm: ' + d.incoterm;
+          if (d.notes) document.getElementById('doc-notes-block').style.display = '';
           if (d.notes) document.getElementById('doc-notes').textContent = d.notes;
 
           var voidBtn = document.getElementById('void-btn');

@@ -324,7 +324,7 @@
          * what made issuing a document feel buried. It now always loads.
          */
         CRM.requireAuth().then(function () {
-          CRM.renderNav(TITLE[docType]);
+          CRM.renderNav('Documents');
           init();
         }).catch(function (e) {
           if (e.message !== 'unauthorized') showStatus('Could not load page.', false);

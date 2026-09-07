@@ -18,7 +18,12 @@
   <body>
     <div class="crm-container">
       <div class="crm-flex-between" style="margin-bottom:16px;">
-        <h1 style="margin:0;">Buyers</h1>
+        <div class="crm-flex" style="align-items:baseline;gap:14px;">
+          <h1 style="margin:0;">Buyers</h1>
+          <!-- Kanban is the same records in a different shape, so it is a
+               view of this page rather than its own nav destination. -->
+          <a href="/crm/kanban/" class="crm-viewlink">Kanban view &rarr;</a>
+        </div>
         <div class="crm-flex">
           <a href="/crm/buyer/?new=1" class="crm-btn crm-btn-primary">+ Add Buyer</a>
           <button type="button" class="crm-btn crm-btn-secondary" id="export-btn">Export CSV</button>

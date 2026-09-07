@@ -18,7 +18,10 @@
   <body>
     <div class="crm-container">
       <div class="crm-flex-between" style="margin-bottom:16px;">
-        <h1 style="margin:0;">Kanban</h1>
+        <div class="crm-flex" style="align-items:baseline;gap:14px;">
+          <h1 style="margin:0;">Kanban</h1>
+          <a href="/crm/buyers/" class="crm-viewlink">&larr; List view</a>
+        </div>
         <a href="/crm/buyer/?new=1" class="crm-btn crm-btn-primary">+ Add Buyer</a>
       </div>
       <p class="crm-muted">Drag a card to a new column to move that buyer's pipeline stage. "Exported/Completed" is a future stage — no record occupies it yet unless one has genuinely completed export.</p>
@@ -99,7 +102,7 @@
         }
 
         CRM.requireAuth().then(function () {
-          CRM.renderNav('Kanban');
+          CRM.renderNav('Buyers');
           return CRM.fetchJson('/api/crm/buyers');
         }).then(function (result) {
           allRows = result.data;
