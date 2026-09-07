@@ -24,16 +24,16 @@
       .spec-card:last-of-type { border-bottom: none; }
       .spec-card ul { margin-top: 0.5rem; padding-right: 1.25rem; padding-left: 0; list-style: disc; }
       .spec-card li { margin-bottom: 0.6rem; line-height: 1.6; }
-      .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-top: 0.75rem; }
+      .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0.75rem; }
       .stat-box { border: 1px solid hsl(var(--border)); border-radius: 0.75rem; padding: 0.75rem; text-align: center; }
       @media print {
         header, footer, .no-print { display: none !important; }
         .spec-card { border-bottom: none; page-break-inside: avoid; padding: 0.75rem 0; }
-        .stat-grid { grid-template-columns: repeat(4, 1fr); }
+        .stat-grid { grid-template-columns: repeat(3, 1fr); }
         @page { margin: 2cm; }
       }
       @media (max-width: 480px) {
-        .stat-grid { grid-template-columns: repeat(2, 1fr); }
+        .stat-grid { grid-template-columns: repeat(1, 1fr); }
       }
     </style>
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -67,7 +67,6 @@
           <div class="stat-box"><p class="text-xl font-bold font-serif text-primary" dir="ltr">#1</p><p class="text-xs text-muted-foreground mt-1">مصدّر زيتون المائدة في أفريقيا</p></div>
           <div class="stat-box"><p class="text-xl font-bold font-serif text-primary" dir="ltr">698K MT</p><p class="text-xs text-muted-foreground mt-1">الإنتاج السنوي (2023)</p></div>
           <div class="stat-box"><p class="text-xl font-bold font-serif text-primary" dir="ltr">+45%</p><p class="text-xs text-muted-foreground mt-1">نمو الإنتاج (2014–2023)</p></div>
-          <div class="stat-box"><p class="text-xl font-bold font-serif text-primary" dir="ltr">3</p><p class="text-xs text-muted-foreground mt-1">أسواق التصدير</p></div>
         </div>
         <p class="text-xs text-muted-foreground text-center mt-2">المصدر: منظمة الأغذية والزراعة (FAO) / المجلس الدولي للزيتون (IOC)</p>
       </section>
