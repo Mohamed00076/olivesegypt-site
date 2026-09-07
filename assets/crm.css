@@ -104,3 +104,14 @@ label { font-size: 12px; font-weight: 700; color: var(--crm-muted); display: blo
 .crm-activity-entry { border-bottom: 1px solid var(--crm-border); padding: 10px 0; }
 .crm-activity-entry:last-child { border-bottom: none; }
 .crm-activity-meta { font-size: 11px; color: var(--crm-muted); margin-top: 2px; }
+
+/* Right-aligned numeric table cells, so money columns line up on the decimal
+   rather than ragging against the text beside them. Added with the documents
+   list; the class was used before it existed, which in this stylesheet means
+   it silently does nothing. */
+.crm-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Letterhead in the CRM nav. Visually separated from the document links
+   beside it because it is the one that saves nothing -- see CRM.renderNav. */
+.crm-nav-aside { opacity: 0.75; font-style: italic; }
+.crm-nav-aside:hover { opacity: 1; }

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documents | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+<link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-flex-between" style="margin-bottom:16px;">
+        <h1 style="margin:0;">Documents</h1>
+        <div class="crm-flex">
+          <a href="/crm/document/" class="crm-btn crm-btn-primary">+ New Quotation</a>
+          <a href="/crm/document/?type=invoice" class="crm-btn crm-btn-secondary">+ New Invoice</a>
+        </div>
+      </div>
+
+      <div id="status" class="crm-status" style="display:none;"></div>
+
+      <div class="crm-card">
+        <div class="crm-flex" style="margin-bottom:12px;">
+          <input type="search" id="filter" placeholder="Filter by number or company&hellip;" style="flex:1;min-width:0;" />
+        </div>
+        <div id="list"><p class="crm-muted">Loading&hellip;</p></div>
+      </div>
+    </div>
+
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        /*
+         * Every document ever issued, in one place.
+         *
+         * Before this page there was no way to find one except by remembering
+         * which buyer received it and opening their record -- and a document
+         * issued without a buyer, which is now the common case, could not be
+         * found at all after you navigated away from it.
+         *
+         * The list endpoint already returned all documents when called with no
+         * buyer_id; nothing was reading it.
+         */
+
+        var TYPE_LABEL = { quotation: 'Quotation', invoice: 'Invoice', letter: 'Letter' };
+
+        var rows = [];
+
+        function showStatus(msg, ok) {
+          var el = document.getElementById('status');
+          el.textContent = msg;
+          el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
+          el.style.display = msg ? 'block' : 'none';
+        }
+
+        function money(value, currency) {
+          var n = Number(value) || 0;
+          return CRM.escapeHtml(currency || 'USD') + ' ' +
+            n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function render(list) {
+          if (!list.length) {
+            document.getElementById('list').innerHTML = rows.length
+              ? '<p class="crm-muted">Nothing matches that filter.</p>'
+              : '<p class="crm-muted">No documents yet. Start with <a href="/crm/document/">a new quotation</a>.</p>';
+            return;
+          }
+
+          var html = '<table><thead><tr>' +
+            '<th>Number</th><th>Type</th><th>For</th><th>Date</th><th class="crm-num">Total</th><th></th>' +
+            '</tr></thead><tbody>';
+
+          list.forEach(function (r) {
+            var voided = !!r.voided_at;
+            html += '<tr' + (voided ? ' class="crm-muted"' : '') + '>' +
+              '<td><a href="/crm/document/view/?id=' + encodeURIComponent(r.id) + '">' +
+                CRM.escapeHtml(r.doc_number || '(unnumbered)') + '</a></td>' +
+              '<td>' + (TYPE_LABEL[r.doc_type] || r.doc_type) + '</td>' +
+              '<td>' + CRM.escapeHtml(r.buyer_company_name || '') + '</td>' +
+              '<td>' + CRM.fmtDate(r.created_at) + '</td>' +
+              '<td class="crm-num">' + (r.doc_type === 'letter' ? '' : money(r.total, r.currency)) + '</td>' +
+              '<td>' + (voided ? '<span class="crm-badge crm-badge-danger">Void</span>' : '') + '</td>' +
+              '</tr>';
+          });
+
+          html += '</tbody></table>';
+          document.getElementById('list').innerHTML = html;
+        }
+
+        function applyFilter() {
+          var q = document.getElementById('filter').value.trim().toLowerCase();
+          if (!q) { render(rows); return; }
+          render(rows.filter(function (r) {
+            return String(r.doc_number || '').toLowerCase().indexOf(q) !== -1 ||
+                   String(r.buyer_company_name || '').toLowerCase().indexOf(q) !== -1;
+          }));
+        }
+
+        CRM.requireAuth().then(function () {
+          CRM.renderNav('Documents');
+          document.getElementById('filter').addEventListener('input', applyFilter);
+
+          CRM.fetchJson('/api/crm/documents').then(function (result) {
+            if (!result.ok) {
+              document.getElementById('list').innerHTML = '';
+              showStatus((result.data && result.data.error) || 'Could not load documents.', false);
+              return;
+            }
+            rows = Array.isArray(result.data) ? result.data : [];
+            applyFilter();
+          });
+        }).catch(function (e) {
+          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+        });
+      })();
+    </script>
+  </body>
+</html>
