@@ -73,6 +73,32 @@ async function ensureSchema(sql) {
       lost_reason              text
     )
   `;
+  /*
+   * handleGet reads this table, so this function has to create it.
+   *
+   * It did not, and the result was that opening any buyer record returned
+   * "Server error" -- since the CRM was first built. The table is also
+   * created by crm-activity.js, but that function runs only when an activity
+   * entry is POSTed, and an entry can only be added from a buyer's page,
+   * which could not load until the table existed. A deadlock, not a race.
+   *
+   * The definition below is character-for-character the one in
+   * crm-activity.js. Both use IF NOT EXISTS, so whichever function runs first
+   * on a new database creates the table and the other accepts it; if the two
+   * definitions drifted, the shape of the table would depend on which
+   * endpoint a person happened to reach first. scripts/check-crm-schema.js
+   * runs each handler against a database containing only what its own
+   * ensureSchema creates, so this cannot silently come undone again.
+   */
+  await sql`
+    CREATE TABLE IF NOT EXISTS buyer_activity_log (
+      id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      buyer_id     bigint NOT NULL,
+      created_at   timestamptz NOT NULL DEFAULT now(),
+      created_by   text,
+      entry        text NOT NULL
+    )
+  `;
   await sql`
     CREATE TABLE IF NOT EXISTS buyer_stage_history (
       id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
