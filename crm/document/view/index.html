@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
 
     <style>
@@ -47,24 +47,24 @@
       .doc-ref { font-size: 10.5px; letter-spacing: 0.06em; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
       .doc-meta { display: grid; grid-template-columns: auto auto; gap: 4px 16px; margin: 0; }
       .doc-meta dt { font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: hsl(var(--muted-foreground)); }
-      .doc-meta dd { margin: 0; font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+      .doc-meta dd { margin: 0; font-size: 11px; text-align: end; font-variant-numeric: tabular-nums; }
 
       /* recipient ------------------------------------------------------- */
-      .doc-to { border-left: 3px solid hsl(var(--primary)); padding: 2px 0 2px 14px; margin-bottom: 26px; }
+      .doc-to { border-inline-start: 3px solid hsl(var(--primary)); padding: 2px 0; padding-inline-start: 14px; margin-bottom: 26px; }
       .doc-to-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; color: hsl(var(--muted-foreground)); margin-bottom: 5px; }
       .doc-to-name { font-size: 15px; font-weight: 700; }
       .doc-to-line { font-size: 11px; color: hsl(var(--muted-foreground)); }
 
       /* line items ------------------------------------------------------ */
       .doc-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 18px; }
-      .doc-table th { text-align: left; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--muted-foreground)); padding: 0 8px 8px; border-bottom: 1.5px solid hsl(var(--primary)); }
+      .doc-table th { text-align: start; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--muted-foreground)); padding: 0 8px 8px; border-bottom: 1.5px solid hsl(var(--primary)); }
       .doc-table td { padding: 11px 8px; border-bottom: 1px solid hsl(var(--border)); vertical-align: top; }
-      .doc-table th:first-child, .doc-table td:first-child { padding-left: 0; }
-      .doc-table th:last-child, .doc-table td:last-child { padding-right: 0; }
-      .doc-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .doc-table th:first-child, .doc-table td:first-child { padding-inline-start: 0; }
+      .doc-table th:last-child, .doc-table td:last-child { padding-inline-end: 0; }
+      .doc-table .num { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
       /* totals: a block of its own, not a row spanning the table -------- */
-      .doc-totals { margin-left: auto; width: 7.6cm; margin-bottom: 22px; }
+      .doc-totals { margin-inline-start: auto; width: 7.6cm; margin-bottom: 22px; }
       .doc-totals > div { display: flex; justify-content: space-between; gap: 1rem; padding: 5px 0; font-size: 12px; }
       .doc-totals .doc-grand { border-top: 2px solid hsl(var(--primary)); margin-top: 4px; padding-top: 10px; font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 700; color: hsl(var(--primary)); }
       .doc-totals .num { font-variant-numeric: tabular-nums; }
@@ -89,6 +89,68 @@
       .doc-notes { font-size: 11px; line-height: 1.7; white-space: pre-wrap; color: #3a4030; }
       .lh-body { flex: 1; }
       .doc-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid hsl(var(--border)); display: flex; justify-content: space-between; gap: 1rem; font-size: 9px; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); }
+
+      /* ------------------------------------------------------------------
+         Arabic (2026-09-07). The sheet is one document in two languages, not
+         two sheets: the geometry, the rule, the type scale and the totals
+         block are identical, and only direction, typeface and the label
+         strings change. Everything above uses logical properties
+         (inset-inline, padding-inline, text-align:start/end) so the mirroring
+         is the browser's job rather than a second stylesheet's.
+
+         Two things genuinely have to change, and both are about Arabic type
+         rather than layout:
+
+         letter-spacing. The small-caps labels -- QUOTATION, BILL TO, DATE --
+         are tracked out 0.12em to 0.22em, which is right for Latin capitals
+         and wrong for Arabic: the script is cursive, and spacing the letters
+         pushes joined forms apart so the word looks broken rather than
+         elegant. Set to normal, not reduced.
+
+         text-transform: uppercase. Arabic is unicameral -- it has no capital
+         letters -- so uppercase is a no-op at best. It is dropped for the
+         same reason the spacing is: it is a Latin typographic convention
+         being applied to a script that has no equivalent.
+         ------------------------------------------------------------------ */
+      [dir="rtl"] .sheet {
+        font-family: 'Noto Naskh Arabic', 'Segoe UI', Tahoma, sans-serif;
+        line-height: 1.8;
+      }
+      [dir="rtl"] .doc-wordmark { font-family: 'Noto Naskh Arabic', Georgia, serif; }
+      [dir="rtl"] .doc-no,
+      [dir="rtl"] .doc-totals .doc-grand { font-family: 'Noto Naskh Arabic', Georgia, serif; }
+      [dir="rtl"] .doc-tagline,
+      [dir="rtl"] .doc-kind,
+      [dir="rtl"] .doc-to-label,
+      [dir="rtl"] .doc-table th,
+      [dir="rtl"] .doc-meta dt,
+      [dir="rtl"] .doc-note-label,
+      [dir="rtl"] .doc-letter-annex dt,
+      [dir="rtl"] .doc-foot,
+      [dir="rtl"] .void-stamp {
+        letter-spacing: normal;
+        text-transform: none;
+      }
+      /*
+       * Anything Latin sitting inside Arabic text -- the document number, a
+       * date, a figure, an email address, a currency code -- is isolated so
+       * the bidirectional algorithm cannot reorder it against its neighbours.
+       * Without this, "USD 6,250.00" at the end of an Arabic line can have its
+       * parts rearranged on screen: the characters are all correct and the
+       * number reads wrong, which is the worst kind of bug to put on an
+       * invoice.
+       */
+      .ltr { direction: ltr; unicode-bidi: isolate; }
+      /*
+       * Isolation without forcing a direction. These cells hold values whose
+       * own direction varies -- "USD", "12.50 USD", "7 سبتمبر 2026" -- so the
+       * right rule is to stop them interacting with the text around them and
+       * let each one resolve itself. text-align:end already puts them on the
+       * correct edge in both directions.
+       */
+      [dir="rtl"] .doc-meta dd,
+      [dir="rtl"] .doc-table .num,
+      [dir="rtl"] .doc-totals .num { unicode-bidi: isolate; }
 
       .void-stamp {
         position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-18deg);
@@ -136,7 +198,7 @@
         <a href="#" id="back-link" class="text-sm font-semibold text-primary">&larr; Back to buyer</a>
         <div class="flex gap-2">
           <button id="void-btn" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;">Void</button>
-          <button onclick="window.print()" class="text-sm px-4 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold">Print / Save as PDF</button>
+          <button id="print-btn" onclick="window.print()" class="text-sm px-4 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold">Print / Save as PDF</button>
         </div>
       </div>
     </div>
@@ -147,19 +209,23 @@
       <div class="void-stamp" id="void-stamp" style="display:none;">Void</div>
       <div class="doc-masthead">
         <div class="doc-mark">
-          <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" width="512" height="512"/>
+          <img id="doc-logo" src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" width="512" height="512"/>
           <div>
-            <div class="doc-wordmark">TRIPLE COMPANY</div>
-            <div class="doc-tagline">for Industrial Development</div>
+            <div class="doc-wordmark" id="doc-wordmark">TRIPLE COMPANY</div>
+            <div class="doc-tagline" id="doc-tagline">for Industrial Development</div>
           </div>
         </div>
         <!-- One canonical address, per C-22. This block used to repeat
              "Cairo, Egypt" on its own line after the full address already
-             ended with it, on every document sent to a buyer. -->
-        <div class="doc-contact">
+             ended with it, on every document sent to a buyer.
+
+             The Arabic wording is not a translation made here: it is the same
+             address string the approved Arabic letterhead carries, copied
+             across so the two cannot drift. -->
+        <div class="doc-contact" id="doc-contact">
           Ouroba Square (&#1605;&#1610;&#1583;&#1575;&#1606; &#1575;&#1604;&#1593;&#1585;&#1608;&#1576;&#1577;), 5th Settlement,<br/>
           New Cairo, Cairo, Egypt<br/>
-          sales@olivesegypt.com &middot; +20 100 604 5961
+          <span class="ltr">sales@olivesegypt.com &middot; +20 100 604 5961</span>
         </div>
       </div>
       <div class="doc-rule"></div>
@@ -191,36 +257,42 @@
             <div class="doc-letter-signature">
               <div id="letter-signatory" class="doc-letter-name"></div>
               <div id="letter-signatory-title" class="doc-letter-title"></div>
-              <div class="doc-letter-org">Triple Company for Industrial Development</div>
+              <div class="doc-letter-org" id="letter-org">Triple Company for Industrial Development</div>
             </div>
           </div>
           <dl class="doc-letter-annex" id="letter-annex" style="display:none;">
-            <div id="letter-enc-row" style="display:none;"><dt>Enc.</dt><dd id="letter-enclosures"></dd></div>
-            <div id="letter-cc-row" style="display:none;"><dt>cc</dt><dd id="letter-cc"></dd></div>
+            <div id="letter-enc-row" style="display:none;"><dt id="annex-enc-label">Enc.</dt><dd id="letter-enclosures"></dd></div>
+            <div id="letter-cc-row" style="display:none;"><dt id="annex-cc-label">cc</dt><dd id="letter-cc"></dd></div>
           </dl>
         </div>
 
         <table class="doc-table" id="doc-table">
           <thead>
-            <tr><th>Description</th><th>Unit</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Amount</th></tr>
+            <tr>
+              <th id="th-description">Description</th>
+              <th id="th-unit">Unit</th>
+              <th class="num" id="th-qty">Qty</th>
+              <th class="num" id="th-price">Unit Price</th>
+              <th class="num" id="th-amount">Amount</th>
+            </tr>
           </thead>
           <tbody id="li-tbody"></tbody>
         </table>
 
         <div class="doc-totals" id="doc-totals">
-          <div><span>Subtotal</span><span class="num" id="doc-subtotal"></span></div>
-          <div class="doc-grand"><span>Total</span><span class="num" id="doc-total"></span></div>
+          <div><span id="label-subtotal">Subtotal</span><span class="num" id="doc-subtotal"></span></div>
+          <div class="doc-grand"><span id="label-total">Total</span><span class="num" id="doc-total"></span></div>
         </div>
 
         <div id="doc-notes-block" style="display:none;">
-          <div class="doc-note-label">Notes</div>
+          <div class="doc-note-label" id="label-notes">Notes</div>
           <div class="doc-notes" id="doc-notes"></div>
         </div>
       </div>
 
       <div class="doc-foot">
-        <span>Triple Company for Industrial Development</span>
-        <span>olivesegypt.com</span>
+        <span id="foot-company">Triple Company for Industrial Development</span>
+        <span class="ltr">olivesegypt.com</span>
       </div>
     </div>
 
@@ -231,14 +303,182 @@
         var qs = new URLSearchParams(window.location.search);
         var docId = qs.get('id');
 
+        /*
+         * ----------------------------------------------------------------
+         * The sheet in two languages.
+         *
+         * One document, one layout, two sets of words. The alternative --
+         * a second Arabic page under /ar/ -- would mean two copies of the
+         * geometry, the print rules, the letter block and the void flow, and
+         * they would drift the first time one of them was fixed.
+         *
+         * The company's own words are not translated here. The wordmark,
+         * tagline, address and legal name are copied from /ar/letterhead,
+         * which carries the approved Arabic identity strings, so a document
+         * and a letterhead cannot disagree about what the company is called.
+         * ----------------------------------------------------------------
+         */
+        var STRINGS = {
+          en: {
+            lang: 'en', dir: 'ltr',
+            wordmark: 'TRIPLE COMPANY',
+            tagline: 'for Industrial Development',
+            company: 'Triple Company for Industrial Development',
+            logoAlt: 'Triple Company for Industrial Development logo',
+            print: 'Print / Save as PDF',
+            voidBtn: 'Void',
+            voidStamp: 'Void',
+            voidConfirm: 'Void this document? This is permanent and cannot be undone (the record stays for your records, marked VOID).',
+            backBuyer: '← Back to buyer',
+            backDocs: '← Back to documents',
+            titles: { quotation: 'Quotation', invoice: 'Invoice' },
+            kindFallback: 'Document',
+            billTo: 'Bill To',
+            letterTo: 'To',
+            refPrefix: 'Ref: ',
+            th: ['Description', 'Unit', 'Qty', 'Unit Price', 'Amount'],
+            subtotal: 'Subtotal',
+            total: 'Total',
+            notes: 'Notes',
+            enc: 'Enc.',
+            cc: 'cc',
+            meta: { date: 'Date', due: 'Due', valid: 'Valid until', incoterm: 'Incoterm', currency: 'Currency' },
+          },
+          ar: {
+            lang: 'ar', dir: 'rtl',
+            wordmark: 'الشركة الثلاثية',
+            tagline: 'للتنمية الصناعية',
+            company: 'الشركة الثلاثية للتنمية الصناعية',
+            logoAlt: 'شعار الشركة الثلاثية للتنمية الصناعية',
+            print: 'طباعة / حفظ كملف PDF',
+            voidBtn: 'إلغاء المستند',
+            voidStamp: 'ملغى',
+            voidConfirm: 'إلغاء هذا المستند؟ لا يمكن التراجع عن ذلك (يبقى السجل محفوظًا ومؤشرًا عليه بـ ملغى).',
+            backBuyer: '→ العودة إلى المشتري',
+            backDocs: '→ العودة إلى المستندات',
+            titles: {
+              quotation: 'عرض سعر',
+              invoice: 'فاتورة',
+            },
+            kindFallback: 'مستند',
+            billTo: 'إلى السادة',
+            letterTo: 'إلى',
+            refPrefix: 'المرجع: ',
+            th: [
+              'البيان',
+              'الوحدة',
+              'الكمية',
+              'سعر الوحدة',
+              'القيمة',
+            ],
+            subtotal: 'الإجمالي الفرعي',
+            total: 'الإجمالي',
+            notes: 'ملاحظات',
+            enc: 'المرفقات',
+            cc: 'نسخة إلى',
+            meta: {
+              date: 'التاريخ',
+              due: 'تاريخ الاستحقاق',
+              valid: 'صالح حتى',
+              incoterm: 'شرط التسليم',
+              currency: 'العملة',
+            },
+          },
+        };
+
+        /*
+         * The Arabic address is the letterhead's, verbatim, including the
+         * dir="ltr" span that keeps the phone number's digits in order on an
+         * RTL page. Held as markup rather than text because it has line
+         * breaks and that span; it is a fixed literal, never anything a user
+         * typed, which is the only reason innerHTML is acceptable here.
+         */
+        var CONTACT_AR =
+          'ميدان العروبة، التجمع الخامس،<br/>' +
+          'القاهرة الجديدة، القاهرة، مصر<br/>' +
+          '<span class="ltr">sales@olivesegypt.com &middot; +20 100 604 5961</span>';
+
+        var t = STRINGS.en;
+
         function fmtMoney(n, currency) {
           n = Number(n) || 0;
-          return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
+          /*
+           * Western digits in both languages, by the owner's decision
+           * (2026-09-07). An Arabic invoice reaches a bank, a customs broker
+           * and often a foreign buyer's accounts department, and
+           * Arabic-Indic numerals in those hands are a reading error waiting
+           * to happen. The grouping and decimal marks stay en-US for the same
+           * reason.
+           *
+           * The currency code leads in Arabic and trails in English. That is
+           * a decision, not a coincidence: "3,000.00 USD" dropped into RTL
+           * text comes out reading "USD 3,000.00" anyway, because the
+           * bidirectional algorithm moves the only strongly-typed run in it.
+           * Relying on that would mean the printed order is whatever bidi
+           * decides rather than what this function returns -- fine until a
+           * currency, a symbol or a suffix changes and the order silently
+           * flips on documents already sent. So each language states its own
+           * order, and moneyInto() below prints it exactly as written.
+           */
+          var amount = n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          return t.lang === 'ar' ? currency + ' ' + amount : amount + ' ' + currency;
+        }
+
+        /*
+         * Money goes into an isolated LTR span rather than straight into the
+         * cell. The cell keeps the sheet's direction, so it still sits on the
+         * correct edge; the span keeps the figure's, so 4,750.00 cannot have
+         * its parts reordered by the text around it.
+         */
+        function moneyInto(el, n, currency) {
+          el.textContent = '';
+          var span = document.createElement('span');
+          span.className = 'ltr';
+          span.textContent = fmtMoney(n, currency);
+          el.appendChild(span);
         }
         function fmtDate(iso) {
           if (!iso) return '';
-          try { return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
+          // ar-EG gives Egyptian month names; -u-nu-latn keeps the digits
+          // Western, as chosen. Same long form as English, not a numeric
+          // date: 7/9/2026 and 9/7/2026 are the same six characters and
+          // different days, which is not a risk worth taking on an invoice.
+          var locale = t.lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US';
+          try { return new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' }); }
           catch (e) { return String(iso).slice(0, 10); }
+        }
+
+        function setText(id, value) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = value;
+        }
+
+        /* Everything on the sheet that is ours rather than the document's. */
+        function applyLanguage(language) {
+          t = STRINGS[language] || STRINGS.en;
+
+          document.documentElement.lang = t.lang;
+          document.documentElement.dir = t.dir;
+
+          setText('doc-wordmark', t.wordmark);
+          setText('doc-tagline', t.tagline);
+          setText('letter-org', t.company);
+          setText('foot-company', t.company);
+          document.getElementById('doc-logo').alt = t.logoAlt;
+          if (t.lang === 'ar') document.getElementById('doc-contact').innerHTML = CONTACT_AR;
+
+          setText('print-btn', t.print);
+          setText('void-btn', t.voidBtn);
+          setText('void-stamp', t.voidStamp);
+
+          t.th.forEach(function (label, i) {
+            setText(['th-description', 'th-unit', 'th-qty', 'th-price', 'th-amount'][i], label);
+          });
+          setText('label-subtotal', t.subtotal);
+          setText('label-total', t.total);
+          setText('label-notes', t.notes);
+          setText('annex-enc-label', t.enc);
+          setText('annex-cc-label', t.cc);
         }
 
         function render(d) {
@@ -249,15 +489,22 @@
            * successfully issuing something, which is the worst moment to hit
            * a dead link.
            */
+          /*
+           * Language first: every label below is read off `t`, and the sheet
+           * has to be in its final direction before anything is measured or
+           * printed. A document issued before the language column existed
+           * has no value here and is English, which is what it is.
+           */
+          applyLanguage(d.language || 'en');
+
           var back = document.getElementById('back-link');
           if (d.buyer_id) {
             back.href = '/crm/buyer/?id=' + d.buyer_id;
-            back.textContent = '\u2190 Back to buyer';
+            back.textContent = t.backBuyer;
           } else {
             back.href = '/crm/documents/';
-            back.textContent = '\u2190 Back to documents';
+            back.textContent = t.backDocs;
           }
-          var TITLES = { invoice: 'Invoice', quotation: 'Quotation' };
           var isLetter = d.doc_type === 'letter';
           /*
            * A quotation says QUOTATION at the top because the reader needs to
@@ -272,7 +519,7 @@
           if (isLetter) {
             kindEl.style.display = 'none';
           } else {
-            kindEl.textContent = TITLES[d.doc_type] || 'Document';
+            kindEl.textContent = t.titles[d.doc_type] || t.kindFallback;
           }
 
           if (isLetter) {
@@ -319,23 +566,36 @@
             var cc = put('letter-cc', d.cc, 'letter-cc-row');
             if (enc || cc) document.getElementById('letter-annex').style.display = '';
             // "Bill To" on a letter is wrong on a document going to a customer.
-            document.getElementById('recipient-label').textContent = 'To';
+            document.getElementById('recipient-label').textContent = t.letterTo;
+          } else {
+            document.getElementById('recipient-label').textContent = t.billTo;
           }
           var noEl = document.getElementById('doc-number');
           noEl.className = isLetter ? 'doc-ref' : 'doc-no';
-          noEl.textContent = isLetter ? 'Ref: ' + d.doc_number : d.doc_number;
-          document.title = d.doc_number + ' | Triple Company for Industrial Development';
+          /*
+           * The number is Latin and stays Latin: Q-2026-000007 must read the
+           * same on both sheets, so it goes in an isolated span rather than
+           * being concatenated into an Arabic string, where the bidirectional
+           * algorithm would be free to move its parts around.
+           */
+          noEl.textContent = '';
+          if (isLetter) noEl.appendChild(document.createTextNode(t.refPrefix));
+          var numSpan = document.createElement('span');
+          numSpan.className = 'ltr';
+          numSpan.textContent = d.doc_number;
+          noEl.appendChild(numSpan);
+          document.title = d.doc_number + ' | ' + t.company;
           /*
            * One meta grid, built from whatever this document actually has,
            * instead of three fixed lines scattered around the page -- a
            * quotation's validity sat beside the date while its incoterm sat
            * under the table, and a letter rendered empty slots for both.
            */
-          var meta = [['Date', fmtDate(d.created_at)]];
-          if (d.doc_type === 'invoice' && d.due_date) meta.push(['Due', fmtDate(d.due_date)]);
-          if (d.doc_type === 'quotation' && d.valid_until) meta.push(['Valid until', fmtDate(d.valid_until)]);
-          if (d.incoterm) meta.push(['Incoterm', d.incoterm]);
-          if (!isLetter && d.currency) meta.push(['Currency', d.currency]);
+          var meta = [[t.meta.date, fmtDate(d.created_at)]];
+          if (d.doc_type === 'invoice' && d.due_date) meta.push([t.meta.due, fmtDate(d.due_date)]);
+          if (d.doc_type === 'quotation' && d.valid_until) meta.push([t.meta.valid, fmtDate(d.valid_until)]);
+          if (d.incoterm) meta.push([t.meta.incoterm, d.incoterm]);
+          if (!isLetter && d.currency) meta.push([t.meta.currency, d.currency]);
 
           var dl = document.getElementById('doc-meta');
           dl.innerHTML = '';
@@ -358,15 +618,17 @@
             ['description', 'unit'].forEach(function (k) {
               var td = document.createElement('td'); td.textContent = li[k] || ''; tr.appendChild(td);
             });
-            var qtyTd = document.createElement('td'); qtyTd.className = 'num'; qtyTd.textContent = li.quantity; tr.appendChild(qtyTd);
-            var priceTd = document.createElement('td'); priceTd.className = 'num'; priceTd.textContent = fmtMoney(li.unit_price, d.currency); tr.appendChild(priceTd);
-            var totalTd = document.createElement('td'); totalTd.className = 'num'; totalTd.textContent = fmtMoney(lineTotal, d.currency); tr.appendChild(totalTd);
+            var qtyTd = document.createElement('td'); qtyTd.className = 'num';
+            var qtySpan = document.createElement('span'); qtySpan.className = 'ltr';
+            qtySpan.textContent = li.quantity; qtyTd.appendChild(qtySpan); tr.appendChild(qtyTd);
+            var priceTd = document.createElement('td'); priceTd.className = 'num'; moneyInto(priceTd, li.unit_price, d.currency); tr.appendChild(priceTd);
+            var totalTd = document.createElement('td'); totalTd.className = 'num'; moneyInto(totalTd, lineTotal, d.currency); tr.appendChild(totalTd);
             tbody.appendChild(tr);
           });
 
           if (!isLetter) {
-            document.getElementById('doc-subtotal').textContent = fmtMoney(d.subtotal, d.currency);
-            document.getElementById('doc-total').textContent = fmtMoney(d.total, d.currency);
+            moneyInto(document.getElementById('doc-subtotal'), d.subtotal, d.currency);
+            moneyInto(document.getElementById('doc-total'), d.total, d.currency);
           }
 
           if (d.notes) document.getElementById('doc-notes-block').style.display = '';
@@ -379,7 +641,7 @@
           } else {
             voidBtn.style.display = '';
             voidBtn.addEventListener('click', function () {
-              if (!window.confirm('Void this document? This is permanent and cannot be undone (the record stays for your records, marked VOID).')) return;
+              if (!window.confirm(t.voidConfirm)) return;
               CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(docId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
                 if (result.ok) window.location.reload();
               });

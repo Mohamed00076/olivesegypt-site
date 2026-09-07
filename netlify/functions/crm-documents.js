@@ -71,6 +71,26 @@ const DOC_PREFIX = { quotation: 'Q', invoice: 'INV', letter: 'L' };
  */
 const PRICED = new Set(['quotation', 'invoice']);
 
+/*
+ * The language a document is written in (2026-09-07).
+ *
+ * Every document this system issued printed in English, on an English sheet,
+ * whatever language the buyer reads -- and an Egyptian or Gulf buyer is
+ * exactly who this company sells to. Arabic text could be typed into a letter
+ * body and it would save, but it printed left-to-right in an English frame,
+ * which is worse than not offering it.
+ *
+ * The choice is per document, not per user: the same person issues an English
+ * quotation to a German importer in the morning and an Arabic one to a Cairo
+ * distributor in the afternoon. It is stored because it must survive -- a
+ * document reprinted in two years has to come out exactly as it was sent.
+ *
+ * 'en' is the default, so every document issued before this column existed
+ * reads as English, which is what it is.
+ */
+const LANGUAGES = new Set(['en', 'ar']);
+const DEFAULT_LANGUAGE = 'en';
+
 const MAX = {
   currency: 3, incoterm: 20, notes: 2000,
   line_description: 300, line_unit: 30,
@@ -149,6 +169,15 @@ async function ensureSchema(sql) {
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS enclosures text`;
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS cc text`;
 
+  /*
+   * The document's language (2026-09-07). NOT NULL with a default rather than
+   * nullable: a document that does not say what language it is in is a
+   * document the printed sheet has to guess about, and the honest answer for
+   * every row written before today is 'en'. The default backfills them in one
+   * statement, and ADD COLUMN IF NOT EXISTS keeps this safe to re-run.
+   */
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'en'`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
       id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -190,8 +219,8 @@ async function handleList(event, sql) {
   const qs = event.queryStringParameters || {};
   const buyerId = qs.buyer_id ? parseInt(qs.buyer_id, 10) : null;
   const rows = buyerId
-    ? await sql`SELECT id, created_at, doc_type, doc_number, currency, total, voided_at FROM crm_documents WHERE buyer_id = ${buyerId} ORDER BY created_at DESC LIMIT 500`
-    : await sql`SELECT id, created_at, doc_type, doc_number, buyer_company_name, currency, total, voided_at FROM crm_documents ORDER BY created_at DESC LIMIT 500`;
+    ? await sql`SELECT id, created_at, doc_type, doc_number, currency, total, language, voided_at FROM crm_documents WHERE buyer_id = ${buyerId} ORDER BY created_at DESC LIMIT 500`
+    : await sql`SELECT id, created_at, doc_type, doc_number, buyer_company_name, currency, total, language, voided_at FROM crm_documents ORDER BY created_at DESC LIMIT 500`;
   return json(200, rows);
 }
 
@@ -207,6 +236,19 @@ async function handleCreate(event, sql, actor) {
 
   const docType = clean(body.doc_type, 20);
   if (!DOC_TYPES.has(docType)) return json(400, { ok: false, error: 'Validation failed', fields: ['doc_type'] });
+
+  /*
+   * Rejected rather than quietly defaulted. An unrecognised language means the
+   * form and this function disagree about what can be issued, and silently
+   * printing English because 'fr' was not understood would send the buyer a
+   * document in the wrong language with nothing anywhere to show it happened.
+   * An absent value is a different thing and does default: older clients, and
+   * anything that simply does not care, get English.
+   */
+  const language = body.language === undefined || body.language === null || body.language === ''
+    ? DEFAULT_LANGUAGE
+    : clean(body.language, 2).toLowerCase();
+  if (!LANGUAGES.has(language)) return json(400, { ok: false, error: 'Validation failed', fields: ['language'] });
 
   /*
    * Two ways to say who a document is for, and exactly one is required.
@@ -301,14 +343,14 @@ async function handleCreate(event, sql, actor) {
     INSERT INTO crm_documents (
       created_by, buyer_id, doc_type, doc_number,
       buyer_company_name, buyer_contact_name, buyer_country, buyer_address,
-      currency, incoterm, valid_until, due_date, notes, subject, body,
+      currency, incoterm, valid_until, due_date, notes, subject, body, language,
       salutation, closing, signatory_name, signatory_title, enclosures, cc,
       line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
       ${companyName}, ${contactName},
       ${country}, ${buyerAddress},
-      ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody},
+      ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody}, ${language},
       ${letterParts.salutation}, ${letterParts.closing}, ${letterParts.signatory_name},
       ${letterParts.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
