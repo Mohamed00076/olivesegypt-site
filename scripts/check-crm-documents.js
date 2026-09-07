@@ -66,20 +66,36 @@ function fakeSql(strings, ...vals) {
   }
 
   if (/INSERT INTO crm_documents/i.test(q)) {
-    // doc_number is a literal '' in the INSERT (it is derived from the row id
-    // and set by the UPDATE below), so it is NOT one of the bound values --
-    // leaving a gap for it here shifts every column by one and makes this
-    // whole test assert against the wrong fields. It did, on the first run.
-    const [created_by, buyer_id, doc_type, company, contact, country, address,
-           currency, incoterm, valid_until, due_date, notes, line_items, subtotal, total] = vals;
-    const row = {
-      id: nextId++, created_at: new Date('2026-09-07T00:00:00Z'),
-      created_by, buyer_id, doc_type,
-      buyer_company_name: company, buyer_contact_name: contact,
-      buyer_country: country, buyer_address: address,
-      currency, incoterm, valid_until, due_date, notes, line_items, subtotal, total,
-      doc_number: '',
-    };
+    /*
+     * Map the bound values onto column names by reading the statement,
+     * rather than destructuring by position.
+     *
+     * Positional destructuring broke this test twice: once because
+     * doc_number is a literal '' rather than a binding, and again when
+     * subject and body were added in the middle of the column list. Both
+     * times every assertion silently checked the wrong field. A test that
+     * quietly moves its own goalposts when the code changes is worse than
+     * no test, so it now derives the mapping from the query itself and
+     * fails loudly if the two do not line up.
+     */
+    const cols = q.slice(q.indexOf('(') + 1, q.indexOf(')')).split(',').map((c) => c.trim());
+    const valuesClause = q.slice(q.indexOf('VALUES'));
+    const slots = valuesClause.slice(valuesClause.indexOf('(') + 1, valuesClause.lastIndexOf(')')).split(',');
+
+    if (cols.length !== slots.length) {
+      throw new Error(`INSERT has ${cols.length} columns but ${slots.length} value slots`);
+    }
+
+    const row = { id: nextId++, created_at: new Date('2026-09-07T00:00:00Z'), doc_number: '' };
+    let vi = 0;
+    slots.forEach((slot, i) => {
+      // a '?' marks where a bound value went; anything else is a literal
+      row[cols[i]] = slot.includes('?') ? vals[vi++] : slot.trim().replace(/^'|'$/g, '');
+    });
+    if (vi !== vals.length) {
+      throw new Error(`INSERT bound ${vals.length} values but only ${vi} slots consumed them`);
+    }
+
     db.documents.push(row);
     return Promise.resolve([{ id: row.id, created_at: row.created_at }]);
   }
@@ -214,6 +230,76 @@ function create(body, { cookie = COOKIE } = {}) {
   {
     const res = await create({ doc_type: 'quotation', buyer_id: 'abc', line_items: LINE_ITEMS });
     t('a non-numeric buyer_id is still refused', res.statusCode === 400 && /buyer_id/.test(res.body), res.body);
+  }
+
+  // ---- letters: the third type ----------------------------------------
+  //
+  // A letter shares the table but not the shape: no line items, no currency,
+  // no totals. What it must not lose is everything that makes a document a
+  // document -- a number, a recipient, a date, a permanent record.
+  {
+    const res = await create({
+      doc_type: 'letter',
+      buyer_company_name: 'Cairo Foods Trading',
+      subject: 'Confirmation of sample dispatch',
+      body: 'Dear Ms Said,\n\nThe samples left Alexandria today.\n\nRegards,',
+    });
+    const out = JSON.parse(res.body);
+    const doc = db.documents[db.documents.length - 1];
+
+    t('a letter can be issued with no line items at all', res.statusCode === 200 && out.ok === true, res.body);
+    t('   it is numbered in its own series', /^L-2026-\d{6}$/.test(out.doc_number), out.doc_number);
+    t('   the body is stored', doc && /samples left Alexandria/.test(doc.body), doc && doc.body);
+    t('   the subject is stored', doc && doc.subject === 'Confirmation of sample dispatch', doc && doc.subject);
+    t('   it still records who it is for', doc && doc.buyer_company_name === 'Cairo Foods Trading', doc && doc.buyer_company_name);
+    t('   line items are empty, not absent', doc && doc.line_items === '[]', doc && doc.line_items);
+    t('   the total is zero', doc && Number(doc.total) === 0, doc && doc.total);
+  }
+
+  {
+    const res = await create({ doc_type: 'letter', buyer_company_name: 'X', body: 'Short note.' });
+    const doc = db.documents[db.documents.length - 1];
+    t('a subject is optional on a letter', res.statusCode === 200 && doc.subject === null, res.body);
+  }
+
+  // an empty letter would issue, take a number, and print blank
+  for (const [label, body] of [
+    ['no body at all', {}],
+    ['an empty body', { body: '' }],
+    ['whitespace only', { body: '   \n  ' }],
+  ]) {
+    const before = db.documents.length;
+    const res = await create(Object.assign({ doc_type: 'letter', buyer_company_name: 'X' }, body));
+    const out = JSON.parse(res.body);
+    t(`a letter is refused with ${label}`, res.statusCode === 400 && (out.fields || []).includes('body'), res.body);
+    t('   and nothing was written', db.documents.length === before);
+  }
+
+  {
+    // the compose form hides these for a letter, so anything arriving is a
+    // stale draft rather than intent -- ignored, not rejected
+    const res = await create({
+      doc_type: 'letter', buyer_company_name: 'X', body: 'Note.',
+      line_items: LINE_ITEMS, currency: 'EUR', incoterm: 'FOB Alexandria',
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('a letter ignores line items left over from a priced draft',
+      res.statusCode === 200 && doc.line_items === '[]' && Number(doc.total) === 0, doc.line_items);
+    t('   and ignores currency and incoterm', doc.currency === 'USD' && doc.incoterm === null,
+      doc.currency + '/' + doc.incoterm);
+  }
+
+  {
+    const before = db.documents.length;
+    const res = await create({ doc_type: 'letter', body: 'Note.' });
+    t('a letter still needs a recipient', res.statusCode === 400 && /buyer_company_name/.test(res.body), res.body);
+    t('   and nothing was written', db.documents.length === before);
+  }
+
+  {
+    // the reverse: a priced document must not become body-only
+    const res = await create({ doc_type: 'quotation', buyer_company_name: 'X', body: 'Just words.' });
+    t('a quotation still requires line items', res.statusCode === 400 && /line_items/.test(res.body), res.body);
   }
 
   // ---- everything else the handler validated, it still validates -------

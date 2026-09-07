@@ -72,7 +72,21 @@
           </div>
         </div>
 
-        <div class="crm-card">
+        <!-- Letters only. A letter shares the recipient, the numbering and
+             the permanent record with a quotation, and none of the pricing. -->
+        <div class="crm-card" id="letter-card" style="display:none;">
+          <h2>Letter</h2>
+          <div class="crm-field">
+            <label for="l-subject">Subject <span class="crm-muted">(optional)</span></label>
+            <input id="l-subject" maxlength="300" placeholder="e.g. Confirmation of sample dispatch" />
+          </div>
+          <div class="crm-field">
+            <label for="l-body">Body</label>
+            <textarea id="l-body" rows="16" maxlength="20000" placeholder="Dear&hellip;"></textarea>
+          </div>
+        </div>
+
+        <div class="crm-card" id="details-card">
           <h2>Details</h2>
           <div class="crm-grid crm-grid-3">
             <div class="crm-field">
@@ -94,7 +108,7 @@
           </div>
         </div>
 
-        <div class="crm-card">
+        <div class="crm-card" id="line-items-card">
           <h2>Line Items</h2>
           <datalist id="product-suggestions"></datalist>
           <table class="li-table">
@@ -120,7 +134,10 @@
         'use strict';
         var qs = new URLSearchParams(window.location.search);
         var buyerId = qs.get('buyer_id');
-        var docType = qs.get('type') === 'invoice' ? 'invoice' : 'quotation';
+        var TYPES = { invoice: 'invoice', letter: 'letter', quotation: 'quotation' };
+        var docType = TYPES[qs.get('type')] || 'quotation';
+        var isLetter = docType === 'letter';
+        var TITLE = { quotation: 'New Quotation', invoice: 'New Invoice', letter: 'New Letter' };
 
         function fmt2(n) {
           n = Number(n) || 0;
@@ -185,25 +202,37 @@
 
         document.getElementById('doc-form').addEventListener('submit', function (e) {
           e.preventDefault();
-          var lines = collectLines();
-          if (!lines.length) { showStatus('Add at least one line item.', false); return; }
-          for (var i = 0; i < lines.length; i++) {
-            if (!lines[i].description) { showStatus('Every line needs a description.', false); return; }
-            if (!(lines[i].quantity > 0)) { showStatus('Every line needs a quantity greater than zero.', false); return; }
-            if (!(lines[i].unit_price >= 0)) { showStatus('Every line needs a unit price.', false); return; }
+          var lines = [];
+          if (!isLetter) {
+            lines = collectLines();
+            if (!lines.length) { showStatus('Add at least one line item.', false); return; }
+            for (var i = 0; i < lines.length; i++) {
+              if (!lines[i].description) { showStatus('Every line needs a description.', false); return; }
+              if (!(lines[i].quantity > 0)) { showStatus('Every line needs a quantity greater than zero.', false); return; }
+              if (!(lines[i].unit_price >= 0)) { showStatus('Every line needs a unit price.', false); return; }
+            }
           }
           /*
            * Exactly one of these two goes to the server. When a buyer is
            * linked the server reads their details off the record and ignores
            * anything typed here, so sending both would only be misleading.
            */
-          var payload = {
-            doc_type: docType,
-            currency: document.getElementById('currency').value.trim().toUpperCase() || 'USD',
-            incoterm: document.getElementById('incoterm').value.trim(),
-            notes: document.getElementById('notes').value.trim(),
-            line_items: lines,
-          };
+          var payload = { doc_type: docType, notes: document.getElementById('notes').value.trim() };
+
+          if (isLetter) {
+            var letterBody = document.getElementById('l-body').value.trim();
+            if (!letterBody) {
+              showStatus('Write the letter before issuing it.', false);
+              document.getElementById('l-body').focus();
+              return;
+            }
+            payload.subject = document.getElementById('l-subject').value.trim();
+            payload.body = letterBody;
+          } else {
+            payload.currency = document.getElementById('currency').value.trim().toUpperCase() || 'USD';
+            payload.incoterm = document.getElementById('incoterm').value.trim();
+            payload.line_items = lines;
+          }
           if (buyerId) {
             payload.buyer_id = Number(buyerId);
           } else {
@@ -224,7 +253,7 @@
           }
 
           if (docType === 'quotation') payload.valid_until = document.getElementById('date-input').value || null;
-          else payload.due_date = document.getElementById('date-input').value || null;
+          else if (docType === 'invoice') payload.due_date = document.getElementById('date-input').value || null;
 
           var saveBtn = document.getElementById('save-btn');
           saveBtn.disabled = true;
@@ -239,8 +268,18 @@
         });
 
         function init() {
-          document.getElementById('page-title').textContent = (docType === 'invoice' ? 'New Invoice' : 'New Quotation');
-          document.getElementById('date-label').textContent = docType === 'invoice' ? 'Due Date' : 'Valid Until';
+          document.getElementById('page-title').textContent = TITLE[docType];
+
+          if (isLetter) {
+            // Currency, incoterm, dates and line items mean nothing on a
+            // letter, and a form that shows fields it will not send is how
+            // people end up believing they set something.
+            document.getElementById('letter-card').style.display = '';
+            document.getElementById('details-card').style.display = 'none';
+            document.getElementById('line-items-card').style.display = 'none';
+          } else {
+            document.getElementById('date-label').textContent = docType === 'invoice' ? 'Due Date' : 'Valid Until';
+          }
 
           var suggestions = document.getElementById('product-suggestions');
           CRM.PRODUCTS.forEach(function (p) {
@@ -251,8 +290,7 @@
             // Standalone: nothing to fetch, so the form is usable immediately.
             document.getElementById('recipient-card').style.display = '';
             document.getElementById('doc-form').style.display = '';
-            addLine(null);
-            recalc();
+            if (!isLetter) { addLine(null); recalc(); }
             document.getElementById('r-company').focus();
             return;
           }
@@ -260,8 +298,7 @@
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
             if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
             var b = result.data;
-            document.getElementById('page-title').textContent =
-              (docType === 'invoice' ? 'New Invoice for ' : 'New Quotation for ') + b.company_name;
+            document.getElementById('page-title').textContent = TITLE[docType] + ' for ' + b.company_name;
             document.getElementById('buyer-summary').innerHTML =
               '<strong>' + CRM.escapeHtml(b.company_name) + '</strong><br/>' +
               (b.contact_name ? CRM.escapeHtml(b.contact_name) + '<br/>' : '') +
@@ -271,11 +308,13 @@
             if (b.incoterm) document.getElementById('incoterm').value = b.incoterm;
             document.getElementById('buyer-card').style.display = '';
             document.getElementById('doc-form').style.display = '';
-            var firstProduct = Array.isArray(b.product_interest) && b.product_interest.length
-              ? (CRM.PRODUCTS.find(function (p) { return p[0] === b.product_interest[0]; }) || [])[1]
-              : null;
-            addLine(firstProduct);
-            recalc();
+            if (!isLetter) {
+              var firstProduct = Array.isArray(b.product_interest) && b.product_interest.length
+                ? (CRM.PRODUCTS.find(function (p) { return p[0] === b.product_interest[0]; }) || [])[1]
+                : null;
+              addLine(firstProduct);
+              recalc();
+            }
           });
         }
 
@@ -285,7 +324,7 @@
          * what made issuing a document feel buried. It now always loads.
          */
         CRM.requireAuth().then(function () {
-          CRM.renderNav(docType === 'invoice' ? 'New Invoice' : 'New Quotation');
+          CRM.renderNav(TITLE[docType]);
           init();
         }).catch(function (e) {
           if (e.message !== 'unauthorized') showStatus('Could not load page.', false);

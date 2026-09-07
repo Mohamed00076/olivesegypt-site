@@ -22,7 +22,21 @@
       .lh-footer { border-top: 1px solid hsl(var(--border)); padding-top: 0.75rem; margin-top: 2rem; font-size: 10px; color: hsl(var(--muted-foreground)); text-align: center; }
       @media print {
         .no-print { display: none !important; }
-        .sheet { box-shadow: none; margin: 0; }
+        /*
+         * @page supplies the 2cm margin, so the sheet drops the screen-only
+         * geometry that makes it look like a page on a grey background.
+         * Keeping min-height:29.7cm forced 29.7cm into a 25.7cm printable
+         * area (A4 less two 2cm margins), and the sheet's own 2cm padding
+         * doubled the margin -- so every letter printed a second, almost
+         * empty page. Same fix as crm/document/view.
+         */
+        .sheet {
+          box-shadow: none;
+          margin: 0;
+          min-height: 0;
+          max-width: none;
+          padding: 0;
+        }
         @page { margin: 2cm; }
       }
     </style>

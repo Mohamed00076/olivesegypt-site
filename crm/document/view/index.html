@@ -28,7 +28,22 @@
       }
       @media print {
         .no-print { display: none !important; }
-        .sheet { box-shadow: none; margin: 0; }
+        /*
+         * @page already supplies the 2cm margin, so in print the sheet must
+         * drop the screen-only geometry it uses to look like a page on a grey
+         * background. Leaving min-height:29.7cm forces 29.7cm of content into
+         * a 25.7cm printable area (A4 less two 2cm margins) and its own 2cm
+         * padding doubles the margin -- so every document printed a second,
+         * almost empty page. Pre-existing since this sheet was written; found
+         * 2026-09-07 when the owner asked whether documents download as PDF.
+         */
+        .sheet {
+          box-shadow: none;
+          margin: 0;
+          min-height: 0;
+          max-width: none;
+          padding: 0;
+        }
         @page { margin: 2cm; }
       }
     </style>
@@ -84,14 +99,20 @@
         </div>
 
         <div class="mb-6">
-          <div class="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Bill To</div>
+          <div class="text-[10px] uppercase tracking-widest text-muted-foreground mb-1" id="recipient-label">Bill To</div>
           <div class="font-semibold" id="buyer-company"></div>
           <div class="text-xs text-muted-foreground" id="buyer-contact"></div>
           <div class="text-xs text-muted-foreground" id="buyer-address"></div>
           <div class="text-xs text-muted-foreground" id="buyer-country"></div>
         </div>
 
-        <table class="doc-table">
+        <!-- Letters render here instead of the table below. -->
+        <div id="letter-block" style="display:none;">
+          <div id="letter-subject" class="font-semibold mb-4" style="display:none;"></div>
+          <div id="letter-body" style="white-space:pre-wrap; line-height:1.7;"></div>
+        </div>
+
+        <table class="doc-table" id="doc-table">
           <thead>
             <tr><th>Description</th><th>Unit</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Total</th></tr>
           </thead>
@@ -144,7 +165,28 @@
             back.href = '/crm/documents/';
             back.textContent = '\u2190 Back to documents';
           }
-          document.getElementById('doc-title-type').textContent = d.doc_type === 'invoice' ? 'INVOICE' : 'QUOTATION';
+          var TITLES = { invoice: 'INVOICE', letter: 'LETTER', quotation: 'QUOTATION' };
+          var isLetter = d.doc_type === 'letter';
+          document.getElementById('doc-title-type').textContent = TITLES[d.doc_type] || 'DOCUMENT';
+
+          if (isLetter) {
+            /*
+             * A letter has no line items, no currency and no total, so the
+             * priced layout would print an empty table with "Total 0.00"
+             * under it -- which looks like a broken invoice rather than a
+             * letter, on a document going to a customer.
+             */
+            document.getElementById('doc-table').style.display = 'none';
+            document.getElementById('letter-block').style.display = '';
+            if (d.subject) {
+              var subj = document.getElementById('letter-subject');
+              subj.textContent = d.subject;
+              subj.style.display = '';
+            }
+            document.getElementById('letter-body').textContent = d.body || '';
+            // "Bill To" on a letter is wrong on a document going to a customer.
+            document.getElementById('recipient-label').textContent = 'To';
+          }
           document.getElementById('doc-number').textContent = d.doc_number;
           document.title = d.doc_number + ' | Triple Company for Industrial Development';
           document.getElementById('doc-date').textContent = fmtDate(d.created_at);
@@ -174,8 +216,10 @@
             tbody.appendChild(tr);
           });
 
-          document.getElementById('doc-subtotal').textContent = fmtMoney(d.subtotal, d.currency);
-          document.getElementById('doc-total').textContent = fmtMoney(d.total, d.currency);
+          if (!isLetter) {
+            document.getElementById('doc-subtotal').textContent = fmtMoney(d.subtotal, d.currency);
+            document.getElementById('doc-total').textContent = fmtMoney(d.total, d.currency);
+          }
 
           if (d.incoterm) document.getElementById('doc-incoterm-row').textContent = 'Incoterm: ' + d.incoterm;
           if (d.notes) document.getElementById('doc-notes').textContent = d.notes;

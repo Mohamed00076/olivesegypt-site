@@ -56,13 +56,26 @@ function connectionString() {
   );
 }
 
-const DOC_TYPES = new Set(['quotation', 'invoice']);
-const DOC_PREFIX = { quotation: 'Q', invoice: 'INV' };
+const DOC_TYPES = new Set(['quotation', 'invoice', 'letter']);
+const DOC_PREFIX = { quotation: 'Q', invoice: 'INV', letter: 'L' };
+
+/*
+ * A letter is priced-document-shaped in every way that matters for the
+ * record -- it is addressed to someone, it is numbered, it is issued on a
+ * date and it must still be readable years later -- and shaped nothing like
+ * one in its content: no line items, no currency, no totals. It shares this
+ * table rather than getting its own because everything around a document
+ * (numbering, the recipient snapshot, voiding, the audit log, the list) is
+ * identical, and duplicating that for the sake of two different columns
+ * would mean two of everything to keep in step.
+ */
+const PRICED = new Set(['quotation', 'invoice']);
 
 const MAX = {
   currency: 3, incoterm: 20, notes: 2000,
   line_description: 300, line_unit: 30,
   buyer_company_name: 300, buyer_contact_name: 200, buyer_country: 40, buyer_address: 500,
+  subject: 300, body: 20000,
 };
 const MAX_LINE_ITEMS = 50;
 
@@ -103,6 +116,11 @@ async function ensureSchema(sql) {
    * invocation and needs no version tracking.
    */
   await sql`ALTER TABLE crm_documents ALTER COLUMN buyer_id DROP NOT NULL`;
+
+  // Letters (2026-09-07). ADD COLUMN IF NOT EXISTS is idempotent, and the
+  // CREATE above will not add a column to a table that already exists.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS subject text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS body text`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
@@ -209,19 +227,43 @@ async function handleCreate(event, sql, actor) {
     buyerAddress = optional(body.buyer_address, MAX.buyer_address);
   }
 
-  const lineItems = validateLineItems(body.line_items);
-  if (!lineItems) return json(400, { ok: false, error: 'Validation failed', fields: ['line_items'] });
+  const priced = PRICED.has(docType);
 
-  const currency = clean(body.currency, MAX.currency).toUpperCase() || 'USD';
-  if (!/^[A-Z]{3}$/.test(currency)) return json(400, { ok: false, error: 'Validation failed', fields: ['currency'] });
+  let lineItems = [];
+  let currency = 'USD';
+  let incoterm = null;
+  let subject = null;
+  let letterBody = null;
 
-  const incoterm = optional(body.incoterm, MAX.incoterm);
+  if (priced) {
+    lineItems = validateLineItems(body.line_items);
+    if (!lineItems) return json(400, { ok: false, error: 'Validation failed', fields: ['line_items'] });
+
+    currency = clean(body.currency, MAX.currency).toUpperCase() || 'USD';
+    if (!/^[A-Z]{3}$/.test(currency)) return json(400, { ok: false, error: 'Validation failed', fields: ['currency'] });
+
+    incoterm = optional(body.incoterm, MAX.incoterm);
+  } else {
+    /*
+     * A letter with nothing written in it is the letter equivalent of an
+     * invoice addressed to nobody -- it would issue, take a number, and
+     * print blank. Subject is optional; plenty of letters do not carry one.
+     *
+     * Line items, currency and incoterm are ignored rather than rejected if
+     * sent: the compose form hides those fields for a letter, so anything
+     * arriving here would be a stale draft rather than intent.
+     */
+    letterBody = clean(body.body, MAX.body);
+    if (!letterBody) return json(400, { ok: false, error: 'Validation failed', fields: ['body'] });
+    subject = optional(body.subject, MAX.subject);
+  }
+
   const notes = optional(body.notes, MAX.notes);
   const validUntil = docType === 'quotation' && body.valid_until ? clean(body.valid_until, 10) : null;
   const dueDate = docType === 'invoice' && body.due_date ? clean(body.due_date, 10) : null;
 
   // Recomputed here, never trusted from the client -- the client's
-  // running total is a convenience preview only.
+  // running total is a convenience preview only. A letter totals zero.
   const subtotal = Math.round(lineItems.reduce((sum, li) => sum + li.quantity * li.unit_price, 0) * 100) / 100;
   const total = subtotal;
 
@@ -229,12 +271,12 @@ async function handleCreate(event, sql, actor) {
     INSERT INTO crm_documents (
       created_by, buyer_id, doc_type, doc_number,
       buyer_company_name, buyer_contact_name, buyer_country, buyer_address,
-      currency, incoterm, valid_until, due_date, notes, line_items, subtotal, total
+      currency, incoterm, valid_until, due_date, notes, subject, body, line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
       ${companyName}, ${contactName},
       ${country}, ${buyerAddress},
-      ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes},
+      ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody},
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )
     RETURNING id, created_at

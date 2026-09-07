@@ -110,3 +110,8 @@ label { font-size: 12px; font-weight: 700; color: var(--crm-muted); display: blo
    list; the class was used before it existed, which in this stylesheet means
    it silently does nothing. */
 .crm-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Letterhead in the CRM nav. Visually separated from the document links
+   beside it because it is the one that saves nothing -- see CRM.renderNav. */
+.crm-nav-aside { opacity: 0.75; font-style: italic; }
+.crm-nav-aside:hover { opacity: 1; }

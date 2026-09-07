@@ -52,6 +52,8 @@
          * buyer_id; nothing was reading it.
          */
 
+        var TYPE_LABEL = { quotation: 'Quotation', invoice: 'Invoice', letter: 'Letter' };
+
         var rows = [];
 
         function showStatus(msg, ok) {
@@ -84,10 +86,10 @@
             html += '<tr' + (voided ? ' class="crm-muted"' : '') + '>' +
               '<td><a href="/crm/document/view/?id=' + encodeURIComponent(r.id) + '">' +
                 CRM.escapeHtml(r.doc_number || '(unnumbered)') + '</a></td>' +
-              '<td>' + (r.doc_type === 'invoice' ? 'Invoice' : 'Quotation') + '</td>' +
+              '<td>' + (TYPE_LABEL[r.doc_type] || r.doc_type) + '</td>' +
               '<td>' + CRM.escapeHtml(r.buyer_company_name || '') + '</td>' +
               '<td>' + CRM.fmtDate(r.created_at) + '</td>' +
-              '<td class="crm-num">' + money(r.total, r.currency) + '</td>' +
+              '<td class="crm-num">' + (r.doc_type === 'letter' ? '' : money(r.total, r.currency)) + '</td>' +
               '<td>' + (voided ? '<span class="crm-badge crm-badge-danger">Void</span>' : '') + '</td>' +
               '</tr>';
           });

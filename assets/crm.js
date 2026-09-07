@@ -89,6 +89,7 @@
       ['/crm/kanban/', 'Kanban'],
       ['/crm/document/', 'New Quotation'],
       ['/crm/document/?type=invoice', 'New Invoice'],
+      ['/crm/document/?type=letter', 'New Letter'],
       ['/crm/documents/', 'Documents'],
       ['/crm/buyer/?new=1', 'Add Buyer'],
     ];
@@ -97,6 +98,14 @@
       var isActive = active === l[1];
       html += '<a href="' + l[0] + '"' + (isActive ? ' class="active"' : '') + '>' + l[1] + '</a>';
     });
+    /*
+     * Letterhead is the existing /letterhead sheet: type, print, gone. It
+     * sits apart from the four document links and says so on hover, because
+     * the one thing that must not happen is someone writing an important
+     * letter there believing it is being kept -- the two are one nav entry
+     * apart and only one of them leaves a record.
+     */
+    html += '<a href="/letterhead" class="crm-nav-aside" title="Quick printable sheet -- not saved">Letterhead</a>';
     html += '<button type="button" id="crm-logout-btn">Log Out</button></div></div>';
     document.body.insertAdjacentHTML('afterbegin', html);
     var btn = document.getElementById('crm-logout-btn');
