@@ -302,6 +302,80 @@ function create(body, { cookie = COOKIE } = {}) {
     t('a quotation still requires line items', res.statusCode === 400 && /line_items/.test(res.body), res.body);
   }
 
+  // ---- the structured letter parts -------------------------------------
+  //
+  // A letter used to be a subject and one free-text box. Each part of a
+  // business letter now has its own field; only the body is required, because
+  // a short note legitimately has no enclosures and an internal memo may not
+  // need a formal close.
+  {
+    const res = await create({
+      doc_type: 'letter',
+      buyer_company_name: 'Cairo Foods Trading',
+      subject: 'Confirmation of sample dispatch',
+      salutation: 'Dear Ms Said,',
+      body: 'The samples left Alexandria on 5 September.',
+      closing: 'Yours sincerely,',
+      signatory_name: 'Mohamed Hassan',
+      signatory_title: 'Export Manager',
+      enclosures: 'Quotation Q-2026-000001',
+      cc: 'accounts@example.test',
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('every letter part is stored', res.statusCode === 200 &&
+      doc.salutation === 'Dear Ms Said,' && doc.closing === 'Yours sincerely,' &&
+      doc.signatory_name === 'Mohamed Hassan' && doc.signatory_title === 'Export Manager' &&
+      doc.enclosures === 'Quotation Q-2026-000001' && doc.cc === 'accounts@example.test',
+      JSON.stringify([doc.salutation, doc.closing, doc.signatory_name, doc.signatory_title, doc.enclosures, doc.cc]));
+  }
+
+  {
+    // the short-note case: body only
+    const res = await create({ doc_type: 'letter', buyer_company_name: 'X', body: 'Short note.' });
+    const doc = db.documents[db.documents.length - 1];
+    t('all the letter parts are optional', res.statusCode === 200 &&
+      doc.salutation === null && doc.closing === null && doc.signatory_name === null &&
+      doc.signatory_title === null && doc.enclosures === null && doc.cc === null,
+      JSON.stringify([doc.salutation, doc.closing, doc.signatory_name, doc.enclosures]));
+    t('   an empty string is stored as null, not as an empty field',
+      doc.closing !== '', JSON.stringify(doc.closing));
+  }
+
+  {
+    // the form sends '' for anything the writer left alone
+    const res = await create({
+      doc_type: 'letter', buyer_company_name: 'X', body: 'Note.',
+      salutation: '', closing: '', signatory_name: '   ', enclosures: '', cc: '',
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('blank and whitespace-only parts become null', res.statusCode === 200 &&
+      doc.salutation === null && doc.signatory_name === null, JSON.stringify([doc.salutation, doc.signatory_name]));
+  }
+
+  {
+    // a quotation must not pick these up
+    const res = await create({
+      doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS,
+      salutation: 'Dear Sir,', signatory_name: 'Someone', enclosures: 'A thing',
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('a quotation ignores letter parts', res.statusCode === 200 &&
+      doc.salutation === null && doc.signatory_name === null && doc.enclosures === null,
+      JSON.stringify([doc.salutation, doc.signatory_name, doc.enclosures]));
+  }
+
+  {
+    // long values are capped rather than rejected, like every other field
+    const res = await create({
+      doc_type: 'letter', buyer_company_name: 'X', body: 'Note.',
+      signatory_name: 'N'.repeat(500), closing: 'C'.repeat(300),
+    });
+    const doc = db.documents[db.documents.length - 1];
+    t('over-long parts are truncated to their limits',
+      res.statusCode === 200 && doc.signatory_name.length === 200 && doc.closing.length === 80,
+      JSON.stringify([doc.signatory_name.length, doc.closing.length]));
+  }
+
   // ---- everything else the handler validated, it still validates -------
   {
     const res = await create({ doc_type: 'receipt', buyer_company_name: 'X', line_items: LINE_ITEMS });
