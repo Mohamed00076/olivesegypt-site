@@ -1,7 +1,7 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
-const { requireCrmSession, readJsonBody, json } = require('./_crm_lib');
+const { requireCrmSession, readJsonBody, json, describeDbError, dbStep } = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -174,14 +174,23 @@ async function handleList(event, sql) {
 }
 
 async function handleGet(event, sql, id, actor) {
-  const rows = await sql`SELECT * FROM buyers WHERE id = ${id} LIMIT 1`;
+  /*
+   * Four queries, each labelled. A buyer page that fails says which of the
+   * four failed rather than "Server error", which is the whole of what was
+   * knowable before and the reason a broken page took two attempts to fix.
+   */
+  const rows = await dbStep('reading the buyer record',
+    () => sql`SELECT * FROM buyers WHERE id = ${id} LIMIT 1`);
   if (!rows[0]) return json(404, { ok: false, error: 'Not found' });
 
-  const activity = await sql`SELECT id, created_at, created_by, entry FROM buyer_activity_log WHERE buyer_id = ${id} ORDER BY created_at DESC LIMIT 500`;
-  const stageHistory = await sql`SELECT id, from_stage, to_stage, changed_at, changed_by FROM buyer_stage_history WHERE buyer_id = ${id} ORDER BY changed_at ASC`;
+  const activity = await dbStep('reading the activity log',
+    () => sql`SELECT id, created_at, created_by, entry FROM buyer_activity_log WHERE buyer_id = ${id} ORDER BY created_at DESC LIMIT 500`);
+  const stageHistory = await dbStep('reading the stage history',
+    () => sql`SELECT id, from_stage, to_stage, changed_at, changed_by FROM buyer_stage_history WHERE buyer_id = ${id} ORDER BY changed_at ASC`);
 
   // Rule 22: audit log of access to sensitive records -- reads included, not just writes.
-  await audit(sql, actor, 'read', 'buyer', id, null);
+  await dbStep('writing the audit entry',
+    () => audit(sql, actor, 'read', 'buyer', id, null));
 
   return json(200, { ...rows[0], activity_log: activity, stage_history: stageHistory });
 }
@@ -311,7 +320,7 @@ exports.handler = async (event) => {
   const id = qs.id ? parseInt(qs.id, 10) : null;
 
   try {
-    await ensureSchema(sql);
+    await dbStep('preparing the database tables', () => ensureSchema(sql));
 
     if (event.httpMethod === 'GET' && id) return await handleGet(event, sql, id, actor);
     if (event.httpMethod === 'GET') return await handleList(event, sql);
@@ -321,8 +330,14 @@ exports.handler = async (event) => {
 
     return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST, PATCH, DELETE' });
   } catch (err) {
-    console.error('[crm-buyers] error:', err?.message ?? err);
-    return json(500, { ok: false, error: 'Server error' });
+    const described = describeDbError(err, err?.crmStep);
+    console.error(
+      `[crm-buyers] error: step=${described.step || 'unknown'} code=${described.code || 'none'} ${err?.message ?? err}`
+    );
+    // The reader here is signed-in staff, and the message is filtered by
+    // describeDbError -- see the note in _crm_lib.js about what it will and
+    // will not repeat from the database.
+    return json(500, { ok: false, ...described });
   }
 };
 
