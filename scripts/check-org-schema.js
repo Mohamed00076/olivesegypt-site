@@ -375,6 +375,62 @@ for (const f of files) {
   }
 }
 
+// ---- no Product invents a price, a review or a rating -------------------
+//
+// Search Console reports every Product node on this site as an invalid
+// product snippet -- 16 of them on 2026-09-06 -- because Google requires at
+// least one of offers, review or aggregateRating and there is none.
+//
+// The owner reviewed that on 2026-09-07 and chose to leave it. The reasoning
+// is worth writing down, because the report will stay red forever and the
+// obvious way to turn it green is to fabricate:
+//
+//   - offers needs a price. This company quotes per container, per buyer;
+//     every product page says "Confirmed during quotation" because that is
+//     how it actually sells. A number in the markup would be a commercial
+//     fact invented to satisfy a dashboard.
+//   - review and aggregateRating need customers who have reviewed the
+//     products. As a newly established exporter that has not yet completed a
+//     shipment, there are none. Inventing them is worse than inventing a
+//     price.
+//
+// A red Search Console row is not a defect here. It means "not eligible for
+// Google Shopping", which is true, and which was never available to a
+// quote-only B2B supplier. Indexing and ranking are unaffected: structured
+// data governs rich-result eligibility, not whether a page is indexed.
+//
+// So this check exists to stop a future pass from "fixing" the red number.
+// If real pricing is ever published, or real reviews are ever collected,
+// delete the relevant entry here deliberately -- do not work around it.
+{
+  const FABRICATED = {
+    offers: 'a price this company does not publish; it quotes per container',
+    price: 'a price this company does not publish; it quotes per container',
+    review: 'customer reviews that do not exist yet',
+    aggregateRating: 'a rating built from reviews that do not exist yet',
+  };
+  const found = [];
+  for (const f of files) {
+    const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
+    for (const doc of jsonLd(html)) {
+      if (doc.__parseError) continue;
+      for (const n of nodes(doc)) {
+        if (!n || typeof n !== 'object' || n['@type'] !== 'Product') continue;
+        for (const k of Object.keys(FABRICATED)) {
+          if (k in n) found.push(`${f}: Product.${k} -- ${FABRICATED[k]}`);
+        }
+      }
+    }
+  }
+  if (found.length) {
+    problems.push(
+      `${found.length} Product field(s) assert commercial facts this company has not published. ` +
+      `Search Console flags these products as invalid snippets on purpose; that is not a bug to ` +
+      `paper over: ${found.slice(0, 3).join('; ')}${found.length > 3 ? ' ...' : ''}`
+    );
+  }
+}
+
 if (websites === 0) problems.push('no WebSite node found on the site');
 
 if (problems.length === 0) {
