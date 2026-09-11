@@ -178,6 +178,22 @@
         var buyerId = qs.get('id');
         var isNew = qs.get('new') === '1' || !buyerId;
 
+        /*
+         * Set for one page view only, immediately after a new buyer is saved.
+         *
+         * Saving redirects onto the new record, which is right -- the buyer
+         * exists now and this is their page. But the record page offers
+         * Delete, so the first thing you saw after adding a buyer was a red
+         * Delete button where the form's Save button had been, and the owner
+         * read it as something having been deleted rather than as an action
+         * available to them.
+         *
+         * So the first view says "Saved" and does not offer Delete. The
+         * button is not removed from the record -- reload, or open the buyer
+         * from the list, and it is there as before.
+         */
+        var justSaved = qs.get('saved') === '1';
+
         function populateSelects() {
           var stageSel = document.getElementById('current_stage');
           CRM.STAGES.forEach(function (s) {
@@ -344,8 +360,20 @@
             if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
             var b = result.data;
             document.getElementById('page-title').textContent = b.company_name;
-            document.getElementById('delete-btn').style.display = '';
+            // Hidden on the just-saved view only -- see justSaved above.
+            if (!justSaved) document.getElementById('delete-btn').style.display = '';
             fillForm(b);
+            if (justSaved) {
+              showStatus('Saved. ' + b.company_name + ' has been added to your buyers.', true);
+              /*
+               * Drop the flag from the address bar. It describes one moment,
+               * not this page: reloading, bookmarking or sharing the URL
+               * should give the ordinary record, Delete button and all.
+               */
+              if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, '', '/crm/buyer/?id=' + encodeURIComponent(buyerId));
+              }
+            }
             renderStageHistory(b.stage_history || []);
             renderActivity(b.activity_log || []);
             loadDocuments();
@@ -369,7 +397,7 @@
               return;
             }
             if (isNew) {
-              window.location.href = '/crm/buyer/?id=' + result.data.id;
+              window.location.href = '/crm/buyer/?id=' + result.data.id + '&saved=1';
             } else {
               showStatus('Saved.', true);
               checkCertificationGap(payload);
