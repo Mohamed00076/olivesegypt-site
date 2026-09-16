@@ -168,7 +168,14 @@ for (const route of routes()) {
   // invisible glyph. That is the failure mode waiting for whoever adds
   // Instagram or LinkedIn next: the button appears in the markup, the page
   // looks fine to a script counting anchors, and a visitor sees nothing.
-  for (const m of html.matchAll(/class="([^"]*\btc-social(?:-wide)?\b[^"]*)"/g)) {
+  // Matched by the button's own classes rather than a tc-social prefix. The
+  // prefix form also caught tc-social-pill-label, the <span> holding the word
+  // inside the pill, and demanded a tint of it -- a label is not a button and
+  // has no glyph to leave invisible. Listing the shapes keeps the check exact:
+  // a genuinely new button shape fails here until it is added, which is the
+  // right way round.
+  for (const m of html.matchAll(/class="([^"]*\b(?:tc-social|tc-social-wide|tc-social-pill)\b[^"]*)"/g)) {
+    if (/\btc-social-pill-label\b/.test(m[1])) continue;
     const classes = m[1].split(/\s+/);
     if (!classes.some((c) => TINTS.has(c))) {
       problems.push(

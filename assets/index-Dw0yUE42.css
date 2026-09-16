@@ -507,6 +507,63 @@ header .container {
 .tc-social-wide:hover { background: rgba(var(--tc-social-rgb), 0.2); }
 .tc-social-wide svg { width: 16px; height: 16px; }
 
+/* ---------------------------------------------------------------------------
+   The pill. Trial variant, 2026-09-16.
+
+   The square tinted icon (.tc-social above) is quiet by design -- it sits in
+   the header without competing with the quote button. The owner wants to run
+   the louder option for a while and see which gets pressed more, so this is
+   the same link wearing a different shape: solid brand blue, rounded ends,
+   and the word Follow, which asks for the click rather than waiting to be
+   recognised.
+
+   Solid rather than tinted because a comparison between two quiet buttons
+   tells you nothing. White on #1877f2 is 3.8:1 -- above the 3:1 required for
+   large or bold text at this weight, and the label is 13px semibold.
+
+   Dark mode lifts the blue rather than darkening it: the header is near-black
+   there, so the same blue reads as a hole rather than a button.
+   --------------------------------------------------------------------------- */
+.tc-social-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: #1877f2;
+  border: 1px solid #1877f2;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.tc-social-pill:hover {
+  background: #0f62d0;
+  border-color: #0f62d0;
+  transform: translateY(-1px);
+}
+.tc-social-pill:focus-visible {
+  outline: 2px solid #1877f2;
+  outline-offset: 2px;
+}
+.tc-social-pill svg { width: 15px; height: 15px; flex-shrink: 0; }
+.dark .tc-social-pill { background: #2d88ff; border-color: #2d88ff; color: #08121f; }
+.dark .tc-social-pill:hover { background: #4d9bff; border-color: #4d9bff; }
+
+/* The header is tight on a small phone: logo, tagline, theme toggle and the
+   menu button already share that row. Below 380px the label steps aside and
+   the pill keeps its shape as an icon -- narrower than the old square, so it
+   cannot be what pushes the row over. aria-label carries the meaning either
+   way, so nothing is lost to a screen reader. */
+@media (max-width: 380px) {
+  .tc-social-pill .tc-social-pill-label { display: none; }
+  .tc-social-pill { padding: 0.4rem 0.5rem; gap: 0; }
+}
+
 /* --- tints ------------------------------------------------------------- */
 .tc-social-fb { --tc-social-rgb: 24, 119, 242; --tc-social-ink: #1877f2; }
 .dark .tc-social-fb { --tc-social-rgb: 122, 182, 255; --tc-social-ink: #7ab6ff; }
