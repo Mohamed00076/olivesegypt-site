@@ -205,10 +205,13 @@ PAGE_TMPL = """<!DOCTYPE html>
         </div>
       </section>
 
-      <section class="mb-8 grid grid-cols-3 gap-2 max-w-sm text-center text-sm">
+      <section class="mb-8">
+        <h2 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Brine Specification</h2>
+        <div class="grid grid-cols-3 gap-2 max-w-sm text-center text-sm">
         <div class="rounded bg-muted px-2 py-2"><p class="text-[10px] text-muted-foreground uppercase">Salt</p><p class="font-semibold text-foreground">{brine_salt}</p></div>
         <div class="rounded bg-muted px-2 py-2"><p class="text-[10px] text-muted-foreground uppercase">Acidity</p><p class="font-semibold text-foreground">{brine_acidity}</p></div>
         <div class="rounded bg-muted px-2 py-2"><p class="text-[10px] text-muted-foreground uppercase">pH</p><p class="font-semibold text-foreground">{brine_ph}</p></div>
+        </div>
       </section>
 
       <section class="mb-8">
