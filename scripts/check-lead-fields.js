@@ -185,6 +185,52 @@ async function post(body) {
       'no explanation found');
   }
 
+  // ---- 6. every lead form on the site actually has a handler ------------
+  //
+  // The market-brief form on the homepage carried id="newsletter-form", five
+  // inputs and a Subscribe button, and no page loaded a script that bound to
+  // it. Nothing on the page had a `name` either, so pressing Subscribe did a
+  // native GET to `/?` -- fields discarded, no request to any endpoint, no
+  // confirmation. It looked like it worked. It had never captured a lead.
+  //
+  // Nothing in this suite could see that, because every other check reads
+  // either the endpoint or one page's fields. What was missing was the join
+  // between them: a form declaring the shared contract, on a page that never
+  // loads the shared handler.
+  const HANDLER = '/assets/gated-download.js';
+  const pagesWithLeadForms = [];
+  (function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name.startsWith('.') || ['node_modules', 'geo', 'assets', 'scripts', 'docs', 'netlify'].includes(entry.name)) continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith('.html')) {
+        const html = fs.readFileSync(full, 'utf8');
+        if (/<form[^>]+data-(?:lead-form|gated-download)=/.test(html)) pagesWithLeadForms.push([path.relative(ROOT, full), html]);
+      }
+    }
+  })(ROOT);
+
+  t(`lead forms were found to check (${pagesWithLeadForms.length} page(s))`, pagesWithLeadForms.length > 0);
+
+  const unhandled = pagesWithLeadForms.filter(([, html]) => !html.includes(HANDLER)).map(([f]) => f);
+  t('every page with a lead form loads the shared handler', unhandled.length === 0, unhandled.join(', '));
+
+  // A form that declares the contract must carry the parts the handler reads,
+  // or it fails silently in a different way: no submit button to bind, or no
+  // status element, so the visitor is told nothing either way.
+  const incomplete = [];
+  for (const [file, html] of pagesWithLeadForms) {
+    for (const m of html.matchAll(/<form[^>]+data-(?:lead-form|gated-download)=[^>]*>[\s\S]*?<\/form>/g)) {
+      const form = m[0];
+      const missing = ['[data-role="submit"]', '[data-role="status"]', 'data-field="email"', 'data-field="consent"']
+        .filter((needle) => !form.includes(needle.replace(/^\[|\]$/g, '')));
+      if (missing.length) incomplete.push(`${file}: ${missing.join(' ')}`);
+    }
+  }
+  t('every lead form carries a submit, a status element, an email field and consent',
+    incomplete.length === 0, incomplete.slice(0, 4).join(' | '));
+
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })().catch((e) => { console.error(e); process.exit(1); });

@@ -29,6 +29,10 @@
 //     <select data-field="buyer_type" required>...</select>
 //     <input data-field="website" type="text" tabindex="-1" autocomplete="off" />  (honeypot, hidden off-screen)
 //     <input data-field="consent" type="checkbox" required />
+//     (optional) data-success-message="..." on the <form> overrides the
+//     default confirmation, for forms whose success is not "we have your brief".
+//     (optional) data-status-on-dark on the <form> switches the status
+//     message to light-on-dark colours, for a form on a dark panel.
 //     <button type="submit" data-role="submit">...</button>
 //     <p data-role="status" class="hidden" role="status" aria-live="polite"></p>
 //     <div data-role="download-reveal" class="hidden">
@@ -74,11 +78,29 @@
     var reveal = form.querySelector('[data-role="download-reveal"]');
     var link = form.querySelector('[data-role="download-link"]');
 
+    // The default pair is sized for a light card. The market-brief form sits
+    // on the olive gradient panel, where the default green measures 1.06:1
+    // against the backdrop -- readable only if you already know what it says.
+    //
+    // Recolouring alone cannot fix it: that panel is light enough that even
+    // pure white reaches only 4.49:1 at this 12px size, just under AA. So a
+    // form on a dark panel gets the message on its own darkened chip, and
+    // the text is then measured against the chip rather than the panel.
+    var onDark = form.hasAttribute('data-status-on-dark');
+    var STATUS_COLOR = onDark
+      ? { error: '#fee2e2', success: '#dcfce7' }
+      : { error: '#b91c1c', success: '#15803d' };
+
     function showStatus(kind, text) {
       if (!status) return;
       status.textContent = text;
       status.classList.remove('hidden');
-      status.style.color = kind === 'error' ? '#b91c1c' : '#15803d';
+      status.style.color = kind === 'error' ? STATUS_COLOR.error : STATUS_COLOR.success;
+      if (onDark) {
+        status.style.background = 'rgba(0,0,0,0.45)';
+        status.style.padding = '8px 10px';
+        status.style.borderRadius = '8px';
+      }
     }
 
     form.addEventListener('submit', function (e) {
@@ -133,7 +155,10 @@
       }).then(function (result) {
         if (submitBtn) submitBtn.disabled = false;
         if (result.ok && result.data && result.data.ok) {
-          showStatus('success', gated ? T.success : T.sent);
+          // A form may state its own confirmation: 'we have your brief' is
+          // right for the private-label brief and wrong for a subscription.
+          showStatus('success', form.getAttribute('data-success-message')
+                                || (gated ? T.success : T.sent));
           // The guide is served by a function that requires a signed
           // token (netlify/functions/guide.js). The main carrier is an
           // HttpOnly cookie set on this same response, which this script
