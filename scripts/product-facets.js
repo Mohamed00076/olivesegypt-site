@@ -19,7 +19,7 @@
  *
  *   - Packaging-based segmentation. Every one of the eleven product pages
  *     carries the identical packaging sentence ("Glass jars, tin cans,
- *     plastic buckets, wooden barrels (brine), or vacuum pouches, subject to
+ *     plastic buckets, plastic barrels (brine), or vacuum pouches, subject to
  *     product and order volume"). A facet that matches all eleven filters
  *     nothing, so "bulk and industrial" is built from the explicit
  *     bulk/production wording in "Best For" instead, and is deliberately

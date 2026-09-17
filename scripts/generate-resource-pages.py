@@ -174,7 +174,7 @@ FAQ_ITEMS = [
     ("Can I request a sample?",
      "Yes. Samples are reserved for qualified B2B buyers &mdash; importers, distributors, retail chains, and food-service buyers. We typically send a representative 1&ndash;5&nbsp;kg assortment of the variety, caliber, and packaging you're evaluating. We coordinate dispatch and customs paperwork to your destination port or door, and sample requests are confirmed within 24 hours by our export team."),
     ("What packaging is available?",
-     "Glass jars, tin cans, plastic buckets, wooden barrels (for bulk brine), and vacuum pouches, depending on the product and order volume &mdash; these are the packaging formats we have actually confirmed as available. Private-label and OEM packaging is available; artwork, labeling, and minimum quantities for custom packaging are confirmed per project."),
+     "Glass jars, tin cans, plastic buckets, plastic barrels (for bulk brine), and vacuum pouches, depending on the product and order volume &mdash; these are the packaging formats we have actually confirmed as available. Private-label and OEM packaging is available; artwork, labeling, and minimum quantities for custom packaging are confirmed per project."),
     ("Which markets are you targeting?",
      "We are actively engaging buyers in Africa, the Middle East, and Asia. These are the markets we are building relationships in &mdash; not markets we currently serve with an established shipping history."),
     ("What documents do you provide?",
@@ -314,7 +314,7 @@ packaging_formats = [
     dict(name="Glass Jars", note="Premium retail and deli presentation. Common sizes from 300g to 1.7kg. Showcases the product; supports branded and private-label labeling."),
     dict(name="Tin Cans", note="Shelf-stable and durable, ideal for food service, warm-climate export, and oxidized black olive lines. Stack and ship efficiently."),
     dict(name="Plastic Buckets", note="Food-grade buckets, typically 1–10kg, for restaurants, caterers, and repackers. Balance cost, volume, and convenience."),
-    dict(name="Wooden / Plastic Barrels", note="Bulk brine maturation and shipping, typically 50–200kg, for the lowest cost per kilogram on large volumes."),
+    dict(name="Plastic Barrels", note="Bulk brine maturation and shipping in 220 kg barrels, for the lowest cost per kilogram on large volumes."),
     dict(name="Vacuum Pouches", note="Compact, lightweight format for pitted or sliced product where brine weight and volume need to be minimized."),
 ]
 packaging_html = "".join(f'''<div class="rounded-xl border border-border bg-card p-5"><h3 class="font-semibold text-foreground mb-1">{p["name"]}</h3><p class="text-sm text-muted-foreground leading-relaxed">{p["note"]}</p></div>''' for p in packaging_formats)
@@ -346,7 +346,7 @@ c1_main = hero(
 write(
     "packaging",
     "Packaging Options for Export | Triple Company for Industrial Development",
-    "Glass jars, tin cans, plastic buckets, wooden barrels, and vacuum pouches for Egyptian table olive export — plus how caliber sizing works and private-label/OEM packaging.",
+    "Glass jars, tin cans, plastic buckets, plastic barrels, and vacuum pouches for Egyptian table olive export — plus how caliber sizing works and private-label/OEM packaging.",
     "olive packaging options Egypt, bulk olive drums, olive drums buckets cans jars wholesale supplier, private label custom OEM olive packaging",
     c1_main,
 )
