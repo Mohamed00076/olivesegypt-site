@@ -842,6 +842,211 @@ build is still failed from before the billing fix, a fresh push or a manual
 
 ---
 
+## Retroactive record — Deploys 6 to 10 (PRs #63–#99)
+
+**Written 2026-09-17, after the fact, at the owner's request.** Deploys 1 to 5
+above were written as part of the work they describe. This block was not: the
+record stopped at Deploy 5 on 2026-09-05 and thirty-seven pull requests were
+merged over the following twelve days without an entry. Every one of those
+merges queued a production build, because the site auto-builds from `main`, so
+the record fell ten days behind what was actually being served.
+
+What that means for the five entries below, stated plainly so they are not read
+as carrying the same weight as Deploys 1 to 5:
+
+- **Read from the repository, and reliable:** commit ranges, dates, PR numbers,
+  commit counts, file counts, diff sizes, rollback SHAs, which claim-register
+  rows moved, and what each pull request changed.
+- **Partly reconstructed:** the approval wording. Deploy 10's instructions come
+  from the session that produced it and are quoted. For Deploys 6 to 9 the
+  merges were made on explicit instruction — that is the standing rule, and no
+  merge in this repository has been made without one — but the exact wording is
+  in sessions whose transcripts this entry cannot reach, so it is not quoted.
+- **Not present, deliberately:** the per-deploy verification tables that Deploys
+  1 to 5 carry (locale links, hreflang counts, JSON-LD block counts, PDF page
+  counts). Those checks ran at merge time as `npm test`, which is why the suite
+  exists, but their output was not captured then and has not been re-run against
+  each historical commit now. Numbers that were never observed are not recorded
+  here as though they had been.
+
+Deploys 6 to 10 share two limitations with every deploy above: **no Netlify
+build was ever confirmed** (this environment has no Netlify API or dashboard
+access, and egress to `olivesegypt.com` is blocked by sandbox policy), and **no
+deploy preview was used**, so verification was local throughout.
+
+---
+
+### Deploy 6 — Navigation, schema, identity and buyer-intent pages (PRs #63–#79)
+
+**Dates:** 2026-09-05 → 2026-09-07
+**Production commit:** `8834a12`
+**Previous recorded deploy:** `687608bd` (Deploy 5)
+**Delta:** 49 commits, 17 merged pull requests, 156 files changed (+9,895 / −4,902)
+**Approval:** per-PR merge instructions, wording not recoverable (see preamble).
+
+| PR | Substance |
+| --- | --- |
+| #63 | Deploy 5's own entry in this record. |
+| #64 | Navigation redesign: new routes, a six-item nav with dropdowns, one shared footer — and two unevidenced claims removed on the way. |
+| #65 | The gated guides made to actually gate, and the nightly purge guarded. |
+| #66 | A real unsubscribe, replacing a consent label that promised one the site could not honour. |
+| #67 | One `Organization` schema for the whole site, defined on the homepage. |
+| #68 | Sitemap, English `Article` schema, robots meta, and an audit of the Arabic schema. |
+| #69 | Every `Organization` node linked to that one entity, and the Arabic company name given a home. |
+| #70 | Each product linked to its own translation. |
+| #71 | One Facebook URL for the site. |
+| #72 | One head-office address, everywhere it belongs. |
+| #73 | The `og:site_name` generator fixed; the private-label claim scoped to what is actually offered; **Operating Rule 1 enforced by a check** rather than by memory. |
+| #74 | Quality & Documentation restructured into three tiers; the Supply & Processing Network page; and Parts B, D, E and F — buyer-intent filtering on the catalogue, the private-label landing page, four more gated assets in both locales, and intent routing. |
+| #75 | The logistics claim scoped, the sourcing regions reconciled, and contact data purged. |
+| #76 | A Facebook button back in the shared header, restyled as a tinted square built to take more networks. |
+| #77 | The tab icon was a red placeholder square, not the logo. Icons then downscaled in linear light, and that pinned in a check. |
+| #78 | Four register actions the owner had answered, closed out. |
+| #79 | The site's short name declared in the `WebSite` node, in both locales. |
+
+**Defects found that were not in the brief:** the catalogue filter had never been
+wired up; **the English contact and sample forms submitted nowhere**; the gated
+guides did not gate; the favicon was a red placeholder.
+
+**Claim register:** created at this deploy — C-01 through C-60.
+
+**Rollback:** all seventeen landed as true merge commits, so each needs `-m 1`:
+
+```
+git revert -m 1 8834a12 df64e4a 376d37f c96eaa2 0b132d3 d6a2bce 87a9a19 \
+                0b9de43 db2e36d 7741c99 8c1ec17 52ea49d 979e135 573ec83 \
+                4a9fbb1 ae4215a 181ccf3
+```
+
+---
+
+### Deploy 7 — CRM documents, Arabic documents, and two CRM failures (PRs #80–#90)
+
+**Date:** 2026-09-07
+**Production commit:** `d135f7c`
+**Previous recorded deploy:** `8834a12` (Deploy 6)
+**Delta:** 20 commits, 11 merged pull requests, 30 files changed (+3,153 / −207)
+**Approval:** per-PR merge instructions, wording not recoverable (see preamble).
+
+| PR | Substance |
+| --- | --- |
+| #80 | Recorded *why* every product page is an invalid snippet, so it stops being "fixed". |
+| #81 | `scripts/admin-password.js`, the sibling `crm-create-user.js` always had. |
+| #82 | Quotations and invoices issued without creating a buyer first. |
+| #83 | The printed sheet redesigned, the CRM nav cut to four places, and the word "Letter" dropped from the sheet at the owner's request. |
+| #84 | Letters composed from labelled fields instead of one free-text box. |
+| #85 | C-14 closed — the Arabic jalapeño term (هالبينو) confirmed. |
+| #86 | The "3 export markets" stat removed from Why Egyptian Olives. |
+| #87 | Quotations, invoices and letters issued in Arabic. |
+| #88 | The CRM and analytics made usable on a phone. |
+| #89 | "Server error" when opening a buyer record. |
+| #90 | A failing CRM page made to say what actually failed. |
+
+**Defects found that were not in the brief:** `buyer_activity_log` was read by one
+function and created by another that was only reachable through the broken page
+— #89 shipped the missing table and **the page still failed**, which is what
+#90 exists for: rather than guess a third time, CRM failures were made
+self-describing, without leaking the database host into a response body. Three
+CRM cards were also found styling themselves with an undefined CSS variable.
+
+**Claim register:** C-61 through C-71 added; C-14, C-24, C-51, C-55 and C-56 amended.
+
+**Rollback:** this deploy straddles the change from merge commits to squashes,
+so it takes two commands — `-m 1` for #80–#83, plain revert for #84–#90:
+
+```
+git revert d135f7c 837fb8d 3ab308e 337cfbf 67f2469 9d02fec d57c2d0
+git revert -m 1 99a74b5 6ee9ccf 577446c 3f4325f
+```
+
+---
+
+### Deploy 8 — Two closures (PRs #91–#92)
+
+**Date:** 2026-09-11
+**Production commit:** `414f8d8`
+**Previous recorded deploy:** `d135f7c` (Deploy 7)
+**Delta:** 2 commits, 2 merged pull requests, 2 files changed (+31 / −3)
+**Approval:** per-PR merge instructions, wording not recoverable (see preamble).
+
+| PR | Substance |
+| --- | --- |
+| #91 | C-15 closed — the Arabic placeholder caption is in Arabic. |
+| #92 | "Saved" after adding a buyer, instead of the Delete button the owner was being offered. |
+
+**Claim register:** C-15 amended and closed.
+
+**Rollback:** `git revert 414f8d8 33779a4` (squashes, no `-m 1` needed)
+
+---
+
+### Deploy 9 — The Arabic mobile menu, and the Follow-pill trial (PRs #93–#94)
+
+**Date:** 2026-09-16
+**Production commit:** `ae0185d`
+**Previous recorded deploy:** `414f8d8` (Deploy 8)
+**Delta:** 2 commits, 2 merged pull requests, 86 files changed (+258 / −427)
+**Approval:** per-PR merge instructions, wording not recoverable (see preamble).
+
+| PR | Substance |
+| --- | --- |
+| #93 | The mobile menu on every Arabic page. |
+| #94 | The Facebook button trialled as a Follow pill, at the owner's request, to see which design gets pressed. |
+
+**Defect found that was not in the brief:** the owner reported the menu dead on
+the Arabic homepage. It was dead on **all 28 Arabic pages that have one**. Each
+carried its own inline copy of a handler that `/assets/site-nav.js` also binds,
+so one tap opened and closed the menu inside a single event — nothing errors,
+nothing looks wrong in the markup, and the DOM is identical before and after.
+`scripts/check-nav-handlers.js` now forbids the structure that allowed it.
+
+**Rollback:** `git revert ae0185d 1a4fbac` (squashes, no `-m 1` needed)
+
+---
+
+### Deploy 10 — Tracking, retired claims, and the barrel (PRs #95–#99)
+
+**Date:** 2026-09-17
+**Production commit:** `4de48ea`
+**Previous recorded deploy:** `ae0185d` (Deploy 9)
+**Delta:** 5 commits, 5 merged pull requests, 67 files changed (+354 / −104)
+**Approval:** quotable, from the session that produced it — "merge both and add
+the click tracking" (#94/#95), "both fine merge all" (#96/#97), "merge 98"
+(#98), and "merge it" (#99).
+
+| PR | Substance |
+| --- | --- |
+| #95 | Facebook clicks recorded, consent-gated, so the Follow-pill trial can be measured rather than guessed at from dates. |
+| #96 | The retired "3 export markets" claim cleared from the generator that writes the resource pages, and a price range the blog implied but the site does not publish. |
+| #97 | Arabic letters no longer auto-address every recipient as a man. |
+| #98 | Three Arabic wording reviews closed — the owner read them as a native reader and confirmed them. |
+| #99 | The barrel is plastic, and it holds 220 kg. |
+
+**Defects found that were not in the brief:**
+
+- **A pre-existing privacy gap.** `whatsapp_click`, `email_click` and
+  `specification_download` were already being recorded, and the privacy page
+  listed only pages viewed, referrer, browser/device and country — it did not
+  mention button presses at all. Corrected in both locales alongside #95.
+- **A retired claim living on in a generator.** The "3 export markets" card was
+  removed from the published pages in #86 on 2026-09-07; the generator that
+  produced them still carried it, under the same source line. One re-run would
+  have restored it. The same file also carried an unapproved Arabic company
+  name in its structured data that every check had passed over.
+- **A wrong packaging spec in 103 places.** The bulk format was described as a
+  wooden barrel across both locales, with three different capacities quoted at
+  once (50/100/200 kg chips on the homepage, "typically 50–200kg" on the
+  packaging pages and in the gated guides, and a 50–200kg row in the print
+  catalogues). Corrected on the owner's own words. Both gated catalogue PDFs
+  were rebuilt so the change reaches the download and not only the HTML.
+
+**Claim register:** C-72 through C-76 added; C-05 and C-71 amended. C-55 is left
+as the only `needs-review` row in the register.
+
+**Rollback:** `git revert 4de48ea b359cdf 9f8d584 7790843 75437be` (squashes, no `-m 1` needed)
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -864,7 +1069,12 @@ last sync. It is not part of the changed-file scope of any deploy above.
    page-by-page, the first PDF in this project to get that. The English
    export-catalog PDF, and all four of `company-profile`, `letterhead`,
    `business-card`, `catalog/print` (both languages), remain unverified
-   as rendered output — only checked as source HTML.
+   as rendered output — only checked as source HTML. Deploy 10 rebuilt **both**
+   export-catalog PDFs with the same headless-Chromium producer and read
+   the packaging table back out of a real browser to confirm the corrected
+   row, but that is one table, not a page-by-page inspection: the English
+   catalogue still has never had one, and the other four documents remain
+   checked only as source HTML.
 4. **Certificates remain unverified** — nothing certificate-dependent has
    been published, per A1/Rule 3, and that has not changed since
    `evidence-needed.md` was written.
@@ -872,4 +1082,22 @@ last sync. It is not part of the changed-file scope of any deploy above.
    merges actually succeeded is unconfirmed** — this session has no
    Netlify API or dashboard access. The site owner should check the
    Netlify dashboard directly and, if the latest production deploy shows
-   failed or stale, trigger a fresh one manually.
+   failed or stale, trigger a fresh one manually. **The same is true of all
+   37 merges in Deploys 6 to 10**, for the same reason, and it is the one
+   thing in this document only the owner can settle.
+6. **This record ran ten days behind production.** Deploy 5 was written on
+   2026-09-05 and nothing was added until 2026-09-17, while PRs #63 to #98
+   merged and built. The claim register kept pace throughout; this file did
+   not. Deploys 6 to 10 were reconstructed from git history on 2026-09-17,
+   and the preamble to that block says exactly which parts are read from the
+   repository and which are not. The gap is cheap to avoid and expensive to
+   close after the fact: a deploy entry belongs in the pull request that
+   merges, not in a catch-up pass twelve days later.
+7. **Deploys 6 to 10 carry no per-deploy verification tables**, unlike
+   Deploys 1 to 5. `npm test` ran at merge time — it is now 20 suites, and
+   several of them exist because of defects found during those deploys
+   (`check-nav-handlers.js`, `check-crm-schema.js`, `check-crm-errors.js`,
+   `check-packaging-claims.js`) — but the output was not captured per
+   deploy, and re-running it against each historical commit now would not
+   reproduce what was observed then. Numbers that were never observed have
+   deliberately not been written down.
