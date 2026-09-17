@@ -92,6 +92,27 @@
     } else if (/^\/catalog\/print|^\/downloads/.test(href)) {
       TC.trackEvent('specification_download', { source_page: sourcePage, target: href });
       TC.logEvent('specification_download', { source_page: sourcePage, target_id: extractTargetId(href) });
+    } else if (/^https:\/\/(?:www\.)?facebook\.com\//.test(href)) {
+      /*
+       * Which Facebook button was on screen, not merely that one was pressed.
+       *
+       * The owner is running the pill against the square icon it replaced to
+       * see which gets pressed more. Without the variant recorded, the two
+       * designs are indistinguishable in the data: the run before the swap
+       * and the run after would have to be compared by date, which conflates
+       * the button with whatever else changed that week.
+       *
+       * The drawer link is labelled separately rather than lumped in with
+       * the header. It is a different placement in a different menu, and
+       * mixing it into the comparison would put traffic from a button nobody
+       * changed on one side of the scales.
+       */
+      var variant = a.classList.contains('tc-social-pill') ? 'header_pill'
+        : a.classList.contains('tc-social-wide') ? 'drawer'
+        : a.classList.contains('tc-social') ? 'header_icon'
+        : 'other';
+      TC.trackEvent('facebook_click', { source_page: sourcePage, target: variant });
+      TC.logEvent('facebook_click', { source_page: sourcePage, target_id: variant });
     }
   }, true);
 
