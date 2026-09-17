@@ -381,6 +381,12 @@
             applyLetterLanguage(langSelect.value);
           });
 
+          // Once the writer touches the opening it is theirs, and the language
+          // switch stops rewriting it.
+          document.getElementById('l-salutation').addEventListener('input', function () {
+            salutationIsOurs = false;
+          });
+
           var suggestions = document.getElementById('product-suggestions');
           CRM.PRODUCTS.forEach(function (p) {
             var o = document.createElement('option'); o.value = p[1]; suggestions.appendChild(o);
@@ -406,8 +412,8 @@
               (b.contact_phone ? CRM.escapeHtml(b.contact_phone) : '') + '<br/>' +
               CRM.escapeHtml(b.country_region || '');
             if (isLetter && b.contact_name) {
-              var phrases = LETTER_PHRASES[langSelect.value] || LETTER_PHRASES.en;
-              document.getElementById('l-salutation').value = phrases.dearPrefix(b.contact_name);
+              linkedContactName = b.contact_name;
+              applySalutationPrefill();
             }
             if (b.incoterm) document.getElementById('incoterm').value = b.incoterm;
             document.getElementById('buyer-card').style.display = '';
@@ -456,9 +462,46 @@
               ['مع أطيب التحيات،', 'مع أطيب التحيات،'],
               ['', '(بدون)'],
             ],
-            dearPrefix: function (name) { return 'السيد/ ' + name + ' المحترم،'; },
+            /*
+             * No automatic opening in Arabic, by the owner's decision
+             * (2026-09-17, confirming the wording as a native reader).
+             *
+             * It used to write "السيد/ <name> المحترم،", which addresses a
+             * man. Filled in automatically, nobody chooses it, so a letter to
+             * a woman went out misaddressed unless the writer noticed and
+             * corrected it. Arabic has no short neutral equivalent of "Dear
+             * <name>,", so the honest answer is to leave the field empty: the
+             * placeholder and the suggestion list are right there.
+             */
           },
         };
+
+        /*
+         * The opening, when a buyer is linked.
+         *
+         * Two rules, and the second is the one that bit:
+         *
+         *   - only the language's own form is used, and Arabic has none, so an
+         *     Arabic letter starts empty rather than borrowing the English one
+         *   - the field follows the language ONLY while we are the ones who
+         *     filled it. The form opens in English, so a letter meant to be
+         *     Arabic was prefilled "Dear <name>," before the writer had chosen
+         *     anything -- and switching to Arabic left that English line
+         *     sitting above an Arabic letter. Recomputing on every change
+         *     would be just as wrong in the other direction: it would wipe a
+         *     salutation the writer had typed themselves.
+         */
+        var linkedContactName = null;
+        var salutationIsOurs = false;
+
+        function applySalutationPrefill() {
+          var el = document.getElementById('l-salutation');
+          if (!linkedContactName) return;
+          if (el.value && !salutationIsOurs) return;   // the writer's words win
+          var phrases = LETTER_PHRASES[document.getElementById('doc-language').value] || LETTER_PHRASES.en;
+          el.value = phrases.dearPrefix ? phrases.dearPrefix(linkedContactName) : '';
+          salutationIsOurs = true;
+        }
 
         function applyLetterLanguage(language) {
           var p = LETTER_PHRASES[language] || LETTER_PHRASES.en;
@@ -487,6 +530,7 @@
 
           var sal = document.getElementById('l-salutation');
           sal.placeholder = p.salutations[0];
+          applySalutationPrefill();
         }
 
         /*
