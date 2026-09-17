@@ -20,7 +20,7 @@ ORG_JSONLD = {
     "@type": "Organization",
     "@id": f"{BASE}/#organization",
     "name": "Triple Company for Industrial Development",
-    "alternateName": ["Triple Company", "شركة تريبل للتطوير الصناعي"],
+    "alternateName": ["Triple Company", "الشركة الثلاثية للتنمية الصناعية", "الشركة الثلاثية"],
     "url": BASE,
     "logo": f"{BASE}/logo.png",
     "image": f"{BASE}/opengraph.jpg",
@@ -274,11 +274,10 @@ c3_main = hero(
     "A look at Egypt's position in the global table-olive trade, and what that means for bulk, wholesale, co-packing, and private-label buyers.",
 ) + '''<section class="py-16"><div class="container max-w-4xl">
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">
 <div class="rounded-xl border border-border bg-muted/30 p-5 text-center"><div class="text-2xl mb-1">🌍</div><p class="text-2xl font-bold font-serif text-primary">#1</p><p class="text-xs text-muted-foreground mt-1 leading-snug">Table Olive Exporter in Africa</p></div>
 <div class="rounded-xl border border-border bg-muted/30 p-5 text-center"><div class="text-2xl mb-1">📦</div><p class="text-2xl font-bold font-serif text-primary">698K MT</p><p class="text-xs text-muted-foreground mt-1 leading-snug">Annual Production (2023)</p></div>
 <div class="rounded-xl border border-border bg-muted/30 p-5 text-center"><div class="text-2xl mb-1">📈</div><p class="text-2xl font-bold font-serif text-primary">+45%</p><p class="text-xs text-muted-foreground mt-1 leading-snug">Production Growth (2014–2023)</p></div>
-<div class="rounded-xl border border-border bg-muted/30 p-5 text-center"><div class="text-2xl mb-1">🚢</div><p class="text-2xl font-bold font-serif text-primary">3</p><p class="text-xs text-muted-foreground mt-1 leading-snug">Export Markets</p></div>
 </div>
 <p class="text-xs text-muted-foreground text-center -mt-10 mb-14">Source: FAO / IOC</p>
 

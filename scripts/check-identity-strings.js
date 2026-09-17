@@ -48,6 +48,17 @@ const APPROVED_SITE_NAMES = new Set([
 ]);
 
 /*
+ * Short forms. Legitimate as an alternateName -- both are on the live
+ * Organization node and both are how the company is spoken of -- but never
+ * as the site name, so they are kept in a separate set rather than widening
+ * the one above.
+ */
+const APPROVED_SHORT_NAMES = new Set([
+  'Triple Company',
+  'الشركة الثلاثية',
+]);
+
+/*
  * Phrases that assert a scope of service wider than anything the owner has
  * confirmed. Each was live and is now gone; the point of the list is that a
  * later edit reintroducing one fails the build rather than shipping.
@@ -160,6 +171,55 @@ for (const f of [...pages, ...generators]) {
     if (!APPROVED_SITE_NAMES.has(m[1])) {
       problems.push(`${f}: og:site_name is "${m[1]}", which is not an approved company name`);
     }
+  }
+}
+
+// ---- the company's name in structured data ------------------------------
+//
+// og:site_name was checked above; the Organization node's own name and
+// alternateName were not, on pages or in generators. That gap was not
+// theoretical: scripts/generate-resource-pages.py carried
+// "\u0634\u0631\u0643\u0629 \u062a\u0631\u064a\u0628\u0644 \u0644\u0644\u062a\u0637\u0648\u064a\u0631 \u0627\u0644\u0635\u0646\u0627\u0639\u064a" as an Arabic alternateName -- a company
+// name that appears in no approved list and nowhere on the shipped site --
+// and every check here passed, because nothing looked at that field.
+//
+// A search engine reads alternateName as a name the company goes by, so a
+// wrong one there is the same defect as a wrong og:site_name, only harder
+// to notice. Matched textually rather than by parsing JSON, so a generator
+// that builds its JSON-LD from Python dicts is covered too.
+// Scoped to the Organization node itself. A first version scanned every
+// "name" in the file and flagged the breadcrumb entries ("Home",
+// "Resources"), which are page names and have nothing to do with the
+// company -- so the window starts at each "@type": "Organization" and
+// stops at the next "@type", and alternateName is read wherever it appears
+// since no other node type on this site uses it.
+function organizationNameValues(src) {
+  const out = [];
+  const typeRe = /"@type"\s*:\s*"([A-Za-z]+)"/g;
+  let m;
+  const marks = [];
+  while ((m = typeRe.exec(src))) marks.push({ type: m[1], at: m.index });
+
+  marks.forEach((mark, i) => {
+    if (mark.type !== 'Organization') return;
+    const next = marks[i + 1] ? marks[i + 1].at : src.length;
+    const window = src.slice(mark.at, next);
+    for (const f of window.matchAll(/"(?:name|alternateName)"\s*:\s*(?:"([^"]*)"|\[([^\]]*)\])/g)) {
+      if (f[1] !== undefined) out.push(f[1]);
+      else for (const v of f[2].matchAll(/"([^"]*)"/g)) out.push(v[1]);
+    }
+  });
+  return out;
+}
+
+for (const f of [...pages, ...generators]) {
+  const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
+  for (const v of organizationNameValues(src)) {
+    if (!v || /^https?:|^#/.test(v)) continue;
+    if (APPROVED_SITE_NAMES.has(v) || APPROVED_SHORT_NAMES.has(v)) continue;
+    problems.push(
+      `${f}: an Organization name/alternateName reads "${v}", which is not an approved company name`
+    );
   }
 }
 
