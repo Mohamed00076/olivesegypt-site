@@ -1385,9 +1385,11 @@ C-87, C-88 and C-89 added, all CLOSED. **C-84 closed too**, during this
 deploy: the owner confirmed that the six printable sheets should not carry
 the floating actions, so the exception is now their decision rather than my
 reading of "every single page", and the check that enforces it has their
-authority behind it. One item stays open — C-85, the Arabic insights-tab
-wording, live on 41 pages and still mine rather than the owner's. C-55
-remains the only `needs-review` row.
+authority behind it. **C-85 closed too**, in the same session: the owner read
+the Arabic insights-tab wording and approved both strings unchanged, so
+nothing on the 41 pages moves. C-55 remains the only `needs-review` row, and
+no claim is now waiting on a native reader — the first time that has been
+true since the Arabic work began.
 
 **Correction, made while checking this entry:** C-77 and C-78 were shown as
 still awaiting the owner's confirmation. They were not — the owner confirmed
