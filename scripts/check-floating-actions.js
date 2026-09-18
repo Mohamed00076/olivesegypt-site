@@ -94,6 +94,26 @@ t('every browsing page carries the WhatsApp button', noFab.length === 0, noFab.l
 t('every browsing page carries the Read Our Insights tab', noTab.length === 0, noTab.length ? show(noTab) : '');
 t('no printable sheet carries a floating action', onPrintable.length === 0, onPrintable.length ? show(onPrintable) : '');
 
+// The consent controls share the bottom of the screen with the WhatsApp
+// bubble, and the bubble is pinned with a PHYSICAL `right-6` on every page.
+// The reopen pill was pinned with inset-inline-start, which follows the
+// reading direction -- left in English, right in Arabic -- so in Arabic the
+// two landed in the same corner and overlapped on all 41 pages the moment
+// the banner was dismissed. Nothing here could see that, because every check
+// in this suite reads markup and that collision only exists once the browser
+// resolves a logical property against `dir`. What is checkable is the cause:
+// a logical inline property positioning something into the bubble's corner.
+{
+  const consent = fs.readFileSync(path.join(ROOT, 'assets', 'consent.js'), 'utf8');
+  const reopen = (consent.match(/#tc-consent-reopen\{[^}]*\}/) || [''])[0];
+  t('the cookie reopen pill is found in consent.js', reopen.length > 0);
+  t('it is pinned with a physical left, not a direction-following one',
+    /(^|[;{])left:/.test(reopen) && !/inset-inline/.test(reopen),
+    reopen.slice(0, 90));
+  t('the WhatsApp bubble is still pinned physically right',
+    fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('flex flex-col items-end gap-3 right-6'));
+}
+
 // The generators write pages too. If one stops emitting these, the next run
 // silently undoes all of the above.
 for (const gen of ['scripts/generate-product-pages.py']) {

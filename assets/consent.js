@@ -122,6 +122,13 @@
   //    same audit. Given .tc-btn-secondary/.tc-btn-modal-secondary now
   //    sit on genuinely different backgrounds, they get their own class
   //    instead of one class serving two unrelated surfaces.
+  // The reopen pill is pinned with a PHYSICAL left, deliberately, and must
+  // stay that way. It used to use inset-inline-start, which follows the
+  // reading direction and put it bottom-right on every Arabic page -- the
+  // same corner the WhatsApp bubble occupies via a physical `right-6`. The
+  // two overlapped on all 41 Arabic pages as soon as the banner was
+  // dismissed. A logical property and a physical one pointing at the same
+  // corner is the bug; two physical opposites cannot drift back together.
   var STYLE = '' +
     '#tc-consent-banner,#tc-consent-modal-overlay{position:fixed;left:0;right:0;z-index:9999;font-family:inherit;}' +
     '#tc-consent-banner{bottom:0;background:#1c2416;color:#e9e7dd;padding:16px 20px;box-shadow:0 -2px 12px rgba(0,0,0,.25);border-top:1px solid #c9a84c;}' +
@@ -141,7 +148,7 @@
     '.tc-cat-desc{font-size:12px;color:#666;margin-top:2px;}' +
     '.tc-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}' +
     '.tc-btn-modal-secondary{background:transparent;color:#1c2416;border-color:#1c241633;}' +
-    '#tc-consent-reopen{position:fixed;inset-inline-start:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
+    '#tc-consent-reopen{position:fixed;left:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
     '.dark #tc-consent-modal{background:hsl(var(--card));color:hsl(var(--card-foreground));}' +
     '.dark .tc-modal-subtext{color:hsl(var(--muted-foreground));}' +
     '.dark .tc-cat{border-top-color:hsl(var(--card-border));}' +
@@ -226,11 +233,48 @@
     return document.querySelector('.fixed.bottom-6.right-6');
   }
 
+  // The insights tab is vertically centred, so on a short viewport with a
+  // wrapped banner its lower edge runs into the banner: 390x780 puts a 195px
+  // banner straight through it. Lift it just clear when that happens, and
+  // let it fall back to centred when the banner goes.
+  function tab() {
+    return document.querySelector('[data-testid="floating-blog-link"]');
+  }
+
+  function positionTab(bannerHeight) {
+    var el = tab();
+    if (!el) return;
+    el.style.top = '';
+    el.style.transform = '';
+    el.style.visibility = '';
+    if (!bannerHeight) return;
+
+    // On a phone the tab is a 256px slab pinned to the same edge as the
+    // WhatsApp bubble, and the banner takes a third of the screen. There is
+    // no position that clears both: lifting it out of the banner drops it
+    // onto the bubble. So while the banner is up on a narrow viewport the
+    // tab steps aside entirely, and comes back the moment a choice is made.
+    // The banner is a one-time interruption; the tab is not worth fighting
+    // it for.
+    if (window.innerWidth < 640) {
+      el.style.visibility = 'hidden';
+      return;
+    }
+
+    var box = el.getBoundingClientRect();
+    var limit = window.innerHeight - bannerHeight - 8;
+    if (box.bottom > limit) {
+      el.style.top = Math.max(8, limit - box.height) + 'px';
+      el.style.transform = 'none';
+    }
+  }
+
   function positionFab() {
     var banner = document.getElementById('tc-consent-banner');
+    var h = banner ? banner.offsetHeight : 0;
     var el = fab();
-    if (!el) return;
-    el.style.bottom = banner ? (24 + banner.offsetHeight) + 'px' : '';
+    if (el) el.style.bottom = h ? (24 + h) + 'px' : '';
+    positionTab(h);
   }
 
   function shiftFabForBanner() {
@@ -259,6 +303,7 @@
     }
     var el = fab();
     if (el) el.style.bottom = '';
+    positionTab(0);
   }
 
   function removeBanner() {

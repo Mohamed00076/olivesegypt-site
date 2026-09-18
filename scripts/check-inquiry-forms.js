@@ -152,10 +152,22 @@ for (const file of ['contact/index.html', 'ar/contact/index.html']) {
       problems.push(`assets/consent.js has no ${href} privacy link, so one locale points at the other's page`);
     }
   }
-  // the reopen pill is pinned to a corner; a physical property puts it in the
-  // wrong one under rtl
-  if (/#tc-consent-reopen\{position:fixed;left:/.test(consent)) {
-    problems.push('the consent reopen control uses a physical left offset, which is the wrong corner under rtl');
+  // The reopen pill is pinned to a corner, and this check used to require a
+  // logical offset so it would follow the reading direction. That was right
+  // in isolation and wrong in place: the WhatsApp bubble is pinned with a
+  // physical `right-6` in the markup of all 82 pages, so under rtl the
+  // logical pill resolved to the same corner and the two overlapped on every
+  // Arabic page as soon as the banner was dismissed (C-87).
+  //
+  // Mirroring the bubble instead would be the more idiomatic fix, but there
+  // is no logical inset utility in the compiled stylesheet -- no end-6, no
+  // start-6, no inset-inline-* at all -- and that file is a fixed build
+  // artifact, so the bubble's corner is not something markup can move. Given
+  // one corner is immovable and physical, the pill takes the other one.
+  // The rule is therefore inverted, deliberately: physical left, and no
+  // logical inline property that could swing it back.
+  if (/#tc-consent-reopen\{position:fixed;inset-inline/.test(consent)) {
+    problems.push('the consent reopen control uses a logical inline offset, which under rtl puts it in the same corner as the WhatsApp bubble (C-87)');
   }
 }
 
