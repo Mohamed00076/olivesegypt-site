@@ -156,9 +156,18 @@ for (const locale of ['', 'ar/']) {
       problems.push(`${file}: ${dir} is filed under category "${own}", expected "${want}"`);
     }
 
-    // and the badge the buyer actually sees on that card must say the same
+    // and the badge the buyer actually sees on that card must say the same.
+    //
+    // This window used to be a flat 2500 characters, which on the Arabic
+    // catalogue reached past the end of the card and into its neighbour: the
+    // artichoke card passed on مخللات borrowed from the card below it, while
+    // its own badge said something the list did not contain at all. The
+    // accident only ended when Batch 2's spec panels made each card longer
+    // than the window. Bound it to the card itself so a badge can only ever
+    // be satisfied by the card that displays it.
     const from = html.indexOf(tag);
-    const chunk = html.slice(from, from + 2500);
+    const nextCard = html.indexOf('<div class="product-card', from + tag.length);
+    const chunk = html.slice(from, nextCard === -1 ? from + 2500 : nextCard);
     const allowed = CATEGORY_BADGES[want][lang];
     if (!allowed.some((b) => chunk.includes(b))) {
       problems.push(
