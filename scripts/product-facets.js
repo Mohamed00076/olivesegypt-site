@@ -172,7 +172,7 @@ const CATEGORY = {
 const CATEGORY_BADGES = {
   green: { en: ['Green Olive'], ar: ['\u0632\u064a\u062a\u0648\u0646 \u0623\u062e\u0636\u0631', '\u0632\u064a\u062a\u0648\u0646 \u0645\u062d\u0634\u0648'] },
   black: { en: ['Black Olive'], ar: ['\u0632\u064a\u062a\u0648\u0646 \u0623\u0633\u0648\u062f'] },
-  specialty: { en: ['Specialty'], ar: ['\u0645\u062e\u0644\u0644\u0627\u062a', '\u0623\u0646\u062a\u064a\u0628\u0627\u0633\u062a\u0648'] },
+  specialty: { en: ['Specialty'], ar: ['\u0645\u062e\u0644\u0644\u0627\u062a', '\u0645\u0642\u0628\u0644\u0627\u062a'] },
 };
 
 const IDS = FACETS.map((f) => f.id);
