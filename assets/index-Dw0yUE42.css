@@ -567,3 +567,13 @@ header .container {
 /* --- tints ------------------------------------------------------------- */
 .tc-social-fb { --tc-social-rgb: 24, 119, 242; --tc-social-ink: #1877f2; }
 .dark .tc-social-fb { --tc-social-rgb: 122, 182, 255; --tc-social-ink: #7ab6ff; }
+
+/* --- floating actions, mirrored for RTL --------------------------------
+   The WhatsApp bubble is pinned with a physical `right-6` in page markup,
+   which on an Arabic page is the inline START -- the same corner the cookie
+   reopen pill resolves to, and they overlapped there (C-87). Mirror the
+   bubble instead, so each control sits where its own direction puts it:
+   bubble at the inline end, pill at the inline start, in both languages.
+   `bottom` is deliberately not set here -- consent.js owns it while the
+   cookie banner is showing. */
+[dir="rtl"] .fixed.bottom-6.right-6 { right: auto; left: 1.5rem; }
