@@ -1188,6 +1188,117 @@ one.
 
 ---
 
+## Deploy 12 — Two contact routes that were only on some pages (PR #107)
+
+**Date:** 2026-09-18
+**Production commit:** `f6dfe69`
+**Previous recorded deploy:** `f094de1` (Deploy 11)
+**Delta:** 1 commit, 1 merged pull request, 70 files changed (+225 / −72) —
+41 Arabic pages, 24 English pages, `assets/consent.js`, two scripts,
+`package.json`, the claim register
+**Approval:** "merge it", after the report below was put to the owner and the
+one judgement call in it was flagged rather than assumed.
+
+Reported by the owner, not found by a check: *"in the home page the arabic
+lang the whatsapp button is overlapping with the cookies thing,, in all other
+pages i dont see the whatsapp icon and the read our insights even at home
+page?"* All three parts were exact.
+
+### What was actually there
+
+| | before | after |
+| --- | --- | --- |
+| WhatsApp button, English | 29 / 41 | 41 / 41 |
+| WhatsApp button, Arabic | **1 / 41** | 41 / 41 |
+| Read Our Insights tab, English | 17 / 41 | 41 / 41 |
+| Read Our Insights tab, Arabic | **0 / 41** | 41 / 41 |
+
+The single Arabic page with the button was the homepage — the one page the
+owner had been looking at, which is why the report read as "here but nowhere
+else" rather than "missing".
+
+**Nothing had ever removed them.** They were added page by page, so any page
+written afterwards simply never got them, and `generate-product-pages.py`
+emitted neither — which accounts precisely for all 11 English product pages
+and `/company-profile`. The generator now emits both, so a re-run cannot undo
+this. That is the third time in three deploys that a generator has been the
+thing holding a defect in place (C-73, C-81, now C-84), and the second time it
+was caught only because someone looked at the pages rather than the checks.
+
+### The overlap was not what it looked like
+
+Not Arabic-specific, and not intermittent. `consent.js` measured the banner
+**once**, synchronously, the instant it was inserted, and never again — no
+resize listener, no re-measure. The banner is a single row on a wide window
+and wraps to several on a narrow one:
+
+```
+/ar/  at 1280px   banner  73px   button bottom:97px    ok
+/ar/  → 390px     banner 195px   button bottom:97px    OVERLAP
+```
+
+Load wide, then narrow the window or turn a phone, and the button stays at
+the old offset while the banner grows over it. English behaved identically.
+It is now repositioned on `resize`, on `orientationchange`, and through a
+`ResizeObserver` on the banner itself, so a webfont arriving after insertion
+cannot strand it either. Verified 1280 → 390 → 1280 in both locales.
+
+### The judgement call, flagged not assumed
+
+"Every single page" was read as every page a buyer browses. The **six
+printable sheets** — both catalogue print pages, both business cards, both
+letterheads — carry neither floater, because their print CSS hides only
+`header, footer, .no-print` and a floating WhatsApp bubble added to one would
+be printed onto the sheet. Put to the owner as an open question in C-84
+rather than settled here.
+
+### Non-regression added
+
+`scripts/check-floating-actions.js` asserts both floaters on every browsing
+page in both locales, that Arabic tabs point at the Arabic blog rather than
+the English one, that no printable sheet carries one, and **that the
+generator still emits them**. Proved to fail on a single removed tab before
+being committed. The suite is now **21 check scripts**.
+
+### Claim register
+
+- **C-84** — the coverage, with the printable-sheet exception left open for
+  the owner.
+- **C-85** — the Arabic tab wording, `اقرأ مدونتنا` / `تصفّح المدونة`. `مدونة`
+  is the site's own word for the blog; `رؤى` was deliberately avoided, having
+  been replaced as a translation-ism one day earlier in C-78. Mine, and still
+  awaiting a native reader.
+- **C-86** — the overlap, CLOSED.
+
+C-55 remains the only `needs-review` row in the register.
+
+### Testing method
+
+Local, in Chromium, as every deploy since #43. What static checks cannot see
+was measured: button offset and banner height across 1280 → 390 → 1280 in
+both locales, horizontal overflow on all 44 Arabic pages at 360px with the
+new side tab in place, and the Arabic tab's rendered text and href.
+
+### Rollback
+
+```
+git revert f6dfe69
+```
+
+A squash; no `-m 1`. Reverting restores the state the owner reported, so
+prefer fixing forward.
+
+### Known limitations shipped with this deploy
+
+- **The Arabic tab wording is unconfirmed.** It is live on 41 pages and is
+  mine, not the owner's. C-85 is open.
+- **`LEADS_NOTIFY` is still unset** (carried from Deploy 11): the market-brief
+  form writes leads to `leads_staging` and emails nobody.
+- No Netlify build has been confirmed for this or any of the seven merges
+  before it.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -1223,9 +1334,10 @@ last sync. It is not part of the changed-file scope of any deploy above.
    merges actually succeeded is unconfirmed** — this session has no
    Netlify API or dashboard access. The site owner should check the
    Netlify dashboard directly and, if the latest production deploy shows
-   failed or stale, trigger a fresh one manually. **The same is true of all
-   37 merges in Deploys 6 to 10**, for the same reason, and it is the one
-   thing in this document only the owner can settle.
+   failed or stale, trigger a fresh one manually. **The same is true of every
+   merge in Deploys 6 to 12** -- 37 in Deploys 6 to 10, six in Deploy 11 and
+   one in Deploy 12 -- for the same reason, and it is the one thing in this
+   document only the owner can settle.
 6. **This record ran ten days behind production.** Deploy 5 was written on
    2026-09-05 and nothing was added until 2026-09-17, while PRs #63 to #98
    merged and built. The claim register kept pace throughout; this file did
