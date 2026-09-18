@@ -1299,6 +1299,120 @@ prefer fixing forward.
 
 ---
 
+## Deploy 13 — The corner the two floating controls were sharing (PRs #109, #110)
+
+**Date:** 2026-09-18
+**Production commit:** `6464d5e`
+**Previous recorded deploy:** `f6dfe69` (Deploy 12, PR #107) — but see the
+process note below: Deploy 12's own record did not reach production the way
+it should have
+**Delta:** 2 commits, 2 merged pull requests, 6 files changed (+209 / −8)
+**Approval:** "merge it" twice, each after its own report.
+
+Deploy 12 answered an owner report in three parts. Two of them were right.
+The third — *"the cookies thing still overlapping with whatsapp icon on
+arabic pages"* — came back, and this deploy is why.
+
+| PR | Substance |
+| --- | --- |
+| #109 | The cookie pill moved out of the WhatsApp bubble's corner under RTL, plus a phone-width collision between the banner and the insights tab that nobody had reported. |
+| #110 | The bubble mirrored to the bottom-left on Arabic pages instead, so both controls follow the reading direction. |
+
+### One report, three attempts
+
+Worth recording as a sequence rather than as a tidy outcome:
+
+1. **Deploy 12 (C-86)** fixed a genuine bug: the banner's height was measured
+   once at insertion, so resizing a window or turning a phone left the button
+   at a stale offset while the banner grew over it. Reproducible, real, and
+   **not what the owner was seeing.**
+2. **#109 (C-87)** found the actual cause. The cookie reopen pill was pinned
+   with `inset-inline-start`, which follows the reading direction, while the
+   bubble is pinned with a physical `right-6` in page markup. In Arabic both
+   resolved to the same corner. It appeared only *after* a cookie choice,
+   because the pill does not exist until then — **which is the one state
+   Deploy 12's verification never entered.** I tested with the banner showing
+   and never once clicked accept or reject.
+3. **#110 (C-89)** replaced that fix with the arrangement the owner chose:
+   mirror the bubble, so Arabic is a mirror of English rather than a mix of
+   one physical corner and one logical one.
+
+The lesson, and it cost two extra rounds: **a fix verified only in the state
+the fixer had in mind is not verified.** The final sweep runs 108
+combinations — nine viewports from 1440×900 down to 320×568, four pages,
+three consent states, both locales — because the bug lived in the
+combination, not in any one of them. A targeted pass then covered the risk
+#110 introduces, the insights tab and the cookie pill sharing a side in
+Arabic: no collisions down to 320×568.
+
+### Where the controls sit now
+
+| | WhatsApp bubble | Cookie pill |
+| --- | --- | --- |
+| Arabic | bottom-left | bottom-right |
+| English | bottom-right (unchanged) | bottom-left (unchanged) |
+
+The bubble is pinned with a physical `right-6` in the markup of 82 pages and
+the compiled stylesheet carries no logical inset utility to swap it for, so
+the mirroring is one hand-written rule in that stylesheet, beside the
+`.tc-social-*` additions already there — not an injected style, which would
+move the button after first paint.
+
+### A rule that was round-tripped
+
+`check-inquiry-forms.js` required the pill to use a logical offset, from the
+RTL work. #109 inverted it; #110 restored it. Both checks now state what they
+actually defend — **not that logical or physical is correct, but that the two
+controls must not mix the two**, since that is the only arrangement that
+lands them in the same corner. A check asserting a property without naming
+the failure it prevents invites exactly this.
+
+### Process note: Deploy 12's record reached production without its own approval
+
+The Deploy 12 section of this file was written for PR #108 and approved as a
+docs-only change. It is on production — but it arrived inside **#109**,
+because that branch was cut from the record branch instead of from `main`.
+The content was harmless and the owner had asked for it, but the deployment
+gate was bypassed: one approval carried a second change.
+
+#108 is therefore closed rather than merged. Merging it now would revert #109
+and #110, since it predates both. Branch from `main`, not from whatever
+happens to be checked out.
+
+### Claim register
+
+C-87, C-88 and C-89 added, all CLOSED. **C-84 closed too**, during this
+deploy: the owner confirmed that the six printable sheets should not carry
+the floating actions, so the exception is now their decision rather than my
+reading of "every single page", and the check that enforces it has their
+authority behind it. One item stays open — C-85, the Arabic insights-tab
+wording, live on 41 pages and still mine rather than the owner's. C-55
+remains the only `needs-review` row.
+
+### Testing method
+
+Local, in Chromium. Measured directly rather than inferred: button and pill
+coordinates per viewport, banner height across resize, element visibility and
+tab order, and the 108-combination sweep.
+
+### Rollback
+
+```
+git revert 6464d5e 1194daa
+```
+
+Both are squashes; no `-m 1`. Reverting only `6464d5e` returns to #109's
+arrangement — no overlap, but Arabic un-mirrored. Reverting both restores the
+overlap the owner reported, so fix forward instead.
+
+### Known limitations shipped with this deploy
+
+- **The Arabic insights-tab wording is unconfirmed** and live on 41 pages.
+- **`LEADS_NOTIFY` is still unset**, carried from Deploy 11.
+- No Netlify build has been confirmed for this or any deploy in this document.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
