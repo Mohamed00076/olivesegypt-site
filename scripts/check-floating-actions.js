@@ -95,23 +95,28 @@ t('every browsing page carries the Read Our Insights tab', noTab.length === 0, n
 t('no printable sheet carries a floating action', onPrintable.length === 0, onPrintable.length ? show(onPrintable) : '');
 
 // The consent controls share the bottom of the screen with the WhatsApp
-// bubble, and the bubble is pinned with a PHYSICAL `right-6` on every page.
-// The reopen pill was pinned with inset-inline-start, which follows the
-// reading direction -- left in English, right in Arabic -- so in Arabic the
-// two landed in the same corner and overlapped on all 41 pages the moment
-// the banner was dismissed. Nothing here could see that, because every check
-// in this suite reads markup and that collision only exists once the browser
-// resolves a logical property against `dir`. What is checkable is the cause:
-// a logical inline property positioning something into the bubble's corner.
+// bubble. The bubble is pinned with a physical `right-6` in page markup and
+// mirrored for RTL by a rule in the compiled stylesheet; the reopen pill
+// follows the reading direction on its own. Both therefore sit at the
+// opposite ends of their own inline axis, in both languages.
+//
+// The failure this guards against is the MIX, not either property: a
+// physical bubble with a logical pill resolves to the same Arabic corner,
+// which is the overlap the owner reported (C-87). Removing the mirror rule
+// while the pill stays logical puts it straight back.
 {
+  const css = fs.readFileSync(path.join(ROOT, 'assets', 'index-Dw0yUE42.css'), 'utf8');
   const consent = fs.readFileSync(path.join(ROOT, 'assets', 'consent.js'), 'utf8');
   const reopen = (consent.match(/#tc-consent-reopen\{[^}]*\}/) || [''])[0];
-  t('the cookie reopen pill is found in consent.js', reopen.length > 0);
-  t('it is pinned with a physical left, not a direction-following one',
-    /(^|[;{])left:/.test(reopen) && !/inset-inline/.test(reopen),
-    reopen.slice(0, 90));
-  t('the WhatsApp bubble is still pinned physically right',
+
+  t('the WhatsApp bubble is still pinned physically right in markup',
     fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('flex flex-col items-end gap-3 right-6'));
+  t('and the stylesheet mirrors it under rtl, so Arabic gets the other corner',
+    /\[dir="rtl"\]\s*\.fixed\.bottom-6\.right-6\s*\{[^}]*left:/.test(css),
+    'no [dir="rtl"] mirror rule for the bubble');
+  t('the cookie reopen pill follows the reading direction',
+    /inset-inline-start:/.test(reopen) && !/(^|[;{])left:/.test(reopen),
+    reopen.slice(0, 90));
 }
 
 // The generators write pages too. If one stops emitting these, the next run
