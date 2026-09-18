@@ -1047,6 +1047,147 @@ as the only `needs-review` row in the register.
 
 ---
 
+## Deploy 11 — The Arabic audit's findings, and two dead forms (PRs #100–#105)
+
+**Date:** 2026-09-17 → 2026-09-18
+**Production commit:** `c97dbe1`
+**Previous recorded deploy:** `4de48ea` (Deploy 10)
+**Delta:** 6 commits, 6 merged pull requests, 32 files changed (+386 / −68)
+**Approval:** quotable, per batch — "merge it" (#100), "merge 101 102 103 in that
+order", "do batch 2" then "merge 104 then 105". Each batch was deployed only
+after its own instruction, and Batch 1's three items were merged in the stated
+order.
+
+This is the first deploy written as part of the work it describes since Deploy
+5, which is what Deploy 6–10's preamble above asks for.
+
+| PR | Substance |
+| --- | --- |
+| #100 | Deploys 6 to 10, reconstructed after this record ran ten days behind production. |
+| #101 | The Arabic homepage's bottom three product cards had no image at all — 232px against 424px for the top row. The Arabic illustrations had existed since the placeholder work and were already wired on every other Arabic surface; the homepage was the one that was missed. |
+| #102 | The Arabic FAQ ran from its last answer straight into the footer, with `/ar/sample` reachable from nowhere in its body. It now closes the way the English one does. |
+| #103 | The market-brief form, in both languages. |
+| #104 | Batch 2: the Arabic catalogue's 11 spec panels, the English brine-spec heading, and the contact-page address. |
+| #105 | The Arabic wording the owner reviewed as a native reader, item by item. |
+
+#### What the audit was, and what it got wrong
+
+Deploy 11 exists because of an owner-requested Arabic cross-page audit of 44
+pages against their English twins. Two of its findings did not survive contact
+with the files, and both are recorded here because the register entries alone
+would not show it:
+
+- **A "missing comma" on both contact pages.** There is none. The head-office
+  card breaks the line with a `<br/>`, and the audit's text extraction turned
+  that break into a space. Only the country form was ever wrong (C-82).
+- **"16 occurrences" of `أنتيباستو`.** There were **26**. The audit counted
+  visible text on `/ar` pages and missed the meta descriptions, the JSON-LD
+  `category` and `description` fields, the print catalogue and the PDF source
+  (C-83).
+
+The audit's own stated baseline was also false: it asserted that the homepage
+and `/ar/resources/packaging` had already been reviewed and their issues
+addressed. No such work existed, in this session or in git history. Reported
+before any of it was acted on.
+
+#### Defects found that were not in the brief
+
+- **The English market-brief form had never captured a lead.** `id="newsletter-form"`,
+  five inputs, a Subscribe button — and no page loaded any script bound to it.
+  No input carried a `name`; the form had no `action`. Pressing Subscribe
+  navigated to `/?` with an empty query string, sent no request anywhere,
+  showed no confirmation and cleared the fields. Meanwhile both privacy pages
+  told visitors that form collects what they enter, and `leads.js` says in its
+  own header that it is the backend "for Section C7 (Market Report signup on
+  the homepage)". The backend was built for this form and the form was never
+  connected to it. Found while building the Arabic half, fixed in both
+  locales, recorded as C-79.
+- **The confirmation message was invisible.** The shared handler's success
+  green measured **1.06:1** against the olive panel. Recolouring could not fix
+  it — at 12px even pure white reaches only 4.49:1 there — so the message now
+  sits on its own darkened chip, measured at 9.69:1 / 9.38:1 / 8.71:1 from
+  real rendered pixels.
+- **`check-product-facets.js` had been passing by accident.** It compared a
+  card's badge against an allow-list over a flat 2500-character window from the
+  card's opening tag, which on the Arabic catalogue reached into the
+  neighbouring card. The artichoke card had been passing on `مخللات` borrowed
+  from the card below it, while its own badge was never in the allow-list at
+  all. It surfaced only when #104's spec panels made each card longer than the
+  window. The window is now bounded to the card.
+
+#### Non-regression added
+
+| Check | Asserts |
+| --- | --- |
+| `check-lead-fields.js` (extended) | every page carrying a lead form loads the shared handler, and each form has a submit, a status element, an email field and consent — the join no check was making, which is how a dead form sat on the homepage through ten deploys |
+| `check-product-facets.js` (fixed) | a badge can only be satisfied by the card that displays it |
+| `check-packaging-claims.js` (Deploy 10) | still green here |
+
+The suite is now **21 check scripts**. Both new assertions were proved to fail
+on the unfixed code before being committed.
+
+#### Claim register
+
+C-77 through C-83 added, all CLOSED. **C-55 remains the only `needs-review` row
+in the register**, unchanged: the six privacy values still waiting on the
+owner's lawyer.
+
+C-77, C-78, C-80 and C-83 were each confirmed by the owner reading the Arabic
+themselves, one at a time, and three of the four were changed on their
+instruction: `هل لديك سؤال آخر؟` for a literal rendering of "Still have a
+question?", `معلومات عن المنشأ` for a translation-ism, `تفاصيل الطلب` for
+wording that read as "the order's data", and `مقبلات` for the transliterated
+loanword. `صادقة` and `الموجز السوقي` were offered for change and deliberately
+kept.
+
+#### Testing method
+
+Local throughout, as every deploy since #43: no deploy preview has been green,
+and this environment's egress to `olivesegypt.com` and `*.netlify.app` is
+blocked by policy. Chromium was used for what static checks cannot see — card
+heights, form submissions and their payloads, consent enforcement, honeypot
+placement, horizontal overflow at 360px, and contrast measured from rendered
+pixels rather than computed styles.
+
+#### Merge conflicts resolved
+
+`ar/index.html` and `ar/catalog/index.html` are effectively one long line each,
+so changes to different parts of the same page collide. #101/#103 and
+#104/#105 both hit this. Each was resolved the same way: take the merged file
+and re-apply the other change to it, then re-verify in a browser that both
+changes coexist — never by hand-editing inside a conflict marker.
+
+One of those resolutions was botched and redone: a `git stash` run while a
+merge was still in progress cleared `MERGE_HEAD`, so the commit recorded a
+single parent. The content was correct but GitHub kept refusing the PR as
+conflicted. Re-merged with the parent recorded properly; no resolution was
+redone.
+
+#### Rollback
+
+```
+git revert c97dbe1 ae67773 fcb8e2e f2756de 3970fe0 583f29a
+```
+
+All six are squashes; no `-m 1`. Reverting #103 alone would restore a
+market-brief form that discards every lead, so prefer fixing forward on that
+one.
+
+#### Known limitations shipped with this deploy
+
+- **`LEADS_NOTIFY` is unset**, so the market-brief form now writes leads to
+  `leads_staging` and emails nobody. That switch is the "wire this up to a real
+  destination" step C7 reserves for the owner. Until it is set, leads
+  accumulate unseen.
+- No Netlify build has been confirmed for any of these six merges, as for every
+  deploy in this document.
+- `/docs/` is served publicly: `netlify.toml` publishes `.` and `robots.txt`
+  does not disallow it, so this record and the claim register are reachable at
+  `olivesegypt.com/docs/…` and crawlable, though unlinked and absent from the
+  sitemap. Raised with the owner at #100 and deliberately left alone.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -1093,6 +1234,9 @@ last sync. It is not part of the changed-file scope of any deploy above.
    repository and which are not. The gap is cheap to avoid and expensive to
    close after the fact: a deploy entry belongs in the pull request that
    merges, not in a catch-up pass twelve days later.
+   **Closed 2026-09-18:** Deploy 11 was written as part of the work it
+   describes, in the same session, which is what this item asks for. The
+   lesson stands rather than the gap.
 7. **Deploys 6 to 10 carry no per-deploy verification tables**, unlike
    Deploys 1 to 5. `npm test` ran at merge time — it is now 20 suites, and
    several of them exist because of defects found during those deploys
