@@ -212,13 +212,53 @@
   // The WhatsApp FAB sits bottom-right, exactly where the banner's
   // "Accept All" button lands -- push it up out of the way while the
   // banner is visible, and put it back once the banner is gone.
-  function shiftFabForBanner(bannerHeight) {
-    var fab = document.querySelector('.fixed.bottom-6.right-6');
-    if (fab) fab.style.bottom = (24 + bannerHeight) + 'px';
+  //
+  // The height has to be re-read, not measured once. The banner is a single
+  // row on a wide window and wraps to several on a narrow one: 73px at
+  // 1280 against 195px at 390. Measuring once at insertion and never again
+  // left the button stranded at the old offset the moment the window was
+  // resized or a phone was turned, and the banner then covered it -- which
+  // is exactly how this was reported, as a button that overlaps the cookie
+  // notice sometimes and not others.
+  var fabWatch = null;
+
+  function fab() {
+    return document.querySelector('.fixed.bottom-6.right-6');
   }
+
+  function positionFab() {
+    var banner = document.getElementById('tc-consent-banner');
+    var el = fab();
+    if (!el) return;
+    el.style.bottom = banner ? (24 + banner.offsetHeight) + 'px' : '';
+  }
+
+  function shiftFabForBanner() {
+    positionFab();
+    if (fabWatch) return;
+    fabWatch = positionFab;
+    window.addEventListener('resize', fabWatch);
+    window.addEventListener('orientationchange', fabWatch);
+    // The banner's own text can reflow after it is inserted -- a webfont
+    // arriving is enough -- so watch the element itself where the browser
+    // supports it, rather than trusting one measurement.
+    if (typeof ResizeObserver === 'function') {
+      var banner = document.getElementById('tc-consent-banner');
+      if (banner) {
+        var ro = new ResizeObserver(positionFab);
+        ro.observe(banner);
+      }
+    }
+  }
+
   function restoreFabPosition() {
-    var fab = document.querySelector('.fixed.bottom-6.right-6');
-    if (fab) fab.style.bottom = '';
+    if (fabWatch) {
+      window.removeEventListener('resize', fabWatch);
+      window.removeEventListener('orientationchange', fabWatch);
+      fabWatch = null;
+    }
+    var el = fab();
+    if (el) el.style.bottom = '';
   }
 
   function removeBanner() {
@@ -293,7 +333,7 @@
         '<button type="button" class="tc-btn tc-btn-primary" id="tc-consent-accept">' + T.accept + '</button>' +
       '</div>';
     document.body.appendChild(banner);
-    shiftFabForBanner(banner.offsetHeight);
+    shiftFabForBanner();
 
     document.getElementById('tc-consent-accept').addEventListener('click', function () {
       applyChoice('banner_accept_all', true);
