@@ -1389,6 +1389,16 @@ authority behind it. One item stays open — C-85, the Arabic insights-tab
 wording, live on 41 pages and still mine rather than the owner's. C-55
 remains the only `needs-review` row.
 
+**Correction, made while checking this entry:** C-77 and C-78 were shown as
+still awaiting the owner's confirmation. They were not — the owner confirmed
+both on 2026-09-18, item by item. Their closures were lost when the register
+conflict in #105 was resolved by taking `main`'s file wholesale and appending
+only the new row, which silently discarded two edits that lived on the branch.
+The code changes had landed; the record of the approvals had not. Both are
+restored, and the loss is noted in each row rather than quietly repaired. A
+conflict resolution that takes one side wholesale is not a resolution — it is
+a choice to discard the other side, and it needs to be read as one.
+
 ### Testing method
 
 Local, in Chromium. Measured directly rather than inferred: button and pill
