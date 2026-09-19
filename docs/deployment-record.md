@@ -1425,6 +1425,223 @@ overlap the owner reported, so fix forward instead.
 
 ---
 
+## Deploy 14 — A logo that was mostly empty canvas, and one claim in three places (PRs #111–#118)
+
+**Date:** 2026-09-19
+**Production commit:** `ac7315f`
+**Previous recorded deploy:** `6464d5e` (Deploy 13, PRs #109 and #110)
+**Delta:** 8 commits, 8 merged pull requests, 61 files changed (+221 / −70),
+one of them a replaced binary
+**Approval:** five instructions across two days, each after its own report —
+attributed per pull request below.
+
+### Where the range starts, and why that needed checking
+
+Deploy 13 names `6464d5e` (#110) as its production commit. But Deploy 13's own
+entry shipped in **#111**, and the correction inside it shipped in **#112**,
+both of which merged after that commit. So both are in this delta, even though
+Deploy 13's prose already describes what they say. The boundary is the commit,
+not the narrative: `6464d5e..ac7315f`.
+
+This was checked rather than assumed. Deploy 12 and Deploy 13 both nearly
+claimed #107, and a record that counts one merge twice is worse than one that
+runs behind — a reader has no way to tell which of the two entries is wrong.
+
+### The merges
+
+| PR | Merged | Visitor-facing | Substance | Approval |
+| --- | --- | --- | --- | --- |
+| #111 | 18 Sep | no | Deploy 13's own entry, and C-84 closed: the owner confirmed the six printable sheets should carry no floating action. | "merge 111 and close 108" |
+| #112 | 18 Sep | no | C-77 and C-78 restored after #105's conflict resolution discarded them, each row recording that it was lost once. C-85 closed. | "merge it" |
+| #113 | 18 Sep | no | C-90: the Follow-pill trial stays running, read as a press-rate question rather than the design comparison it was set up for. | "leave the pill running, check back in a few weeks" |
+| #116 | 19 Sep | **yes** | `assets/logo-BJ1TOn9V.png` cropped to its own artwork. | "merge both and fix the contact wording too" |
+| #115 | 19 Sep | **yes** | The header tagline replaced on 57 pages, plus a check that fails if either retired wording reappears. | same instruction |
+| #117 | 19 Sep | **yes** | The same claim removed from the contact pages' opening sentence, both locales. | "merge 117" |
+| #114 | 19 Sep | **yes** | The partner-facility address given the same country form as the head office, both locales. | "merge 114 and 118" |
+| #118 | 19 Sep | no | C-91 closed: the owner read the new Arabic as a native reader and approved both strings unchanged. | same instruction |
+
+Four of the eight change what a visitor sees. The other four are the claim
+register and this file catching up — three of them on 18 September, before any
+of the next day's site changes existed.
+
+### The logo's box was never the problem
+
+The brief asked for the header icon to be scaled up to roughly match the
+cap-height of "TRIPLE COMPANY". Following that literally would have made the
+logo **smaller**: that cap-height is about 11px, and the box the header already
+gives the image is 32.
+
+The file was the problem. `assets/logo-BJ1TOn9V.png` was a 512×512 canvas with
+the mark occupying only 224×277 of it — 44% of the width, 54% of the height —
+centred, with 149px of empty transparency on the left and 84px on top. In a
+32px box `object-contain` fits the *canvas*, so the visible mark rendered about
+17px tall beside a 15px wordmark. Cropping the canvas to the artwork (236×289,
+with 6px of padding) puts the mark at about 31px in the same box: an 85% visual
+increase with **no layout dimension changed anywhere**. Nothing moves, so
+nothing can crowd the theme toggle or the menu button — confirmed at 1280, 768,
+390, 360 and 320 in both locales, with a header-overlap check at each width.
+
+The file grew from 15,119 to 38,740 bytes, and that direction is not a mistake:
+the old file was small because most of it was empty canvas, which compresses to
+almost nothing. A 256-colour version came in at 7,866 bytes with a mean channel
+error of 2.1/255, but it shifted alpha on 1.5% of pixels — the anti-aliased
+edges — and the owner declined it. A company mark is the wrong place to trade
+edge quality for 30KB.
+
+**Owner confirmation, and a gap in where it is recorded.** The owner approved
+the result — "the new logo is fine". That approval is recorded here and nowhere
+else, because the crop asserts nothing new: same artwork, same aspect ratio,
+empty canvas removed. So no register row was opened for it. The favicon crop
+*did* get rows (C-58, C-59), on the grounds that "the tab icon shows the
+company logo" is a claim about what an image depicts. The two are arguably the
+same kind of change, and the asymmetry is noted here rather than resolved —
+opening a row after the fact is the owner's call, not something to slip into a
+records-only pull request.
+
+### One claim, three places, reviewed once before
+
+"Premium Export Specialists" / "متخصصون في تصدير الزيتون المصري الفاخر" was not
+a new find. **C-32 records that the owner reviewed this exact wording on
+2026-09-05 and deliberately kept it**, over my note that "specialists" sits
+against the site's own FAQ answer — "We are a newly established export
+company". That row now reads SUPERSEDED rather than being edited away, because
+the fact that it was looked at once and kept is precisely what made it look
+unresolved when it came back.
+
+What it is **not** is the alternate-name defect. That was **C-31** — "Triple
+Company Export Specialist" in `og:site_name`, emitted by
+`generate-resource-pages.py` — found and fixed on 2026-09-05. Re-verified on
+the 19th before touching anything: all 57 occurrences of the old tagline were
+visible markup, zero in any schema node, `og:`/`twitter:` field or `<title>`,
+and no `og:site_name` anywhere contains "Specialist". Two different defects in
+the same words, fourteen days apart; conflating them would have produced a fix
+for a problem that was already fixed.
+
+The replacement, chosen by the owner from three options — a plain statement of
+activity, with no claim about how well it is done:
+
+| | Retired | Live |
+| --- | --- | --- |
+| English (29 page headers) | Premium Export Specialists | Egyptian Table Olive Export |
+| Arabic (28 page headers) | متخصصون في تصدير الزيتون المصري الفاخر | تصدير الزيتون المصري |
+
+It asserts no new fact: Egyptian origin, table olives and export are each
+stated throughout the site already. It is also not new wording. A grep for the
+English string returns a thirtieth hit —
+`netlify/functions/_guides/en/company-overview.html`, which has carried
+"Egyptian Table Olive Export · Company Overview" as its subtitle since
+2026-09-06. The phrase was already approved site language before it was picked
+for the header, which is what Operating Rule 2 asks for; it was found
+afterwards, not used as the reason.
+
+**The third place was found only because the second was fixed.** With the
+header done, a sweep for the claim turned up the contact pages' opening
+sentence — "Get in touch with our export specialists" / "تواصل مع متخصصي
+التصدير لدينا" — one word in each locale. Worth recording: each of those pages'
+own `og:description` **already said "export team" / "فريق التصدير"**. The
+visible sentence had been contradicting the page's own meta description the
+whole time, so the neutral wording was already the one going to search engines
+and social previews, while the text a visitor actually read made the stronger
+claim. No occurrence of the claim, in either language, now remains anywhere on
+the site.
+
+### Process note: a pull request that was approved and then left sitting
+
+#114 was approved on 2026-09-18 and merged on the 19th. In between, I moved on
+to the header work **without saying that it was still open**. It went four
+merges stale, and its one file collided with both #115 and #117, which each
+touched `contact/index.html`.
+
+The collision was resolved the way the minified-file conflicts before it were:
+take `main`, re-apply the branch's two-word change on top, then verify all
+three survive — the new tagline, the "export team" wording, and the partner
+facility reading Egypt. That part worked. The part that should not have
+happened is the delay. An approval is an instruction with a clock on it, and
+the cost of sitting on one is paid in conflicts on files that cannot be merged
+automatically.
+
+#114 exists because of something worse than the delay. Batch 2 normalised the
+head-office address to "Egypt" / "مصر" and left the partner-facility block on
+the same two pages reading "Arab Republic of Egypt" / "جمهورية مصر العربية", so
+each contact page carried two country forms at once, in both locales. **C-22
+governs only the head-office address, so scoping that change to it was right;
+not flagging the mismatch it would leave was not.** It surfaced because the
+owner asked for Batch 2's results to be re-verified rather than taking
+"finished" at face value. Both blocks on both pages now end Egypt / مصر, and a
+direct search for either formal form returns zero.
+
+### Claim register
+
+C-90 and C-91 added. **C-91 is CLOSED** — the owner reviewed the new Arabic as a
+native reader and approved both strings unchanged, so nothing on the 28 Arabic
+pages moves. C-32 is marked SUPERSEDED by it. C-82 was extended to cover the
+partner facility, and C-84 and C-85 closed on the owner's confirmations. The
+register stands at 91 claims, with **C-55 the only `needs-review` row** and
+nothing waiting on a native reader.
+
+C-90 carries an open action rather than a closure: no Follow-pill count has
+been read, and none can be read from here.
+
+### Testing method
+
+`npm test` — now **21 suites**, green on `ac7315f`. One of them grew for this
+deploy: `check-identity-strings.js` gained a retired-tagline rule, covering
+pages and generators alike. A header subtitle is exactly the kind of text
+copied onto a new page from an old one, and the check that would have caught
+that did not exist.
+
+The logo was measured, not eyeballed: canvas and ink bounds read out of the PNG
+directly, then rendered box and mark dimensions read out of Chromium at five
+widths in both locales.
+
+The tagline sweep counted occurrences **by category** — visible markup, schema
+nodes, meta fields, `<title>` — rather than in total, because which category
+they were in was the whole question.
+
+### Rollback
+
+```
+git revert ac7315f 3b8e8c4 4fe8959 153d6e3 07f8ccd 72439d7 9b3caf5 9dc5ba2
+```
+
+All eight are squashes; no `-m 1` on any of them. The order matters: #114, #117
+and #115 all touch `contact/index.html`, so reverting out of reverse
+chronological order will conflict.
+
+**Do not revert #115 or #117 selectively.** Both remove an unverified
+capability claim that the owner has since replaced by decision; putting either
+back restores the claim. A partial revert of #115 — the pages without the check
+— will also fail `npm test`, which is the retired-tagline rule doing exactly
+its job. Fix forward instead.
+
+Reverting #116 restores the 512×512 canvas and shrinks the header mark back to
+about 17px. It changes no layout dimension in either direction.
+
+### Known limitations shipped with this deploy
+
+- **105 pages declare the logo as `width="512" height="512"` for a file that is
+  now 236×289.** Found while writing this entry; not fixed here. The
+  consequence today is nil — every one of those images also carries an explicit
+  `h-8 w-8` box (two carry `h-16 w-16`), so CSS sets both dimensions and the
+  stale attributes never reach layout, and `object-contain` fits the real
+  intrinsic ratio rather than the declared one. But the numbers are now wrong,
+  and the next person to render that image without a fixed box will get a
+  square space reservation for a 0.82:1 file. Flagged rather than folded into a
+  records-only change. Separately, `generate-product-pages.py` emits the image
+  with no `width`/`height` at all, so a re-run produces pages that differ from
+  the hand-written ones in this respect.
+- **`LEADS_NOTIFY` is still unset**, carried from Deploy 11 through Deploy 13.
+- **`/admin/analytics` still cannot be signed into**, open since 2026-09-17. It
+  is the named blocker on C-90: the Follow-pill counts exist only behind that
+  login.
+- The Arabic insights-tab wording is **no longer** a limitation — carried by
+  Deploy 13, closed as C-85 on the owner's review.
+- No Netlify build has been confirmed for this or any deploy in this document.
+  The owner chose to record this deploy without checking the dashboard first,
+  so the entry says "unconfirmed" for the seventh time rather than settling it.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -1461,9 +1678,12 @@ last sync. It is not part of the changed-file scope of any deploy above.
    Netlify API or dashboard access. The site owner should check the
    Netlify dashboard directly and, if the latest production deploy shows
    failed or stale, trigger a fresh one manually. **The same is true of every
-   merge in Deploys 6 to 12** -- 37 in Deploys 6 to 10, six in Deploy 11 and
-   one in Deploy 12 -- for the same reason, and it is the one thing in this
-   document only the owner can settle.
+   merge in Deploys 6 to 14** -- 37 in Deploys 6 to 10, six in Deploy 11,
+   one in Deploy 12, two in Deploy 13 and eight in Deploy 14, 54 in all --
+   for the same reason, and it is the one thing in this document only the
+   owner can settle. Updated 2026-09-19 with Deploy 14: the owner elected to
+   record that deploy without checking the dashboard first, so the count
+   grows rather than closing.
 6. **This record ran ten days behind production.** Deploy 5 was written on
    2026-09-05 and nothing was added until 2026-09-17, while PRs #63 to #98
    merged and built. The claim register kept pace throughout; this file did
@@ -1476,7 +1696,7 @@ last sync. It is not part of the changed-file scope of any deploy above.
    describes, in the same session, which is what this item asks for. The
    lesson stands rather than the gap.
 7. **Deploys 6 to 10 carry no per-deploy verification tables**, unlike
-   Deploys 1 to 5. `npm test` ran at merge time — it is now 20 suites, and
+   Deploys 1 to 5. `npm test` ran at merge time — it is now 21 suites, and
    several of them exist because of defects found during those deploys
    (`check-nav-handlers.js`, `check-crm-schema.js`, `check-crm-errors.js`,
    `check-packaging-claims.js`) — but the output was not captured per
