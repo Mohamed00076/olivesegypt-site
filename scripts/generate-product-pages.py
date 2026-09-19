@@ -168,7 +168,7 @@ PAGE_TMPL = """<!DOCTYPE html>
     <header class="w-full border-b border-border bg-background">
       <div class="container flex h-16 max-w-screen-2xl items-center justify-between gap-4 mx-auto px-4">
         <a href="/" class="flex items-center gap-2 shrink-0">
-          <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" class="h-8 w-8 object-contain shrink-0"/>
+          <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" class="h-8 w-8 object-contain shrink-0" width="236" height="289"/>
           <span class="font-serif text-sm sm:text-[15px] font-bold tracking-tight text-primary whitespace-nowrap">TRIPLE COMPANY</span>
         </a>
         <nav class="flex gap-4 text-sm font-medium">
