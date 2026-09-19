@@ -2474,6 +2474,14 @@ last sync. It is not part of the changed-file scope of any deploy above.
    egress to `olivesegypt.com` is itself blocked (sandbox policy, not
    evidence about the domain), so even that limited check couldn't be
    attempted this time.
+   **Partly overtaken 2026-09-20:** the Netlify dashboard confirms the site
+   builds and publishes (see item 5), and its entry carries a domain badge and
+   a padlock, which suggests the parked-domain problem this item describes is
+   no longer current. That is read off an icon, though, not a request, so it is
+   noted rather than claimed — and Section D itself is still not done, because
+   nobody has checked the live site's *content* against what was shipped. The
+   egress block in this environment is unchanged, so that check stays with the
+   owner.
 2. **No dedicated claim-removal register file** exists for A2, despite
    being explicitly required. The removals themselves are verified (see
    Deploy 1's table above); the tracking artifact is not.
@@ -2504,6 +2512,28 @@ last sync. It is not part of the changed-file scope of any deploy above.
    owner can settle. Updated 2026-09-19 with Deploy 14: the owner elected to
    record that deploy without checking the dashboard first, so the count
    grows rather than closing.
+
+   **SETTLED 2026-09-20, and mostly answered rather than partly.** The owner
+   opened the Netlify dashboard and sent its site list. `olivesegypt.com`
+   deploys from GitHub and had **published at 00:38** — the same minute
+   `4b82c67` (#130) merged, `2026-09-20 00:38:02 +0300`. So merging to `main`
+   does trigger a build, the build succeeds, and it goes live in under a
+   minute. That is the pipeline this document has assumed for eighteen deploys
+   and never confirmed.
+
+   It also makes the count above far less interesting than it looked.
+   Production is a static publish of the repository at a commit, and the
+   published commit is the tip — so the content of all 65 merges is live now,
+   whether or not any individual build along the way failed. What the count was
+   really measuring is how long the site might have been *stale* at some past
+   moment, not whether anything is missing today.
+
+   **What remains unconfirmed, and it is narrow:** whether any earlier build
+   failed, which would mean the site was stale for some window. The dashboard's
+   site list shows only the latest publish; the per-site Deploys tab lists every
+   build with its commit and status and would settle it. The published commit
+   SHA is therefore inferred from the timestamp match rather than read. See
+   C-98.
 6. **This record ran ten days behind production.** Deploy 5 was written on
    2026-09-05 and nothing was added until 2026-09-17, while PRs #63 to #98
    merged and built. The claim register kept pace throughout; this file did
