@@ -30,10 +30,17 @@
  *      form message or PDF used it as an identity -- so this rule guards a
  *      clean state rather than fixing a dirty one.
  *
- * The header taglines ("Premium Export Specialists", and the Arabic
- * equivalent) are deliberately NOT checked. They are descriptive subtitles
- * beneath the company name, they appear in no schema or meta field, and the
- * owner reviewed and kept them on 2026-09-05.
+ * The header taglines are descriptive subtitles beneath the company name and
+ * appear in no schema or meta field, so they are not identity strings and are
+ * not checked as such.
+ *
+ * They did carry a claim, though. "Premium Export Specialists" and its Arabic
+ * equivalent were reviewed and kept on 2026-09-05, over my note that
+ * "specialists" sat against the site's own FAQ answer ("We are a newly
+ * established export company"). The owner revisited that on 2026-09-19 and
+ * replaced both with a plain statement of what the company does -- see C-91.
+ * The old wording is asserted gone below, because a subtitle is exactly the
+ * kind of text that gets copied onto a new page from an old one.
  */
 
 const fs = require('fs');
@@ -142,6 +149,14 @@ const BANNED = [
 const PLACEHOLDERS = /\bTODO\b|\bFIXME\b|Lorem ipsum/i;
 
 const problems = [];
+
+// The retired tagline (C-91). Not an identity violation -- it never appeared
+// in a schema or meta field -- but an unverified capability claim, and the
+// header is copied from page to page by hand.
+const RETIRED_TAGLINES = [
+  ['Premium Export Specialists', 'claims expertise the site does not evidence (C-91)'],
+  ['\u0645\u062a\u062e\u0635\u0635\u0648\u0646 \u0641\u064a \u062a\u0635\u062f\u064a\u0631 \u0627\u0644\u0632\u064a\u062a\u0648\u0646 \u0627\u0644\u0645\u0635\u0631\u064a \u0627\u0644\u0641\u0627\u062e\u0631', 'the Arabic form of the same claim (C-91)'],
+];
 const tracked = execSync('git ls-files', { cwd: ROOT }).toString().trim().split('\n');
 const pages = tracked.filter((f) => f.endsWith('.html'));
 // The generators are the reason this file exists: a page fixed by hand is
@@ -229,6 +244,14 @@ for (const f of [...pages, ...generators]) {
   for (const { pattern, why } of BANNED) {
     const hit = src.match(pattern);
     if (hit) problems.push(`${f}: "${hit[0]}" -- ${why}`);
+  }
+}
+
+// ---- the retired tagline (C-91) -----------------------------------------
+for (const f of [...pages, ...generators]) {
+  const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
+  for (const [phrase, why] of RETIRED_TAGLINES) {
+    if (src.includes(phrase)) problems.push(`${f}: still carries the retired tagline "${phrase}" -- ${why}`);
   }
 }
 
