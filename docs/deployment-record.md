@@ -1867,6 +1867,16 @@ so revert in the order given.
   — the generator list is one array at the top — and the work is adding an
   output root, rebuilding the template from the seven shipped pages, and
   registering it.
+  **Closed the same day, and the diagnosis above was incomplete.** The script
+  did not merely lack an output root: it read its header and footer at import
+  time from two files under an ephemeral `/tmp/claude-0/.../scratchpad/` path
+  committed on 2026-09-01, so on any fresh checkout it raised
+  `FileNotFoundError` before generating anything. **It had not been runnable
+  since the container that wrote those files.** That is also the mechanism
+  behind the drift described above: the two scratch files were a 1 September
+  snapshot of the header and footer, so the script could not have picked up the
+  navigation rebuild however often it ran, and five of its seven bodies had
+  fallen behind the shipped pages as well. See C-95.
 - **The other 21 check scripts print their `… OK --` summary even when a test
   failed**, so a failing run reads "OK" directly above "1 failed". Fixed in
   the two scripts added by this deploy; the rest still do it.

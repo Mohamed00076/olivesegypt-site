@@ -25,10 +25,24 @@
  * file it was wrong about. The drift was found by running it, and the run had
  * to be undone from git.
  *
+ * The resource generator was worse, and is the reason this check takes a list.
+ * It read its header and footer at import time from two files under
+ * /tmp/claude-0/.../scratchpad/ -- an ephemeral path committed to the
+ * repository on 2026-09-01, which worked only while that one container lived.
+ * On any fresh checkout it raised FileNotFoundError before generating
+ * anything, and because those two scratch files were a 1 September snapshot it
+ * could not have picked up the navigation rebuild however often it ran. It
+ * emitted the header tagline that C-91 retired on all seven of its pages -- the
+ * exact wording is in that register row, and is deliberately not quoted here,
+ * because check-identity-strings.js forbids it in any generator including prose
+ * about the rule -- and five of its seven bodies had fallen behind the shipped
+ * ones, /resources/certifications by more than half the page.
+ *
  * WHAT THIS ASSERTS
  *
- * The generator, run into a scratch directory, produces byte-for-byte what is
- * committed. Editing a generated page by hand fails this check, and so does
+ * Each generator, run into a scratch directory, produces byte-for-byte what is
+ * committed. Every file it writes is compared, at whatever depth, so a hub page
+ * written beside the per-slug directories is covered rather than skipped. Editing a generated page by hand fails this check, and so does
  * editing the template without regenerating -- which is the point: the two
  * have to move together or the site has two sources of truth for one page.
  *
@@ -44,6 +58,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const GENERATORS = [
   { script: 'scripts/generate-product-pages.py', dir: 'products' },
+  { script: 'scripts/generate-resource-pages.py', dir: 'resources' },
 ];
 
 let pass = 0, fail = 0;
@@ -67,17 +82,27 @@ for (const gen of GENERATORS) {
     t(`${gen.script} runs`, ran, err);
     if (!ran) continue;
 
-    const outRoot = path.join(tmp, gen.dir);
-    const produced = fs.existsSync(outRoot) ? fs.readdirSync(outRoot).sort() : [];
+    // Collect every file the generator wrote, at whatever depth. One writes
+    // <slug>/index.html only; the other also writes a hub page beside them, so
+    // walking the tree is what keeps this honest about both.
+    const produced = [];
+    (function collect(dir, rel) {
+      if (!fs.existsSync(dir)) return;
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name < b.name ? -1 : 1)) {
+        const next = rel ? `${rel}/${entry.name}` : entry.name;
+        entry.isDirectory() ? collect(path.join(dir, entry.name), next) : produced.push(next);
+      }
+    })(path.join(tmp, gen.dir), '');
+
     t(`${gen.script} produced pages`, produced.length > 0, `nothing under ${gen.dir}/`);
 
     const differs = [], missing = [];
-    for (const slug of produced) {
-      const got = path.join(outRoot, slug, 'index.html');
-      const want = path.join(ROOT, gen.dir, slug, 'index.html');
-      if (!fs.existsSync(want)) { missing.push(slug); continue; }
+    for (const rel of produced) {
+      const got = path.join(tmp, gen.dir, rel);
+      const want = path.join(ROOT, gen.dir, rel);
+      if (!fs.existsSync(want)) { missing.push(rel); continue; }
       checked++;
-      if (!fs.readFileSync(got).equals(fs.readFileSync(want))) differs.push(slug);
+      if (!fs.readFileSync(got).equals(fs.readFileSync(want))) differs.push(rel);
     }
 
     const show = (l) => `${l.length}: ${l.slice(0, 6).join(', ')}${l.length > 6 ? ' …' : ''}`;
