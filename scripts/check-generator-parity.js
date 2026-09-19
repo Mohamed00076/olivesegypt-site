@@ -27,8 +27,11 @@
  *
  * There was a second generator, for the seven /resources pages, and it was
  * worse: it read its header and footer at import time from two files under an
- * ephemeral /tmp/claude-0/.../scratchpad/ path committed on 2026-09-01, so on
- * any fresh checkout it raised FileNotFoundError before generating anything.
+ * ephemeral per-session scratchpad directory outside the repository, whose
+ * absolute path was committed on 2026-09-01, so on any fresh checkout it raised
+ * FileNotFoundError before generating anything. (The path itself is quoted in
+ * Deploy 16's entry; check-absolute-paths.js now forbids writing one into a
+ * file like this, prose included, which is why it is described here instead.)
  * It was RETIRED on 2026-09-19 (C-95) rather than kept: nothing ran it -- no
  * build step, no CI, no npm script, no runbook -- while those seven pages had
  * been edited by hand 33 times since it was written. A generator nobody runs
