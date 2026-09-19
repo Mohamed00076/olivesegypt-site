@@ -1642,6 +1642,242 @@ about 17px. It changes no layout dimension in either direction.
 
 ---
 
+## Deploy 15 — Four merges a visitor cannot see (PRs #119–#122)
+
+**Date:** 2026-09-19
+**Production commit:** `412bcbb`
+**Previous recorded deploy:** `ac7315f` (Deploy 14, PRs #111–#118)
+**Delta:** 4 commits, 4 merged pull requests, 109 files changed (+746 / −167)
+**Approval:** three instructions — "record deploy 14", "fix the logo dimensions",
+"can you fix those two ??" — then "merge 120 121 122 in that order".
+
+### The first deploy in this document that changes nothing anyone can see
+
+That is worth stating plainly, because every earlier entry could be checked by
+looking at a page. None of these four can:
+
+| PR | Substance | What a visitor sees |
+| --- | --- | --- |
+| #119 | Deploy 14's own entry | nothing — documentation |
+| #120 | 105 logo tags corrected from 512×512 to 236×289, plus a check | nothing — CSS pins the box, so the attributes never reach layout |
+| #121 | The product-page generator rebuilt to match the pages it writes | nothing — zero bytes differ in any of the ten pages |
+| #122 | 23 image declarations corrected to their files' real sizes | nothing — same reason as #120 |
+
+So the verification that matters here is not "does the page look right". It is
+before-and-after measurement, byte-for-byte comparison, and negative tests
+proving each new check fails when the defect returns. Those are recorded below
+because they are the only evidence these changes have.
+
+### Where the range starts
+
+`ac7315f..412bcbb`. Deploy 14 names `ac7315f` (#118) as its production commit
+and **#119 carries Deploy 14's own entry**, merged after it — so #119 belongs
+here, exactly as #111 and #112 belonged to Deploy 14 rather than to the deploy
+they described. A record of a deploy is itself a merge, and it lands in the
+next one. Checked against every earlier entry rather than assumed: none of
+#119 to #122 appears in any of them.
+
+### A crop that left 105 numbers describing nothing
+
+#116, in Deploy 14, cropped `assets/logo-BJ1TOn9V.png` from a 512×512 canvas
+to its 236×289 artwork and changed nothing else. It did not change the 105
+tags that declared `width="512" height="512"`, and after the crop those
+numbers described no file that existed.
+
+**It never showed, and that is the finding rather than an excuse.** Every one
+of those tags also carries an explicit CSS box — `h-8 w-8` on 100 of them,
+`h-16 w-16` on 2, a `width`/`height` pair in a document stylesheet on 3 — so
+the attributes never reach layout, and `object-contain` fits the real
+intrinsic ratio rather than the declared one. A wrong value and a right value
+render identically. Three days passed; the defect was found while writing
+Deploy 14's entry, not by anyone looking at the site.
+
+Measured after the fix, at 1280, 768, 390 and 320 in both locales: box 32×32
+with a painted mark of 26×32 on browsing pages, 46×46 on the letterheads,
+64×64 on the business cards. Those are the numbers #116 recorded, unchanged,
+which is the point — nothing layout-bearing moved in either direction.
+
+### The generator would have undone eleven days of work
+
+While confirming that #120's one-line change to
+`scripts/generate-product-pages.py` was consistent, the generator was run. It
+rewrote all ten pages it owns: **401 insertions, 611 deletions.** The run was
+undone from git within the minute, and the committed diff for those files is
+the two logo attributes and nothing else.
+
+The template had drifted from its own output. The shipped pages had gained the
+consent, locale-switch, site-nav and analytics scripts, hreflang alternates,
+the favicon family, the theme bootstrap, the rebuilt navigation with its
+dropdown panels and mobile drawer, the Facebook pill, the theme toggle and the
+footer columns. The template still emitted the shape they had before all of
+that.
+
+**And one thing the pages had lost, the template had kept**: an
+`offers`/`InStock` block in the Product schema. A re-run would have put an
+availability claim back into the structured data of ten pages — the single
+most consequential item in this deploy, and it would have arrived silently,
+inside what looked like a routine regeneration.
+
+It is not an unmaintained generator, which is what makes it instructive. The
+WhatsApp button and the insights tab were added to it during Deploy 13's
+floating-actions work, and the logo's dimensions in #120. It was edited twice
+in two days. Only the parts nobody thought to re-check drifted — and **a
+generator that is wrong says nothing until it is run, by which point it has
+already overwritten the file it was wrong about.**
+
+The fix goes the only direction it can. The live pages were always the correct
+ones, so the template is now derived from
+`products/aggizi-green-olives/index.html` and reproduces all ten byte for
+byte. Each page's image markup is read back out of the page rather than
+assumed — five products carry a photograph with a WebP source, five an
+illustration whose alt text says photography is pending — so the image became
+a field per product instead of one shape hardcoded for all of them.
+
+Before rebuilding anything, the old code's formats chips, caliber chips,
+best-for list, related list and image markup were confirmed still present
+verbatim in all ten shipped pages. That is what established the drift was
+confined to the chrome and the product-data half of the template was sound.
+
+### One rule for image sizes, and a miscount corrected
+
+The survey that found the logo defect also found 23 tags declaring a size that
+was not the file's: ten thumbnails at 96×96 on the printable catalogues, ten
+at 80×80 on the downloads pages — both declaring the *display* size — and
+three in `ar/catalog` declaring `800x515`, which is the real size of
+`olive-black`, on the aggizi, toffahi and hamed photographs (800×533,
+1200×800, 1200×1800). The English catalogue has all three right, so the Arabic
+page is a copy whose numbers were never updated.
+
+**#120 reported 14 of these. There were 23.** The rows of a summary table were
+counted rather than the tags they stood for, and the miscount reached both the
+pull request body and C-92. Corrected in #122 with the error left on the
+record in the row itself, per the same reasoning that kept C-32 as
+SUPERSEDED rather than deleting it: a number that was wrong once is part of
+what the register is for.
+
+All 23 are now the files' own sizes. The rule is now one rule — a declared
+size is the file's size — and it is enforced for every raster image the site
+serves itself, 159 tags across 7 assets.
+
+**SVGs are deliberately outside it.** Their intrinsic size is a `viewBox` or a
+percentage and often neither, so there is no single number to compare against
+and a check that picked one would be asserting its own guess. The illustration
+placeholders are all SVG, so this is not a marginal exception — it is stated
+rather than hidden.
+
+### The checks, and why each one exists
+
+The suite went from 21 to 23. Both additions came from this deploy's defects,
+and both were proven to fail before being trusted to pass.
+
+| Check | Fails when | Negative tests, all exit 1 |
+| --- | --- | --- |
+| `check-image-dimensions.js` (widened from `check-logo-dimensions.js`) | any declared size differs from the file, read from PNG `IHDR` and JPEG `SOF` headers on every run | a page put back to 512×512; the generator stripped of its attributes; **the PNG itself re-cropped to 200×200 with the markup untouched** — 105 declarations named; a thumbnail put back to 80×80; one photograph re-encoded at 600×400 — failed on all eight pages that declare it |
+| `check-generator-parity.js` | a generator's output differs from what is committed, rendered into a temporary directory — never the working tree | one word changed in the template, failing all ten pages; one character added to a generated page, failing that one |
+
+The third negative test in the first row is the one that matters: it proves the
+**file** is the source of truth, not the markup. Re-cropping an asset fails the
+suite until the declarations follow it. Every asset touched in a negative test
+was restored byte-for-byte, and confirmed so before committing.
+
+The parity check renders into a temporary directory specifically so that
+running the suite cannot itself do what the check exists to prevent. It also
+asserts in both directions: editing a generated page by hand fails, and so
+does editing the template without regenerating. One page, one source of truth.
+
+`generate-product-pages.py` now takes an output root, which is what makes that
+possible — and which means the generator can be rendered somewhere harmless by
+anyone who wants to see what it would do.
+
+### Process note: three stacked pull requests, rebased rather than merged across
+
+#121 and #122 were opened against their parent branches, because all three
+touched `package.json` and the check-script family while no page was touched by
+more than one of them. Merging them in that stacked state would have made each
+squash re-apply its parent's diff and carry its parent's commits into the
+message.
+
+So each branch was rebased onto `main` after its parent merged, the suite
+re-run, and the base retargeted before merging. All three were branches with
+no other checkout, force-with-lease, and the suite passed on each rebased head
+before it was pushed. Recorded because the alternative — merging a stack as a
+stack — produces a history where a later commit appears to contain an earlier
+one's changes, and nobody reading it later can tell why.
+
+### Claim register
+
+C-92, C-93 and C-94 added, all `defect-fixed` with no action required. **C-92
+corrected in #122** — the 14/23 miscount above. Register stands at 94 claims,
+with **C-55 the only `needs-review` row** and nothing waiting on a native
+reader.
+
+Three defect rows in one deploy is the most this record has carried. Two of
+them (C-92, C-94) are the same defect at two scales, and the third (C-93) was
+found only because the first was being fixed. None of the three was reported
+by anyone using the site, and none of them could have been.
+
+### Testing method
+
+`npm test` — 23 checks, green on `412bcbb`, re-run on `main` after all three
+merges rather than trusted from the branches.
+
+Rendered geometry measured in Chromium rather than reasoned about: the logo at
+four widths in both locales across five page families, and the five
+photo-affected pages at 1280 and 390 **before and after** the change, serving
+the committed HTML for the before pass. Every box matched to the pixel and the
+two outputs `diff` clean.
+
+Byte-for-byte comparison for the generator, with `cmp`, 10 of 10 — and the
+stronger check afterwards: running it in the repository on `main` produces no
+diff at all. The run that would have rewritten ten pages that morning is now a
+no-op.
+
+### Rollback
+
+```
+git revert 412bcbb 27f017b f662f50 83d3c51
+```
+
+All four are squashes; no `-m 1` on any of them. Reverting any of them changes
+nothing a visitor sees — what it restores is the hazard: stale declarations, a
+generator that overwrites ten pages with an older shape and an availability
+claim, and a suite two checks smaller. Fix forward.
+
+`412bcbb` and `f662f50` both touch the check-script family and `package.json`,
+so revert in the order given.
+
+### Known limitations shipped with this deploy
+
+- **`generate-resource-pages.py` has drifted the same way, and is not fixed.**
+  Checked while writing this entry, by reading it rather than running it: the
+  script emits no `tc-nav`, no `tc-social-pill`, no `tc-footer-col`, no
+  `mobile-menu-toggle`, no `theme-toggle-btn`, no `consent.js` or `site-nav.js`,
+  and not the current tagline — every marker that was missing from the product
+  generator is missing from this one too. It writes seven pages:
+  `/resources/certifications`, `/resources/faq`, `/resources/export-markets`,
+  `/resources/why-egyptian-olives`, `/resources/packaging`,
+  `/resources/pricing`, and the `/resources` hub.
+  **It is also the script that produced the C-31 alternate-name defect**, so
+  its output has been wrong in a published way before.
+  It was not fixed here for a specific reason: unlike the product generator it
+  writes relative to the current working directory with no output-root option,
+  so there is no way to render it somewhere harmless without changing it first.
+  Testing it means editing it, which makes it its own change rather than a
+  verification step in this one. `check-generator-parity.js` takes more entries
+  — the generator list is one array at the top — and the work is adding an
+  output root, rebuilding the template from the seven shipped pages, and
+  registering it.
+- **The other 21 check scripts print their `… OK --` summary even when a test
+  failed**, so a failing run reads "OK" directly above "1 failed". Fixed in
+  the two scripts added by this deploy; the rest still do it.
+- **`LEADS_NOTIFY` is still unset**, carried since Deploy 11.
+- **`/admin/analytics` still cannot be signed into**, open since 2026-09-17,
+  and still the named blocker on C-90's Follow-pill counts.
+- No Netlify build has been confirmed for this or any deploy in this document.
+  With these four merges the count reaches 58.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -1678,8 +1914,9 @@ last sync. It is not part of the changed-file scope of any deploy above.
    Netlify API or dashboard access. The site owner should check the
    Netlify dashboard directly and, if the latest production deploy shows
    failed or stale, trigger a fresh one manually. **The same is true of every
-   merge in Deploys 6 to 14** -- 37 in Deploys 6 to 10, six in Deploy 11,
-   one in Deploy 12, two in Deploy 13 and eight in Deploy 14, 54 in all --
+   merge in Deploys 6 to 15** -- 37 in Deploys 6 to 10, six in Deploy 11,
+   one in Deploy 12, two in Deploy 13, eight in Deploy 14 and four in
+   Deploy 15, 58 in all --
    for the same reason, and it is the one thing in this document only the
    owner can settle. Updated 2026-09-19 with Deploy 14: the owner elected to
    record that deploy without checking the dashboard first, so the count
@@ -1696,7 +1933,7 @@ last sync. It is not part of the changed-file scope of any deploy above.
    describes, in the same session, which is what this item asks for. The
    lesson stands rather than the gap.
 7. **Deploys 6 to 10 carry no per-deploy verification tables**, unlike
-   Deploys 1 to 5. `npm test` ran at merge time — it is now 21 suites, and
+   Deploys 1 to 5. `npm test` ran at merge time — it is now 23 suites, and
    several of them exist because of defects found during those deploys
    (`check-nav-handlers.js`, `check-crm-schema.js`, `check-crm-errors.js`,
    `check-packaging-claims.js`) — but the output was not captured per
