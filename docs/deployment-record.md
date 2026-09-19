@@ -2294,6 +2294,172 @@ path; reverting both also removes Deploy 16's entry.
 
 ---
 
+## Deploy 18 — Parsing what nobody runs (PRs #128, #129)
+
+**Date:** 2026-09-20
+**Production commit:** `accebf4`
+**Previous recorded deploy:** `8950bc1` (Deploy 17, PRs #126, #127)
+**Delta:** 2 commits, 2 merged pull requests, 4 files changed (+354 / −4)
+**Approval:** "record deploy 17", then "add the smoke test for the unexercised
+scripts", then "merge" for each.
+
+### The merges
+
+| PR | Substance |
+| --- | --- |
+| #128 | Deploy 17's own entry, which is where the gap this deploy closes was first written down. |
+| #129 | `check-script-integrity.js`: 78 scripts parsed, every dependency they name resolved, none of them executed. Suite 24 → 25. |
+
+`8950bc1..accebf4`, with #128 in this delta for the usual reason — it carries
+Deploy 17's entry and merged after the commit Deploy 17 names as production.
+Neither appears in an earlier entry.
+
+### How long it has been since a visitor could see anything change
+
+Worth measuring precisely rather than gesturing at, because two different things
+get called "visitor-facing" and only one of them matters.
+
+**Seven consecutive merges — #123 through #129 — touched no file a visitor
+loads at all**: no HTML, no image, no stylesheet, in either locale.
+
+**The last change a visitor could actually perceive was #114**, on 19 September:
+the partner-facility country form on the two contact pages. That is eleven
+merges ago. Two merges since then did touch HTML — #120 and #122 — but both
+changed only declared `width`/`height` attributes, which the Deploy 14 and
+Deploy 15 entries established never reach layout, on pages whose rendered
+geometry was measured identically before and after.
+
+So the honest figure is eleven merges since anything changed for a reader, and
+seven since anything changed in a file they fetch. **All eleven were machinery
+or record work**: four record entries, four new checks (`check-image-dimensions`
+as `check-logo-dimensions`, `check-generator-parity`, `check-absolute-paths`,
+`check-script-integrity`), one check widened from a single asset to all of them,
+one generator repaired and one retired.
+
+None of it was busywork — every one closed a defect that had shipped or a gap
+that had let one ship — and the record should still say plainly that a project
+can spend eleven merges getting better at checking itself without getting better
+for anyone using it. **The next thing worth doing is on a page.**
+
+### The gap, and why parsing is the right size of fix
+
+Deploy 17's limitations recorded that nothing checked whether runnable code is
+ever run. `npm test` executed the check scripts, `git ls-files` and
+`generate-product-pages.py`, and `require`d four helper modules. Nine scripts
+were neither executed nor loaded by anything.
+
+`build-geo.js` was the one that mattered. **Netlify runs it on every deploy and
+nothing local did**, so a syntax error or a renamed dependency in it would have
+been discovered by a failed production build — the same shape as C-95, code
+nobody runs until it matters.
+
+The obvious fix is to run them, and it is the wrong one. Several of these
+scripts send email, write to the database or download a GeoLite2 archive on
+their first line. **A smoke test that ran them would be worse than no smoke
+test**, and would breach the standing rule against sending real mail from a test
+path. `node --check` and Python's `ast.parse` read and parse without evaluating,
+which is the whole trick: everything below is asserted with nothing run.
+
+| Assertion | What it catches |
+| --- | --- |
+| Every `.js` parses as CommonJS | a syntax error |
+| Every `.py` parses | a syntax error |
+| Every relative `require()` resolves | a module renamed out from under a caller |
+| Every package `require()` is builtin, declared, or tooling-only | an undeclared or renamed dependency |
+| Every third-party Python import is stdlib or tooling-only | the same, in Python |
+| **The script `netlify.toml` names exists and is one of those parsed** | renaming `build-geo.js` without editing the build command |
+
+That last row is the reason the file exists. It breaks every deploy, and nothing
+else in the repository would notice.
+
+The check covers **78 files**, not the nine that were unexercised, so its
+coverage cannot narrow as scripts are added or renamed.
+
+### Two dependencies nobody had declared
+
+Found by the new rule on its first run: `generate-export-catalog-pdf.js`
+requires `playwright`, and `build-favicons.py` imports `PIL`. Neither is declared
+in `package.json` or anywhere else, and there is no `requirements.txt`.
+
+Both are one-off asset builders a maintainer runs with the tool already
+installed, and neither is part of the Netlify build. **Declaring Playwright
+properly would be worse than the gap**: `devDependencies` are installed on
+production deploys, so every deploy would fetch a browser toolchain to render
+two PDFs nobody regenerates on deploy.
+
+So they are listed in `TOOLING_ONLY`, keyed to the single file each is allowed
+in, with the reason written beside them. The same import anywhere else still
+fails. It joins the printable sheets in `check-floating-actions.js` and the PDF
+sources in `check-image-dimensions.js` as a named-exception list, and follows the
+same rule those set: an exception is a decision with a name and a reason, not a
+pattern that quietly happens to pass. `check-absolute-paths.js` has such a list
+too, deliberately empty.
+
+### A negative test that proved nothing, and the control that fixed it
+
+Six negative tests. Five were ordinary: a syntax error, a renamed local module,
+an undeclared package, an undeclared Python import, and `netlify.toml` pointed
+at a file that does not exist, which failed two assertions at once.
+
+The sixth was the one the whole design rests on — **does this check execute
+anything?** A `writeFileSync` was injected into `crm-seed.js` so that loading
+the file would leave a sentinel on disk.
+
+**The first attempt was worthless.** The line went in before the shebang, which
+pushed `#!` to line 2 and made the file unparsable. The check rejected it, the
+sentinel was absent, and that proved only that files which cannot be parsed do
+not run — which nobody doubted.
+
+Redone with the line after the shebang, so the file parses cleanly: the check
+passed 8 of 8, the sentinel stayed absent, **and a genuine `require()` of the
+same file created it.** That control is what makes the claim mean anything. A
+no-execution test without it is decoration, and it took writing the bad version
+first to see that.
+
+### Claim register
+
+**C-97** added, `verified-approved`, no action required. Register stands at 97
+claims, with **C-55 the only `needs-review` row**.
+
+### Testing method
+
+`npm test` — 25 checks, green on `accebf4`, re-run on `main` after the merge.
+Every file touched by a negative test was restored and `git status` confirmed
+clean before committing.
+
+### Rollback
+
+```
+git revert accebf4 a9e9be4
+```
+
+Both are squashes; no `-m 1`. Reverting changes nothing a visitor sees.
+Reverting `accebf4` returns the suite to 24 checks and leaves `build-geo.js`
+unexercised again; reverting both also removes Deploy 17's entry.
+
+### Known limitations shipped with this deploy
+
+- **Parsing is not running, and the scripts that cannot safely be run stay
+  unrun.** Not caught: a `require()` built at run time from a variable, a module
+  that throws on load, a wrong argument, a missing environment variable. The
+  docstring says so rather than implying coverage it does not have. Deploy 17's
+  gap is narrower, not closed.
+- **`build-geo.js` is parsed but still never executed locally**, and it is the
+  one script Netlify runs on every deploy. The only proof it works is a
+  production build succeeding — which, per the item below, has not been
+  confirmed for any deploy in this document.
+- **The two tooling-only dependencies are undeclared by decision, not by
+  accident**, which means a fresh checkout cannot run either asset builder until
+  someone installs Playwright and Pillow by hand. Nothing records that
+  requirement except `TOOLING_ONLY` and this entry.
+- **`LEADS_NOTIFY` is still unset**, carried since Deploy 11.
+- **`/admin/analytics` still cannot be signed into**, open since 2026-09-17, and
+  still the named blocker on C-90's Follow-pill counts.
+- No Netlify build has been confirmed for this or any deploy in this document.
+  With these two merges the count reaches 65.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -2330,9 +2496,10 @@ last sync. It is not part of the changed-file scope of any deploy above.
    Netlify API or dashboard access. The site owner should check the
    Netlify dashboard directly and, if the latest production deploy shows
    failed or stale, trigger a fresh one manually. **The same is true of every
-   merge in Deploys 6 to 17** -- 37 in Deploys 6 to 10, six in Deploy 11,
+   merge in Deploys 6 to 18** -- 37 in Deploys 6 to 10, six in Deploy 11,
    one in Deploy 12, two in Deploy 13, eight in Deploy 14, four in
-   Deploy 15, three in Deploy 16 and two in Deploy 17, 63 in all --
+   Deploy 15, three in Deploy 16, two in Deploy 17 and two in Deploy 18,
+   65 in all --
    for the same reason, and it is the one thing in this document only the
    owner can settle. Updated 2026-09-19 with Deploy 14: the owner elected to
    record that deploy without checking the dashboard first, so the count
@@ -2349,7 +2516,7 @@ last sync. It is not part of the changed-file scope of any deploy above.
    describes, in the same session, which is what this item asks for. The
    lesson stands rather than the gap.
 7. **Deploys 6 to 10 carry no per-deploy verification tables**, unlike
-   Deploys 1 to 5. `npm test` ran at merge time — it is now 24 suites, and
+   Deploys 1 to 5. `npm test` ran at merge time — it is now 25 suites, and
    several of them exist because of defects found during those deploys
    (`check-nav-handlers.js`, `check-crm-schema.js`, `check-crm-errors.js`,
    `check-packaging-claims.js`) — but the output was not captured per
