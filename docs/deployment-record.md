@@ -2120,6 +2120,180 @@ fresh checkout.
 
 ---
 
+## Deploy 17 — A guard for the way the last defect was found (PRs #126, #127)
+
+**Date:** 2026-09-19
+**Production commit:** `8950bc1`
+**Previous recorded deploy:** `57b0c74` (Deploy 16, PRs #123–#125)
+**Delta:** 2 commits, 2 merged pull requests, 5 files changed (+392 / −6)
+**Approval:** "record deploy 16", then "check the umami repo for the same
+scratchpad path issue", then "add a check for absolute paths in committed
+files", then "merge" for each.
+
+### The merges
+
+| PR | Substance |
+| --- | --- |
+| #126 | Deploy 16's own entry. |
+| #127 | `check-absolute-paths.js`, forbidding a filesystem path rooted on one machine in any file that can run or configure something. Suite 23 → 24. |
+
+`57b0c74..8950bc1`, with #126 in this delta because it carries Deploy 16's entry
+and merged after the commit Deploy 16 names as production. No earlier entry
+claims either.
+
+### The third consecutive deploy a visitor cannot see
+
+Deploys 15, 16 and 17 changed no HTML, no asset and no stylesheet, in either
+locale — checked here rather than asserted: zero files matching `.html`, `.png`,
+`.jpg`, `.css` or `.svg` in this whole range diff.
+
+Worth stating as an observation rather than an achievement. Nine merges across
+three deploys — four, three and two — have gone into the machinery that checks
+the site instead of the site. Some of that was necessary — two of those deploys existed to close
+defects the machinery had missed — but a record that goes three deploys without
+a visitor-facing change is describing a project that has been working on itself.
+The next thing worth doing is probably on a page.
+
+### Guarding the discovery method, not just the defect
+
+The defect behind C-95 was a script reading its header and footer from an
+absolute path in an ephemeral per-session scratchpad directory. Deploy 16
+recorded how it was fixed. What Deploy 16 could not record is how it was
+**found**, because that was luck: the suite never ran the script, so the broken
+read never executed; nothing else ran it either; it surfaced because the
+generator was run to check something unrelated, and was confirmed by reading
+its first fifteen lines.
+
+`check-absolute-paths.js` scans every tracked file that can run or configure
+anything — 208 of 277 tracked files, by extension — for `/home/`, `/root/`,
+`/tmp/`, `/Users/`, `/var/folders/`, `/private/var/` and Windows drive paths.
+Such a path is wrong by construction: it describes one checkout, one container,
+one laptop, and a repository that names one cannot be cloned and used.
+
+**What it does not flag, and why each one is a deliberate boundary:**
+
+| Not flagged | Reason |
+| --- | --- |
+| Web-absolute paths (`/assets/…`) | URLs, not filesystem paths; the whole site is built from them |
+| Documentation | This file quotes the original two lines verbatim, which is the record doing its job, and a path in a `.md` cannot be executed |
+| `C:/…`, forward-slash form | Indistinguishable from an ordinary `label:/path` |
+
+That last one is not hypothetical caution. The first draft flagged eight
+innocent lines, among them `mailto:/`, `purged:/` and a CSS `left:/` inside a
+regular expression. **A check that cries wolf gets deleted rather than obeyed**,
+so the pattern was narrowed until it was quiet.
+
+### An empty allowlist, on purpose
+
+One file would have needed an exemption: `check-generator-parity.js`, whose
+comment quoted the path while explaining the defect. It was **reworded to
+describe the path instead of quoting it** — the same decision made in Deploy 15
+when the C-91 tagline rule failed two docstrings that quoted the retired wording
+to explain why it was retired.
+
+So `ALLOWED` is an empty map, and the docstring says it is meant to stay that
+way: *a rule with an exemption for comments is a rule somebody routes around by
+adding a comment.* Twice now the cheaper option was to carve out prose, and
+twice the rule was kept absolute and the prose changed instead. That is the
+precedent worth having, and it only holds while it keeps being chosen.
+
+### The rule's point, written as a test
+
+```js
+t('the suite still gets its temp directory from the OS rather than a literal',
+  /os\.tmpdir\(\)/.test(src) && /mkdtemp/.test(src), …)
+```
+
+Asking the operating system for a temporary directory at run time is correct and
+stays correct everywhere, and `check-generator-parity.js` does exactly that,
+three lines from a comment about this defect. **The fault was never using a
+temporary directory; it was writing one machine's answer into a file.** That
+distinction is now asserted rather than assumed, so it cannot quietly stop being
+true.
+
+### A negative test that found a gap in the check it was testing
+
+Five negative tests, all exiting 1: the original defect reintroduced verbatim
+into the product generator; a `/home/` constant in a serverless function; a
+single-backslash Windows path in `netlify.toml`; a doubled-backslash Windows
+path in a `package.json` string; and `os.tmpdir()` replaced by a literal, which
+failed two tests at once.
+
+**The fourth one failed to fail.** The pattern required exactly one backslash,
+so it let `"C:\\Users\\x"` through — which is how a Windows path is *always*
+written inside a JavaScript or JSON string literal. It now accepts one or two.
+
+That line is correct only because the test was written before the check was
+trusted, which is the entire argument for writing them in that order. A check
+whose negative tests are written afterwards tests the code that was written,
+not the rule that was meant.
+
+### Both repositories swept first
+
+| Repository | Result |
+| --- | --- |
+| `umami-olivesegypt` | Clean, and could not have been otherwise: **no commit by the owner or by me** — the authors are the upstream umami maintainers — no scratchpad reference, no absolute host path, working tree clean at upstream v3.3.1 |
+| `olivesegypt-site` | The path survives only as elided prose in C-95, this file's Deploy 16 entry, and one docstring |
+
+The umami result was verified rather than reasoned from the deployment record's
+own claim that no commit was ever made there. Assuming is how the first one
+survived eighteen days.
+
+The site repository was also checked past string-matching, against the
+underlying class — *does any committed file read something outside the
+repository at run time* — by auditing all 22 file reads under `scripts/` and
+`netlify/`. Every one builds its path from `ROOT`, `__dirname`,
+`path.resolve(__dirname, …)` or a walk of the repository tree.
+
+### Claim register
+
+**C-96** added, `verified-approved`, no action required. Register stands at 96
+claims, with **C-55 the only `needs-review` row**.
+
+### Testing method
+
+`npm test` — 24 checks, green on `8950bc1`, re-run on `main` after the merge
+rather than trusted from the branch. Every file touched by a negative test was
+restored, and `package.json` re-validated as JSON afterwards.
+
+### Rollback
+
+```
+git revert 8950bc1 3bddd10
+```
+
+Both are squashes; no `-m 1`. Reverting changes nothing a visitor sees.
+Reverting `8950bc1` removes the check and restores the docstring that quoted the
+path; reverting both also removes Deploy 16's entry.
+
+### Known limitations shipped with this deploy
+
+- **Nothing checks that runnable code is ever run.** This is the gap the new
+  check narrows without closing. `npm test` executes the 24 checks, `git
+  ls-files`, and `generate-product-pages.py`; it `require`s `locale-routes.js`,
+  `product-order.js`, `product-facets.js` and `sourcing-regions.js`. **Eight
+  scripts are never executed or loaded by the suite at all** —
+  `admin-password.js`, `build-geo.js`, `crm-create-user.js`, `crm-seed.js`,
+  `db-roundtrip-check.js`, `kpi-roundtrip-check.js`, `send-test-email.js`, and
+  `build-favicons.py`, plus `generate-export-catalog-pdf.js`. A machine-specific
+  path in any of them now fails the suite; a syntax error, a bad import or a
+  renamed dependency still would not. `build-geo.js` is the one that matters
+  most, since Netlify runs it on every deploy — and nothing local does.
+- **The check reads extensions, not content.** A runnable file with an
+  unexpected extension, or a path assembled from fragments (`'/ho' + 'me/user'`)
+  passes. The first is a real boundary; the second is not worth defending
+  against, since anyone doing it is working around the check on purpose.
+- **`LEADS_NOTIFY` is still unset**, carried since Deploy 11.
+- **`/admin/analytics` still cannot be signed into**, open since 2026-09-17, and
+  still the named blocker on C-90's Follow-pill counts. The decision to leave
+  the trial running was taken on 2026-09-18 and no count has been read since,
+  which is expected this early — but the counts stay unreadable by anyone until
+  that login works, whatever the elapsed time.
+- No Netlify build has been confirmed for this or any deploy in this document.
+  With these two merges the count reaches 63.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -2156,9 +2330,9 @@ last sync. It is not part of the changed-file scope of any deploy above.
    Netlify API or dashboard access. The site owner should check the
    Netlify dashboard directly and, if the latest production deploy shows
    failed or stale, trigger a fresh one manually. **The same is true of every
-   merge in Deploys 6 to 16** -- 37 in Deploys 6 to 10, six in Deploy 11,
+   merge in Deploys 6 to 17** -- 37 in Deploys 6 to 10, six in Deploy 11,
    one in Deploy 12, two in Deploy 13, eight in Deploy 14, four in
-   Deploy 15 and three in Deploy 16, 61 in all --
+   Deploy 15, three in Deploy 16 and two in Deploy 17, 63 in all --
    for the same reason, and it is the one thing in this document only the
    owner can settle. Updated 2026-09-19 with Deploy 14: the owner elected to
    record that deploy without checking the dashboard first, so the count
@@ -2175,7 +2349,7 @@ last sync. It is not part of the changed-file scope of any deploy above.
    describes, in the same session, which is what this item asks for. The
    lesson stands rather than the gap.
 7. **Deploys 6 to 10 carry no per-deploy verification tables**, unlike
-   Deploys 1 to 5. `npm test` ran at merge time — it is now 23 suites, and
+   Deploys 1 to 5. `npm test` ran at merge time — it is now 24 suites, and
    several of them exist because of defects found during those deploys
    (`check-nav-handlers.js`, `check-crm-schema.js`, `check-crm-errors.js`,
    `check-packaging-claims.js`) — but the output was not captured per
