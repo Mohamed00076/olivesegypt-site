@@ -1898,6 +1898,228 @@ so revert in the order given.
 
 ---
 
+## Deploy 16 — Repairing a tool before asking whether it should exist (PRs #123–#125)
+
+**Date:** 2026-09-19
+**Production commit:** `57b0c74`
+**Previous recorded deploy:** `412bcbb` (Deploy 15, PRs #119–#122)
+**Delta:** 3 commits, 3 merged pull requests, 6 files changed (+299 / −502)
+**Approval:** "record deploy 15", then a decision brief on C-95 requiring the
+question to be answered and reported before anything was changed, then "merge"
+for each.
+
+### The first deploy with a negative line count
+
+−502 against +299, because the middle pull request rebuilt a 488-line script
+and the last one deleted it. Both were correct, in that order, and the entry is
+mostly about why that is not a contradiction.
+
+It is also the **second consecutive deploy in which nothing a visitor loads
+changes at all**: no HTML, no asset, no stylesheet, in either locale. Six files,
+all of them a script, a check or a record.
+
+### The merges
+
+| PR | Substance |
+| --- | --- |
+| #123 | Deploy 15's own entry, and the first flag that `generate-resource-pages.py` had drifted the same way the product generator had. |
+| #124 | That script made runnable and true to its seven pages, byte for byte, and registered in the parity check. |
+| #125 | That script deleted, because nothing ran it. |
+
+Range checked rather than assumed, as every entry since Deploy 13 has been:
+`412bcbb..57b0c74`, with #123 in this delta because it carries Deploy 15's entry
+and merged after the commit Deploy 15 names as production. No earlier entry
+claims any of the three.
+
+### A script that had not been able to run since 1 September
+
+The finding flagged in Deploy 15 was that the resource generator's chrome had
+drifted. That was true and it was the smaller half.
+
+```python
+HEADER = open("/tmp/claude-0/.../scratchpad/header_raw.html").read()
+FOOTER = open("/tmp/claude-0/.../scratchpad/footer_raw.html").read()
+```
+
+Committed on 2026-09-01 in `57ad849`. An **ephemeral, session-scoped path**,
+read at import time, so on any fresh checkout the script raised
+`FileNotFoundError` before generating anything. It worked while being tested
+only because the container that wrote those two files was still alive.
+
+**That is also the drift mechanism, and the reason the drift was total.** The
+two scratch files were a 1 September snapshot of the header and footer, so no
+number of runs could ever have picked up the navigation rebuild, the Facebook
+pill, the theme toggle, the mobile drawer, the footer columns, the consent and
+site-nav scripts, or the logo's declared dimensions. A re-run would also have
+re-emitted the header tagline C-91 retired, on all seven pages.
+
+Five of the seven bodies had fallen behind as well:
+
+| Page | Shipped `<main>` | In the script |
+| --- | --- | --- |
+| `/resources/certifications` | 8,174 chars | 3,766 |
+| `/resources/why-egyptian-olives` | 7,380 | 5,283 |
+| `/resources/pricing` | 7,235 | 5,332 |
+| `/resources` (hub) | 4,981 | 4,069 |
+| `/resources/packaging` | 5,190 | 5,019 |
+| `/resources/faq` | 8,859 | 8,859 |
+| `/resources/export-markets` | 4,526 | 4,526 |
+
+**Deploy 15's own diagnosis was incomplete**, having said only that the script
+lacked an output root. That entry carries the correction rather than having
+been rewritten.
+
+### Why #124 was not wasted work, and why it was still the wrong stopping point
+
+#124 rebuilt the script from the shipped pages: template, header, footer and all
+seven bodies derived and verified byte for byte, nothing read from outside the
+repository, an output root added, and the parity check extended to cover it —
+including a fix to the comparison loop, which had assumed `<slug>/index.html`
+and would silently have skipped the `/resources` hub page written beside those
+directories.
+
+The derivation is worth recording as a method, because it was mechanical rather
+than careful. Aligning all six slug pages line by line produced exactly **15
+varying lines** and an assertion that every other line was identical across all
+six. That assertion is what made the template trustworthy instead of plausible,
+and it immediately caught two details that had been guessed wrong: the
+description `<meta>` closes `"/>` while keywords closes `" />`, and the empty
+extra-JSON-LD slot is four spaces rather than an empty line.
+
+What #124 did not do was ask whether the script should exist. It ended with a
+correct generator holding a second copy of seven pages that are edited by hand
+— and a check whose job was to notice when the two disagreed. That is a safety
+net over the problem, not a removal of it, and the pull request said so.
+
+### The question that ended it, and how long it took to answer
+
+The owner's instruction was to find out whether anything still ran the script
+before touching it, and to report before changing. The audit:
+
+| Candidate runner | Result |
+| --- | --- |
+| Netlify build | `command = "node scripts/build-geo.js"` — that and nothing else |
+| CI | **no `.github/workflows` directory exists at all** |
+| npm scripts | none invoke any generator |
+| Makefile, shell scripts | none in the repository |
+| Runbook or documentation | no `.md` contains a `python3 scripts/generate…` instruction |
+| `check-generator-parity.js` | ran it — **only because #124 added that entry, to guard it** |
+| `check-identity-strings.js`, `check-packaging-claims.js` | read it as text, never execute it |
+
+And the evidence that settled it: **the seven pages had been edited by hand in
+33 commits** since the script was written — the 220 kg barrel correction, the
+retired export-markets stat, the header social button, the new tagline, the logo
+dimensions.
+
+The script's own history says the same thing from the other side. It was created
+on 1 September and finished the same day, and in the eighteen days that followed
+it was edited exactly three times: `e61ce0e` for the C-31 `og:site_name` defect,
+`7790843` for the retired export-markets claim, and `4de48ea` for the barrel
+capacity. **Every one of those came after the same change had already been made
+to the pages by hand.** The script never led; it was always being caught up, and
+three times out of thirty-three it was.
+
+So the repair had produced a correct tool that nothing used, for pages everyone
+edited directly. #125 deleted it.
+
+**The lesson is the sequence, not the outcome.** The tool was fixed before
+anyone asked whether it should exist, and answering that took one pass over the
+build configuration. A generator earns its place by being run by something;
+`check-generator-parity.js` now says so in the comment above its list, so the
+next entry added to it has to answer the question first.
+
+### A premise corrected rather than accepted
+
+The alternative to deletion was reworking the script to read each page's own
+body from disk at generation time — described in the instruction as the approach
+already used for the `/ar/catalog` reuse of product-page data.
+
+**No such mechanism exists.** The site has no HTML build step at all; Netlify's
+build command fetches a GeoLite2 database. Nothing under `scripts/` or
+`netlify/` reads a page's `<main>` from disk. The `/ar/catalog` spec panels were
+*editorial* reuse — already-approved Arabic wording copied from the product
+pages under Operating Rule 2, which satisfied the no-invented-content rule and
+was not a build-time mechanism.
+
+It changed no outcome, since the deletion path applied. It is recorded because
+that path would have been new work rather than a pattern followed, and a record
+that lets an incorrect premise stand teaches the wrong thing later.
+
+### A rule that caught its own explanation
+
+`check-identity-strings.js` forbids the retired tagline in any page or
+generator. Both docstrings written for #124 quoted that wording to explain the
+defect, and the suite failed them for it — correctly.
+
+They were reworded to describe the string and point at C-91 rather than adding a
+comment exemption. The rule is worth more absolute than convenient, and the
+exact wording belongs in the register row, where it already was.
+
+### Claim register
+
+**C-95** added in #124 and **closed in #125**, `defect-fixed`, action `none`.
+The row carries the runner audit, the 33-commit history, the byte-identical
+verification, both consequences the owner accepted, and the corrected premise.
+Register stands at 95 claims, with **C-55 the only `needs-review` row**.
+
+C-95 is the only row in the register whose `action_required` ever asked the
+owner for a decision rather than for evidence, and it was open for about twelve
+hours.
+
+### Testing method
+
+`npm test` — 23 checks, green on `57b0c74`, re-run on `main` after each merge
+rather than trusted from the branch.
+
+Byte-for-byte comparison twice, for opposite reasons. In #124, that the rebuilt
+script reproduced all seven pages. In #125, that **deleting** it changed none of
+them: all nine files under `/resources` checked with `sha256sum -c` against a
+baseline taken before the first edit. Nine rather than seven, because
+`private-label` and `supply-network` live there and were never written by that
+script — a distinction worth having made before deleting something that claimed
+to own the directory.
+
+Negative tests for the parity check as extended: a one-word template change
+failed on six pages, a one-character edit to a shipped page failed on that page,
+and the same edit to the hub failed on the hub — the last one written
+specifically to prove the loop no longer skips it.
+
+### Rollback
+
+```
+git revert 57b0c74 13445aa 9fdb07c
+```
+
+All three are squashes; no `-m 1`. Reverting changes nothing a visitor sees, in
+any combination. Reverting only `57b0c74` restores the repaired script and its
+parity entry — the state after #124, which was correct but was the safety net
+rather than the fix. Reverting further restores a script that cannot run on a
+fresh checkout.
+
+### Known limitations shipped with this deploy
+
+- **`/resources` can no longer be rebuilt from anything in the repository.**
+  Named before the decision and accepted: those seven pages are hand-maintained
+  only, which is what they already were in practice since 1 September. The two
+  pages in that directory the script never owned, `private-label` and
+  `supply-network`, were always in that position.
+- **`check-identity-strings.js` and `check-packaging-claims.js` scan one fewer
+  generator.** Accepted for the same reason: both still scan the shipped pages,
+  which is where a false claim would actually appear and matter. Their
+  docstrings now say the script was retired, so a reader does not go looking for
+  a file that is not there.
+- **`generate-product-pages.py` remains the only generator with a parity
+  check**, and now the only page-writing generator at all. `build-geo.js` and
+  `generate-export-catalog-pdf.js` produce a database and PDFs rather than
+  pages, and neither is covered.
+- **`LEADS_NOTIFY` is still unset**, carried since Deploy 11.
+- **`/admin/analytics` still cannot be signed into**, open since 2026-09-17, and
+  still the named blocker on C-90's Follow-pill counts.
+- No Netlify build has been confirmed for this or any deploy in this document.
+  With these three merges the count reaches 61.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -1934,9 +2156,9 @@ last sync. It is not part of the changed-file scope of any deploy above.
    Netlify API or dashboard access. The site owner should check the
    Netlify dashboard directly and, if the latest production deploy shows
    failed or stale, trigger a fresh one manually. **The same is true of every
-   merge in Deploys 6 to 15** -- 37 in Deploys 6 to 10, six in Deploy 11,
-   one in Deploy 12, two in Deploy 13, eight in Deploy 14 and four in
-   Deploy 15, 58 in all --
+   merge in Deploys 6 to 16** -- 37 in Deploys 6 to 10, six in Deploy 11,
+   one in Deploy 12, two in Deploy 13, eight in Deploy 14, four in
+   Deploy 15 and three in Deploy 16, 61 in all --
    for the same reason, and it is the one thing in this document only the
    owner can settle. Updated 2026-09-19 with Deploy 14: the owner elected to
    record that deploy without checking the dashboard first, so the count
