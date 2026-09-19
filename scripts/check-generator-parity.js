@@ -25,18 +25,18 @@
  * file it was wrong about. The drift was found by running it, and the run had
  * to be undone from git.
  *
- * The resource generator was worse, and is the reason this check takes a list.
- * It read its header and footer at import time from two files under
- * /tmp/claude-0/.../scratchpad/ -- an ephemeral path committed to the
- * repository on 2026-09-01, which worked only while that one container lived.
- * On any fresh checkout it raised FileNotFoundError before generating
- * anything, and because those two scratch files were a 1 September snapshot it
- * could not have picked up the navigation rebuild however often it ran. It
- * emitted the header tagline that C-91 retired on all seven of its pages -- the
- * exact wording is in that register row, and is deliberately not quoted here,
- * because check-identity-strings.js forbids it in any generator including prose
- * about the rule -- and five of its seven bodies had fallen behind the shipped
- * ones, /resources/certifications by more than half the page.
+ * There was a second generator, for the seven /resources pages, and it was
+ * worse: it read its header and footer at import time from two files under an
+ * ephemeral /tmp/claude-0/.../scratchpad/ path committed on 2026-09-01, so on
+ * any fresh checkout it raised FileNotFoundError before generating anything.
+ * It was RETIRED on 2026-09-19 (C-95) rather than kept: nothing ran it -- no
+ * build step, no CI, no npm script, no runbook -- while those seven pages had
+ * been edited by hand 33 times since it was written. A generator nobody runs
+ * is a second source of truth for pages somebody does edit, and a parity check
+ * makes that visible without making it untrue.
+ *
+ * This list is still a list for that reason. A generator earns a place in it by
+ * being run by something; one that is not should be deleted instead.
  *
  * WHAT THIS ASSERTS
  *
@@ -58,7 +58,6 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const GENERATORS = [
   { script: 'scripts/generate-product-pages.py', dir: 'products' },
-  { script: 'scripts/generate-resource-pages.py', dir: 'resources' },
 ];
 
 let pass = 0, fail = 0;

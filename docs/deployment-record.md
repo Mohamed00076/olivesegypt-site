@@ -1877,6 +1877,16 @@ so revert in the order given.
   snapshot of the header and footer, so the script could not have picked up the
   navigation rebuild however often it ran, and five of its seven bodies had
   fallen behind the shipped pages as well. See C-95.
+  **Retired 2026-09-19, the same day it was repaired.** The repair made the
+  script correct and runnable, and left it holding a second copy of seven pages
+  that are edited by hand. On the owner's instruction the question "does
+  anything actually run this" was put first, and the answer was nothing —
+  no build step, no CI (the repository has no workflows at all), no npm script,
+  no runbook. The pages, meanwhile, had been edited directly in 33 commits since
+  the script was written. So it was deleted rather than kept behind its own
+  parity check, and all nine `/resources` pages were verified byte-identical
+  across the deletion. The parity check is back to the one generator something
+  runs.
 - **The other 21 check scripts print their `… OK --` summary even when a test
   failed**, so a failing run reads "OK" directly above "1 failed". Fixed in
   the two scripts added by this deploy; the rest still do it.

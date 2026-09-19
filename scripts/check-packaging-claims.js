@@ -20,7 +20,8 @@
  * A wrong packaging spec does not look wrong. It reads like ordinary product
  * copy, it is repeated in every locale, and it lives in three generators as
  * well as the pages they produce -- which is how a retired export-markets
- * claim survived in scripts/generate-resource-pages.py long after the pages
+ * claim survived in scripts/generate-resource-pages.py (since retired, C-95)
+ * long after the pages
  * had been cleaned. One re-run would have put "wooden barrels" back. So this
  * asserts the fact itself, on pages and generators alike.
  *
