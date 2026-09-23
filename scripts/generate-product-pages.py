@@ -134,9 +134,9 @@ PRODUCTS = [
     dict(
         slug="sliced-jalapeno-peppers", print_slug="jalapeno",
         name="Sliced Jalapeño Peppers", origin="Egypt",
-        formats=["Sliced Rings", "Whole"], calibers=[],
+        formats=["Sliced Green Rings", "Sliced Red Rings", "Whole"], calibers=[],
         brine=dict(salt="4–6%", acidity="0.6–0.8% acetic", ph="3.4–3.8"),
-        profile="Crisp green jalapeño rings pickled for a bright, medium heat.",
+        profile="Crisp jalapeño rings pickled for a bright, medium heat, in green or red. Packed in glass jars from 320ml to 1050ml, in 65mm, A9, A10 and A12 cans, and in a 4kg PET pail.",
         best_for=["Nachos, pizza, and Tex-Mex food-service applications", "Retail"],
         related=["pepperoncini-peppers", "marinated-artichoke-hearts", "oxidized-black-olives"],
         image=dict(src='/assets/illus-jalapeno.svg', alt='Sliced Jalapeño Peppers — photography pending', w='900', h='630', webp=None),
