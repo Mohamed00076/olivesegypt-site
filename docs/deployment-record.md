@@ -2460,6 +2460,234 @@ unexercised again; reverting both also removes Deploy 17's entry.
 
 ---
 
+## Deploy 19 — The streak breaks, and a document nobody meant to publish (PRs #130–#135)
+
+**Date:** 2026-09-24
+**Production commit:** `0ca7b3b`
+**Previous recorded deploy:** `accebf4` (Deploy 18, PRs #128, #129)
+**Delta:** 6 commits, 6 merged pull requests, 36 files changed (+552 / −118)
+**Approval:** merge instructions given one at a time, each after its own report,
+across two sessions three days apart.
+
+### The merges
+
+| PR | Substance | Visitor-facing |
+| --- | --- | --- |
+| #130 | Deploy 18's own entry. | no |
+| #131 | The Netlify build confirmed from the owner's dashboard, after eighteen deploys of assuming it. | no |
+| #132 | Internal documents removed from the deploy artifact. | no |
+| #133 | Jar and can sizes published from supplier evidence; the jalapeño Red variant. | **yes** |
+| #134 | Per-variety calibers replaced by the supplier's 140-360 range. | **yes** |
+| #135 | The certifications sentence corrected to match. | **yes** |
+
+`accebf4..0ca7b3b`. #130 is in this delta for the usual reason. One earlier
+reference to `4b82c67` exists in outstanding item 5, but it cites the commit as
+evidence for the build confirmation rather than claiming it in a delta — checked
+before the boundary was set, because that is the double-count trap.
+
+### Twenty-nine visitor-facing files
+
+Deploy 18 measured the streak precisely and ended with *"the next thing worth
+doing is on a page."* Eleven merges had passed since a reader could see anything
+change. This deploy changes **29 files a visitor loads**, in both languages.
+
+It is worth being accurate about why. Not initiative: the owner brought three
+primary-source supplier documents and asked for the site to be corrected against
+them. The observation in Deploy 18 was right, and it was not what broke the
+streak.
+
+### A security audit, served from the company's own domain
+
+The largest finding of this deploy came from being asked *"what do you think we
+should do?"* rather than from a task.
+
+`netlify.toml` sets `publish = "."`, so the publish directory is the whole
+repository. `robots.txt` disallows 28 specific paths and **none of them was
+`/docs`**. So `olivesegypt.com/docs/security-audit-2026-09.md` was fetchable and
+crawlable: a full security and functional audit of the public site and both
+internal apps, sitting beside an access inventory, questions put to legal
+counsel, a personal-data flow inventory, the claim register and this file. Four
+root-level UI audits and `netlify.toml` itself — carrying the CSP, the security
+headers and the full redirect map — went the same way.
+
+**Nobody put them there.** `publish = "."` publishes whatever exists, so every
+internal document written since the site was built shipped by default and would
+have gone on shipping.
+
+The owner asked for the strongest option: not served, not crawlable, not
+fetchable under any circumstance. A Netlify publish directory has no exclude
+list, so the only way to make a file genuinely unreachable is for it not to be
+in the artifact. `scripts/prune-publish.js` runs last in the build and deletes
+them; production returns a true 404 because the file is absent, not because a
+rule intercepts it. Verified by reproducing the build against a copy of all 280
+tracked files and inspecting the result: 16 internal paths gone, 14 sampled site
+files present.
+
+**Still open, and the one thing this deploy could not settle:** whether
+`netlify/functions/*.js` is served as static source. It cannot be pruned — the
+function bundler reads that directory after the build command runs — and this
+environment cannot fetch the site to find out. One request to
+`olivesegypt.com/netlify/functions/auth-login.js` answers it. Mitigating fact
+established meanwhile: `_guide_token.js` derives its key by HMAC from
+`SESSION_SECRET`, an environment variable, so the worst case is scheme
+disclosure rather than credential exposure.
+
+### Evidence that was not what it said it was
+
+The supplier work began with three PDFs described as received from the supply
+partner. They were **Triple Company's own outbound price offers** — its
+letterhead, its head-office address, `sales@olivesegypt.com`, signed by the
+General Manager, with a blank customer field. Zero occurrences of the named
+supplier, its contact or its city in any of the three.
+
+That was reported rather than used. A site citing its own sales document as
+evidence for its own claims is circular, and it is the one thing the claim
+register exists to prevent. The originals were then supplied, and the two sets
+verified line for line: package formats, drained weights and case packs
+identical in all three pairs.
+
+One detail worth keeping. The sentence *"Packaging, caliber and case
+configuration shown are indicative; exact specification is confirmed at
+quotation"* appears only in Triple Company's version. **The supplier states the
+packaging data flatly.**
+
+**The supplier is not named anywhere in this repository**, at the owner's
+instruction and on recommendation: it is public, and naming the company and its
+contact individual would publish a third party's details to competitors. The
+owner confirmed the source is the disclosed partner facility and asked that no
+attribution appear on any page for now.
+
+### What the evidence corrected, and what it exposed
+
+Published in both languages: glass jars at 320, 370, 467, 720 and 1050 ml with
+their case packs; tin cans at 65 mm, A9, A10 and A12; a 4 kg PET pail for sliced
+jalapeño **only**, since the olive documents carry no PET line at all. Jalapeño
+gained Red as a catalogue variant.
+
+Two defects surfaced:
+
+1. Both packaging pages said jars came in *"common sizes from 300g to 1.7kg"*.
+   The largest drained weight the supplier quotes in any jar is **0.615 kg** —
+   the published upper bound was nearly three times anything on offer.
+2. **Reported wrongly first.** The homepages were recorded as agreeing with the
+   new evidence. They did not. Both advertised glass jars at **1.5 L and 3 L**,
+   which the supplier does not quote, and tin cans at 400 g, 850 g, 3 kg and
+   5 kg, which match no can in the documents. All eight chips were superseded
+   rather than incomplete. Checking instead of asserting is the only reason it
+   was caught, and the register records the correction rather than the tidy
+   version.
+
+Blast radius measured rather than estimated: exactly four files on the site
+stated a jar or can size. Every other surface names formats without them.
+
+### A caliber decision, and what it cost
+
+The owner asked twice for the per-variety grades to be replaced by the
+supplier's generic 140-360, the second time after being shown the table of what
+it would withdraw. **Toffahi, Manzanilla and Stuffed Green each stopped offering
+101/110, 111/120 and 121/140** — three grades below the supplier's floor.
+Manzanilla went from eight published grades to one range. Nothing published
+exceeded 360.
+
+297 caliber pairs across 23 files. That count includes the **product JSON-LD**,
+where the range sits inside a description string as prose rather than as markup
+— a chips-and-panels reading of "catalogue panels" would have missed it and left
+the structured data contradicting the rendered page.
+
+The first propagation pass reported success on seven files and **left 94 pairs
+standing in three others**: the print sheets use a `.chip` class rather than the
+`.font-mono` spans the product pages use, and Arabic writes the range as
+`من X إلى Y`, which the English-shaped pattern did not match. Re-counting after
+the run is the only reason that surfaced.
+
+### Two branches whose conflict sides were both incomplete
+
+#133 and #134 both edited the minified homepages, and their conflict sides were
+complementary rather than competing:
+
+| | jar `320 ml` | tin `65 mm` | `Caliber: 140-360` | old pairs |
+| --- | --- | --- | --- | --- |
+| #133's side | yes | yes | no | **8 left** |
+| #134's side | no | no | yes | 0 |
+
+**Neither contained both.** Picking a side would have silently dropped the
+other, which is how C-77 and C-78 were lost in #105 — and it would have looked
+like a clean resolution.
+
+A hand-resolution was attempted and **rejected on evidence, having failed
+twice**: it produced the wrong register row order, because the two branches were
+cut either side of #132 and their tails differed, and it left **three
+Organization JSON-LD blocks** on the homepage where there should be one.
+`check-org-schema` caught the second; all three branches pass it individually,
+so the splice caused it.
+
+#134 was therefore **rebuilt on top of the merged main by re-running its
+replacements**, which are deterministic regex passes and correct by construction
+with no splicing. #133's own conflict against main — the register again, #132
+having added C-99 after it was cut — was resolved by taking main wholesale and
+re-applying the single row on top.
+
+### A consequence flagged, then closed
+
+Replacing the calibers made `/resources/certifications` false in both halves of
+one sentence: it cited *"Aggizi at 141/160 through 231/260"* and promised those
+ranges were *"published on each product page and in the export catalogue"*. The
+example named a grade no page still offered, and the promise pointed at pages
+saying something else.
+
+It sat inside the category the owner had asked to leave alone, so #134 flagged
+it rather than editing it. #135 closed it on their instruction. C-101 records
+the closure **beside** the original flag rather than replacing it, so the
+sequence stays legible: change made, consequence reported, owner decided,
+consequence fixed.
+
+### Claim register
+
+C-99 through C-101 added; C-101 later closed. The register stands at **101
+claims**, with **C-55 the only `needs-review` row**. Three rows in this deploy
+record something the evidence did not support and the owner decided anyway — the
+withdrawn caliber grades, the retained `Whole` jalapeño, and the unnamed
+supplier — each attributed rather than absorbed.
+
+### Testing method
+
+`npm test` — 25 checks, green on `0ca7b3b`, re-run on `main` after every merge
+rather than trusted from a branch.
+
+Rendered geometry measured before and after for the packaging change. Build
+simulation against a real copy of the tracked tree for the pruner. Byte-for-byte
+barrel and bucket verification bounded to each card, after a first attempt whose
+700-character window ran past the card and reported a false failure.
+
+### Rollback
+
+```
+git revert 0ca7b3b 4811a4a 20b37c0 6d3f763 d1bd4e1 4b82c67
+```
+
+All six are squashes; no `-m 1`. Order matters: #133, #134 and #135 touch
+overlapping files. Reverting `6d3f763` alone restores the document exposure and
+should not be done without replacing it.
+
+### Known limitations shipped with this deploy
+
+- **Whether `netlify/functions/*.js` is served as static source is unresolved.**
+  It cannot be pruned without breaking the bundle and cannot be checked from
+  here.
+- **Caliber pairs remain in twelve files by decision** — the explainer on both
+  packaging pages, the how-to-import post, the certifications pages, both
+  pricing pages and the four gated guides. They are about calibers rather than
+  statements of what is sold.
+- **`Whole` jalapeño is published on the owner's judgement**, not on this
+  evidence: the supplier documents quote sliced only.
+- **`LEADS_NOTIFY` is still unset**, carried since Deploy 11. With the build now
+  confirmed, an enquiry submitted today is stored and seen by nobody.
+- **`/admin/analytics` still cannot be signed into**, open since 2026-09-17.
+- Individual builds for #132 to #135 are unobserved. The mechanism is confirmed
+  (see outstanding item 5) but only one publish has ever been watched.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -2534,6 +2762,13 @@ last sync. It is not part of the changed-file scope of any deploy above.
    build with its commit and status and would settle it. The published commit
    SHA is therefore inferred from the timestamp match rather than read. See
    C-98.
+
+   **Updated 2026-09-24 with Deploy 19.** The count this item used to grow no
+   longer applies. The mechanism is settled, so the open question is not whether
+   merges build but whether any individual build failed. Six merges have landed
+   since the confirmation and none of their publishes was observed — a different
+   and much smaller gap than the one this item opened with, and worth stating as
+   such rather than growing a number that no longer measures anything.
 6. **This record ran ten days behind production.** Deploy 5 was written on
    2026-09-05 and nothing was added until 2026-09-17, while PRs #63 to #98
    merged and built. The claim register kept pace throughout; this file did
