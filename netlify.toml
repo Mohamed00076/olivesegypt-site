@@ -4,7 +4,11 @@
   # Section J Phase 2 -- fetches the (country-level-only) GeoLite2
   # database from a free redistribution mirror before each deploy. Never
   # fails the build itself; see scripts/build-geo.js.
-  command = "node scripts/build-geo.js"
+  # prune-publish.js runs last and removes internal working material from
+  # the deploy artifact -- docs/, scripts/, the root audit files and this
+  # file itself. publish = "." has no exclude list, so absence is the only
+  # way to make them genuinely unfetchable. See scripts/prune-publish.js.
+  command = "node scripts/build-geo.js && node scripts/prune-publish.js"
 
 # Persists geo/ (the downloaded GeoLite2-Country database) between
 # builds. Before this, scripts/build-geo.js re-downloaded and
