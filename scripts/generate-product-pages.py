@@ -171,6 +171,33 @@ PAGE_TMPL = """<!DOCTYPE html>
     <meta property="og:image" content="https://olivesegypt.com/opengraph.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script>
+      (function () {{
+        'use strict';
+        var KEY = 'tc-theme';
+        function apply(theme) {{
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          document.documentElement.style.colorScheme = theme;
+        }}
+        function getPreferred() {{
+          try {{
+            var stored = localStorage.getItem(KEY);
+            if (stored === 'dark' || stored === 'light') return stored;
+          }} catch (e) {{}}
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }}
+        apply(getPreferred());
+        document.addEventListener('DOMContentLoaded', function () {{
+          var btn = document.getElementById('theme-toggle-btn');
+          if (!btn) return;
+          btn.addEventListener('click', function () {{
+            var next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+            apply(next);
+            try {{ localStorage.setItem(KEY, next); }} catch (e) {{}}
+          }});
+        }});
+      }})();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
 
@@ -209,33 +236,6 @@ PAGE_TMPL = """<!DOCTYPE html>
     <meta name="theme-color" content="#3f4f2b" />
   </head>
   <body>
-    <script>
-      (function () {{
-        'use strict';
-        var KEY = 'tc-theme';
-        function apply(theme) {{
-          document.documentElement.classList.toggle('dark', theme === 'dark');
-          document.documentElement.style.colorScheme = theme;
-        }}
-        function getPreferred() {{
-          try {{
-            var stored = localStorage.getItem(KEY);
-            if (stored === 'dark' || stored === 'light') return stored;
-          }} catch (e) {{}}
-          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }}
-        apply(getPreferred());
-        document.addEventListener('DOMContentLoaded', function () {{
-          var btn = document.getElementById('theme-toggle-btn');
-          if (!btn) return;
-          btn.addEventListener('click', function () {{
-            var next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-            apply(next);
-            try {{ localStorage.setItem(KEY, next); }} catch (e) {{}}
-          }});
-        }});
-      }})();
-    </script>
     
     <header class="relative sticky top-0 z-50 w-full border-b border-border bg-background shadow-sm"><div class="container flex h-16 max-w-screen-2xl items-center justify-between gap-4 mx-auto px-4"><a href="/" class="flex items-center gap-2 shrink-0">
           <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" class="h-8 w-8 object-contain shrink-0" width="236" height="289"/>
