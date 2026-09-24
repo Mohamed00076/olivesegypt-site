@@ -2686,6 +2686,230 @@ should not be done without replacing it.
 - Individual builds for #132 to #135 are unobserved. The mechanism is confirmed
   (see outstanding item 5) but only one publish has ever been watched.
 
+### Amendment, 2026-09-24: this deploy broke production
+
+**PR #132 in the table above took the live site down, and it stayed down for
+about a day.** The document exposure it fixed was real and the fix was right in
+principle; putting `netlify.toml` on the pruner's delete list alongside `docs/`
+and `scripts/` was not. Netlify reads redirects and headers from that file
+*after* the build command runs, so deleting it removed every rule from the
+deployed site. Deploy 21 below has the full account.
+
+This amendment exists so that nobody reads Deploy 19 as a clean deploy. The
+"Known limitations" list above was written on the assumption that the artifact
+deployed the way the local simulation said it would, and the one thing the
+simulation could not model — what Netlify does with the file after the build —
+is exactly what failed.
+
+---
+
+## Deploy 20 — Two records, no visitor-facing change (PRs #136, #137)
+
+**Date:** 2026-09-24
+**Production commit:** `b4e4095`
+**Previous recorded deploy:** `0ca7b3b` (Deploy 19, PRs #130–#135)
+**Delta:** 2 commits, 2 merged pull requests, 2 files changed (+236 / −1), all
+of it inside `docs/`
+**Approval:** "merge 136" and "merge 137", each given after its own report.
+
+### The merges
+
+| PR | Substance | Visitor-facing |
+| --- | --- | --- |
+| #136 | The Deploy 19 record | No |
+| #137 | The 2026-09-24 Google site-name re-check, against C-60 | No |
+
+Both changed only `docs/`, which `scripts/prune-publish.js` removes from the
+deploy artifact. **Nothing a visitor can reach changed in either language.**
+Two builds ran and published, as every merge to `main` does; both published the
+same site as `0ca7b3b`.
+
+### The site-name re-check
+
+C-60 closed on 2026-09-06 telling the owner to re-check the search result in
+two to four weeks, and said that if it still showed the domain, the remaining
+lever would be off-site. The owner re-checked on 2026-09-24, 18 days on: Google
+still prints `olivesegypt.com` rather than the company name.
+
+Three of the four checks requested could not be run at all, because
+`validator.schema.org`, `olivesegypt.com`, `www.olivesegypt.com` and
+`search.google.com` are unreachable from this environment. The row says so
+plainly rather than presenting offline JSON-LD parsing as equivalent to a
+validator run, and it does not claim the www or http redirect behaviour is
+verified. **That restraint turned out to matter**: see Deploy 21, where the
+unverified www result was reached while every redirect was missing from the
+site, making it unreliable evidence rather than merely uncorroborated.
+
+What was verified offline came back clean — exactly one `WebSite` node, four
+JSON-LD blocks all parsing, the four naming signals in agreement, one canonical
+matching `og:url`, a sitemap with one root entry and no `http://` URLs, and no
+occurrence of `www.olivesegypt.com` anywhere in the tree. The external
+reference count is one: the reciprocal Facebook profile.
+
+### Claim register
+
+No rows added. C-60's `evidence_source` and `action_required` were amended in
+place; the now-spent "re-check in two to four weeks" instruction was replaced
+with the three owner-side levers that remain. The register stayed at **101
+claims**, with **C-55 the only `needs-review` row**.
+
+### Testing method
+
+`npm test` — 25 checks, green on `b4e4095`, re-run on `main` after the merge.
+CSV structure re-validated through the `csv` module: 101 rows before and after,
+six columns on every row, no duplicate ids.
+
+### Rollback
+
+```
+git revert b4e4095 1d35b76
+```
+
+Both are squashes; no `-m 1`. Reverting either only removes documentation.
+
+### Known limitations shipped with this deploy
+
+- **The Google display is unchanged and no guarantee is made that it will
+  change**, per Operating Rule 17. The on-site work is finished; the remaining
+  levers are off-site and the owner's.
+- Everything carried from Deploy 19 was still carried here, including the
+  `netlify.toml` defect, which was live throughout this deploy and undetected.
+
+---
+
+## Deploy 21 — The outage, and the first production check in this project's history (PR #138)
+
+**Date:** 2026-09-24
+**Production commit:** `80b03b3`
+**Previous recorded deploy:** `b4e4095` (Deploy 20, PRs #136, #137)
+**Delta:** 1 commit, 1 merged pull request, 3 files changed (+48 / −2)
+**Approval:** "merge 138", given after the diagnosis and the fix were reported
+and the owner had confirmed the failure against the live domain themselves.
+
+### What happened
+
+PR #132, merged 2026-09-23 as part of Deploy 19, put `netlify.toml` on
+`scripts/prune-publish.js`'s delete list. Netlify collects redirects and headers
+from that file **after** the build command runs, and `publish = "."` makes the
+publish directory the repository root — so deleting it during the build deleted
+the only copy Netlify had left to read.
+
+Everything in the file was inoperative for roughly a day:
+
+| Lost | Consequence |
+| --- | --- |
+| All `/api/*` redirects | CRM and `/admin/analytics` unusable |
+| `/netlify/*` forced 404 | Function sources fetchable as static files |
+| Gated-download redirects | `/downloads/*` dead in both languages |
+| SPA catch-all `/*` | Any non-file route returned Netlify's 404 |
+| All security headers | `X-Frame-Options`, CSP, `X-Robots-Tag` not sent |
+
+**This was introduced by this assistant**, in a PR that was implemented without
+flagging that `netlify.toml` is load-bearing in a way `docs/` and `scripts/` are
+not. It is recorded rather than quietly patched.
+
+### How it surfaced, and what the missing nav bar proved
+
+The owner reported the CRM dashboard at `/crm/` showing "Could not load
+dashboard data." The diagnostic detail was not the error — it was **what else
+was missing from the screenshot**: no nav bar, no enquiries card.
+
+`CRM.requireAuth` in `assets/crm.js` redirects to the login page on a 401 and
+otherwise calls `res.json()`. A 404 HTML body makes that throw a parse error;
+the rejection is not the string `'unauthorized'`, so it reaches the page's final
+`catch` — and because it threw *inside* `requireAuth`, `CRM.renderNav` and
+`renderInbox` never ran. Every element of the screenshot was accounted for
+before anything was changed.
+
+### The first time production has been checked directly
+
+`olivesegypt.com/api/crm/auth/me` returned **Netlify's own "Page not found"
+page**. Not the homepage — so the SPA catch-all at the end of the file was gone
+too, which is what established the loss as total rather than partial.
+
+This is worth marking. Outstanding item 1 has said since Deploy 1 that no
+deploy has ever been verified against actual production. This environment's
+egress to the domain is still blocked, so the check was run by the owner in a
+browser and reported back — but it is the first time in twenty-one deploys that
+a production behaviour has been **observed rather than inferred** from source,
+from a build log, or from a dashboard icon.
+
+### The fix, and what it is not
+
+`netlify.toml` comes off the prune list and is kept off the published site by a
+forced 404 on `/netlify.toml`, reusing the mechanism `/netlify/*` already uses
+rather than inventing one.
+
+**This is weaker than what the rest of the prune list gets, and the owner had
+explicitly chosen true absence over a 404 for those.** A file that configures
+the deploy cannot also be missing from it. The comments in both
+`scripts/prune-publish.js` and `netlify.toml` say that plainly instead of
+implying the two are equivalent. `docs/`, `scripts/` and the four audit files
+are unchanged and still genuinely deleted — that part of PR #132 was sound, and
+true absence stays the standard wherever a file is not load-bearing.
+
+### A check that was enforcing the bug
+
+`scripts/check-publish-exclusions.js` previously **asserted `netlify.toml` was
+absent**. The regression check written to protect the artifact was holding the
+defect in place, and it passed green on every run while production was down.
+
+It now asserts both halves of the fix — the pruner must not list the file, and
+the forced 404 rule must exist — and both were proved by injection rather than
+by passing:
+
+| Injected fault | Result |
+| --- | --- |
+| `netlify.toml` put back on the prune list | **2 FAIL** — the new assertion and the site-intact check |
+| Forced 404 rule deleted | **1 FAIL** — "the file would be fetchable at the domain" |
+| Neither, as merged | **10 passed, 0 failed** |
+
+The lesson is not that the check was wrong to exist. It is that a check
+asserting a file's absence is only as good as the reason for that absence, and
+nobody wrote down what `netlify.toml` was *for* before adding it to the list.
+
+### Claim register
+
+**C-102 added**, classified `defect-fixed`, carrying the cause, the live
+confirmation, the full blast radius, the fix, the honest limit on the forced
+404, and the attribution. The register stands at **102 claims**, with **C-55
+still the only `needs-review` row**.
+
+### Testing method
+
+`npm test` — 25 checks, green on `80b03b3`, re-run on `main` after the merge.
+Two negative tests by injection, listed above. Runtime dependencies of the
+remaining pruned paths re-checked: the GeoLite2 database lives at repo-root
+`geo/`, which is not on the list, and `netlify/`, `package.json` and
+`package-lock.json` were already excluded by design.
+
+### Rollback
+
+```
+git revert 80b03b3
+```
+
+A squash; no `-m 1`. **Do not revert this one.** Reverting it restores the
+outage — it would put `netlify.toml` back on the prune list and strip the
+deployed site of every redirect and header again.
+
+### Known limitations shipped with this deploy
+
+- **Recovery is not yet confirmed.** The fix is verified in the repository and
+  by build simulation; whether the live site is serving again is the owner's
+  check, listed in C-102's `action_required`. The record should not read as
+  though recovery were established here.
+- **Whether `netlify/functions/*.js` is served as static source is still
+  unresolved**, and is now urgent rather than theoretical: the rule protecting
+  that path was inoperative for a day.
+- **Any conclusion about `www.olivesegypt.com` reached before 2026-09-24 is
+  unreliable.** It was investigated while every redirect was missing, so the
+  earlier reading — a missing Netlify domain alias — cannot be trusted and
+  needs re-testing from a clean baseline.
+- **`LEADS_NOTIFY` is still unset**, carried since Deploy 11.
+- **`/admin/analytics` still cannot be signed into**, open since 2026-09-17, and
+  was additionally unreachable for the duration of this outage.
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -2710,6 +2934,19 @@ last sync. It is not part of the changed-file scope of any deploy above.
    nobody has checked the live site's *content* against what was shipped. The
    egress block in this environment is unchanged, so that check stays with the
    owner.
+   **Materially changed 2026-09-24 (Deploy 21):** production has now been
+   observed directly for the first time. The owner opened
+   `olivesegypt.com/api/crm/auth/me` in a browser and it returned Netlify's own
+   404 page, which is what identified the outage. That settles the underlying
+   question this item has carried since Deploy 1 — **the domain resolves, serves
+   from this Netlify site, and is reachable over HTTPS; the parked-domain
+   problem is genuinely gone**, established by a request rather than read off an
+   icon. It also proved the opposite of what everyone had assumed: the first
+   real look at production found it broken. Section D still is not done —
+   nobody has compared the live site's *content* against what was shipped — and
+   the egress block here is unchanged, so that part stays with the owner. What
+   changes is that this item is no longer about whether production can be
+   reached at all.
 2. **No dedicated claim-removal register file** exists for A2, despite
    being explicitly required. The removals themselves are verified (see
    Deploy 1's table above); the tracking artifact is not.
