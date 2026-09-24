@@ -521,6 +521,19 @@
   status = 404
   force = true
 
+# Same reasoning for this file itself. It used to be deleted during the build
+# instead, which is what the rest of the internal material still gets -- but
+# Netlify reads redirects and headers from netlify.toml after the build command
+# runs, so deleting it stripped every rule below and above from the deployed
+# site and took the CRM down on 2026-09-23. A file that configures the deploy
+# cannot be absent from it, so it is blocked rather than removed. See the
+# "WHAT IS DELIBERATELY NOT PRUNED" note in scripts/prune-publish.js.
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/index.html"
+  status = 404
+  force = true
+
 # A0 canonical-route audit (re-checked 2026-09-02): these four /media/
 # article paths appeared in an old sitemap with no matching content
 # anywhere in this repo's history, and no evidence they were ever

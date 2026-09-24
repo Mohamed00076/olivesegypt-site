@@ -60,7 +60,7 @@ const MUST_BE_ABSENT = [
   'scripts', 'scripts/build-geo.js', 'scripts/prune-publish.js',
   'contrast-audit.md', 'mobile-nav-overlap-audit.md',
   'part3-product-pages-audit.md', 'responsive-layout-audit.md',
-  'ui-remediation-register.csv', 'netlify.toml',
+  'ui-remediation-register.csv',
 ];
 
 // Must survive it. A pruner that removed the site would also pass a test that
@@ -71,6 +71,12 @@ const MUST_SURVIVE = [
   'assets/index-Dw0yUE42.css', 'assets/logo-BJ1TOn9V.png',
   'robots.txt', 'sitemap.xml', 'site.webmanifest', 'favicon.ico',
   'netlify/functions/auth-login.js', 'package.json',
+  // On this list because deleting it took the site down on 2026-09-23.
+  // Netlify reads redirects and headers from netlify.toml after the build
+  // command runs, so pruning it stripped every rule from the deploy: the CRM
+  // lost /api/*, and /api/crm/auth/me returned Netlify's own 404 page. It is
+  // kept unfetchable by a forced 404 rule instead, asserted below.
+  'netlify.toml',
 ];
 
 // Root-level documents that are served on purpose. Anything else with these
@@ -99,6 +105,17 @@ const show = (l) => `${l.length}: ${l.slice(0, 8).join(', ')}${l.length > 8 ? ' 
   t('publish is still the repository root, which is why this is needed',
     /publish\s*=\s*"\."/.test(toml),
     'publish changed -- if it is now a built directory, this check needs rethinking, not deleting');
+
+  // netlify.toml survives the prune now, so the only thing keeping it off the
+  // site is this rule. Deleting it instead is what broke production on
+  // 2026-09-23, so both halves are asserted: the pruner must not list it, and
+  // the rule must exist.
+  t('the pruner no longer deletes netlify.toml',
+    !/^\s*'netlify\.toml',/m.test(fs.readFileSync(path.join(ROOT, 'scripts/prune-publish.js'), 'utf8')),
+    'pruning netlify.toml strips every redirect and header from the deploy -- it took the CRM down once already');
+  t('and netlify.toml is blocked by a forced 404 instead',
+    /from\s*=\s*"\/netlify\.toml"[\s\S]{0,120}?status\s*=\s*404[\s\S]{0,60}?force\s*=\s*true/.test(toml),
+    'no forced 404 rule for /netlify.toml -- the file would be fetchable at the domain');
 }
 
 // ---- run the real pruner against a real copy -----------------------------
