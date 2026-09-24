@@ -2917,6 +2917,213 @@ deployed site of every redirect and header again.
 - **`/admin/analytics` still cannot be signed into**, open since 2026-09-17, and
   was additionally unreachable for the duration of this outage.
 
+### Amendment, 2026-09-24: three of the four recovery checks came back clean
+
+Written while recovery was still unconfirmed. The owner has since checked the
+live domain:
+
+| Check | Result |
+| --- | --- |
+| `/crm/` | **Recovered** — redirects to the login page |
+| `/api/crm/auth/me` | **Recovered**, proved by the above |
+| `/downloads/*` | **Recovered** — a gated form submits again |
+| `/netlify/functions/auth-login.js` | **Source not served**; status code still unverified |
+
+The CRM check proves more than it looks. `CRM.requireAuth` in `assets/crm.js`
+only redirects to the login page on a **401** — a 404 page would have produced
+the error screen again. Landing on login therefore establishes the whole chain:
+the redirect rule is restored, the function ran, and it answered with a proper
+401. **The outage is over.**
+
+The fourth is a narrower question than it first appeared, and the answer is
+reassuring: `/netlify/functions/auth-login.js` serves the homepage, not
+JavaScript source, because the rule is written `to = "/index.html", status =
+404` — the body of the 404 is `index.html`. What is *not* established is
+whether the status line really reads 404, or whether the rule is being bypassed
+and the SPA catch-all is answering 200. The two are indistinguishable in a
+browser without opening devtools. Either way the source is not exposed, which
+is the part that mattered. Serving a whole homepage as a 404 body is a soft-404
+pattern worth revisiting on its own; it is not this deploy's to fix.
+
+---
+
+## Deploy 22 — The record catches up (PR #139)
+
+**Date:** 2026-09-24
+**Production commit:** `2ef1393`
+**Previous recorded deploy:** `80b03b3` (Deploy 21, PR #138)
+**Delta:** 1 commit, 1 merged pull request, 2 files changed (+238 / −0)
+**Approval:** "merge 139".
+
+Documentation only, entirely inside `docs/`, which `scripts/prune-publish.js`
+removes from the artifact. **Nothing a visitor can reach changed.**
+
+C-102 was added for the outage, Deploys 20 and 21 were written up, Deploy 19
+gained the amendment saying plainly that it broke production, and outstanding
+item 1 was materially changed rather than annotated.
+
+### Claim register
+
+C-102 added. Register at **102 claims**, C-55 the only `needs-review` row.
+
+### Testing method
+
+`npm test` — 26 checks, green on `2ef1393`. Register re-parsed through the
+`csv` module: 102 rows, six columns throughout, no duplicate ids. The diff on
+the register is `+1 / −0`; a first attempt using `csv.writer` rewrote the whole
+file and silently re-quoted seven unrelated rows, which was caught on the diff
+shape and redone as a true append.
+
+### Rollback
+
+```
+git revert 2ef1393
+```
+
+A squash; no `-m 1`. Removes documentation only.
+
+---
+
+## Deploy 23 — A form that blamed itself for the visitor's typo (PR #140)
+
+**Date:** 2026-09-24
+**Production commit:** `3e70e84`
+**Previous recorded deploy:** `2ef1393` (Deploy 22, PR #139)
+**Delta:** 1 commit, 1 merged pull request, 5 files changed (+185 / −8)
+**Approval:** "merge 140".
+
+`netlify/functions/leads.js` has always returned the exact fields it refused.
+`assets/gated-download.js` threw that list away and showed "Something went
+wrong. Please try again" for every failure that was not rate limiting — so a
+buyer who mistyped their email was told the **site** was broken.
+
+It surfaced by accident: a test submission using `mnjnmnm@jhjhj`, which has no
+dot in the domain and is rejected at `leads.js:256`, looked exactly like the
+outage that had just been fixed. That ambiguity was the bug, not a coincidence.
+
+Five fields now carry their own wording in both locales. `source_page` and
+`segment` deliberately do not — the page fills those in, so a rejection of
+either is our fault, and a per-field message would blame the visitor for our
+bug.
+
+### One visitor-facing file, 116 pages
+
+The strings live in the shared script, so both locales pick this up without a
+single page file being edited. Only the failure path changes: the success path,
+the guide token, the cookie fallback, the reveal, the rate-limit message and
+the network-error message are untouched.
+
+### Claim register
+
+**C-103 added**, `defect-fixed`. Register at **103 claims**.
+
+### Testing method
+
+`npm test` — 27 checks, green on `3e70e84`. Thirty-two behavioural tests run
+against the shipped file rather than a copy. `check-lead-validation-messages.js`
+added, reading the real field names out of `leads.js` rather than keeping a
+second list. Three negative tests by injection: a deleted Arabic message, a new
+`vat_number` field server-side, and the unconditional generic message restored.
+
+### A figure corrected in this deploy
+
+The suite was **26 checks, not 25**. It went to 26 in Deploy 19 when PR #132
+added `check-publish-exclusions.js`, and the stale number was carried into
+Deploys 20 and 21 and several pull request bodies. Corrected at all three wrong
+places, with a dated note at Deploy 19. Deploy 18's line was left alone: it
+genuinely ran 25. The suites were green as recorded; only the figure was stale.
+
+### Rollback
+
+```
+git revert 3e70e84
+```
+
+A squash; no `-m 1`. Restores the generic-only message.
+
+### Known limitations shipped with this deploy
+
+- **Not observed in a browser.** Verified in code and by test; this environment
+  cannot reach the site.
+
+---
+
+## Deploy 24 — The theme was right, its position was not (PR #141)
+
+**Date:** 2026-09-24
+**Production commit:** `2eff5c3`
+**Previous recorded deploy:** `3e70e84` (Deploy 23, PR #140)
+**Delta:** 1 commit, 1 merged pull request, 83 files changed (+2291 / −2168)
+**Approval:** "merge 141".
+
+The owner reported that moving between pages kept switching between light and
+dark. The theme script was not at fault — it is **byte-identical on all 80
+pages** that carry it. Its position was.
+
+It sat as the first element inside `<body>`, which is after the render-blocking
+stylesheet in `<head>`. Every navigation therefore parsed the head, applied the
+CSS, **painted the page in the light default**, then reached `<body>`, ran the
+script, added `.dark` to `<html>` and **repainted**. The flicker was the page
+being painted twice with different themes, on every page, every time.
+
+Confirmed on a pretty-printed page — `contact/index.html`, `</head>` at line
+90, `<body>` at 91, the script at 95 — and on the minified homepage by byte
+offset.
+
+### The large diff is a relocation, not a rewrite
+
+Eighty pages, +2140 / −2140: the same lines, moved. Verified file by file
+against the previous commit that with the script excised all 80 documents are
+unchanged, that the script body is identical to the committed one, and that it
+is still identical across all 80. Only its position moved.
+
+### The generator caught what the pages did not
+
+`scripts/generate-product-pages.py` needed the same move and did not get it at
+first. `check-generator-parity.js` failed on all ten product pages — exactly
+the drift C-93 exists to catch, and without it the flash would have returned
+silently at the next regeneration.
+
+### A check for something nothing else could see
+
+All 80 copies of the script were byte-identical **and all 80 were in the wrong
+place**, so no comparison of pages against each other could ever have found
+this. `scripts/check-theme-no-flash.js` asserts the script is in `<head>`,
+ahead of the first stylesheet, present once, and that the generator template
+agrees.
+
+A guard written for the migration itself was wrong and fired on all 80 files,
+writing nothing: it compared whole documents before and after, which cannot
+pass when the purpose of the change is to move a block. Removed; the remaining
+checks already prove relocation-only.
+
+### Claim register
+
+**C-104 added**, `defect-fixed`. Register at **104 claims**, C-55 still the only
+`needs-review` row.
+
+### Testing method
+
+`npm test` — 28 checks, green on `2eff5c3`. Three negative tests by injection:
+one page restored to the old layout, the generator template restored alone, and
+the script duplicated on a page.
+
+### Rollback
+
+```
+git revert 2eff5c3
+```
+
+A squash; no `-m 1`. Restores the flash on every navigation.
+
+### Known limitations shipped with this deploy
+
+- **Not observed in a browser.** The absence of a flash is a visual property,
+  and this is verified structurally rather than seen. If flicker remains, the
+  diagnosis is incomplete rather than merely unconfirmed.
+- The print and PDF sheets and the CRM and admin tools carry no theme script
+  and were deliberately untouched.
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -2954,6 +3161,15 @@ last sync. It is not part of the changed-file scope of any deploy above.
    the egress block here is unchanged, so that part stays with the owner. What
    changes is that this item is no longer about whether production can be
    reached at all.
+   **Further, 2026-09-24 (Deploys 22–24):** the owner has now checked live
+   *behaviour* on four occasions — the CRM login redirect, a gated form
+   submission, the `/api/crm/auth/me` response, and `/netlify/functions/`.
+   That is still not Section D, which asks whether the live site's **content**
+   matches what was shipped, and nobody has done that for any deploy. But the
+   checks have become routine rather than unprecedented, and two of this
+   session's four bugs were found by them. The remaining obstacle is unchanged:
+   this environment's egress to the domain is blocked, so live checks are the
+   owner's to run and to report back.
 2. **No dedicated claim-removal register file** exists for A2, despite
    being explicitly required. The removals themselves are verified (see
    Deploy 1's table above); the tracking artifact is not.
