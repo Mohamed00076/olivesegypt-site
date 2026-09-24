@@ -46,14 +46,28 @@
       sent: 'Thank you — we have your brief and will come back to you.',
       rateLimited: 'Too many requests — please try again in a little while.',
       generic: 'Something went wrong. Please try again, or email sales@olivesegypt.com directly.',
-      network: 'Network error — please try again, or email sales@olivesegypt.com directly.'
+      network: 'Network error — please try again, or email sales@olivesegypt.com directly.',
+      invalid: {
+        email: 'That email address does not look right — please check it.',
+        company_name: 'Please enter your company name.',
+        country_region: 'Please enter your country or region.',
+        buyer_type: 'Please choose which kind of buyer you are.',
+        consent: 'Please tick the box so we know we may reply to you.'
+      }
     },
     ar: {
       success: 'شكرًا لك — الدليل جاهز أدناه.',
       sent: 'شكرًا لك — وصلنا موجزك وسنعاود التواصل معك.',
       rateLimited: 'عدد كبير جدًا من الطلبات — يرجى المحاولة مرة أخرى بعد قليل.',
       generic: 'حدث خطأ ما. يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
-      network: 'خطأ في الشبكة — يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.'
+      network: 'خطأ في الشبكة — يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
+      invalid: {
+        email: 'يبدو أن البريد الإلكتروني غير صحيح — يرجى التحقق منه.',
+        company_name: 'يرجى إدخال اسم شركتك.',
+        country_region: 'يرجى إدخال بلدك أو منطقتك.',
+        buyer_type: 'يرجى اختيار نوع المشتري الذي تمثّله.',
+        consent: 'يرجى تحديد المربع حتى نتمكن من الرد عليك.'
+      }
     }
   };
   var LANG = (document.documentElement.lang === 'ar') ? 'ar' : 'en';
@@ -61,6 +75,30 @@
 
   function field(form, name) {
     return form.querySelector('[data-field="' + name + '"]');
+  }
+
+  // The server already answers a rejected submission with the exact fields it
+  // refused -- {ok:false, error:'Validation failed', fields:['email']} from
+  // netlify/functions/leads.js. Until now every one of those became "Something
+  // went wrong", which tells a buyer who mistyped their address that the site
+  // is broken rather than that their address needs a second look. They have no
+  // way to tell the two apart, and the likely response to "the site is broken"
+  // is to give up rather than retry.
+  //
+  // Only fields the person can see and correct get a message. source_page and
+  // segment are filled in by the page itself, so a rejection of either is a
+  // fault here rather than anything to ask a visitor to fix -- an unrecognised
+  // field name returns nothing at all and the caller falls back to the generic
+  // wording, deliberately.
+  function fieldMessage(data) {
+    if (!data || !data.fields || !data.fields.length) return '';
+    var parts = [];
+    for (var i = 0; i < data.fields.length; i++) {
+      var msg = T.invalid[data.fields[i]];
+      if (!msg) return '';
+      if (parts.indexOf(msg) === -1) parts.push(msg);
+    }
+    return parts.join(' ');
   }
 
   function initForm(form) {
@@ -179,7 +217,7 @@
         } else if (result.data && result.data.error === 'Too many requests. Please try again later.') {
           showStatus('error', T.rateLimited);
         } else {
-          showStatus('error', T.generic);
+          showStatus('error', fieldMessage(result.data) || T.generic);
         }
       }).catch(function () {
         if (submitBtn) submitBtn.disabled = false;

@@ -2651,8 +2651,15 @@ supplier — each attributed rather than absorbed.
 
 ### Testing method
 
-`npm test` — 25 checks, green on `0ca7b3b`, re-run on `main` after every merge
+`npm test` — 26 checks, green on `0ca7b3b`, re-run on `main` after every merge
 rather than trusted from a branch.
+
+*Corrected 2026-09-24:* this line and the two below it said **25 checks**. The
+count went to 26 in this very deploy — PR #132 added
+`check-publish-exclusions.js` — and the old number was carried forward into
+Deploys 20 and 21 and into several pull request bodies before anyone counted.
+Deploy 18 and earlier genuinely ran 25. The suites were green as recorded; only
+the figure was stale.
 
 Rendered geometry measured before and after for the packaging change. Build
 simulation against a real copy of the tracked tree for the pruner. Byte-for-byte
@@ -2755,7 +2762,7 @@ claims**, with **C-55 the only `needs-review` row**.
 
 ### Testing method
 
-`npm test` — 25 checks, green on `b4e4095`, re-run on `main` after the merge.
+`npm test` — 26 checks, green on `b4e4095`, re-run on `main` after the merge.
 CSV structure re-validated through the `csv` module: 101 rows before and after,
 six columns on every row, no duplicate ids.
 
@@ -2877,7 +2884,7 @@ still the only `needs-review` row**.
 
 ### Testing method
 
-`npm test` — 25 checks, green on `80b03b3`, re-run on `main` after the merge.
+`npm test` — 26 checks, green on `80b03b3`, re-run on `main` after the merge.
 Two negative tests by injection, listed above. Runtime dependencies of the
 remaining pruned paths re-checked: the GeoLite2 database lives at repo-root
 `geo/`, which is not on the list, and `netlify/`, `package.json` and
