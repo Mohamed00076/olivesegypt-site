@@ -236,12 +236,22 @@ function classifyCompanyName(value) {
   if (!raw) {
     return { severity: 'reject', code: 'empty', reason: 'A company name is required.' };
   }
-  if (raw.length < 3) {
-    return {
-      severity: 'reject', code: 'too_short',
-      reason: `"${raw}" is too short to be a company name. Enter the company, not an abbreviation or a title.`,
-    };
-  }
+  /*
+   * The title rules run before the length rule, and the length rule refuses
+   * only a single character.
+   *
+   * The floor started at three characters, which caught "Dr" -- but it caught
+   * it for the wrong reason, told the person "too short" when the real fault
+   * was that they had typed a title, and refused BP, 3M, LG and GE along with
+   * it. The title rules recognise "Dr", "Mr", "Ms" and the Arabic forms on
+   * their own, without any help from a length check, so ordering them first
+   * both frees up the short names and gives the person the message that
+   * actually tells them what to do.
+   *
+   * The cost, accepted deliberately: a careless two-character entry like "qq"
+   * is no longer refused at the form. It is still flagged on the review page.
+   * Blocking real companies to catch that is the worse trade.
+   */
   if (w.length && w.every((x) => PERSONAL_TITLES.includes(x))) {
     return {
       severity: 'reject', code: 'title_only',
@@ -252,6 +262,12 @@ function classifyCompanyName(value) {
     return {
       severity: 'reject', code: 'starts_with_title',
       reason: `"${raw}" looks like a person's name. Put it in Contact Name and enter their company here.`,
+    };
+  }
+  if (raw.length < 2) {
+    return {
+      severity: 'reject', code: 'too_short',
+      reason: `"${raw}" is a single character. Enter the company's name.`,
     };
   }
   if (w.length === 1 && !COMPANY_WORDS.includes(w[0]) && /^[a-z؀-ۿ]+$/.test(w[0])) {
