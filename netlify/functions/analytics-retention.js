@@ -137,7 +137,7 @@ async function readContactRetentionDays(sql) {
 async function purge(sql, table, timeColumn, idColumn, days, limit) {
   // Table and column names are module constants, never request data; the
   // two values that vary are bound parameters.
-  const rows = await sql.query(
+  const rows = await sql(
     `DELETE FROM ${table} WHERE ${idColumn} IN (
        SELECT ${idColumn} FROM ${table}
        WHERE ${timeColumn} < now() - ($1::numeric * interval '1 day')
@@ -150,7 +150,7 @@ async function purge(sql, table, timeColumn, idColumn, days, limit) {
 }
 
 async function countOlderThan(sql, table, timeColumn, days) {
-  const rows = await sql.query(
+  const rows = await sql(
     `SELECT count(*)::int AS n FROM ${table}
      WHERE ${timeColumn} < now() - ($1::numeric * interval '1 day')`,
     [days]
