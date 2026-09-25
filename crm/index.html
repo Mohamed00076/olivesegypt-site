@@ -115,11 +115,45 @@
             ? '(' + cr.converted + ' of ' + cr.total + ' buyers)'
             : SmallSample.note(cr.total, { noun: 'buyers' });
 
-          var avgStageHtml = d.avg_time_per_stage_days.length
-            ? '<table><thead><tr><th>Stage Reached</th><th>Avg. Days To Get There</th></tr></thead><tbody>' +
-              d.avg_time_per_stage_days.map(function (r) {
+          /*
+           * Pipeline order, not whatever order the database returned.
+           *
+           * The query groups by stage and has no ORDER BY on its outer select
+           * -- the only one it carries is inside the window function, which
+           * orders each buyer's own history so LEAD() can find the next
+           * change. So the groups arrive in whatever order the aggregate
+           * produced, which read as Sample Requested, Negotiation, Qualifying,
+           * Lead, Contacted on the owner's screen and can differ between runs.
+           *
+           * stageOrderIndex has sat in this file since it was written, used by
+           * nothing. Somebody meant to sort this table with it and never wired
+           * it in.
+           */
+          var avgStageRows = d.avg_time_per_stage_days.slice().sort(function (a, b) {
+            return stageOrderIndex(a.stage) - stageOrderIndex(b.stage);
+          });
+
+          /*
+           * "Time spent in", not "time to reach".
+           *
+           * Each row of buyer_stage_history is a move TO a stage; LEAD() finds
+           * when that buyer moved again, so the interval is how long they sat
+           * in the stage they had just entered. The headings said the opposite
+           * -- "Time to Reach Each Stage", "Avg. Days To Get There" -- which is
+           * a different question with a different answer. One tells you your
+           * cycle length, the other tells you where deals stall.
+           *
+           * Only stages somebody has LEFT appear: the query drops rows with no
+           * next change, so whatever stage a buyer sits in today is not counted
+           * for them. That is correct, and the note says so, because a table
+           * missing half the pipeline invites the reader to assume a bug.
+           */
+          var avgStageHtml = avgStageRows.length
+            ? '<table><thead><tr><th>Stage</th><th>Avg. Days In Stage</th></tr></thead><tbody>' +
+              avgStageRows.map(function (r) {
                 return '<tr><td>' + CRM.escapeHtml(r.stage) + '</td><td>' + r.avg_days + '</td></tr>';
-              }).join('') + '</tbody></table>'
+              }).join('') + '</tbody></table>' +
+              '<p class="crm-muted" style="margin-bottom:0;">Counts only stages a buyer has already moved on from, so the stage each buyer sits in today is not included.</p>'
             : '<p class="crm-muted">Not enough stage-change history yet to compute this.</p>';
 
           document.getElementById('dashboard-content').innerHTML =
@@ -141,7 +175,7 @@
               '<p><strong style="font-size:22px;">' + CRM.escapeHtml(crBig) + '</strong> <span class="crm-muted">' + CRM.escapeHtml(crNote) + '</span></p>' +
               '<p class="crm-muted">' + CRM.escapeHtml(cr.definition) + '</p>' +
             '</div>' +
-            '<div class="crm-card"><h2>Average Time to Reach Each Stage</h2>' + avgStageHtml + '</div>';
+            '<div class="crm-card"><h2>Average Time Spent in Each Stage</h2>' + avgStageHtml + '</div>';
         }).catch(function (e) {
           if (e.message !== 'unauthorized') {
             document.getElementById('dashboard-content').innerHTML = '<div class="crm-status crm-status-error">Could not load dashboard data.</div>';
