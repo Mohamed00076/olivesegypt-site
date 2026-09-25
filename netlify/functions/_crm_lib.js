@@ -90,6 +90,34 @@ const DB_ERROR_CODES = {
 };
 
 /*
+ * A fault in this code, not in the database.
+ *
+ * These are the errors the JavaScript engine raises when a program is wrong:
+ * a misspelt method, a value that was never there. They carry no SQLSTATE, so
+ * without this they fell into the "could not be reached" branch below and a
+ * one-line mistake was reported to staff as a database outage.
+ *
+ * That is not hypothetical. `await sql.query(...)` was written in three
+ * functions against a driver whose query handle has no `query` property --
+ * the parameterised form is calling the handle itself. Every buyer update,
+ * every Kanban drag, the whole analytics report and the retention purge threw
+ * `TypeError: sql.query is not a function` from 2026-09-01, and all of them
+ * said "the database could not be reached". Anybody reading that goes looking
+ * at Neon, which was fine the whole time.
+ *
+ * Checked by name rather than with instanceof: these functions are bundled,
+ * and an error crossing a realm boundary can fail an instanceof against the
+ * local constructor while still being exactly this kind of mistake.
+ */
+const OUR_BUG_NAMES = new Set([
+  'TypeError', 'ReferenceError', 'SyntaxError', 'RangeError',
+]);
+
+function isOurBug(err) {
+  return !!(err && !err.code && err.name && OUR_BUG_NAMES.has(err.name) && err.message);
+}
+
+/*
  * Turn a thrown error into something safe to put on a screen.
  *
  * `step` is the label the caller attached with dbStep(), so the answer names
@@ -102,6 +130,7 @@ function describeDbError(err, step) {
   const parts = [];
   if (known) parts.push(known.what);
   else if (code) parts.push(`the database refused the request (${code})`);
+  else if (isOurBug(err)) parts.push(`this page has a bug in its own code, not a database problem - ${String(err.message).slice(0, 200)}`);
   else parts.push('the database could not be reached');
 
   if (known && known.quote && err.message) {

@@ -109,7 +109,6 @@ function makeStrictSql(fileName, seen) {
     if (/RETURNING/i.test(q)) return Promise.resolve([{ id: 1, created_at: new Date('2026-09-07T00:00:00Z') }]);
     return Promise.resolve([]);
   }
-  sql.query = () => Promise.resolve([]);
   return sql;
 }
 

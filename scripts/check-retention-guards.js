@@ -46,15 +46,31 @@ function respond(sqlText) {
   return [];
 }
 
-function fakeSql(strings, ...values) {
-  const t = text(strings);
-  statements.push({ text: t, params: values });
+/*
+ * This double has to mirror the real handle, including what it does NOT have.
+ *
+ * It used to carry a `query` method. The real one, from neon(), does not --
+ * it is a function with a single `transaction` property, and the parameterised
+ * form is calling it directly with text and an array. So `await sql.query(...)`
+ * passed here and threw TypeError in production, in three functions, for three
+ * and a half weeks. A double more permissive than the real object cannot fail
+ * on the one mistake it most needs to catch, so `query` is gone from here too;
+ * check-neon-call-shapes.js holds the two to each other.
+ *
+ * Both real call shapes are accepted, and they are told apart the way the
+ * driver tells them apart: a tagged template arrives with a TemplateStringsArray
+ * first, a parameterised call with a plain string.
+ */
+function fakeSql(first, ...rest) {
+  if (typeof first === 'string') {
+    const params = Array.isArray(rest[0]) ? rest[0] : [];
+    statements.push({ text: first, params });
+    return Promise.resolve(respond(first));
+  }
+  const t = text(first);
+  statements.push({ text: t, params: rest });
   return Promise.resolve(respond(t));
 }
-fakeSql.query = (t, params) => {
-  statements.push({ text: t, params: params || [] });
-  return Promise.resolve(respond(t));
-};
 
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);

@@ -85,7 +85,7 @@ async function reportFunnel(sql, { startAt, endAt, source, country, funnelId }) 
     return `bool_or(${clause})`;
   });
 
-  const rows = await sql.query(
+  const rows = await sql(
     `
     WITH scoped_sessions AS (
       SELECT s.session_id, s.attribution_source
@@ -129,7 +129,7 @@ async function reportHotLeads(sql, { startAt, endAt }) {
   // Hot-lead definition (documented here and in the dashboard, not left
   // implicit): a session containing at least one specification_download
   // AND at least one of {whatsapp_click, email_click, contact_form_submit}.
-  const rows = await sql.query(
+  const rows = await sql(
     `
     WITH scoped_sessions AS (
       SELECT s.session_id, s.visitor_id, s.started_at, s.entry_page, s.attribution_source, s.org_name, s.org_resolution_type
@@ -168,7 +168,7 @@ async function reportAttribution(sql, { startAt, endAt, model }) {
   const suppressed = botSuppressedSql(threshold);
 
   if (model === 'last_touch') {
-    const rows = await sql.query(
+    const rows = await sql(
       `
       SELECT s.attribution_source AS source, count(DISTINCT e.session_id)::int AS conversions
       FROM analytics_sessions s
@@ -185,7 +185,7 @@ async function reportAttribution(sql, { startAt, endAt, model }) {
   // first_touch (primary, per spec): attribute each converting visitor's
   // conversion to THAT VISITOR's earliest-ever session's source, not the
   // source of the session the conversion actually happened in.
-  const rows = await sql.query(
+  const rows = await sql(
     `
     WITH first_sessions AS (
       SELECT DISTINCT ON (visitor_id) visitor_id, attribution_source
@@ -216,7 +216,7 @@ async function reportAttribution(sql, { startAt, endAt, model }) {
 
 async function reportBotReview(sql) {
   const threshold = await getThreshold(sql);
-  const rows = await sql.query(
+  const rows = await sql(
     `
     SELECT session_id, visitor_id, ${isoUtc('started_at')} AS started_at, entry_page,
            attribution_source, bot_confidence, bot_reason_codes, bot_detection_version, bot_override
@@ -242,13 +242,13 @@ async function reportDemographics(sql, { startAt, endAt }) {
   `;
 
   const [countryRows, deviceRows, browserRows, languageRows] = await Promise.all([
-    sql.query(`SELECT country AS x, count(*)::int AS y ${scope} AND country IS NOT NULL GROUP BY country ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
-    sql.query(`SELECT device_type AS x, count(*)::int AS y ${scope} AND device_type IS NOT NULL GROUP BY device_type ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
-    sql.query(`SELECT browser AS x, count(*)::int AS y ${scope} AND browser IS NOT NULL GROUP BY browser ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
-    sql.query(`SELECT browser_language AS x, count(*)::int AS y ${scope} AND browser_language IS NOT NULL GROUP BY browser_language ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+    sql(`SELECT country AS x, count(*)::int AS y ${scope} AND country IS NOT NULL GROUP BY country ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+    sql(`SELECT device_type AS x, count(*)::int AS y ${scope} AND device_type IS NOT NULL GROUP BY device_type ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+    sql(`SELECT browser AS x, count(*)::int AS y ${scope} AND browser IS NOT NULL GROUP BY browser ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
+    sql(`SELECT browser_language AS x, count(*)::int AS y ${scope} AND browser_language IS NOT NULL GROUP BY browser_language ORDER BY y DESC LIMIT 20`, [startAt, endAt]),
   ]);
 
-  const [unresolved] = await sql.query(`SELECT count(*)::int AS n ${scope} AND country IS NULL`, [startAt, endAt]);
+  const [unresolved] = await sql(`SELECT count(*)::int AS n ${scope} AND country IS NULL`, [startAt, endAt]);
 
   return {
     countries: countryRows,
@@ -281,7 +281,7 @@ async function reportLiveFeed(sql) {
   `;
   const minutes = rows[0] ? Number(rows[0].value) : 5;
 
-  const sessions = await sql.query(
+  const sessions = await sql(
     `
     SELECT
       s.session_id, s.entry_page, s.attribution_source, s.country, s.device_type, s.browser,
@@ -318,7 +318,7 @@ async function reportSearchConsole(sql, { startAt, endAt }) {
     LIMIT 20
   `;
 
-  const topQueries = await sql.query(
+  const topQueries = await sql(
     `
     SELECT query, sum(clicks)::int AS clicks, sum(impressions)::int AS impressions,
            CASE WHEN sum(impressions) > 0 THEN round((sum(clicks)::numeric / sum(impressions)) * 100, 1) ELSE 0 END AS ctr,
@@ -348,7 +348,7 @@ async function reportOverview(sql, { startAt, endAt }) {
   const threshold = await getThreshold(sql);
   const suppressed = botSuppressedSql(threshold);
 
-  const [totals] = await sql.query(
+  const [totals] = await sql(
     `
     SELECT
       count(*)::int AS total_sessions,
@@ -365,7 +365,7 @@ async function reportOverview(sql, { startAt, endAt }) {
     SELECT count(*)::int AS n FROM analytics_ingest_errors WHERE occurred_at >= now() - interval '7 days'
   `;
 
-  const sourceRows = await sql.query(
+  const sourceRows = await sql(
     `
     SELECT DISTINCT attribution_source AS source
     FROM analytics_sessions
@@ -376,7 +376,7 @@ async function reportOverview(sql, { startAt, endAt }) {
     [startAt, endAt],
   );
 
-  const countryRows = await sql.query(
+  const countryRows = await sql(
     `
     SELECT DISTINCT country
     FROM analytics_sessions

@@ -275,7 +275,7 @@ async function handleUpdate(event, sql, id, actor) {
   setClauses.push(`updated_at = now()`);
   values.push(id);
 
-  await sql.query(`UPDATE buyers SET ${setClauses.join(', ')} WHERE id = $${i}`, values);
+  await sql(`UPDATE buyers SET ${setClauses.join(', ')} WHERE id = $${i}`, values);
 
   if (updates.current_stage && updates.current_stage !== previousStage) {
     await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by) VALUES (${id}, ${previousStage}, ${updates.current_stage}, ${actor})`;

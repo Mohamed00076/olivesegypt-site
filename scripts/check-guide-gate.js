@@ -34,7 +34,6 @@ function fakeSql(strings) {
   queries.push(text);
   return Promise.resolve(/count\(/i.test(text) ? [{ n: 0 }] : []);
 }
-fakeSql.query = (text) => { queries.push(text); return Promise.resolve([]); };
 require.cache[neonId] = new Module(neonId, null);
 require.cache[neonId].filename = neonId;
 require.cache[neonId].loaded = true;
