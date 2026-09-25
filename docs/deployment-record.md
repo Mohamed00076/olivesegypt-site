@@ -3126,6 +3126,149 @@ A squash; no `-m 1`. Restores the flash on every navigation.
 
 ---
 
+## Deploy 25 — The record catches up again (PR #142)
+
+**Date:** 2026-09-24
+**Production commit:** `2aee35c`
+**Previous recorded deploy:** `2eff5c3` (Deploy 24, PR #141)
+**Delta:** 1 commit, 1 merged pull request, 2 files changed (+218 / −0)
+**Approval:** "merge 142".
+
+Documentation only, entirely inside `docs/`, which the pruner removes from the
+artifact. **Nothing a visitor can reach changed.**
+
+Deploys 22, 23 and 24 written up; C-103 and C-104 added; Deploy 21 amended to
+record that three of its four recovery checks came back clean; outstanding item
+1 updated again.
+
+### Claim register
+
+C-103 and C-104 added, both `defect-fixed`. Register at **104 claims**, C-55 the
+only `needs-review` row.
+
+### Testing method
+
+`npm test` — 28 checks, green on `2aee35c`. Register re-parsed: 104 rows, six
+columns throughout, no duplicate ids. Diff `+2 / −0` on the register, `+216 / −0`
+on this file: append and insert only, nothing reworded.
+
+### Rollback
+
+```
+git revert 2aee35c
+```
+
+A squash; no `-m 1`. Removes documentation only.
+
+---
+
+## Deploy 26 — Eighteen calls to a method that was never there (PR #143)
+
+**Date:** 2026-09-25
+**Production commit:** `d0324cf`
+**Previous recorded deploy:** `2aee35c` (Deploy 25, PR #142)
+**Delta:** 1 commit (2 before squash), 1 merged pull request, 14 files changed
+(+249 / −33)
+**Approval:** "merge 143", after the seven flagged doubles were fixed on the
+owner's instruction — "fix them all if its a problem in the future".
+
+The owner reported that dragging a Kanban card and saving an edit to an
+existing buyer both answered "the database could not be reached". **The
+database was healthy throughout.**
+
+`neon()` returns a function. You query with it as a tagged template, or you
+call it directly with text and a parameter array. It has exactly one property,
+`transaction`. **It has no `query`.** Three functions called
+`await sql.query(text, params)` anyway, so every one threw a `TypeError`.
+
+| File | Calls | Broken since 2026-09-01 |
+| --- | --- | --- |
+| `crm-buyers.js` | 1 | Every buyer update — and so every Kanban drag, which is a PATCH to the same handler |
+| `analytics-report.js` | 15 | The entire `/admin/analytics` report |
+| `analytics-retention.js` | 2 | `purge()`, which enforces the retention window |
+
+### The retention consequence, which this deploy does not close
+
+`purge()` has been throwing rather than deleting since the day it shipped. **No
+analytics row has ever been deleted by the scheduled job**, so personal
+analytics data has accumulated past its stated retention period for three and a
+half weeks.
+
+The fix makes the job work from this deploy onward. It does nothing about the
+backlog that built up, and that is a policy question for whoever holds C-55
+rather than something a code change settles. It is recorded here and in C-105
+so that it is not quietly absorbed into "fixed".
+
+### Why the symptom named the wrong system
+
+A `TypeError` carries no SQLSTATE, so `describeDbError` fell through to its last
+branch and reported all of it as "the database could not be reached" — pointing
+staff at the one component that was fine. That is half of why this lasted three
+and a half weeks, and it is fixed: an error named `TypeError`, `ReferenceError`,
+`SyntaxError` or `RangeError` carrying no code is now reported as a bug in this
+code, with its message. A genuine connection failure still reads as one and
+SQLSTATE errors are untouched, both asserted.
+
+### Why the suite stayed green through all of it
+
+**All eight test doubles carried a `.query` the real handle does not.** The fakes
+accepted exactly what production rejected, so every check passed while the CRM,
+the analytics report and the retention job were all broken.
+
+A double more permissive than the object it stands in for cannot fail on the
+mistake it most needs to catch. That is the durable lesson of this deploy, and
+it is worth more than the eighteen-line fix: the suite was not merely silent
+here, it was actively reassuring.
+
+All eight lose it. `check-retention-guards.js`'s double also learns both real
+call shapes, and it caught the fix mid-change when parameters came back nested
+as `[[395,50000]]`.
+
+### A check that holds both sides to the real driver
+
+`scripts/check-neon-call-shapes.js` does not grep for the name already burned.
+It builds a real handle from the real driver and checks **every method the
+functions call** and **every method a double offers** against it, so `sql.end`,
+`sql.unsafe` and `sql.begin` — all real in other Postgres clients — fail too.
+Harness bookkeeping is allowed only when named with a reason; there is one,
+`check-crm-documents.js`'s `fakeSql.statements`.
+
+### Claim register
+
+**C-105 added**, `defect-fixed`. Register at **105 claims**, C-55 still the only
+`needs-review` row.
+
+### Testing method
+
+`npm test` — 29 checks, green on `d0324cf`. Verified against the installed
+driver rather than from memory: `@neondatabase/serverless` 0.10.4,
+`typeof sql.query` is `undefined`, the only own key is `transaction`, and the
+package's own `index.d.ts` declares no `query` on `NeonQueryFunction`.
+
+Proved by injection throughout: `sql.query` and `sql.unsafe` restored in
+production code, `.query` restored on each of the seven remaining doubles in
+turn (caught 7 of 7), an invented `.begin` caught with file and line, and the
+error-message fix reverted.
+
+### Rollback
+
+```
+git revert d0324cf
+```
+
+A squash; no `-m 1`. **Reverting restores the outage**: the CRM, the analytics
+report and the retention purge all break again.
+
+### Known limitations shipped with this deploy
+
+- **Not observed in a browser.** Verified against the real driver, by test and
+  by injection; the CRM and the analytics report have not been seen working.
+- **The retention backlog is untouched**, as above.
+- `/admin/analytics` sign-in remains a separate open item. This deploy fixes the
+  report it renders, not the way in.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -3248,3 +3391,25 @@ last sync. It is not part of the changed-file scope of any deploy above.
    deploy, and re-running it against each historical commit now would not
    reproduce what was observed then. Numbers that were never observed have
    deliberately not been written down.
+8. **Analytics data past its retention window was never deleted, and still
+   has not been** (opened 2026-09-25, Deploy 26). `purge()` in
+   `analytics-retention.js` threw on every scheduled run from 2026-09-01 to
+   2026-09-25 — see C-105 — so the retention job has never removed a single
+   row. Deploy 26 fixes the call, which means the job works from now on and
+   will begin deleting what is past the window on its next run. What it does
+   not do is decide anything about the three and a half weeks of data that
+   accumulated in the meantime, or about whether anyone needs to be told that
+   a stated retention period was not honoured while it was broken. That is a
+   question for whoever holds C-55, alongside the privacy values still with
+   the lawyer, and it is recorded here so it is not quietly absorbed into
+   "fixed". Nothing about it is settled by any deploy in this document.
+9. **The suite passed throughout a total CRM outage** (opened 2026-09-25,
+   Deploy 26). Every test double granted a `.query` the real Neon handle does
+   not have, so eighteen broken calls were green in CI while the buyer update,
+   the whole analytics report and the retention purge all threw in production.
+   `check-neon-call-shapes.js` closes this for the Neon driver specifically —
+   it holds both the functions and the doubles to a real handle. The general
+   question it raises is not closed: every other double in this suite is
+   hand-written, and nothing checks that any of them still resembles what it
+   stands in for. No audit of the rest has been done, and this item exists so
+   that absence is on the record rather than assumed.
