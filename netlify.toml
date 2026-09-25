@@ -254,6 +254,14 @@
   status = 200
   force = true
 
+# The company-name review pass. Read-only by design -- it reports records whose
+# company_name looks wrong and changes nothing. See netlify/functions/crm-data-quality.js.
+[[redirects]]
+  from = "/api/crm/data-quality"
+  to = "/.netlify/functions/crm-data-quality"
+  status = 200
+  force = true
+
 # Section L -- quotation/invoice generator
 [[redirects]]
   from = "/api/crm/documents"
