@@ -40,7 +40,8 @@ const t = (name, cond, extra) => {
 
 const EXPECT = [
   // The real bad data, from the owner's own screens.
-  ['Dr', 'reject', 'too_short'],
+  // Refused as a title, not for its length -- see the ordering note below.
+  ['Dr', 'reject', 'title_only'],
   ['Mr masud', 'reject', 'starts_with_title'],
   ['Mr khalid algatin', 'reject', 'starts_with_title'],
   // Arabic, because the buyers are not all writing in Latin script.
@@ -54,7 +55,22 @@ const EXPECT = [
   ['Aggizi Foods', 'ok', null],
   ['شركة النيل للتجارة', 'ok', null],
   ['Nile Food Industries', 'ok', null],
-  ['3M', 'reject', 'too_short'],
+
+  /*
+   * Two-letter companies are real, and refusing them was a bug in the first
+   * version of these rules: a three-character floor caught "Dr" but took BP,
+   * 3M, LG and GE with it. The floor now refuses a single character only, and
+   * the title rules -- which run first -- catch "Dr" on their own, for the
+   * right reason and with a message that says what to do about it.
+   *
+   * These four are the regression: if any of them starts being refused again,
+   * somebody has put a length floor back.
+   */
+  ['BP', 'review', 'single_word'],
+  ['LG', 'review', 'single_word'],
+  ['GE', 'review', 'single_word'],
+  ['3M', 'ok', null],
+  ['X', 'reject', 'too_short'],
 ];
 
 for (const [value, severity, code] of EXPECT) {
@@ -62,6 +78,19 @@ for (const [value, severity, code] of EXPECT) {
   t(`${JSON.stringify(value)} -> ${severity}${code ? ' (' + code + ')' : ''}`,
     got.severity === severity && got.code === code,
     `got ${got.severity} (${got.code})`);
+}
+
+/*
+ * A title must be reported AS a title, not as something else that happens to
+ * refuse it. "Dr" was rejected for being short, which told the person nothing
+ * about the actual mistake. The ordering of the rules is what fixes that, and
+ * ordering is easy to undo by accident, so it is asserted rather than assumed.
+ */
+for (const title of ['Dr', 'Mr', 'Ms', 'dr.', 'الدكتور']) {
+  const got = lib.classifyCompanyName(title);
+  t(`${JSON.stringify(title)} is refused for being a title, not for its length`,
+    got.code === 'title_only',
+    `refused as ${got.code} -- the message would not tell the person what to fix`);
 }
 
 t('every rejection explains itself to whoever has to fix it',
