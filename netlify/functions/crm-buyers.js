@@ -1,7 +1,9 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
-const { requireCrmSession, readJsonBody, json, describeDbError, dbStep } = require('./_crm_lib');
+const {
+  requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
+} = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -131,11 +133,25 @@ async function audit(sql, actor, action, recordType, recordId, details) {
 
 function validateBuyerInput(body, forCreate) {
   const errors = [];
+  const fieldReasons = {};
   const companyName = clean(body.company_name, MAX.company_name);
   const countryRegion = clean(body.country_region, MAX.country_region);
   const currentStage = clean(body.current_stage, MAX.current_stage) || 'Lead';
 
-  if (forCreate && companyName.length < 2) errors.push('company_name');
+  // Only the reject severity blocks a save. A review-level signal is for the
+  // data-quality page to raise with a person; refusing "Olivex" here to catch
+  // "Abdelrahman" would teach staff to fight the form. See _crm_lib.js.
+  //
+  // On an update the field is only judged when it is actually being changed,
+  // so an existing bad name does not lock its own record out of every other
+  // correction -- including the one that fixes the name.
+  if (forCreate || body.company_name !== undefined) {
+    const verdict = classifyCompanyName(companyName);
+    if (verdict.severity === 'reject') {
+      errors.push('company_name');
+      fieldReasons.company_name = verdict.reason;
+    }
+  }
   if (forCreate && !REGIONS.has(countryRegion)) errors.push('country_region');
   if (body.current_stage !== undefined && !STAGE_SET.has(currentStage)) errors.push('current_stage');
 
@@ -148,7 +164,7 @@ function validateBuyerInput(body, forCreate) {
     errors.push('contact_email');
   }
 
-  return { errors, companyName, countryRegion, currentStage, productInterest };
+  return { errors, fieldReasons, companyName, countryRegion, currentStage, productInterest };
 }
 
 async function handleList(event, sql) {
@@ -197,8 +213,8 @@ async function handleGet(event, sql, id, actor) {
 
 async function handleCreate(event, sql, actor) {
   const body = readJsonBody(event) || {};
-  const { errors, companyName, countryRegion, currentStage, productInterest } = validateBuyerInput(body, true);
-  if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors });
+  const { errors, fieldReasons, companyName, countryRegion, currentStage, productInterest } = validateBuyerInput(body, true);
+  if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors, reasons: fieldReasons });
 
   const rows = await sql`
     INSERT INTO buyers (
@@ -234,8 +250,8 @@ async function handleUpdate(event, sql, id, actor) {
   const previousStage = existingRows[0].current_stage;
 
   const body = readJsonBody(event) || {};
-  const { errors, productInterest } = validateBuyerInput(body, false);
-  if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors });
+  const { errors, fieldReasons, productInterest } = validateBuyerInput(body, false);
+  if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors, reasons: fieldReasons });
 
   const fields = [
     'assigned_to', 'company_name', 'country_region', 'contact_name', 'contact_title',
