@@ -95,17 +95,26 @@ t('and every one of them links back into the CRM',
 
 // ---- and the one we know about stays fixed -------------------------------
 
-{
-  const lh = path.join(ROOT, 'letterhead/index.html');
-  if (fs.existsSync(lh)) {
-    const src = fs.readFileSync(lh, 'utf8');
-    t('the letterhead back link points at the CRM, not the public homepage',
-      /href="\/crm\/"/.test(src) && !/href="\/"\s+class="text-sm font-semibold text-primary"/.test(src),
-      'it points at "/" again, which is where this started');
-    t('   and it is still a print sheet, with no CRM script loaded',
-      !/assets\/crm\.js/.test(src),
-      'crm.js was added -- the CRM header would print, which is why this page never had one');
-  }
+/*
+ * Both letterheads, not just the English one. The Arabic sheet had the same
+ * fault and was missed on the first pass, because it writes its back link with
+ * a right arrow -- correct for an RTL page, where right is backwards -- and a
+ * search for the left one did not find it. Checking the pair by name here
+ * means neither can drift back on its own.
+ */
+for (const [rel, homepage] of [['letterhead', '/'], ['ar/letterhead', '/ar/']]) {
+  const file = path.join(ROOT, rel, 'index.html');
+  if (!fs.existsSync(file)) continue;
+  const src = fs.readFileSync(file, 'utf8');
+  const toolbarLink = /<a href="([^"]+)" class="text-sm font-semibold text-primary">/.exec(src);
+
+  t(`/${rel} sends its back link to the CRM, not to ${homepage}`,
+    !!toolbarLink && toolbarLink[1] === '/crm/',
+    toolbarLink ? `points at ${toolbarLink[1]}` : 'no toolbar link found at all');
+
+  t(`   and /${rel} is still a print sheet, with no CRM script loaded`,
+    !/assets\/crm\.js/.test(src),
+    'crm.js was added -- the CRM header would print, which is why these pages never had one');
 }
 
 const ok = fail === 0;

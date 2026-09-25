@@ -76,7 +76,14 @@
   <body class="bg-muted/30">
     <div class="no-print sticky top-0 z-10 bg-background border-b border-border py-3 mb-2">
       <div class="container doc-toolbar mx-auto px-4 flex items-center justify-between">
-        <a href="/ar/" class="text-sm font-semibold text-primary">الشركة الثلاثية &rarr;</a>
+        <!--
+          Back to the CRM, not to the public Arabic site, for the same reason
+          as the English sheet: this page is reached from the Letterhead (AR)
+          entry in CRM.NAV and from nowhere else. The arrow points right
+          because the page is RTL and right is backwards here; the English
+          twin uses a left arrow for the same meaning.
+        -->
+        <a href="/crm/" class="text-sm font-semibold text-primary">لوحة التحكم &rarr;</a>
         <div class="flex gap-2">
           <button onclick="document.querySelector('.lh-body').innerHTML=''" class="text-sm px-3 py-1.5 rounded-md border border-border">مسح</button>
           <button onclick="window.print()" class="text-sm px-4 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold">طباعة / حفظ كملف PDF</button>
