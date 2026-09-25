@@ -51,11 +51,26 @@ function stripCrossLocaleTags(html) {
   return html.replace(/<link\b[^>]*>/gi, '');
 }
 
-/** True if an href resolves to something that actually exists on disk. */
+/**
+ * True if an href resolves to something that actually exists on disk.
+ *
+ * Three ways that can be true, and the third was missing. The route map holds
+ * the public, locale-paired pages. Below that, a plain file: /favicon.ico and
+ * the like. And below that, a directory with an index.html in it -- a real URL
+ * on a static host, but not a route the map carries, because the map is about
+ * the public site and these are the internal tools: /crm/, /admin/analytics/.
+ *
+ * Without the third case, a link from a page into the CRM read as broken even
+ * though crm/index.html is right there. That is what made the Letterhead back
+ * link point at the public homepage instead of the dashboard for as long as it
+ * did: the honest fix looked like it broke the build.
+ */
 function existsOnDisk(route) {
   if (map.set.has(route)) return true;
-  const asFile = path.join(ROOT, route.slice(1));
-  return fs.existsSync(asFile) && fs.statSync(asFile).isFile();
+  const target = path.join(ROOT, route.slice(1));
+  if (fs.existsSync(target) && fs.statSync(target).isFile()) return true;
+  const asIndex = path.join(target, 'index.html');
+  return fs.existsSync(asIndex) && fs.statSync(asIndex).isFile();
 }
 
 const ANCHOR = /<a\b([^>]*)href="(\/[^"]*)"([^>]*)>/gi;

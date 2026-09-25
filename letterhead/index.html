@@ -71,7 +71,14 @@
   <body class="bg-muted/30">
     <div class="no-print sticky top-0 z-10 bg-background border-b border-border py-3 mb-2">
       <div class="container doc-toolbar mx-auto px-4 flex items-center justify-between">
-        <a href="/" class="text-sm font-semibold text-primary">&larr; Triple Company</a>
+        <!--
+          Back to the CRM, not to the public site. This page sits at a public
+          URL but is reached from one place only: the Letterhead entry in
+          CRM.NAV. Nothing on the website links here and robots.txt disallows
+          it, so a link to "/" sent the only people who ever arrive - staff,
+          mid-task - out of the tool they were working in.
+        -->
+        <a href="/crm/" class="text-sm font-semibold text-primary">&larr; Dashboard</a>
         <div class="flex gap-2">
           <button onclick="document.querySelector('.lh-body').innerHTML=''" class="text-sm px-3 py-1.5 rounded-md border border-border">Clear</button>
           <button onclick="window.print()" class="text-sm px-4 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold">Print / Save as PDF</button>

@@ -95,6 +95,17 @@
     ['/crm/buyers/', 'Buyers'],
     ['/crm/documents/', 'Documents'],
     ['/letterhead', 'Letterhead'],
+    // Arabic letterhead, on the owner's instruction 2026-09-25: "yes it
+    // belong it to navigation i need arabic letterhead sometimes".
+    //
+    // Worth noting against the rule above, which says a language variant is
+    // the same place rather than a different one, and would put this on the
+    // letterhead page as an Arabic/English toggle instead of in the bar. The
+    // owner was asked and chose the bar. Recording the tension rather than
+    // pretending the rule was not there: a letterhead addressed to an Arabic
+    // correspondent is a different sheet to reach for, not a different view
+    // of the same one, which is a fair reading.
+    ['/ar/letterhead', 'Letterhead (AR)'],
   ];
 
   CRM.renderNav = function (active) {
