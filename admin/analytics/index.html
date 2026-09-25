@@ -6,6 +6,7 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>Analytics — Triple Company (Admin)</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="/assets/small-sample.js"></script>
   <style>
     :root {
       --olive-deep: #3d5a2e;
@@ -599,8 +600,12 @@
     function renderSummary(s) {
       document.getElementById('kpi-visitors').textContent = fmtNum(s.visitors);
       document.getElementById('kpi-pageviews').textContent = fmtNum(s.pageviews);
-      document.getElementById('kpi-bounce').textContent =
-        (s.visits > 0 ? Math.round((s.bounceRate || 0) * 100) : 0) + '%';
+      // A bounce rate over a handful of visits swings wildly on one visit,
+      // so below the sample floor this shows the visits it is drawn from
+      // instead of a percentage.
+      document.getElementById('kpi-bounce').textContent = SmallSample.enough(s.visits)
+        ? Math.round((s.bounceRate || 0) * 100) + '%'
+        : SmallSample.rate(null, s.visits, { noun: 'visits', empty: '0%' });
       document.getElementById('kpi-duration').textContent = fmtDuration(s.avgDuration);
     }
 
@@ -1021,7 +1026,16 @@
           ['query', 'clicks', 'impressions'].forEach(function (k) {
             var td = document.createElement('td'); td.textContent = k === 'query' ? labelFor(q[k]) : fmtNum(q[k]); tr.appendChild(td);
           });
-          var ctrTd = document.createElement('td'); ctrTd.textContent = q.ctr + '%'; tr.appendChild(ctrTd);
+          // Clicks and impressions are already the two columns to the left,
+          // so a CTR drawn from too few impressions is shown as a dash rather
+          // than repeated as a count: the numbers behind it are right there.
+          var ctrTd = document.createElement('td');
+          ctrTd.textContent = SmallSample.enough(q.impressions) ? q.ctr + '%' : '—';
+          if (!SmallSample.enough(q.impressions)) {
+            ctrTd.title = 'Fewer than ' + SmallSample.MIN_SAMPLE +
+              ' impressions — too few for a rate to mean much.';
+          }
+          tr.appendChild(ctrTd);
           var posTd = document.createElement('td'); posTd.textContent = q.avg_position; tr.appendChild(posTd);
           tbody.appendChild(tr);
         });
