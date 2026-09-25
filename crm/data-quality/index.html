@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company name review | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+<link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-flex-between" style="margin-bottom:16px;">
+        <h1 style="margin:0;">Company name review</h1>
+        <a href="/crm/buyers/" class="crm-btn crm-btn-secondary">&larr; Buyers</a>
+      </div>
+
+      <!--
+        The page states its own read-only nature before it shows a single
+        record, because a list of "wrong" things usually comes with a Fix All
+        button and the absence of one should not have to be inferred. Nothing
+        here writes. Each row links to that buyer's own page, where a person
+        who knows which company it is makes the correction.
+      -->
+      <p class="crm-muted" style="margin-top:0;">
+        This page only reports. It changes nothing, and there is no bulk fix:
+        only someone who knows the buyer can say what the company is really
+        called. Open a record to correct it.
+      </p>
+
+      <div id="status" class="crm-status" style="display:none;"></div>
+      <div id="summary"></div>
+      <div id="content"><p class="crm-muted">Loading&hellip;</p></div>
+    </div>
+
+    <script src="/assets/crm.js"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        function severityBadge(sev) {
+          var cls = sev === 'reject' ? 'crm-badge crm-badge-danger' : 'crm-badge crm-badge-warn';
+          var label = sev === 'reject' ? 'Would be refused now' : 'Worth a look';
+          return '<span class="' + cls + '">' + label + '</span>';
+        }
+
+        function renderSummary(d) {
+          var s = d.summary;
+          var clean = s.reject === 0 && s.review === 0 && s.duplicate_groups === 0;
+          document.getElementById('summary').innerHTML =
+            '<div class="crm-card"><div class="crm-grid crm-grid-4">' +
+              '<div class="crm-stat"><div class="n">' + d.scanned + '</div><div class="l">Records scanned</div></div>' +
+              '<div class="crm-stat"><div class="n">' + s.reject + '</div><div class="l">Would be refused now</div></div>' +
+              '<div class="crm-stat"><div class="n">' + s.review + '</div><div class="l">Worth a look</div></div>' +
+              '<div class="crm-stat"><div class="n">' + s.duplicate_groups + '</div><div class="l">Possible duplicates</div></div>' +
+            '</div>' +
+            (clean
+              ? '<p class="crm-muted" style="margin-bottom:0;">Nothing flagged. Every company name passes the same rules the form now enforces.</p>'
+              : '<p class="crm-muted" style="margin-bottom:0;">“Would be refused now” means the record predates the validation and could not be saved with that name today. Existing records are never changed automatically.</p>') +
+            '</div>';
+        }
+
+        function renderFlagged(rows) {
+          if (!rows.length) return '';
+          var html = '<div class="crm-card"><h2>Names to check (' + rows.length + ')</h2>' +
+            '<table><thead><tr><th>Company name</th><th>Contact</th><th>Stage</th><th>Why it is flagged</th><th></th></tr></thead><tbody>';
+          rows.forEach(function (r) {
+            var contact = [r.contact_title, r.contact_name].filter(Boolean).join(' ');
+            html += '<tr>' +
+              '<td><strong>' + CRM.escapeHtml(r.company_name || '(empty)') + '</strong><br>' + severityBadge(r.severity) + '</td>' +
+              '<td>' + CRM.escapeHtml(contact || '—') + '</td>' +
+              '<td>' + CRM.escapeHtml(r.current_stage || '—') + '</td>' +
+              '<td class="crm-muted">' + CRM.escapeHtml(r.reason) + '</td>' +
+              '<td><a href="/crm/buyer/?id=' + encodeURIComponent(r.id) + '">Open</a></td>' +
+            '</tr>';
+          });
+          return html + '</tbody></table></div>';
+        }
+
+        function renderDuplicates(groups) {
+          if (!groups.length) return '';
+          var html = '<div class="crm-card"><h2>Possibly the same company (' + groups.length + ')</h2>' +
+            '<p class="crm-muted">These names reduce to the same thing once punctuation and words like Ltd or Trading are set aside. They may be genuinely different companies — check before merging anything.</p>';
+          groups.forEach(function (g) {
+            html += '<p style="margin-bottom:4px;"><strong>' + CRM.escapeHtml(g.key) + '</strong></p><ul>';
+            g.members.forEach(function (m) {
+              html += '<li><a href="/crm/buyer/?id=' + encodeURIComponent(m.id) + '">' +
+                CRM.escapeHtml(m.company_name) + '</a> <span class="crm-muted">(' +
+                CRM.escapeHtml(m.current_stage || '—') + ')</span></li>';
+            });
+            html += '</ul>';
+          });
+          return html + '</div>';
+        }
+
+        CRM.requireAuth().then(function () {
+          CRM.renderNav('Buyers');
+          return CRM.fetchJson('/api/crm/data-quality');
+        }).then(function (result) {
+          if (!result.ok || !result.data || !result.data.ok) {
+            document.getElementById('content').innerHTML =
+              '<div class="crm-status crm-status-error">' +
+              CRM.escapeHtml((result.data && result.data.error) || 'Could not run the review.') +
+              '</div>';
+            return;
+          }
+          var d = result.data.data;
+          renderSummary(d);
+          var body = renderFlagged(d.flagged) + renderDuplicates(d.duplicates);
+          document.getElementById('content').innerHTML = body ||
+            '<div class="crm-card"><p class="crm-muted" style="margin-bottom:0;">Nothing to review.</p></div>';
+        }).catch(function (e) {
+          if (e && e.message === 'unauthorized') return;
+          document.getElementById('content').innerHTML =
+            '<div class="crm-status crm-status-error">Could not run the review.</div>';
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -157,6 +157,130 @@ async function dbStep(step, run) {
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * COMPANY NAMES
+ *
+ * company_name is the spine of the CRM: search, deduplication, every report,
+ * and every quotation and invoice addressed to a company all hang off it. It
+ * was accepting anything two characters or longer, and the records show what
+ * that let through -- "Dr" as a company, alongside people's names ("Mr masud",
+ * "Mr khalid algatin") in the field meant for their employer.
+ *
+ * TWO SEVERITIES, AND THE LINE BETWEEN THEM IS THE DESIGN
+ *
+ *   reject  Refused on save. Only where being wrong is close to impossible:
+ *           too short to be a name at all, a personal title on its own, or a
+ *           value opening with a title and a person's name.
+ *   review  Flagged on the data-quality page, never blocked. Signals that are
+ *           usually right and sometimes wrong -- a single bare word, or two
+ *           records that look like one company typed two ways.
+ *
+ * "Olivex" is a single bare word and a perfectly good company name. Refusing it
+ * to catch "Abdelrahman" would train staff to fight the form, and a field
+ * people fight is a field people fill with junk. So the machine blocks only
+ * what it cannot be wrong about and asks a person about the rest.
+ *
+ * Arabic titles and company words are here for the same reason the rest of the
+ * site is bilingual: the buyers are in Egypt, the Gulf and North Africa, and a
+ * rule that reads only Latin script would miss half of them.
+ * ------------------------------------------------------------------------- */
+
+const PERSONAL_TITLES = [
+  'mr', 'mrs', 'ms', 'miss', 'dr', 'doctor', 'prof', 'professor',
+  'eng', 'engineer', 'sir', 'madam', 'mme', 'sheikh', 'shaikh', 'hajj', 'haji',
+  'السيد', 'السيدة', 'الأستاذ', 'الاستاذ', 'الدكتور', 'المهندس', 'الشيخ',
+];
+
+// A word that marks the value as an organisation rather than a person.
+const COMPANY_WORDS = [
+  'ltd', 'limited', 'llc', 'inc', 'incorporated', 'co', 'company', 'corp',
+  'corporation', 'gmbh', 'sarl', 'sa', 'sae', 'bv', 'nv', 'as', 'ab', 'oy',
+  'plc', 'pte', 'pvt', 'spa', 'srl', 'group', 'holding', 'holdings',
+  'trading', 'trade', 'import', 'imports', 'export', 'exports', 'foods',
+  'food', 'industries', 'industry', 'industrial', 'agro', 'farms',
+  'international', 'global', 'enterprises', 'establishment', 'supermarket',
+  'markets', 'distribution', 'distributors', 'logistics', 'factory',
+  'شركة', 'مؤسسة', 'مجموعة', 'مصنع', 'للتجارة', 'للاستيراد', 'للتصدير',
+];
+
+function companyWords(value) {
+  return String(value || '').trim().toLowerCase()
+    .replace(/[.,'"()]/g, '')
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+/** Lower-cased, punctuation and legal suffixes stripped, spaces collapsed. */
+function normaliseCompanyName(value) {
+  return String(value === null || value === undefined ? '' : value)
+    .toLowerCase()
+    .replace(/[.,'"()\[\]&/\\-]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((w) => !COMPANY_WORDS.includes(w))
+    .join(' ')
+    .trim();
+}
+
+/**
+ * What is wrong with a company name, if anything.
+ *
+ * Returns { severity: 'ok' | 'review' | 'reject', code, reason }. The reason is
+ * written for whoever has to fix it, so it says what to do rather than which
+ * rule fired.
+ */
+function classifyCompanyName(value) {
+  const raw = String(value === null || value === undefined ? '' : value).trim();
+  const w = companyWords(raw);
+
+  if (!raw) {
+    return { severity: 'reject', code: 'empty', reason: 'A company name is required.' };
+  }
+  if (raw.length < 3) {
+    return {
+      severity: 'reject', code: 'too_short',
+      reason: `"${raw}" is too short to be a company name. Enter the company, not an abbreviation or a title.`,
+    };
+  }
+  if (w.length && w.every((x) => PERSONAL_TITLES.includes(x))) {
+    return {
+      severity: 'reject', code: 'title_only',
+      reason: `"${raw}" is a personal title, not a company. Put the title in Contact Title and the company here.`,
+    };
+  }
+  if (w.length > 1 && PERSONAL_TITLES.includes(w[0])) {
+    return {
+      severity: 'reject', code: 'starts_with_title',
+      reason: `"${raw}" looks like a person's name. Put it in Contact Name and enter their company here.`,
+    };
+  }
+  if (w.length === 1 && !COMPANY_WORDS.includes(w[0]) && /^[a-z؀-ۿ]+$/.test(w[0])) {
+    return {
+      severity: 'review', code: 'single_word',
+      reason: `"${raw}" is a single word with nothing marking it as a company. It may well be right — check whether it is the company or a person.`,
+    };
+  }
+  return { severity: 'ok', code: null, reason: '' };
+}
+
+/**
+ * Records whose names normalise to the same thing: one company entered twice,
+ * differently. Returns groups of two or more, and never a judgement about which
+ * spelling is right -- that is a person's call.
+ */
+function findNearDuplicates(rows) {
+  const groups = new Map();
+  for (const row of rows || []) {
+    const key = normaliseCompanyName(row.company_name);
+    if (!key) continue;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(row);
+  }
+  return [...groups.entries()]
+    .filter(([, members]) => members.length > 1)
+    .map(([key, members]) => ({ key, members }));
+}
+
 module.exports = {
   CRM_COOKIE_NAME,
   CRM_SESSION_TTL_SECONDS,
@@ -174,4 +298,9 @@ module.exports = {
   clearCrmSessionCookie,
   getCrmSession,
   requireCrmSession,
+  PERSONAL_TITLES,
+  COMPANY_WORDS,
+  normaliseCompanyName,
+  classifyCompanyName,
+  findNearDuplicates,
 };
