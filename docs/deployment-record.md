@@ -3269,6 +3269,259 @@ report and the retention purge all break again.
 
 ---
 
+## Deploy 27 — The record catches up (PR #144)
+
+**Date:** 2026-09-25
+**Production commit:** `d7ec0b5`
+**Previous recorded deploy:** `d0324cf` (Deploy 26, PR #143)
+**Delta:** 1 commit, 1 merged pull request, 2 files changed (+166 / −0)
+**Approval:** "merge 144".
+
+Documentation only, inside `docs/`, which the pruner removes from the artifact.
+**Nothing a visitor can reach changed.** Deploys 25 and 26 written up, C-105
+added, and outstanding items 8 and 9 opened — the retention backlog, and the
+fact that the suite passed green throughout a total CRM outage.
+
+### Testing method
+
+`npm test` — 29 checks, green on `d7ec0b5`. Register re-parsed: 105 rows, six
+columns, no duplicate ids.
+
+### Rollback
+
+```
+git revert d7ec0b5
+```
+
+Removes documentation only.
+
+---
+
+## Deploy 28 — A link that took staff out of the tool (PR #145)
+
+**Date:** 2026-09-25
+**Production commit:** `5998d0f`
+**Previous recorded deploy:** `d7ec0b5` (Deploy 27, PR #144)
+**Delta:** 1 commit (2 before squash), 1 merged pull request, 6 files changed
+(+173 / −6)
+**Approval:** "merge 145", after the Arabic sheet was added to the nav on the
+owner's instruction mid-review.
+
+Four of `CRM.NAV`'s five entries were `/crm/` pages carrying the shared header.
+Letterhead was not a CRM page at all — a print sheet at a public URL, with no
+CRM script because a CRM header would print — and it offered a link to `/`.
+Nothing on the website links there and `robots.txt` disallows it, so the only
+arrivals were staff who had just clicked Letterhead in the nav. The link did
+exactly one thing: take somebody mid-task out of the tool they were working in.
+
+Both sheets now return to the dashboard. `Letterhead (AR)` was added to the nav
+on the owner's instruction, noted in the code against the "four places, not ten
+links" rule that would have made a language variant a toggle instead.
+
+### A finding first reported wrongly
+
+`/ar/letterhead` was described as having **no** back link. It had one, written
+with a right arrow as RTL requires, and a search for the left one missed it.
+The Arabic sheet carried the same fault as the English one rather than nothing
+at all.
+
+### An existing check was part of why this lasted
+
+`check-locale-links.js` recognised a mapped public route or a plain file, but
+**not a directory holding an `index.html`** — so a link into `/crm/` read as
+broken although `crm/index.html` is right there. **The honest fix looked like
+it broke the build.** A third case was added, and the checker still catches a
+genuinely missing route.
+
+### Claim register
+
+**C-106 added**, `defect-fixed`.
+
+### Testing method
+
+`npm test` — 30 checks, green on `5998d0f`. Five negative tests by injection,
+including a new nav entry pointing at a print sheet with no way back, which is
+what proves this guards the *next* entry rather than only the one already wrong.
+
+### Rollback
+
+```
+git revert 5998d0f
+```
+
+Restores the back links to the public site and removes the Arabic sheet from
+the nav.
+
+---
+
+## Deploy 29 — The company field, and a page that reports rather than fixes (PR #146)
+
+**Date:** 2026-09-25
+**Production commit:** `c82cb86`
+**Previous recorded deploy:** `5998d0f` (Deploy 28, PR #145)
+**Delta:** 1 commit, 1 merged pull request, 8 files changed (+565 / −8)
+**Approval:** "merge 146 and 147", after the locations and threshold were
+confirmed as the brief required.
+
+Item 2 of the owner's Batch 1. `company_name` accepted anything two characters
+or longer, and the records showed what that let through: `Dr` as a company, and
+people's names in the field meant for their employer.
+
+Two severities, and the line between them is the design: **reject** refuses on
+save only where being wrong is close to impossible; **review** flags for a
+person and never blocks. `Olivex` is a single bare word and a good company
+name — refusing it to catch `Abdelrahman` would teach staff to fight the form.
+
+`/crm/data-quality` reports and changes nothing: no bulk fix, GET only, no
+`UPDATE`, `INSERT` or `DELETE`, all asserted. That was the owner's instruction
+and it is also right — guessing what `Dr` was meant to say would replace a
+visible problem with an invisible one.
+
+### What this deploy could not do
+
+**The flagged list itself has never been produced.** It needs the live
+database, which this environment cannot reach. That is precisely why the owner
+asked for the scan as a page: it runs where the data is.
+
+### Claim register
+
+**C-107 added**, `defect-fixed`.
+
+### Testing method
+
+`npm test` — 31 checks, green on `c82cb86`. The check requires the rules from
+`_crm_lib.js` rather than restating them. Four negative tests by injection,
+including a write added to the review endpoint and a Fix All button on the
+page — the two ways the read-only promise could quietly be broken.
+
+### Rollback
+
+```
+git revert c82cb86
+```
+
+Restores the permissive field and removes the review page.
+
+---
+
+## Deploy 30 — Percentages that stopped implying more than they knew (PR #147)
+
+**Date:** 2026-09-25
+**Production commit:** `f8d3425`
+**Previous recorded deploy:** `c82cb86` (Deploy 29, PR #146)
+**Delta:** 1 commit (2 before squash), 1 merged pull request, 5 files changed
+(+296 / −6)
+**Approval:** "merge 146 and 147".
+
+Item 4 of Batch 1. A percentage implies a measured rate; "33.3%" off three
+buyers is one buyer. Below a floor of 10 the figures now show what they are
+drawn from.
+
+Two places are **deliberately exempt**, both named in the check with written
+reasons: bar widths, which are a drawing instruction rather than a claim about
+a population, and `fmtKpiValue`, which renders figures the owner types in with
+a declared unit and has no denominator to threshold.
+
+### The merge conflicted, and the resolution is the point
+
+Deploys 29 and 30 both added a check to the same chain in `package.json`.
+Resolved the way this repository resolves these: **take `main`'s file whole,
+re-apply this branch's single change on top**, rather than editing inside the
+markers or taking one side and losing the other. Verified the result carried
+*both* checks rather than one silently winning — which is the failure mode the
+pattern exists to prevent.
+
+### A negative test found a hole in the check itself
+
+The first version accepted any `SmallSample` call within three lines, so **a
+bare percentage inserted directly above a genuine one passed**. The guard now
+walks up only through continuation lines, so it must belong to the same
+expression.
+
+### Claim register
+
+**C-108 added**, `defect-fixed`.
+
+### Testing method
+
+`npm test` — 32 checks, green on `f8d3425`.
+
+### Rollback
+
+```
+git revert f8d3425
+```
+
+Restores bare percentages at any sample size.
+
+---
+
+## Deploy 31 — A rule that looked right and blocked real customers (PR #148)
+
+**Date:** 2026-09-25
+**Production commit:** `6b9cae0`
+**Previous recorded deploy:** `f8d3425` (Deploy 30, PR #147)
+**Delta:** 1 commit, 1 merged pull request, 2 files changed (+53 / −8)
+**Approval:** "merge 148", after the limitation was explained in plain terms at
+the owner's request.
+
+The company-name floor shipped in Deploy 29 was three characters. It caught
+`Dr` — and took **BP, 3M, LG and GE** with it. A buyer from any of those could
+not have been saved at all. It also caught `Dr` **for the wrong reason**,
+reporting "too short" when the person had typed a title into the company field.
+
+Both faults were one cause: **a length check standing in for a rule about
+meaning.** The title rules recognise `Dr`, `Mr`, `Ms`, `dr.` and the Arabic
+forms unaided — proved before anything was changed — so they now run first and
+the length rule refuses a single character only.
+
+No exception list: an allow-list would need somebody to remember to add `HP`
+the day one appears, and this has no such failure mode.
+
+A cost taken deliberately and written into the code: a careless two-character
+entry like `qq` is no longer refused at the form, only flagged on the review
+page. Blocking real companies to catch that is the worse trade.
+
+### A judgement not to tighten, which turned out to matter
+
+`Egypt future` was raised as a suspect value during the assessment, and the
+rules pass it. The owner confirmed 2026-09-25 that **it is a company name**.
+Had the rules been contorted to catch it while it looked wrong, they would now
+be blocking a genuine customer — the same mistake the three-character floor
+made, in the same deploy.
+
+### Claim register
+
+No new row. C-107 carries this, because the rule and its correction are one
+claim about one field rather than two.
+
+### Testing method
+
+`npm test` — 32 checks, green on `6b9cae0`. The four short names are now a
+regression, and each title is asserted to be refused **as** a title rather than
+by something that happens to reject it — rule ordering is easy to undo by
+accident. Restoring the three-character floor fails four assertions.
+
+### Rollback
+
+```
+git revert 6b9cae0
+```
+
+Restores the three-character floor, and with it the block on two-letter
+companies.
+
+### Known limitations shipped with Deploys 28 to 31
+
+- **None of it has been observed in a browser.** This environment cannot reach
+  the site; everything is verified in code, by test and by injection.
+- **Batch 1 items 1 and 3 are not in any of these deploys.** Item 1 is a
+  Netlify dashboard change and rests on `NOTIFY_EMAIL` rather than
+  `LEADS_NOTIFY`, which was this assistant's error to correct. Item 3 had no
+  code in it: there was no default follow-up date to remove.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -3413,3 +3666,26 @@ last sync. It is not part of the changed-file scope of any deploy above.
    hand-written, and nothing checks that any of them still resembles what it
    stands in for. No audit of the rest has been done, and this item exists so
    that absence is on the record rather than assumed.
+10. **An enquiry arrives and no human is told** (promoted to an outstanding
+    item 2026-09-25, Deploy 31; carried as a per-deploy limitation since
+    Deploy 11, where it kept disappearing). `netlify/functions/inquiries.js`
+    already calls `sendNotification` on every saved enquiry, unconditionally,
+    with Reply-To set to the enquirer. It is silent because **`NOTIFY_EMAIL`
+    and/or `RESEND_API_KEY` are unset** — the send is skipped, logged
+    `status=skipped`, and the failure is deliberately swallowed so a buyer
+    never sees an error for an enquiry that saved correctly.
+    **A correction that matters, and it is this assistant's:** this was
+    repeatedly described in conversation as "`LEADS_NOTIFY` is unset", which
+    conflated two paths and went into the owner's own work brief.
+    `LEADS_NOTIFY` is a boolean switch gating only the **gated-guide
+    download** notifications in `leads.js`. Setting it would not deliver a
+    single contact-form enquiry. `docs/email-delivery.md` had it right all
+    along; the shorthand did not.
+    A second trap sits behind it, documented at §3 of that file:
+    `NOTIFY_FROM_EMAIL` unset defaults to Resend's sandbox sender, which
+    delivers only to the address the Resend account is registered under — so
+    routing to two mailboxes fails silently even once `NOTIFY_EMAIL` is set.
+    All of these are Netlify dashboard values by deliberate design, so no
+    deploy in this document can close this. It is the highest-value open item
+    here: every other thing on this list is about accuracy, and this one is
+    about a buyer's enquiry reaching a person.
