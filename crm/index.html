@@ -28,6 +28,7 @@
         <p class="crm-muted">Loading…</p>
       </div>
     </div>
+    <script src="/assets/small-sample.js"></script>
     <script src="/assets/crm.js"></script>
     <script>
       (function () {
@@ -106,7 +107,13 @@
           }).join('');
 
           var cr = d.conversion_rate;
-          var crPct = cr.rate === null ? 'n/a' : (cr.rate * 100).toFixed(1) + '%';
+          // Below SmallSample.MIN_SAMPLE the headline figure becomes the
+          // count itself, because a percentage set in 22px type reads as a
+          // measured rate and "33.3%" off three buyers is one buyer.
+          var crBig = SmallSample.rate(cr.converted, cr.total, { noun: 'buyers' });
+          var crNote = SmallSample.enough(cr.total)
+            ? '(' + cr.converted + ' of ' + cr.total + ' buyers)'
+            : SmallSample.note(cr.total, { noun: 'buyers' });
 
           var avgStageHtml = d.avg_time_per_stage_days.length
             ? '<table><thead><tr><th>Stage Reached</th><th>Avg. Days To Get There</th></tr></thead><tbody>' +
@@ -131,7 +138,7 @@
                 : '<p class="crm-muted">No stalled leads right now.</p>') +
             '</div>' +
             '<div class="crm-card"><h2>Conversion Rate</h2>' +
-              '<p><strong style="font-size:22px;">' + crPct + '</strong> <span class="crm-muted">(' + cr.converted + ' of ' + cr.total + ' buyers)</span></p>' +
+              '<p><strong style="font-size:22px;">' + CRM.escapeHtml(crBig) + '</strong> <span class="crm-muted">' + CRM.escapeHtml(crNote) + '</span></p>' +
               '<p class="crm-muted">' + CRM.escapeHtml(cr.definition) + '</p>' +
             '</div>' +
             '<div class="crm-card"><h2>Average Time to Reach Each Stage</h2>' + avgStageHtml + '</div>';
