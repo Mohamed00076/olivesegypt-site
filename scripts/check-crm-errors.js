@@ -71,7 +71,6 @@ function fakeSql(strings) {
   }
   return Promise.resolve([]);
 }
-fakeSql.query = () => Promise.resolve([]);
 
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);

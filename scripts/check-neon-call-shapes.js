@@ -98,6 +98,52 @@ t(`and the ones called are all real (${[...seen].sort().join(', ') || 'none'})`,
   [...seen].every((mth) => typeof sql[mth] === 'function'),
   [...seen].filter((mth) => typeof sql[mth] !== 'function').join(', '));
 
+// ---- and the doubles must not offer what the real handle does not --------
+
+/*
+ * This is the half that actually let the bug through.
+ *
+ * Eight suite doubles carried a `query` method. Production code written
+ * against them therefore passed every check and threw in the browser: the
+ * fake answered a call the real handle cannot. Removing the eight is not
+ * enough on its own, because the next person writing a double will add
+ * whatever their code happens to call -- which is exactly how these got here.
+ *
+ * So a double may only offer what a real handle offers. Anything else is
+ * bookkeeping the harness keeps for its own assertions, and has to be named
+ * here with a reason, the way the other named-exception lists in this suite
+ * work.
+ */
+const HARNESS_ONLY = new Map([
+  ['statements', 'check-crm-documents.js keeps every statement so the schema migrations can be asserted on directly'],
+]);
+
+{
+  const scriptFiles = fs.readdirSync(__dirname)
+    .filter((f) => f.endsWith('.js'))
+    .map((f) => path.join(__dirname, f));
+
+  const granted = [];
+  for (const file of scriptFiles) {
+    const rel = path.relative(ROOT, file);
+    if (rel.endsWith('check-neon-call-shapes.js')) continue;
+    const src = fs.readFileSync(file, 'utf8');
+    if (!/neon\s*:/.test(src) && !/neon\s*=/.test(src)) continue;  // only neon doubles
+
+    for (const m of src.matchAll(/^[ \t]*(?:fakeSql|sql)\.([A-Za-z_$][\w$]*)\s*=[^=]/gm)) {
+      const prop = m[1];
+      if (HARNESS_ONLY.has(prop)) continue;
+      if (typeof sql[prop] === 'function') continue;             // the real handle has it
+      const line = src.slice(0, m.index).split('\n').length;
+      granted.push(`${rel}:${line} .${prop}`);
+    }
+  }
+
+  t('no test double offers a method the real handle lacks',
+    granted.length === 0,
+    `${granted.join('; ')} -- a double more permissive than the driver cannot fail on the mistake it most needs to catch`);
+}
+
 // ---- and the message a bug in this code produces -------------------------
 
 {

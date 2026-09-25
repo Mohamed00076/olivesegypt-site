@@ -50,7 +50,6 @@ function fakeSql(strings) {
   if (/count\(/i.test(q)) return Promise.resolve([{ n: 0 }]);
   return Promise.resolve([]);
 }
-fakeSql.query = () => Promise.resolve([]);
 
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
