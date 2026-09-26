@@ -66,12 +66,14 @@ function planFor(requestType) {
  * The form's product dropdown sends its visible label, in English or Arabic.
  * Each label is the heading of the matching page under /products/, so this is
  * the site's own naming, not a guess -- scripts/check-enquiry-intake.js reads
- * those pages and fails if a label and its page stop agreeing. Kalamata and
- * "not sure yet" map to nothing; the original text is always kept in the
- * activity entry either way.
+ * those pages and fails if a label and its page stop agreeing. "Not sure yet"
+ * maps to nothing; the original text is always kept in the activity entry
+ * either way. (Kalamata maps like any other product: it is in the CRM's own
+ * product list -- see scripts/check-crm-products.js.)
  */
 const PRODUCT_LABELS = {
   'aggizi-green-olives': ['Aggizi Green Olives', 'زيتون عجيزي أخضر'],
+  'kalamata-olives': ['Kalamata Olives', 'زيتون كالاماتا'],
   'toffahi-green-olives': ['Toffahi Green Olives', 'زيتون تفاحي أخضر'],
   'hamed-green-olives': ['Hamed Green Olives', 'زيتون حامد أخضر'],
   'manzanilla-green-olives': ['Manzanilla Green Olives', 'زيتون مانزانيلا أخضر'],

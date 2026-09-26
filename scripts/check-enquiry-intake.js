@@ -86,8 +86,6 @@ const { regionForCountry, TABLE } = require(path.join(FN, '_country_regions.js')
 
 {
   const UNMAPPED = {
-    'Kalamata Olives': 'not in the CRM product list (Rule 12)',
-    'زيتون كالاماتا': 'not in the CRM product list (Rule 12)',
     'Multiple varieties / not sure yet': 'not a product',
     'عدة أصناف / غير محدد بعد': 'not a product',
   };
