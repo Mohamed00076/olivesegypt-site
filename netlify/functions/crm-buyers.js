@@ -3,6 +3,7 @@
 const { neon } = require('@neondatabase/serverless');
 const {
   requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
+  STAGES, REGIONS: REGION_LIST, ensureBuyerTables,
 } = require('./_crm_lib');
 
 function connectionString() {
@@ -30,12 +31,9 @@ const PRODUCTS = [
   'oxidized-black-olives', 'marinated-artichoke-hearts', 'pepperoncini-peppers',
   'sliced-jalapeno-peppers',
 ];
-const REGIONS = new Set(['Africa', 'Middle East', 'Asia', 'EU', 'North America']);
-const STAGES = [
-  'Lead', 'Contacted', 'Qualifying', 'Sample Requested', 'Sample Sent',
-  'Negotiation', 'Contract Signed', 'Shipment Prepared', 'Exported/Completed',
-  'Lost/Stalled',
-];
+// Stages and regions live in _crm_lib.js, shared with the CSV import and the
+// website enquiry intake, so the three cannot disagree about what is valid.
+const REGIONS = new Set(REGION_LIST);
 const STAGE_SET = new Set(STAGES);
 
 const MAX = {
@@ -50,85 +48,11 @@ function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v);
 function clean(v, cap) { return str(v).trim().slice(0, cap); }
 function optional(v, cap) { const s = clean(v, cap); return s.length ? s : null; }
 
+// The buyer tables are defined once, in _crm_lib.js, because the enquiry
+// endpoint now creates buyers too -- two copies of a CREATE TABLE would let
+// the table's shape depend on which endpoint a new database met first.
 async function ensureSchema(sql) {
-  await sql`
-    CREATE TABLE IF NOT EXISTS buyers (
-      id                       bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      created_at               timestamptz NOT NULL DEFAULT now(),
-      updated_at               timestamptz NOT NULL DEFAULT now(),
-      deleted_at               timestamptz,
-      created_by               text,
-      assigned_to              text,
-      company_name             text NOT NULL,
-      country_region           text NOT NULL,
-      contact_name             text,
-      contact_title            text,
-      contact_email            text,
-      contact_phone            text,
-      contact_whatsapp         text,
-      lead_source              text,
-      current_stage            text NOT NULL DEFAULT 'Lead',
-      product_interest         jsonb NOT NULL DEFAULT '[]',
-      packaging_format         text,
-      estimated_volume         text,
-      target_price             text,
-      quoted_price             text,
-      incoterm                 text,
-      certifications_required  text,
-      certification_gap        boolean NOT NULL DEFAULT false,
-      next_action              text,
-      next_action_due          date,
-      notes                    text,
-      lost_reason              text
-    )
-  `;
-  /*
-   * handleGet reads this table, so this function has to create it.
-   *
-   * It did not, and the result was that opening any buyer record returned
-   * "Server error" -- since the CRM was first built. The table is also
-   * created by crm-activity.js, but that function runs only when an activity
-   * entry is POSTed, and an entry can only be added from a buyer's page,
-   * which could not load until the table existed. A deadlock, not a race.
-   *
-   * The definition below is character-for-character the one in
-   * crm-activity.js. Both use IF NOT EXISTS, so whichever function runs first
-   * on a new database creates the table and the other accepts it; if the two
-   * definitions drifted, the shape of the table would depend on which
-   * endpoint a person happened to reach first. scripts/check-crm-schema.js
-   * runs each handler against a database containing only what its own
-   * ensureSchema creates, so this cannot silently come undone again.
-   */
-  await sql`
-    CREATE TABLE IF NOT EXISTS buyer_activity_log (
-      id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      buyer_id     bigint NOT NULL,
-      created_at   timestamptz NOT NULL DEFAULT now(),
-      created_by   text,
-      entry        text NOT NULL
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS buyer_stage_history (
-      id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      buyer_id     bigint NOT NULL,
-      from_stage   text,
-      to_stage     text NOT NULL,
-      changed_at   timestamptz NOT NULL DEFAULT now(),
-      changed_by   text
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS crm_audit_log (
-      id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      occurred_at  timestamptz NOT NULL DEFAULT now(),
-      actor        text NOT NULL,
-      action       text NOT NULL,
-      record_type  text NOT NULL,
-      record_id    bigint,
-      details      text
-    )
-  `;
+  await ensureBuyerTables(sql);
 }
 
 async function audit(sql, actor, action, recordType, recordId, details) {

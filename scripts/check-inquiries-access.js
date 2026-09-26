@@ -39,7 +39,13 @@ let rowsWritten = 0;
 function fakeSql(strings) {
   const q = Array.isArray(strings) ? strings.join('?') : String(strings);
   if (/^\s*CREATE|^\s*ALTER/i.test(q.trim())) return Promise.resolve([]);
-  if (/INSERT INTO inquiries/i.test(q)) { rowsWritten += 1; return Promise.resolve([]); }
+  // Answers RETURNING as Postgres does -- with the row. The handler needs the
+  // new enquiry's id to put it into the CRM pipeline, and a double that
+  // returns nothing here would be more permissive than the real driver.
+  if (/INSERT INTO inquiries/i.test(q)) {
+    rowsWritten += 1;
+    return Promise.resolve(/RETURNING id/i.test(q) ? [{ id: rowsWritten }] : []);
+  }
   if (/FROM inquiries/i.test(q)) {
     rowsRead += 1;
     return Promise.resolve([{ id: 1, created_at: '2026-09-07T00:00:00.000Z', name: 'A Buyer',
