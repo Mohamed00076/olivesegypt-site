@@ -380,6 +380,23 @@
           });
         }
 
+        /*
+         * Say which field was refused and why. This read
+         * `data.error || 'Validation failed.' + fields`, and since the server
+         * always sends an error, the field list after the || never showed --
+         * nor did the reasons the server sends with it (e.g. why a company
+         * name was refused). Staff saw "Validation failed" and nothing else.
+         * The field is named by its own label on this form.
+         */
+        function saveErrorText(d) {
+          if (!d.fields || !d.fields.length) return d.error || 'Could not save.';
+          return d.fields.map(function (f) {
+            var label = document.querySelector('label[for="' + f + '"]');
+            var name = label ? label.textContent.replace(/\s*\*\s*$/, '').trim() : f;
+            return name + ': ' + ((d.reasons && d.reasons[f]) || 'please check this field.');
+          }).join(' ');
+        }
+
         document.getElementById('buyer-form').addEventListener('submit', function (e) {
           e.preventDefault();
           var payload = collectForm();
@@ -393,7 +410,7 @@
           req.then(function (result) {
             saveBtn.disabled = false;
             if (!result.ok) {
-              showStatus(result.data.error || 'Validation failed.' + (result.data.fields ? ' (' + result.data.fields.join(', ') + ')' : ''), false);
+              showStatus(saveErrorText(result.data || {}), false);
               return;
             }
             if (isNew) {
