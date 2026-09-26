@@ -16,9 +16,16 @@ function connectionString() {
 }
 
 // Controlled vocabularies -- kept in sync with the rest of the site.
-// Kalamata excluded per Rule 12 until cleared (see catalog/products).
+//
+// Kalamata was left out here when it was removed from the site on
+// 2026-09-01. It was reintroduced and approved field by field on 2026-09-05
+// (claims C-01 to C-09, position 2 per C-17) but this list was never updated,
+// so staff could not tag a Kalamata buyer at all. The one restriction still in
+// force is private label (C-40), which this list does not touch.
+// scripts/check-crm-products.js fails if this list and the site's products
+// drift apart again.
 const PRODUCTS = [
-  'aggizi-green-olives', 'toffahi-green-olives', 'hamed-green-olives',
+  'aggizi-green-olives', 'kalamata-olives', 'toffahi-green-olives', 'hamed-green-olives',
   'manzanilla-green-olives', 'natural-black-olives', 'pepper-stuffed-green-olives',
   'oxidized-black-olives', 'marinated-artichoke-hearts', 'pepperoncini-peppers',
   'sliced-jalapeno-peppers',
