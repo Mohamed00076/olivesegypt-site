@@ -152,7 +152,15 @@ function validateBuyerInput(body, forCreate) {
       fieldReasons.company_name = verdict.reason;
     }
   }
-  if (forCreate && !REGIONS.has(countryRegion)) errors.push('country_region');
+  // Checked on an edit too, when the region is being sent. It was checked only
+  // on create, so an edit could store any text at all -- or null, which the
+  // NOT NULL column then refused as a database error. A Kanban drag sends only
+  // the stage, so it is not judged here, and an old record with an odd region
+  // stays movable; the region is judged when someone actually saves one.
+  if ((forCreate || body.country_region !== undefined) && !REGIONS.has(countryRegion)) {
+    errors.push('country_region');
+    fieldReasons.country_region = 'Choose a region from the list.';
+  }
   if (body.current_stage !== undefined && !STAGE_SET.has(currentStage)) errors.push('current_stage');
 
   let productInterest = [];
