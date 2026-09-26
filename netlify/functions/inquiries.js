@@ -43,6 +43,26 @@ function optional(v, cap) {
   return s.length ? s : null;
 }
 
+/*
+ * The analytics session this enquiry came from, or null.
+ *
+ * It arrives from the browser, so it is untrusted input and is checked for
+ * shape before it is stored. A value that fails is DROPPED, never refused:
+ * an enquiry is a buyer asking for a quote, and it must go through whether or
+ * not attribution works. Losing one enquiry to protect a tracking field
+ * would be exactly backwards.
+ *
+ * The shape is what assets/analytics.js mints -- crypto.randomUUID(), or its
+ * v4-shaped fallback -- so anything else is not a session this site created.
+ */
+const SESSION_ID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function sessionIdOrNull(v) {
+  if (typeof v !== 'string') return null;
+  const s = v.trim();
+  return SESSION_ID_SHAPE.test(s) ? s.toLowerCase() : null;
+}
+
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 const RATE_LIMIT_MAX_PER_WINDOW = 5;
 
@@ -73,6 +93,12 @@ async function ensureSchema(sql) {
   // backfill on existing deployments rather than assuming a fresh table.
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS client_ip text`;
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS source_page text`;
+  // The analytics session this enquiry came from, so a quote or sample
+  // request can be attributed to how the visitor arrived. Nullable and
+  // deliberately not a foreign key: analytics sessions are purged on their
+  // own retention schedule, and an enquiry must outlive the session that
+  // produced it. A dangling id simply stops joining; it does no harm.
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS session_id text`;
   // Where the enquiry went in the CRM pipeline: the buyer it created or was
   // added to, or -- when it was not added -- why not. Exactly one is set once
   // intake has run; both null means intake never ran (an enquiry saved before
@@ -155,14 +181,15 @@ async function handlePost(event, sql) {
   const estimatedVolume = optional(body.estimated_volume, MAX.estimated_volume);
   const requestType = optional(body.request_type, MAX.request_type);
   const sourcePage = optional(body.source_page, MAX.source_page);
+  const sessionId = sessionIdOrNull(body.session_id);
 
   const saved = await sql`
     INSERT INTO inquiries
       (name, email, company, country, phone,
-       product_interest, estimated_volume, request_type, message, client_ip, source_page)
+       product_interest, estimated_volume, request_type, message, client_ip, source_page, session_id)
     VALUES
       (${name}, ${email}, ${company}, ${country}, ${phone},
-       ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip}, ${sourcePage})
+       ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip}, ${sourcePage}, ${sessionId})
     RETURNING id
   `;
   const inquiryId = saved[0].id;

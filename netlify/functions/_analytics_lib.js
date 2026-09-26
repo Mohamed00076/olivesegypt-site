@@ -36,6 +36,26 @@ const EVENT_TYPES = new Set([
   'email_click',
   'specification_download',
   'contact_form_submit',
+  /*
+   * facebook_click was fired by assets/analytics.js through TC.logEvent and
+   * refused here with a 400 on every click, because it was never added to
+   * this set. The rejection was silent: logEvent is fire-and-forget, so
+   * nothing surfaced.
+   *
+   * It did not lose the clicks entirely. The same handler also calls
+   * TC.trackEvent, which goes to Umami, and Umami has been receiving them.
+   * What was lost is the first-party record -- and C-90 named /admin/analytics,
+   * which reads this pipeline, as where the Follow-pill trial would be read.
+   *
+   * Deliberately NOT added to HIGH_INTENT_TYPES in analytics-collect.js.
+   * Following a Facebook page is interest, not a buying signal, and counting
+   * it alongside a WhatsApp click or a spec download would inflate the
+   * figure that is meant to mean "somebody is trying to buy".
+   *
+   * check-event-types.js holds this set against every event name the client
+   * actually sends, so the next one cannot be dropped the same way.
+   */
+  'facebook_click',
 ]);
 
 // Not a funnel/event row -- a sendBeacon-delivered update to an existing

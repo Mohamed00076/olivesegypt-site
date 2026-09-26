@@ -22,6 +22,7 @@
   ];
   CRM.PRODUCTS = [
     ['aggizi-green-olives', 'Aggizi Green Olives'],
+    ['kalamata-olives', 'Kalamata Olives'],
     ['toffahi-green-olives', 'Toffahi Green Olives'],
     ['hamed-green-olives', 'Hamed Green Olives'],
     ['manzanilla-green-olives', 'Manzanilla Green Olives'],
