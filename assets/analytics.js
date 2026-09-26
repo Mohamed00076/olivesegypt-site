@@ -270,6 +270,37 @@
     }
   }
 
+  /*
+   * TC.currentSessionId() -- the id of the analytics session already in
+   * progress, or null. READ ONLY, and that is the whole point of it.
+   *
+   * The enquiry forms send this with a submission so an enquiry can be tied
+   * to the visit that produced it, and through that visit to how the visitor
+   * arrived -- organic search, a referrer, a campaign. Without it a quote
+   * request could not be attributed to any traffic source by any query.
+   *
+   * getSession() is not usable for this: it CREATES a session when none is
+   * live and writes to storage. Called from a form, that would start
+   * analytics tracking as a side effect of somebody asking for a quote. So
+   * this one returns null rather than creating, and never writes:
+   *
+   *   - no analytics consent  -> null. A visitor who declined analytics
+   *     does not get an analytics identifier attached to their enquiry.
+   *   - no session, or expired -> null. An expired id belongs to an earlier
+   *     visit, and attributing today's enquiry to it would be wrong.
+   *   - otherwise              -> the live session's id.
+   *
+   * In practice a visitor on a form page nearly always has a live session,
+   * because the pageview that loaded the page refreshed it.
+   */
+  TC.currentSessionId = function () {
+    if (!TC.consent.analytics) return null;
+    var stored = readJson(SESSION_KEY);
+    if (!stored || !stored.id) return null;
+    if (Date.now() - stored.lastSeen >= SESSION_TIMEOUT_MS) return null;
+    return stored.id;
+  };
+
   // TC.logEvent(type, {source_page, target_id}) -- the write path for
   // this pipeline. Consent-gated, same allowlist discipline as
   // TC.trackEvent: only what's needed for the funnel/hot-lead/attribution

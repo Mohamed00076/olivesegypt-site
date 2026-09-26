@@ -107,6 +107,15 @@
       payload.source_page = document.referrer || window.location.href;
       payload.website = val(prefix + '-website');
 
+      // Ties this enquiry to the visit that produced it, so it can be
+      // attributed to how the visitor arrived. Null without analytics
+      // consent, and never creates a session -- see TC.currentSessionId.
+      // Guarded because analytics.js may be blocked or not yet loaded, and
+      // an enquiry must go through regardless.
+      payload.session_id = (window.TC && typeof TC.currentSessionId === 'function')
+        ? TC.currentSessionId()
+        : null;
+
       submitBtn.disabled = true;
       submitBtn.textContent = T.sending;
 

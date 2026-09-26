@@ -26,6 +26,7 @@
 
       <p class="crm-muted" style="margin-top:0;">
         Everything sent through the website&rsquo;s contact and sample forms, newest first.
+        Each one is also added to the pipeline automatically &mdash; the Pipeline column links to the buyer, or says why it was not added.
       </p>
 
       <div id="status" class="crm-status" style="display:none;"></div>
@@ -69,6 +70,22 @@
         }
 
         function esc(v) { return CRM.escapeHtml(v == null ? '' : String(v)); }
+        /*
+         * Where this enquiry went in the pipeline (see _crm_intake.js). Three
+         * cases, and they must not look alike: added (link to the buyer), not
+         * added (the reason, so a person can act on it), and received before
+         * automatic intake existed (neither is set).
+         */
+        function pipelineCell(r) {
+          if (r.buyer_id) {
+            return '<a href="/crm/buyer/?id=' + encodeURIComponent(r.buyer_id) + '">In pipeline &rarr;</a>';
+          }
+          if (r.pipeline_note) {
+            return '<span class="crm-badge crm-badge-warn">Not added</span><br/>' +
+              '<span class="crm-muted">' + esc(r.pipeline_note.replace(/^Not added to pipeline: /, '')) + '</span>';
+          }
+          return '<span class="crm-muted">Received before automatic intake</span>';
+        }
 
         function render(list) {
           var el = document.getElementById('list');
@@ -80,7 +97,7 @@
           }
 
           var html = '<table><thead><tr>' +
-            '<th>Received</th><th>From</th><th>Country</th><th>Asked for</th><th></th>' +
+            '<th>Received</th><th>From</th><th>Country</th><th>Asked for</th><th>Pipeline</th><th></th>' +
             '</tr></thead><tbody>';
 
           list.forEach(function (r) {
@@ -92,9 +109,10 @@
                 (r.email ? '<br/><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '') + '</td>' +
               '<td>' + esc(r.country) + '</td>' +
               '<td>' + esc(r.request_type || 'Enquiry') + '</td>' +
+              '<td>' + pipelineCell(r) + '</td>' +
               '<td><button type="button" class="crm-btn crm-btn-secondary detail-btn" data-id="' + esc(r.id) + '">Open</button></td>' +
               '</tr>' +
-              '<tr class="detail-row" id="detail-' + esc(r.id) + '" style="display:none;"><td colspan="5">' +
+              '<tr class="detail-row" id="detail-' + esc(r.id) + '" style="display:none;"><td colspan="6">' +
                 (r.product_interest ? '<div><span class="crm-muted">Product:</span> ' + esc(r.product_interest) + '</div>' : '') +
                 (r.estimated_volume ? '<div><span class="crm-muted">Volume:</span> ' + esc(r.estimated_volume) + '</div>' : '') +
                 (r.phone ? '<div><span class="crm-muted">Phone:</span> <span dir="ltr">' + esc(r.phone) + '</span></div>' : '') +

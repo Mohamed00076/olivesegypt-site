@@ -82,7 +82,14 @@ function tablesIn(q) {
   const use = /\b(?:FROM|JOIN|INSERT INTO|UPDATE|ALTER TABLE)\s+([a-z_][a-z0-9_]*)/gi;
   while ((m = use.exec(q))) used.push(m[1]);
 
-  return { created, used: used.filter((u) => !created.includes(u)) };
+  // A WITH clause names its own result sets -- `WITH new_buyer AS (...)
+  // SELECT id FROM new_buyer` -- and those are not tables. Only names the
+  // statement itself defines are excused; a real table is still checked.
+  const ctes = [];
+  const cte = /(?:\bWITH|,)\s+([a-z_][a-z0-9_]*)\s+AS\s*\(/gi;
+  while ((m = cte.exec(q))) ctes.push(m[1]);
+
+  return { created, used: used.filter((u) => !created.includes(u) && !ctes.includes(u)) };
 }
 
 function makeStrictSql(fileName, seen) {
@@ -131,6 +138,11 @@ const COOKIE = `${CRM_COOKIE_NAME}=${signSession('staff', SECRET)}`;
  * database that has never seen this CRM before. Anything that reads a table
  * its own function did not create will fail here.
  */
+const ENQUIRY = {
+  name: 'Anna Berg', email: 'anna@example.com', company: 'Nordic Deli Imports ApS',
+  country: 'Denmark', message: 'Please send a quotation.', request_type: 'Sample Request',
+};
+
 const CASES = [
   {
     file: 'crm-buyers.js',
@@ -159,6 +171,21 @@ const CASES = [
     rows: () => [{ id: 1, doc_type: 'quotation', doc_number: 'Q-2026-000001' }],
   },
   {
+    // The website enquiry form: no CRM session, and on a database the CRM
+    // may never have touched. Intake must create every buyer table it uses.
+    file: 'inquiries.js',
+    what: 'a website enquiry from a new person goes into the pipeline',
+    event: { httpMethod: 'POST', queryStringParameters: {}, body: JSON.stringify(ENQUIRY) },
+    rows: (q) => (/count\(\*\)/.test(q) ? [{ n: 0 }] : []),
+  },
+  {
+    file: 'inquiries.js',
+    what: 'a website enquiry from a known buyer is added to their record',
+    event: { httpMethod: 'POST', queryStringParameters: {}, body: JSON.stringify(ENQUIRY) },
+    rows: (q) => (/count\(\*\)/.test(q) ? [{ n: 0 }]
+      : /FROM buyers/i.test(q) ? [{ id: 1, current_stage: 'Lead' }] : []),
+  },
+  {
     file: 'crm-activity.js',
     what: 'add an activity entry',
     event: { httpMethod: 'POST', queryStringParameters: {}, body: JSON.stringify({ buyer_id: 1, entry: 'Called.' }) },
@@ -179,7 +206,10 @@ const CASES = [
 
     const res = await fn.handler(Object.assign({ headers: { cookie: COOKIE } }, c.event));
 
-    const ok = res.statusCode !== 500;
+    // Not only the status: inquiries.js deliberately answers 200 when intake
+    // fails -- the enquiry itself was saved -- so a missing table there would
+    // never surface as a 500. A read of an uncreated table fails regardless.
+    const ok = res.statusCode !== 500 && seen.missing.length === 0;
     t(`${c.what} (${c.file}) works on a fresh database`, ok,
       seen.missing.length
         ? `reads a table it never creates: ${seen.missing.map((x) => x.table).join(', ')} -- in: ${seen.missing[0].q}`

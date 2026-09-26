@@ -4,6 +4,8 @@ const { neon } = require('@neondatabase/serverless');
 const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
 const { requireCrmSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
+const { addEnquiryToPipeline } = require('./_crm_intake');
+const { describeDbError } = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -41,6 +43,26 @@ function optional(v, cap) {
   return s.length ? s : null;
 }
 
+/*
+ * The analytics session this enquiry came from, or null.
+ *
+ * It arrives from the browser, so it is untrusted input and is checked for
+ * shape before it is stored. A value that fails is DROPPED, never refused:
+ * an enquiry is a buyer asking for a quote, and it must go through whether or
+ * not attribution works. Losing one enquiry to protect a tracking field
+ * would be exactly backwards.
+ *
+ * The shape is what assets/analytics.js mints -- crypto.randomUUID(), or its
+ * v4-shaped fallback -- so anything else is not a session this site created.
+ */
+const SESSION_ID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function sessionIdOrNull(v) {
+  if (typeof v !== 'string') return null;
+  const s = v.trim();
+  return SESSION_ID_SHAPE.test(s) ? s.toLowerCase() : null;
+}
+
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 const RATE_LIMIT_MAX_PER_WINDOW = 5;
 
@@ -71,6 +93,18 @@ async function ensureSchema(sql) {
   // backfill on existing deployments rather than assuming a fresh table.
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS client_ip text`;
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS source_page text`;
+  // The analytics session this enquiry came from, so a quote or sample
+  // request can be attributed to how the visitor arrived. Nullable and
+  // deliberately not a foreign key: analytics sessions are purged on their
+  // own retention schedule, and an enquiry must outlive the session that
+  // produced it. A dangling id simply stops joining; it does no harm.
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS session_id text`;
+  // Where the enquiry went in the CRM pipeline: the buyer it created or was
+  // added to, or -- when it was not added -- why not. Exactly one is set once
+  // intake has run; both null means intake never ran (an enquiry saved before
+  // this existed). See _crm_intake.js.
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS buyer_id bigint`;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS pipeline_note text`;
 }
 
 // Section K -- plain-text email body for the "copy of every inquiry"
@@ -147,15 +181,38 @@ async function handlePost(event, sql) {
   const estimatedVolume = optional(body.estimated_volume, MAX.estimated_volume);
   const requestType = optional(body.request_type, MAX.request_type);
   const sourcePage = optional(body.source_page, MAX.source_page);
+  const sessionId = sessionIdOrNull(body.session_id);
 
-  await sql`
+  const saved = await sql`
     INSERT INTO inquiries
       (name, email, company, country, phone,
-       product_interest, estimated_volume, request_type, message, client_ip, source_page)
+       product_interest, estimated_volume, request_type, message, client_ip, source_page, session_id)
     VALUES
       (${name}, ${email}, ${company}, ${country}, ${phone},
-       ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip}, ${sourcePage})
+       ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip}, ${sourcePage}, ${sessionId})
+    RETURNING id
   `;
+  const inquiryId = saved[0].id;
+
+  // Into the CRM pipeline -- after the enquiry is saved, and never able to
+  // undo that. A failure here leaves the enquiry in the inbox with the reason
+  // on it, and the buyer still gets their success message: their request WAS
+  // received. Awaited, like the email below, so it finishes before the
+  // function is frozen.
+  try {
+    await addEnquiryToPipeline(sql, inquiryId, {
+      name, email, company, country, phone,
+      productInterest, estimatedVolume, requestType, message,
+    });
+  } catch (err) {
+    console.error('[inquiries] pipeline intake failed:', err?.message ?? err);
+    try {
+      const why = describeDbError(err, 'adding the enquiry to the pipeline').error;
+      await sql`UPDATE inquiries SET pipeline_note = ${'Not added to pipeline: ' + why} WHERE id = ${inquiryId}`;
+    } catch (noteErr) {
+      console.error('[inquiries] could not record the intake failure:', noteErr?.message ?? noteErr);
+    }
+  }
 
   // Best-effort "email me a copy" notification -- awaited so it actually
   // finishes before this function's execution context is frozen, but its
@@ -222,7 +279,9 @@ async function handleGet(event, sql) {
       estimated_volume,
       request_type,
       COALESCE(message, '')  AS message,
-      source_page
+      source_page,
+      buyer_id,
+      pipeline_note
     FROM inquiries
     ORDER BY created_at DESC
     LIMIT 5000
