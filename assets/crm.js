@@ -14,7 +14,12 @@
     'Negotiation', 'Contract Signed', 'Shipment Prepared', 'Exported/Completed',
     'Lost/Stalled',
   ];
-  CRM.REGIONS = ['Africa', 'Middle East', 'Asia', 'EU', 'North America'];
+  // Same list, same order, as REGIONS in netlify/functions/_crm_lib.js --
+  // scripts/check-enquiry-intake.js fails if they drift.
+  CRM.REGIONS = [
+    'Africa', 'Middle East', 'Asia', 'EU', 'Europe (non-EU)',
+    'North America', 'South America', 'Oceania', 'Unassigned',
+  ];
   CRM.PRODUCTS = [
     ['aggizi-green-olives', 'Aggizi Green Olives'],
     ['toffahi-green-olives', 'Toffahi Green Olives'],

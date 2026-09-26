@@ -4,6 +4,8 @@ const { neon } = require('@neondatabase/serverless');
 const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
 const { requireCrmSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
+const { addEnquiryToPipeline } = require('./_crm_intake');
+const { describeDbError } = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -71,6 +73,12 @@ async function ensureSchema(sql) {
   // backfill on existing deployments rather than assuming a fresh table.
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS client_ip text`;
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS source_page text`;
+  // Where the enquiry went in the CRM pipeline: the buyer it created or was
+  // added to, or -- when it was not added -- why not. Exactly one is set once
+  // intake has run; both null means intake never ran (an enquiry saved before
+  // this existed). See _crm_intake.js.
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS buyer_id bigint`;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS pipeline_note text`;
 }
 
 // Section K -- plain-text email body for the "copy of every inquiry"
@@ -148,14 +156,36 @@ async function handlePost(event, sql) {
   const requestType = optional(body.request_type, MAX.request_type);
   const sourcePage = optional(body.source_page, MAX.source_page);
 
-  await sql`
+  const saved = await sql`
     INSERT INTO inquiries
       (name, email, company, country, phone,
        product_interest, estimated_volume, request_type, message, client_ip, source_page)
     VALUES
       (${name}, ${email}, ${company}, ${country}, ${phone},
        ${productInterest}, ${estimatedVolume}, ${requestType}, ${message}, ${ip}, ${sourcePage})
+    RETURNING id
   `;
+  const inquiryId = saved[0].id;
+
+  // Into the CRM pipeline -- after the enquiry is saved, and never able to
+  // undo that. A failure here leaves the enquiry in the inbox with the reason
+  // on it, and the buyer still gets their success message: their request WAS
+  // received. Awaited, like the email below, so it finishes before the
+  // function is frozen.
+  try {
+    await addEnquiryToPipeline(sql, inquiryId, {
+      name, email, company, country, phone,
+      productInterest, estimatedVolume, requestType, message,
+    });
+  } catch (err) {
+    console.error('[inquiries] pipeline intake failed:', err?.message ?? err);
+    try {
+      const why = describeDbError(err, 'adding the enquiry to the pipeline').error;
+      await sql`UPDATE inquiries SET pipeline_note = ${'Not added to pipeline: ' + why} WHERE id = ${inquiryId}`;
+    } catch (noteErr) {
+      console.error('[inquiries] could not record the intake failure:', noteErr?.message ?? noteErr);
+    }
+  }
 
   // Best-effort "email me a copy" notification -- awaited so it actually
   // finishes before this function's execution context is frozen, but its
@@ -222,7 +252,9 @@ async function handleGet(event, sql) {
       estimated_volume,
       request_type,
       COALESCE(message, '')  AS message,
-      source_page
+      source_page,
+      buyer_id,
+      pipeline_note
     FROM inquiries
     ORDER BY created_at DESC
     LIMIT 5000

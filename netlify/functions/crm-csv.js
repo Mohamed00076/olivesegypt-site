@@ -1,7 +1,9 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
-const { requireCrmSession, readJsonBody, json } = require('./_crm_lib');
+const {
+  requireCrmSession, readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES,
+} = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -13,12 +15,9 @@ function connectionString() {
   );
 }
 
-const REGIONS = new Set(['Africa', 'Middle East', 'Asia', 'EU', 'North America']);
-const STAGES = new Set([
-  'Lead', 'Contacted', 'Qualifying', 'Sample Requested', 'Sample Sent',
-  'Negotiation', 'Contract Signed', 'Shipment Prepared', 'Exported/Completed',
-  'Lost/Stalled',
-]);
+// Shared with crm-buyers.js and the website enquiry intake -- see _crm_lib.js.
+const REGIONS = new Set(CRM_REGIONS);
+const STAGES = new Set(CRM_STAGES);
 
 const EXPORT_COLUMNS = [
   'id', 'company_name', 'country_region', 'contact_name', 'contact_title', 'contact_email',
