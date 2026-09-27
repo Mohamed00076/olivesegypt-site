@@ -21,6 +21,7 @@
         <h1 id="page-title" style="margin:0;">Buyer</h1>
         <div class="crm-flex">
           <button type="button" class="crm-btn crm-btn-danger" id="delete-btn" style="display:none;">Delete</button>
+          <button type="button" class="crm-btn crm-btn-danger" id="erase-btn" style="display:none;">Erase (deletion request)</button>
         </div>
       </div>
 
@@ -355,15 +356,18 @@
         }
 
         function loadExisting() {
-          document.getElementById('activity-card').style.display = '';
           return CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
+            if (!result.ok && result.data.deleted) { showDeletedBuyer(result.data); return; }
             if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
             var b = result.data;
+            document.getElementById('activity-card').style.display = '';
             document.getElementById('page-title').textContent = b.company_name;
             // Hidden on the just-saved view only -- see justSaved above.
-            if (!justSaved) document.getElementById('delete-btn').style.display = '';
+            if (!justSaved) {
+              document.getElementById('delete-btn').style.display = '';
+              document.getElementById('erase-btn').style.display = '';
+            }
             fillForm(b);
-            if (b.deleted_at) markDeleted(b);
             if (justSaved) {
               showStatus('Saved. ' + b.company_name + ' has been added to your buyers.', true);
               /*
@@ -382,23 +386,24 @@
         }
 
         /*
-         * A deleted buyer, shown for the record and nothing else.
+         * A deleted buyer: that it was deleted, when, and nothing else.
          *
-         * This page used to open a deleted record exactly like a live one --
-         * Save and Delete offered, nothing saying otherwise -- so a second
-         * Delete answered "Not found" after the first had worked, and Save
-         * edited a record no list or report would show again. Now the page
-         * says it was deleted and when, and offers nothing that would change it.
+         * Owner decision 2026-09-27 (outstanding item 12): a deleted buyer is
+         * no longer viewable in the CRM; it is kept in the database and can be
+         * recalled from there (docs/recall-deleted-buyer.md). The server sends
+         * no name or details, so there is nothing here to show. It still says
+         * "deleted" rather than "Not found" -- a bare "Not found" is what made
+         * a finished delete look like a failed one. The one action offered is
+         * Erase, for when the person asks for their data to be deleted.
          */
-        function markDeleted(b) {
-          var when = String(b.deleted_at).slice(0, 10);
+        function showDeletedBuyer(d) {
+          document.getElementById('buyer-form').parentNode.style.display = 'none';
+          document.getElementById('activity-card').style.display = 'none';
+          document.getElementById('documents-card').style.display = 'none';
           document.getElementById('delete-btn').style.display = 'none';
-          document.getElementById('save-btn').style.display = 'none';
-          document.getElementById('page-title').textContent = b.company_name + ' (deleted)';
-          Array.prototype.forEach.call(document.getElementById('buyer-form').elements, function (el) { el.disabled = true; });
-          document.getElementById('activity-form').style.display = 'none';
-          showStatus('This buyer was deleted on ' + when + '. It no longer appears in the buyer list, the Kanban board or the dashboard. ' +
-            'It is kept here for the record only and cannot be edited.', false);
+          document.getElementById('erase-btn').style.display = '';
+          document.getElementById('page-title').textContent = 'Deleted buyer';
+          showStatus(d.error + ' If they asked for their data to be deleted, use Erase to remove it completely.', false);
         }
 
         /*
@@ -468,7 +473,8 @@
         });
 
         document.getElementById('delete-btn').addEventListener('click', function () {
-          if (!window.confirm('Delete this buyer record? This can only be undone by a database administrator.')) return;
+          if (!window.confirm('Delete this buyer record?\n\nIt will no longer appear anywhere in the CRM, but it is kept in the database and can be recalled if needed.\n\n' +
+            'If the buyer asked for their data to be deleted, cancel and use \u201cErase (deletion request)\u201d instead.')) return;
           var name = document.getElementById('company_name').value;
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
             if (!result.ok) {
@@ -484,6 +490,28 @@
             if (e && e.message === 'unauthorized') return;
             showStatus('The delete request did not complete, so it is not known whether it worked. ' +
               'Check the buyer list before trying again.', false);
+          });
+        });
+
+        /*
+         * Erase: when the person asked for their data to be deleted (owner
+         * decision 2026-09-27). Unlike Delete, nothing is kept to recall.
+         */
+        document.getElementById('erase-btn').addEventListener('click', function () {
+          var msg = 'Erase this buyer permanently? Use this when the person asked for their data to be deleted.\n\n' +
+            'Removed for good: the buyer record, its notes (including the copy of their original message), its stage history, ' +
+            'and the website enquiries linked to it.\n\n' +
+            'Kept: quotations, invoices and letters already issued, and the opt-out list (an unsubscribed address stays unsubscribed). ' +
+            'Any other requests from them, such as downloads or a Market Brief signup, are not linked to the buyer: delete those from the Enquiries page.\n\n' +
+            'This cannot be undone, not even from the database.';
+          if (!window.confirm(msg)) return;
+          var name = document.getElementById('company_name').value;
+          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&erase=1&confirmed=1', { method: 'DELETE' }).then(function (result) {
+            if (!result.ok) { showStatus(result.data.error || 'Could not erase.', false); return; }
+            window.location.href = '/crm/buyers/?erased=' + encodeURIComponent(name || ('buyer #' + buyerId));
+          }).catch(function (e) {
+            var m = CRM.noReplyMessage(e, 'Erasing the buyer', 'Reload this page: if it says Not found, the erase went through.');
+            if (m) showStatus(m, false);
           });
         });
 

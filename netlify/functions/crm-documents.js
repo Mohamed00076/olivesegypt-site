@@ -275,8 +275,13 @@ async function handleCreate(event, sql, actor) {
     buyerId = parseId(body.buyer_id);
     if (!buyerId) return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_id'] });
 
-    const buyerRows = await sql`SELECT company_name, contact_name, country_region, contact_email, contact_phone FROM buyers WHERE id = ${buyerId} LIMIT 1`;
+    const buyerRows = await sql`SELECT company_name, contact_name, country_region, contact_email, contact_phone, deleted_at FROM buyers WHERE id = ${buyerId} LIMIT 1`;
     if (!buyerRows[0]) return json(400, { ok: false, error: 'Buyer not found', fields: ['buyer_id'] });
+    // Issuing a document would copy a deleted buyer's details back into the
+    // CRM, where they are no longer shown. See crm-buyers.js handleGet.
+    if (buyerRows[0].deleted_at) {
+      return json(409, { ok: false, already_deleted: true, error: 'This buyer was deleted, so documents can no longer be issued to it.', fields: ['buyer_id'] });
+    }
     const buyer = buyerRows[0];
 
     companyName = clean(buyer.company_name, MAX.buyer_company_name);
