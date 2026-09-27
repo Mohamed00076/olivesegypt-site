@@ -21,6 +21,7 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json } = require('./_lib');
+const { requireReaderSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
 const {
   GUIDES, URL_TTL_SECONDS, COOKIE_TTL_SECONDS, signGuideToken, guideCookie,
@@ -338,11 +339,45 @@ async function handlePost(event, sql) {
   return json(200, { ok: true, ...guideGrant(segment) }, guideHeaders(segment));
 }
 
+/*
+ * The requests these forms collect, for staff to read.
+ *
+ * Until 2026-09-27 nothing read this table: not the CRM, not the analytics
+ * dashboard, no API. Private-label briefs -- with volume, pack size, Incoterm
+ * and launch date -- market-report signups and every gated guide download were
+ * saved and seen by nobody, because the only other route to a person was an
+ * email that is switched off. The owner asked for them in the CRM's Enquiries.
+ *
+ * Read in place rather than copied into inquiries: one copy, one retention
+ * rule. client_ip is left out. Each row says whether its address has opted
+ * out, so nobody is contacted who asked not to be.
+ */
+async function handleGet(event, sql) {
+  if (!requireReaderSession(event)) {
+    return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
+  }
+  const rows = await sql`
+    SELECT
+      l.id,
+      to_char(l.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS created_at,
+      l.email, l.company_name, l.country_region, l.buyer_type, l.consent,
+      l.source_page, l.segment, l.target_market, l.variety, l.format, l.pack_size,
+      l.volume, l.certification_requirements, l.launch_date, l.incoterm,
+      COALESCE(o.status = 'unsubscribed', false) AS opted_out
+    FROM leads_staging l
+    LEFT JOIN contact_opt_outs o ON o.email = lower(trim(l.email))
+    ORDER BY l.created_at DESC
+    LIMIT 5000
+  `;
+  const labelled = rows.map((r) => ({ ...r, segment_label: SEGMENT_LABELS[r.segment] || r.segment }));
+  return json(200, labelled, { 'Cache-Control': 'no-store, private' });
+}
+
 exports.handler = async (event) => {
   const method = event.httpMethod;
 
-  if (method !== 'POST') {
-    return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'POST' });
+  if (method !== 'POST' && method !== 'GET') {
+    return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST' });
   }
 
   const cs = connectionString();
@@ -355,10 +390,13 @@ exports.handler = async (event) => {
   try {
     await ensureSchema(sql);
     await ensureOptOutSchema(sql);
+    if (method === 'GET') return await handleGet(event, sql);
     return await handlePost(event, sql);
   } catch (err) {
     console.error('[leads] db error:', err?.message ?? err);
-    await reportFailure(sql, { source: 'leads', method: event.httpMethod, step: 'saving a guide-download lead' }, err);
+    await reportFailure(sql, { source: 'leads', method: event.httpMethod,
+      step: method === 'GET' ? 'loading guide-download and brief requests' : 'saving a guide-download lead' }, err);
+    if (method === 'GET') return json(500, { error: 'Could not load these requests' });
     return json(500, { ok: false, error: 'Could not save lead' });
   }
 };
