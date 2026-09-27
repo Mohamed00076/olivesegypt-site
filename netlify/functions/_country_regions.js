@@ -17,8 +17,8 @@
  *   - 'Middle East' is UN M49 Western Asia, plus Iran. EU membership wins
  *     for Cyprus.
  *   - Transcontinental countries go where most of the population is:
- *     Egypt -> Africa, Turkey -> Middle East, Russia -> Europe (non-EU),
- *     Kazakhstan -> Asia.
+ *     Egypt -> Africa, Russia -> Europe (non-EU), Kazakhstan -> Asia.
+ *     Confirmed by the owner 2026-09-27, with one exception below.
  *   - Mexico, Central America and the Caribbean are North America, the
  *     continent -- not the narrower "Northern America" of the UN scheme.
  *
@@ -31,6 +31,13 @@
  *   - "Congo" alone: two countries. Both are Africa, so it is included.
  *   - "Korea" alone: both Koreas are Asia, so it is included.
  *   The test is whether the REGION is in doubt, not the country.
+ *
+ * LEFT OUT BY THE OWNER'S DECISION (2026-09-27):
+ *
+ *   - Turkey. Not because its region is in doubt: Turkey is a table-olive
+ *     EXPORTER, so an enquiry from there is as likely to come from a
+ *     competitor or trading partner as from a buyer, and should be looked at
+ *     by a person before it is filed. Unassigned makes that happen.
  *
  * Changing a country's region here changes only future website enquiries.
  * Buyers already in the CRM keep what they have.
@@ -62,12 +69,12 @@ const TABLE = {
     'saudi arabia', 'ksa', 'kingdom of saudi arabia', 'united arab emirates', 'uae',
     'u a e', 'emirates', 'dubai', 'abu dhabi', 'sharjah', 'qatar', 'kuwait', 'bahrain',
     'oman', 'sultanate of oman', 'yemen', 'iraq', 'iran', 'jordan', 'lebanon', 'syria',
-    'palestine', 'state of palestine', 'israel', 'turkey', 'turkiye', 'armenia',
+    'palestine', 'state of palestine', 'israel', 'armenia',
     'azerbaijan',
     'السعوديه', 'المملكه العربيه السعوديه', 'الامارات', 'الامارات العربيه المتحده',
     'دبي', 'ابوظبي', 'ابو ظبي', 'الشارقه', 'قطر', 'الكويت', 'البحرين', 'سلطنه عمان',
     'اليمن', 'العراق', 'ايران', 'الاردن', 'لبنان', 'سوريا', 'سوريه', 'فلسطين',
-    'تركيا', 'ارمينيا', 'اذربيجان',
+    'ارمينيا', 'اذربيجان',
   ],
   'Africa': [
     'algeria', 'angola', 'benin', 'botswana', 'burkina faso', 'burundi', 'cabo verde',
