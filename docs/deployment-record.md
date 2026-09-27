@@ -4429,6 +4429,111 @@ Deploy 48 is documentation only.
 
 ---
 
+## Deploys 50 and 51 — Record ids are digits, or refused (PRs #168, #169)
+
+**Previous recorded deploy:** `bb0c1c5` (Deploy 49, PR #167)
+**Approval:** "merge 168 and 169".
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines |
+|---|---|---|---|---|---|
+| 50 | #168 | `ef5877a` | 2026-09-27 20:27:26 | 2 | +121 |
+| 51 | #169 | `0ce9e76` | 2026-09-27 20:27:30 | 9 | +202 / −24 |
+
+The two PRs touch no common file. Both were mergeable against the same
+`main`, and the full suite passed on the combined result, `0ce9e76`.
+
+### Deploy 50 — The record for Deploys 48 and 49 (PR #168)
+
+Documentation only, inside `docs/`, which is pruned from the published site.
+It added C-124 and outstanding item 12: a full "delete my data" request cannot
+yet be carried out from the CRM for someone who reached the pipeline.
+
+### Deploy 51 — Malformed ids refused on the CRM and the KPI manager (PR #169)
+
+This resolves the known limitation recorded under Deploy 49. The owner asked
+for it to be fixed ("fix this"), and then for the KPI manager to be held to
+the same rule ("tighten it the same way").
+
+**What was wrong:**
+- **CRM.** Ids were read with `parseInt`, which reads `5abc` or `5; …` as 5.
+  A malformed id opened, edited or deleted buyer 5, opened or voided
+  document 5, or filed a note or document against buyer 5.
+- **KPI manager.** Ids were read with `Number()`, which reads `0x10` as KPI
+  16, `1e1` as KPI 10 and `true` as KPI 1.
+- **Both.** An id that was malformed and parsed to nothing fell through to a
+  list instead of being refused: `?id=abc` returned every buyer,
+  `?buyer_id=abc` every buyer's documents, and `?kpi_id=abc` every KPI's
+  values.
+
+Every endpoint needed a login, and the id was always passed to the database
+as a parameter, so this was never SQL injection. It was acting on a record
+nobody named.
+
+**What changed:**
+- **One shared rule.** `parseId` in `_lib.js` accepts plain positive whole
+  numbers only, as text or as a number, and refuses anything past 2^53, which
+  would round to a different record. `_crm_lib.js` uses the same function,
+  including for the enquiry delete from Deploy 49, whose behaviour is
+  unchanged.
+- **Where it applies:**
+  - `crm-buyers.js` `?id`
+  - `crm-documents.js` `?id`, `?buyer_id` and body `buyer_id`
+  - `crm-activity.js` body `buyer_id`
+  - `kpi-values.js` `?kpi_id` and body `kpi_id`
+  - `kpi-definitions.js` body `id` (edit and archive)
+- **A malformed id gets a 400** before any query that names a record. The CRM
+  says "Which one? A valid id is required."; the KPI endpoints keep their
+  existing messages.
+- **A missing id behaves as before.** The list endpoints still list.
+- **No page, schema or wording change.** The pages already show a server
+  error, so a bad link now shows that message and loads nothing.
+
+### Claim register
+
+- **C-125 added.** The register stands at 125 claims.
+- C-55 remains the only `needs-review` row.
+
+### Testing method
+
+`npm test` passed with 45 checks on `0ce9e76`.
+
+**`check-strict-ids.js` (32 assertions)** runs the real handlers with 10
+malformed forms per query endpoint and 8 or 9 per body field, checks that a
+good id still reaches that record as a number, and checks that there is only
+one copy of `parseId`. Negative tests: it failed 9 assertions against the
+previous CRM code and 4 against the previous KPI code.
+
+**End to end** (real handlers, the Neon driver, PostgreSQL 16, Chromium),
+with dummy records in a throwaway local database:
+- **CRM (14/14).** Malformed ids were refused on every path and the buyer was
+  untouched. The buyer page and new-document page showed the message, loaded
+  no record and offered no Delete button. The real id still opened the buyer,
+  its notes and its documents. No script errors.
+- **KPI (9/9).** The driver returns a KPI id as the string `"1"`, and the
+  admin page sends it back as it is. Entering a value, reading history and
+  archiving all still worked with it. `?kpi_id=abc`, `0x1` and `true` were
+  refused, and no KPI was archived by them.
+
+### Rollback
+
+```
+git revert -m 1 0ce9e76
+```
+
+This restores the lenient parsing. Nothing is stored differently, so nothing
+needs to be undone in the database. Deploy 50 is documentation only.
+
+### Known limitations shipped with Deploy 51
+
+- **Not yet confirmed on the live site.** The check to do is in the owner's
+  hands: open a buyer, change `?id=12` to `?id=12abc`, and expect the message
+  with no record loaded.
+- **Other analytics settings still use `Number()`,** for retention days,
+  thresholds and similar values. They read values, not record ids, and were
+  deliberately left out of scope.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
