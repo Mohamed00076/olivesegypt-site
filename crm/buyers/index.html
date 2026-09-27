@@ -238,11 +238,16 @@
          * the address bar straight away: it describes one moment, not the page.
          */
         (function () {
-          var deleted = new URLSearchParams(window.location.search).get('deleted');
-          if (deleted === null) return;
+          var qs = new URLSearchParams(window.location.search);
+          var deleted = qs.get('deleted');
+          var erased = qs.get('erased');
+          if (deleted === null && erased === null) return;
           var el = document.getElementById('deleted-status');
-          el.textContent = 'Deleted ' + (deleted ? '\u201c' + deleted + '\u201d' : 'the buyer') +
-            '. It no longer appears in this list, the Kanban board or the dashboard.';
+          el.textContent = erased !== null
+            ? 'Erased ' + (erased ? '\u201c' + erased + '\u201d' : 'the buyer') +
+              ' permanently, with its notes, stage history and linked enquiries.'
+            : 'Deleted ' + (deleted ? '\u201c' + deleted + '\u201d' : 'the buyer') +
+              '. It no longer appears anywhere in the CRM; it is kept in the database and can be recalled if needed.';
           el.style.display = 'block';
           if (window.history && window.history.replaceState) window.history.replaceState({}, '', '/crm/buyers/');
         })();

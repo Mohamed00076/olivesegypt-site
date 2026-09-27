@@ -112,14 +112,15 @@ async function handleList(event, sql) {
   const stage = qs.stage && STAGE_SET.has(qs.stage) ? qs.stage : null;
   const region = qs.region && REGIONS.has(qs.region) ? qs.region : null;
   const search = qs.search ? `%${clean(qs.search, 200)}%` : null;
-  const includeDeleted = qs.include_deleted === '1';
 
+  // Deleted buyers are never listed -- there is no "include deleted" option.
+  // See handleGet: a deleted buyer is kept in the database, not in the CRM.
   const rows = await sql`
     SELECT id, created_at, updated_at, created_by, assigned_to, company_name, country_region,
            contact_name, contact_email, current_stage, product_interest, next_action,
            next_action_due, certification_gap, deleted_at
     FROM buyers
-    WHERE (${includeDeleted}::boolean OR deleted_at IS NULL)
+    WHERE deleted_at IS NULL
       AND (${stage}::text IS NULL OR current_stage = ${stage})
       AND (${region}::text IS NULL OR country_region = ${region})
       AND (${search}::text IS NULL OR company_name ILIKE ${search} OR contact_name ILIKE ${search} OR contact_email ILIKE ${search})
@@ -138,6 +139,24 @@ async function handleGet(event, sql, id, actor) {
   const rows = await dbStep('reading the buyer record',
     () => sql`SELECT * FROM buyers WHERE id = ${id} LIMIT 1`);
   if (!rows[0]) return json(404, { ok: false, error: 'Not found' });
+  /*
+   * A deleted buyer is no longer viewable in the CRM (owner decision,
+   * 2026-09-27, outstanding item 12). It stays in the database and can be
+   * recalled from there -- docs/recall-deleted-buyer.md -- but the CRM
+   * answers only that it was deleted, and when: no name, no contact details,
+   * no activity log (which holds a copy of the original message), no stage
+   * history. 410, not 404, so the page can say "deleted" rather than "Not
+   * found" -- the confusion that made deleted buyers visible in the first place.
+   *
+   * no-store: a 410 may be cached by browsers by default, and was -- after a
+   * restore from the database the page kept saying "deleted" (found testing).
+   */
+  if (rows[0].deleted_at) {
+    return json(410, {
+      ok: false, deleted: true, deleted_on: new Date(rows[0].deleted_at).toISOString().slice(0, 10),
+      error: deletedMessage(rows[0], 'Its details are no longer shown in the CRM.'),
+    }, { 'Cache-Control': 'no-store, private' });
+  }
 
   const activity = await dbStep('reading the activity log',
     () => sql`SELECT id, created_at, created_by, entry FROM buyer_activity_log WHERE buyer_id = ${id} ORDER BY created_at DESC LIMIT 500`);
@@ -190,7 +209,7 @@ async function handleUpdate(event, sql, id, actor) {
   if (existingRows[0].deleted_at) {
     return json(409, {
       ok: false, already_deleted: true,
-      error: deletedMessage(existingRows[0], 'A deleted record is kept for the record and cannot be edited.'),
+      error: deletedMessage(existingRows[0], 'It can no longer be viewed or edited in the CRM.'),
     });
   }
   const previousStage = existingRows[0].current_stage;
@@ -280,7 +299,7 @@ async function handleDelete(event, sql, id, actor) {
   if (rows[0].deleted_at) {
     return json(409, {
       ok: false, already_deleted: true,
-      error: deletedMessage(rows[0], 'Nothing more to do: it no longer appears in the buyer list, the Kanban board or the dashboard.'),
+      error: deletedMessage(rows[0], 'Nothing more to do: it no longer appears anywhere in the CRM.'),
     });
   }
 
@@ -290,6 +309,56 @@ async function handleDelete(event, sql, id, actor) {
   await sql`UPDATE buyers SET deleted_at = now(), updated_at = now() WHERE id = ${id}`;
   await audit(sql, actor, 'delete', 'buyer', id, null);
   return json(200, { ok: true });
+}
+
+/*
+ * Erase: for a buyer who asked for their data to be deleted.
+ *
+ * Owner decision, 2026-09-27 (outstanding item 12): an ordinary delete hides
+ * a buyer from the CRM but keeps it recallable (handleDelete, above); "if
+ * buyer requested to be deleted then delete fully". /privacy promises that
+ * anyone can ask for their information to be deleted, and until now the CRM
+ * could not do it.
+ *
+ * Removed, in one statement so it cannot half-happen:
+ *   - the buyer record
+ *   - its activity log, which holds a copy of the original message
+ *   - its stage history
+ *   - the website enquiries linked to it, which hold the message itself
+ * Kept:
+ *   - quotations, invoices and letters already issued (crm_documents): business
+ *     records, which /privacy says are kept for a quotation or order placed
+ *   - the opt-out list: an unsubscribed address stays unsubscribed
+ *   - the audit log, which never held their details, plus one entry for this
+ *     erasure recording who, when, and how many rows -- again, no details.
+ * Works on a live buyer and on one already hidden by an ordinary delete.
+ */
+async function handleErase(event, sql, id, actor) {
+  const qs = event.queryStringParameters || {};
+  if (qs.confirmed !== '1') {
+    return json(400, { ok: false, error: 'Erasing requires explicit confirmation (confirmed=1)' });
+  }
+  const hasInquiries = (await sql`SELECT to_regclass('public.inquiries') IS NOT NULL AS present`)[0].present;
+  const enquiriesCte = hasInquiries
+    ? 'q AS (DELETE FROM inquiries WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),'
+    : 'q AS (SELECT 1 WHERE false),';
+  const rows = await sql(
+    `WITH b AS (DELETE FROM buyers WHERE id = $1 RETURNING id),
+     a AS (DELETE FROM buyer_activity_log WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),
+     h AS (DELETE FROM buyer_stage_history WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),
+     ${enquiriesCte}
+     counts AS (SELECT (SELECT count(*) FROM a) AS notes, (SELECT count(*) FROM h) AS stage_changes,
+                       (SELECT count(*) FROM q) AS enquiries)
+     INSERT INTO crm_audit_log (actor, action, record_type, record_id, details)
+     SELECT $2, 'erase', 'buyer', b.id,
+            'deletion request: removed ' || counts.notes || ' note(s), ' || counts.stage_changes ||
+            ' stage change(s), ' || counts.enquiries || ' linked enquiry(ies)'
+     FROM b, counts
+     RETURNING details`,
+    [id, actor || 'unknown']
+  );
+  if (!rows[0]) return json(404, { ok: false, error: 'Not found -- it may already have been erased.' });
+  return json(200, { ok: true, erased: rows[0].details });
 }
 
 exports.handler = async (event) => {
@@ -316,6 +385,7 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'GET') return await handleList(event, sql);
     if (event.httpMethod === 'POST') return await handleCreate(event, sql, actor);
     if (event.httpMethod === 'PATCH' && id) return await handleUpdate(event, sql, id, actor);
+    if (event.httpMethod === 'DELETE' && id && qs.erase === '1') return await handleErase(event, sql, id, actor);
     if (event.httpMethod === 'DELETE' && id) return await handleDelete(event, sql, id, actor);
 
     return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST, PATCH, DELETE' });

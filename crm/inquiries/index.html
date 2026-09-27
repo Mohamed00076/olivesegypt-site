@@ -101,9 +101,10 @@
           if (r.kind === 'lead') return '<span class="crm-muted">Not in the pipeline</span>';
           if (r.buyer_id && r.buyer_deleted_on) {
             // Added, then deleted by staff. Still linked, because the record
-            // is kept -- but it must not claim to be in the pipeline.
+            // is kept -- but it must not claim to be in the pipeline. The link
+            // opens no details: only the date, and Erase for a deletion request.
             return '<span class="crm-muted">Buyer deleted ' + esc(r.buyer_deleted_on) + '</span><br/>' +
-              '<a href="/crm/buyer/?id=' + encodeURIComponent(r.buyer_id) + '">View record</a>';
+              '<a href="/crm/buyer/?id=' + encodeURIComponent(r.buyer_id) + '">Erase options</a>';
           }
           if (r.buyer_id) {
             return '<a href="/crm/buyer/?id=' + encodeURIComponent(r.buyer_id) + '">In pipeline &rarr;</a>';
