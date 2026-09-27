@@ -5,7 +5,7 @@ const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json } = require
 const { requireCrmSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
 const { addEnquiryToPipeline } = require('./_crm_intake');
-const { describeDbError } = require('./_crm_lib');
+const { describeDbError, ensureBuyerTables } = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -265,25 +265,37 @@ async function handleGet(event, sql) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }
 
+  /*
+   * Whether the buyer an enquiry went to has since been deleted. The inbox
+   * said "In pipeline" and linked to the buyer regardless, so after a buyer
+   * was deleted the link still led to it, looking live -- the route by which
+   * the owner reached test123 again and was told "Not found" on a second
+   * Delete (2026-09-27). The enquiry itself is never deleted with the buyer:
+   * it is the record of what arrived. The buyer tables are created first,
+   * because this may be the first CRM read on a new database.
+   */
+  await ensureBuyerTables(sql);
   const rows = await sql`
     SELECT
-      id,
-      to_char(created_at AT TIME ZONE 'UTC',
+      i.id,
+      to_char(i.created_at AT TIME ZONE 'UTC',
               'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')     AS created_at,
-      COALESCE(name, '')     AS name,
-      COALESCE(email, '')    AS email,
-      COALESCE(company, '')  AS company,
-      COALESCE(country, '')  AS country,
-      phone,
-      product_interest,
-      estimated_volume,
-      request_type,
-      COALESCE(message, '')  AS message,
-      source_page,
-      buyer_id,
-      pipeline_note
-    FROM inquiries
-    ORDER BY created_at DESC
+      COALESCE(i.name, '')     AS name,
+      COALESCE(i.email, '')    AS email,
+      COALESCE(i.company, '')  AS company,
+      COALESCE(i.country, '')  AS country,
+      i.phone,
+      i.product_interest,
+      i.estimated_volume,
+      i.request_type,
+      COALESCE(i.message, '')  AS message,
+      i.source_page,
+      i.buyer_id,
+      i.pipeline_note,
+      to_char(b.deleted_at AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS buyer_deleted_on
+    FROM inquiries i
+    LEFT JOIN buyers b ON b.id = i.buyer_id
+    ORDER BY i.created_at DESC
     LIMIT 5000
   `;
 

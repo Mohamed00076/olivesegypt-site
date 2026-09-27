@@ -39,7 +39,8 @@ let updates = 0;
 const sql = (strings, ...vals) => {
   const q = Array.isArray(strings) ? strings.join('?') : String(strings);
   if (/^\s*UPDATE buyers/i.test(q)) updates += 1;
-  if (/SELECT current_stage FROM buyers/i.test(q)) return Promise.resolve([{ current_stage: 'Lead' }]);
+  // A live buyer: the handler now also reads deleted_at, to refuse edits to a deleted one.
+  if (/SELECT current_stage(, deleted_at)? FROM buyers/i.test(q)) return Promise.resolve([{ current_stage: 'Lead', deleted_at: null }]);
   return Promise.resolve([]);
 };
 const neonId = require.resolve('@neondatabase/serverless');

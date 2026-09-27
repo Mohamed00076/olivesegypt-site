@@ -270,7 +270,7 @@ const buyerWrites = (calls) => calls.filter((c) => /INSERT INTO buyers|UPDATE bu
   {
     const src = read('netlify/functions/inquiries.js');
     t('the inbox is given each enquiry\'s buyer and note',
-      /source_page,\s*buyer_id,\s*pipeline_note\s*FROM inquiries/.test(src));
+      /i\.source_page,\s*i\.buyer_id,\s*i\.pipeline_note,/.test(src) && /FROM inquiries i\s+LEFT JOIN buyers b ON b\.id = i\.buyer_id/.test(src));
     const page = read('crm/inquiries/index.html');
     t('and the inbox shows them, distinguishing all three cases',
       /In pipeline &rarr;/.test(page) && /Not added/.test(page) && /Received before automatic intake/.test(page));
