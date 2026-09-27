@@ -21,12 +21,13 @@
         <h1 style="margin:0;">Enquiries</h1>
         <div class="crm-flex">
           <span class="crm-muted" id="count"></span>
+          <button type="button" class="crm-btn crm-btn-secondary" id="export-mb-btn">Export market-brief subscribers</button>
         </div>
       </div>
 
       <p class="crm-muted" style="margin-top:0;">
-        Everything sent through the website&rsquo;s contact and sample forms, newest first.
-        Each one is also added to the pipeline automatically &mdash; the Pipeline column links to the buyer, or says why it was not added.
+        Everything sent through the website&rsquo;s forms, newest first: contact and sample requests, private-label briefs, market-brief signups and guide downloads.
+        Contact and sample requests are also added to the pipeline automatically &mdash; the Pipeline column links to the buyer, or says why it was not added. Downloads and briefs are not added.
       </p>
 
       <div id="status" class="crm-status" style="display:none;"></div>
@@ -43,24 +44,44 @@
     <script>
       (function () {
         'use strict';
-
         /*
-         * The enquiries this site collects, finally on a screen.
+         * Everything the website's forms collect, finally on one screen.
          *
-         * Every submission has always been written to the database before
-         * anything else happens, so none were ever lost. But the notification
-         * email is off unless RESEND_API_KEY and NOTIFY_EMAIL are set, and
-         * until now nothing in the site read GET /api/inquiries -- so a buyer
-         * could send a quote request and nobody would ever see it. From the
-         * owner's side that is indistinguishable from no enquiries arriving,
-         * which is exactly what they concluded.
+         * Contact and sample enquiries (GET /api/inquiries) have always been
+         * saved before anything else happens, but the notification email is
+         * off unless RESEND_API_KEY and NOTIFY_EMAIL are set -- so a buyer
+         * could send a quote request and nobody would see it. From the owner's
+         * side that is indistinguishable from no enquiries arriving.
          *
-         * Hence the banner below when the list is empty: "none yet" and
-         * "nobody is being told" are different problems and must not look the
-         * same twice over.
+         * Guide downloads, private-label briefs and market-brief signups
+         * (GET /api/leads) had it worse: saved since the forms went live and
+         * shown nowhere at all -- not here, not in the analytics dashboard --
+         * until 2026-09-27. They share this list, newest first.
          */
-
         var rows = [];
+
+        // Labels are for staff; the server's own (SEGMENT_LABELS) are for email.
+        var LEAD_LABELS = {
+          private_label: 'Private-label brief',
+          market_report: 'Market-brief signup',
+          buyers_guide: "Buyer's guide download",
+          pricing_guide: 'Pricing guide download',
+          origin_guide: 'Origin guide download',
+          company_overview: 'Company overview download',
+          private_label_brochure: 'Private-label brochure download',
+          packaging_guide: 'Packaging overview download',
+          export_docs_checklist: 'Export documents checklist download',
+          catalog_pdf: 'Export catalogue (PDF) download'
+        };
+        var BUYER_TYPES = { importer: 'Importer', distributor: 'Distributor', retail_chain: 'Retail chain', food_service: 'Food service', other: 'Other' };
+
+        function fromEnquiry(r) { return Object.assign({ kind: 'enquiry', key: 'e' + r.id }, r); }
+        function fromLead(l) {
+          return Object.assign({}, l, {
+            kind: 'lead', key: 'l' + l.id, company: l.company_name, name: '', country: l.country_region,
+            request_type: LEAD_LABELS[l.segment] || l.segment_label || l.segment, message: ''
+          });
+        }
 
         function showStatus(msg, ok) {
           var el = document.getElementById('status');
@@ -68,15 +89,16 @@
           el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
           el.style.display = msg ? 'block' : 'none';
         }
-
         function esc(v) { return CRM.escapeHtml(v == null ? '' : String(v)); }
+
         /*
-         * Where this enquiry went in the pipeline (see _crm_intake.js). Three
-         * cases, and they must not look alike: added (link to the buyer), not
-         * added (the reason, so a person can act on it), and received before
-         * automatic intake existed (neither is set).
+         * Where an enquiry went in the pipeline (see _crm_intake.js). Added
+         * (link to the buyer), added then deleted, not added (the reason), and
+         * received before automatic intake existed must not look alike. Guide
+         * downloads and briefs are never added automatically.
          */
         function pipelineCell(r) {
+          if (r.kind === 'lead') return '<span class="crm-muted">Not in the pipeline</span>';
           if (r.buyer_id && r.buyer_deleted_on) {
             // Added, then deleted by staff. Still linked, because the record
             // is kept -- but it must not claim to be in the pipeline.
@@ -93,44 +115,73 @@
           return '<span class="crm-muted">Received before automatic intake</span>';
         }
 
+        function line(label, value) {
+          return value ? '<div><span class="crm-muted">' + label + ':</span> ' + esc(value) + '</div>' : '';
+        }
+        function replyButton(email, subject) {
+          return email ? '<a class="crm-btn crm-btn-primary" href="mailto:' + esc(email) +
+            '?subject=' + encodeURIComponent(subject) + '">Reply by email</a>' : '';
+        }
+
+        function enquiryDetail(r) {
+          return line('Product', r.product_interest) + line('Volume', r.estimated_volume) +
+            (r.phone ? '<div><span class="crm-muted">Phone:</span> <span dir="ltr">' + esc(r.phone) + '</span></div>' : '') +
+            line('Sent from', r.source_page) +
+            '<div class="crm-inquiry-message">' + esc(r.message) + '</div>' +
+            replyButton(r.email, 'Re: your enquiry to Triple Company');
+        }
+
+        /*
+         * Every one of these forms requires its consent box, but the boxes say
+         * different things: a guide or brief says "contacted about this
+         * request", a market-brief signup says "about the quarterly market
+         * brief" -- which is not agreement to a sales approach. Shown as the
+         * visitor read it, so staff know what they may do with the address.
+         * An address that has since opted out gets no Reply button at all.
+         */
+        function leadDetail(r) {
+          var agreed = r.segment === 'market_report'
+            ? 'Agreed to be contacted about the quarterly market brief only &mdash; this is not a sales enquiry.'
+            : 'Agreed to be contacted about this request.';
+          return line('Buyer type', BUYER_TYPES[r.buyer_type] || r.buyer_type) +
+            line('Target market', r.target_market) + line('Variety', r.variety) + line('Format', r.format) +
+            line('Pack size', r.pack_size) + line('Volume', r.volume) +
+            line('Certifications required', r.certification_requirements) + line('Launch date', r.launch_date) +
+            line('Incoterm', r.incoterm) + line('Sent from', r.source_page) +
+            '<div class="crm-muted" style="margin:8px 0;">' + agreed + '</div>' +
+            (r.opted_out
+              ? '<div class="crm-status crm-status-error">This address has since opted out of contact. Do not email it.</div>'
+              : replyButton(r.email, 'Re: your request to Triple Company'));
+        }
+
         function render(list) {
           var el = document.getElementById('list');
           if (!list.length) {
             el.innerHTML = rows.length
               ? '<p class="crm-muted">Nothing matches that filter.</p>'
-              : '<p class="crm-muted">No enquiries have been received yet.</p>';
+              : '<p class="crm-muted">Nothing has been received yet.</p>';
             return;
           }
-
           var html = '<table><thead><tr>' +
             '<th>Received</th><th>From</th><th>Country</th><th>Asked for</th><th>Pipeline</th><th></th>' +
             '</tr></thead><tbody>';
-
           list.forEach(function (r) {
             var who = esc(r.company || r.name || '(no name given)');
             var sub = r.company && r.name ? esc(r.name) : '';
+            var optedOut = r.opted_out ? '<br/><span class="crm-badge crm-badge-danger">Opted out &mdash; do not contact</span>' : '';
             html += '<tr>' +
               '<td>' + CRM.fmtDate(r.created_at) + '</td>' +
               '<td><strong>' + who + '</strong>' + (sub ? '<br/><span class="crm-muted">' + sub + '</span>' : '') +
-                (r.email ? '<br/><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '') + '</td>' +
+                (r.email ? '<br/><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '') + optedOut + '</td>' +
               '<td>' + esc(r.country) + '</td>' +
               '<td>' + esc(r.request_type || 'Enquiry') + '</td>' +
               '<td>' + pipelineCell(r) + '</td>' +
-              '<td><button type="button" class="crm-btn crm-btn-secondary detail-btn" data-id="' + esc(r.id) + '">Open</button></td>' +
+              '<td><button type="button" class="crm-btn crm-btn-secondary detail-btn" data-id="' + esc(r.key) + '">Open</button></td>' +
               '</tr>' +
-              '<tr class="detail-row" id="detail-' + esc(r.id) + '" style="display:none;"><td colspan="6">' +
-                (r.product_interest ? '<div><span class="crm-muted">Product:</span> ' + esc(r.product_interest) + '</div>' : '') +
-                (r.estimated_volume ? '<div><span class="crm-muted">Volume:</span> ' + esc(r.estimated_volume) + '</div>' : '') +
-                (r.phone ? '<div><span class="crm-muted">Phone:</span> <span dir="ltr">' + esc(r.phone) + '</span></div>' : '') +
-                (r.source_page ? '<div><span class="crm-muted">Sent from:</span> ' + esc(r.source_page) + '</div>' : '') +
-                '<div class="crm-inquiry-message">' + esc(r.message) + '</div>' +
-                (r.email
-                  ? '<a class="crm-btn crm-btn-primary" href="mailto:' + esc(r.email) +
-                    '?subject=' + encodeURIComponent('Re: your enquiry to Triple Company') + '">Reply by email</a>'
-                  : '') +
+              '<tr class="detail-row" id="detail-' + esc(r.key) + '" style="display:none;"><td colspan="6">' +
+                (r.kind === 'lead' ? leadDetail(r) : enquiryDetail(r)) +
               '</td></tr>';
           });
-
           html += '</tbody></table>';
           el.innerHTML = html;
 
@@ -148,29 +199,74 @@
           var q = document.getElementById('filter').value.trim().toLowerCase();
           if (!q) { render(rows); return; }
           render(rows.filter(function (r) {
-            return ['name', 'company', 'country', 'message', 'email', 'request_type'].some(function (k) {
+            return ['name', 'company', 'country', 'message', 'email', 'request_type', 'target_market', 'variety', 'volume'].some(function (k) {
               return String(r[k] || '').toLowerCase().indexOf(q) !== -1;
             });
           }));
         }
 
+        // Both lists, independently: one failing must not hide the other.
+        function settle(p) {
+          return p.then(function (r) { return r; }, function (e) {
+            if (e && e.message === 'unauthorized') throw e;
+            return { ok: false, data: { error: 'no reply from the server' } };
+          });
+        }
+
+        /*
+         * The quarterly-report mailing list, as a CSV. Fetched rather than
+         * navigated to, so a refusal or a dropped request is said on this page
+         * instead of leaving a raw error page. The server decides who is in it:
+         * market-brief signups with consent, minus anyone who opted out.
+         */
+        function exportSubscribers() {
+          if (!window.confirm('Download the email addresses of everyone who signed up for the market brief? ' +
+            'Anyone who has opted out is left out. Use it only to send the quarterly market report.')) return;
+          var btn = document.getElementById('export-mb-btn');
+          btn.disabled = true;
+          fetch('/api/leads?export=market_report&confirmed=1', { credentials: 'same-origin' }).then(function (res) {
+            if (res.status === 401) { window.location.href = '/crm/login/?next=' + encodeURIComponent(window.location.pathname); return; }
+            if (!res.ok) {
+              return res.json().catch(function () { return {}; }).then(function (d) {
+                showStatus('The export failed: ' + ((d && d.error) || 'HTTP ' + res.status) + '.', false);
+              });
+            }
+            var name = (/filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '') || [])[1] || 'market-brief-subscribers.csv';
+            return res.blob().then(function (blob) {
+              var a = document.createElement('a');
+              a.href = URL.createObjectURL(blob);
+              a.download = name;
+              document.body.appendChild(a); a.click(); a.remove();
+              setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+              showStatus('Downloaded ' + name + '.', true);
+            });
+          }).catch(function (e) {
+            var msg = CRM.noReplyMessage(e, 'The export', 'Try again; downloading it twice does no harm.');
+            if (msg) showStatus(msg, false);
+          }).then(function () { btn.disabled = false; });
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Enquiries');
+          document.getElementById('export-mb-btn').addEventListener('click', exportSubscribers);
           document.getElementById('filter').addEventListener('input', applyFilter);
-
-          CRM.fetchJson('/api/inquiries').then(function (result) {
-            if (!result.ok) {
-              document.getElementById('list').innerHTML = '';
-              showStatus((result.data && result.data.error) || 'Could not load enquiries.', false);
-              return;
-            }
-            rows = Array.isArray(result.data) ? result.data : [];
-            document.getElementById('count').textContent =
-              rows.length === 1 ? '1 enquiry' : rows.length + ' enquiries';
-            applyFilter();
-          });
+          return Promise.all([settle(CRM.fetchJson('/api/inquiries')), settle(CRM.fetchJson('/api/leads'))]);
+        }).then(function (res) {
+          var enq = res[0], leads = res[1], problems = [];
+          if (!enq.ok) problems.push('Contact and sample enquiries could not be loaded (' + ((enq.data && enq.data.error) || 'error') + ').');
+          if (!leads.ok) problems.push('Guide downloads and briefs could not be loaded (' + ((leads.data && leads.data.error) || 'error') + ').');
+          showStatus(problems.join(' '), false);
+          rows = (enq.ok && Array.isArray(enq.data) ? enq.data.map(fromEnquiry) : [])
+            .concat(leads.ok && Array.isArray(leads.data) ? leads.data.map(fromLead) : [])
+            .sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); });
+          var nEnq = rows.filter(function (r) { return r.kind === 'enquiry'; }).length;
+          var nLead = rows.length - nEnq;
+          document.getElementById('count').textContent =
+            nEnq + (nEnq === 1 ? ' enquiry' : ' enquiries') + ' · ' +
+            nLead + (nLead === 1 ? ' download or brief' : ' downloads and briefs');
+          applyFilter();
         }).catch(function (e) {
-          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+          if (e && e.message !== 'unauthorized') showStatus('Could not load page.', false);
         });
       })();
     </script>

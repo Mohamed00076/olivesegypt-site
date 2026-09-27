@@ -12,7 +12,7 @@
 // (that rule is about olivesegypt-site vs. the separate umami-olivesegypt
 // codebase, which this file has no connection to at all).
 
-const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json } = require('./_lib');
+const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, COOKIE_NAME: ADMIN_COOKIE_NAME } = require('./_lib');
 
 const CRM_COOKIE_NAME = 'tc_crm_session';
 const CRM_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
@@ -410,6 +410,41 @@ async function ensureBuyerTables(sql) {
 }
 
 
+// CSV-injection mitigation (moved here from crm-csv.js, 2026-09-27, when a
+// second export needed it): neutralize any cell whose content, once
+// coerced to a string, starts with a character a spreadsheet app would
+// interpret as the start of a formula (=, +, -, @) by prefixing a
+// single quote so it's forced to render as plain text on open.
+function csvCell(value) {
+  let s = value === null || value === undefined ? '' : String(value);
+  if (/^[=+\-@]/.test(s)) s = "'" + s;
+  if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+/*
+ * Either session may read what the website collects from visitors.
+ *
+ * Enquiries (inquiries.js) and guide-download / private-label requests
+ * (leads.js) are read by both the CRM and the /admin/analytics dashboard.
+ * CRM staff already see the full buyers table, which holds the same class of
+ * personal data about the same people, so this is consistent with the access
+ * they have rather than a widening of it. Deny-by-default: no valid session of
+ * either kind returns null, and the caller answers 401 before reading a row.
+ *
+ * Moved here from inquiries.js when leads.js needed the same rule, so the two
+ * cannot drift apart.
+ */
+function requireReaderSession(event) {
+  const adminSecret = process.env.SESSION_SECRET;
+  if (adminSecret) {
+    const token = parseCookies(event.headers)[ADMIN_COOKIE_NAME];
+    const session = token ? verifySession(token, adminSecret) : null;
+    if (session) return session;
+  }
+  return requireCrmSession(event);
+}
+
 module.exports = {
   CRM_COOKIE_NAME,
   CRM_SESSION_TTL_SECONDS,
@@ -432,6 +467,8 @@ module.exports = {
   normaliseCompanyName,
   classifyCompanyName,
   findNearDuplicates,
+  requireReaderSession,
+  csvCell,
   STAGES,
   REGIONS,
   ensureBuyerTables,

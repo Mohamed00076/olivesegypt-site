@@ -194,6 +194,14 @@ const CASES = [
     rows: () => [],
   },
   {
+    // Guide downloads and briefs in the Enquiries list: reads leads_staging
+    // joined to contact_opt_outs, and must create both on a new database.
+    file: 'leads.js',
+    what: 'list guide downloads and briefs',
+    event: { httpMethod: 'GET', queryStringParameters: {} },
+    rows: () => [],
+  },
+  {
     file: 'crm-activity.js',
     what: 'add an activity entry',
     event: { httpMethod: 'POST', queryStringParameters: {}, body: JSON.stringify({ buyer_id: 1, entry: 'Called.' }) },
