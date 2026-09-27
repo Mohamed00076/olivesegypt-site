@@ -4133,6 +4133,201 @@ git revert 92c4331 4e04db1 151936e
 
 ---
 
+## Deploys 44 to 47 — Requests that had reached nobody (PRs #159, #163, #164, #165)
+
+**Previous recorded deploy:** `92c4331` (Deploy 43, PR #162)
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Approval |
+|---|---|---|---|---|---|---|
+| 44 | #159 | `7cc8b26` | 2026-09-27 05:06:37 | 2 | +149 / −4 | "merge 159 and record deploys 41 42 43" |
+| 45 | #163 | `ed49eb0` | 2026-09-27 05:10:14 | 2 | +241 / −0 | "merge 163" |
+| 46 | #164 | `000f242` | 2026-09-27 16:16:59 | 8 | +458 / −91 | "merge 164 and 165" |
+| 47 | #165 | `b555aa7` | 2026-09-27 16:17:01 | 3 | +31 / −2 | "merge 164 and 165" |
+
+### Deploys 44 and 45 — The record
+
+Documentation only, inside `docs/`, which the pruner removes from the
+artifact. Nothing a visitor can reach changed.
+
+- **Deploy 44** records Deploys 38 to 40, with the owner's confirmation of
+  the Arabic privacy wording and the two live checks.
+- **Deploy 45** records Deploys 41 to 43.
+
+### Deploy 46 — Every request the forms collect, in the CRM (PR #164)
+
+**The owner's question.** Almost a month after setting up the analytics
+dashboard, and never having signed in to it, the owner asked whether any
+quotations or requests had been sent there that they never received, and
+asked for them in the CRM's Enquiries.
+
+**The honest answer came in two parts, and only the second was a
+problem.**
+
+1. **Contact and sample enquiries were never hidden.** The dashboard's
+   Inquiries panel and the CRM's Enquiries page both read
+   `GET /api/inquiries`, the same table.
+2. **`leads_staging` was never read by anything.** It holds:
+   - private-label briefs: target market, variety, format, pack size,
+     volume, certifications, launch date and Incoterm, which amounts to a
+     full project request
+   - market-brief signups
+   - every gated guide download
+
+   That is ten form kinds across `/`, `/downloads` and
+   `/resources/private-label`, in both languages. No page and no API read
+   the table; only the retention job touched it. The one route to a person
+   was an email that is switched off.
+
+   **These requests reached nobody from the day the forms went live until
+   this deploy.**
+
+   **How many there are is not known to this record.** This environment has
+   no production access. The owner is to read the Enquiries page and report
+   what was waiting.
+
+   **What was found, 2026-09-27.** The owner read the page after the deploy
+   and sent a screenshot. Every guide download and private-label brief in it
+   was the owner's own test submission, four in all. In the part shown, **no
+   real buyer's request had been waiting.** The gap was real; its cost, as
+   far as can be seen, was nil.
+
+   The screenshot began at 26 September, so newer rows were not in view. One
+   older contact-form sample request (3 September) looks like a test but is
+   not from the owner's address. Names and addresses are deliberately not
+   recorded, because this repository is public.
+   **The owner confirmed that one was their own test too.**
+
+**What changed:**
+
+- `leads.js` answers `GET` for a CRM or dashboard session only. The rows
+  never include the IP address, and each carries its opt-out status.
+- The session rule (`requireReaderSession`) moved into `_crm_lib.js`, so
+  enquiries and these requests share one access rule.
+- `/crm/inquiries` lists both kinds together, labelled, with every collected
+  detail shown when a row is opened.
+- An opted-out address is marked "do not contact" and gets no Reply button.
+- A market-brief signup is shown as consent to hear about the brief only,
+  "not a sales enquiry". This matches its checkbox, which differs from the
+  guides' "about this request".
+- These requests are read in place, not copied, and not added to the
+  pipeline.
+
+**Also in the same PR, at the owner's request: exporting market-brief
+subscribers.** The site promises signups a quarterly market report, and
+nothing in the system can send one, so the owner will send it by hand.
+
+- **Who is in the file:**
+  - market-brief signups with consent
+  - minus anyone who has opted out
+  - one row per address, using its latest signup
+- **Held to the buyer export's rules:**
+  - explicit confirmation before it runs
+  - an audit entry recording who exported and how many rows
+  - formula-injection protection on every cell. `csvCell` moved into
+    `_crm_lib.js`, so both exports use one copy.
+- **A byte-order mark leads the file**, so Arabic company names open
+  correctly in a spreadsheet. The buyer export has no BOM; that was noted,
+  not changed.
+
+**The page's intro sentence was corrected in passing.** It said every row
+enters the pipeline, and guide downloads and briefs do not.
+
+### Deploy 47 — Every form named on the privacy page (PR #165)
+
+`/privacy` named only the Contact, Sample Request and Market Brief forms.
+The owner answered "yes add". The forms section now covers:
+
+- **Contact and Sample Request:** unchanged in substance.
+- **The downloads, the private-label brief and the Market Brief signup:**
+  - what each collects
+  - that each asks for agreement before sending
+  - what each is used for.
+- **The IP address.** It is kept with every submission, for the
+  five-per-hour limit.
+
+**Two corrections came with it:**
+
+1. **The IP address.** Every form had always stored it (`client_ip`) and the
+   page never said so. It is stated now, because the rewritten sentence
+   would otherwise have been untrue. The owner was told this was beyond the
+   literal ask.
+2. **The Market Brief field list.** The old text said the Market Brief form
+   collects a name, phone and message. It collects none of those. See the
+   note on C-79.
+
+`POLICY_VERSION` was not bumped. This describes forms that each carry their
+own consent box, not what the analytics consent covers.
+
+**The Arabic is the assistant's.** The owner was asked to review it after
+the deploy, and **confirmed it the same day ("its fine")**. C-123 is now
+`verified-approved`.
+
+`check-privacy-disclosures.js` reads the brief's project fields from the
+table definition, so a field added to the form later must be disclosed too.
+
+### Verification before the merges
+
+The two PRs touch no common file. Their combination was merged locally first
+and passed the full suite before either was merged on GitHub.
+
+### Claim register
+
+- **C-121 to C-123 added.**
+- **A dated note added to C-79**, whose Market Brief statement Deploy 47
+  corrected again.
+- The register stands at 123 claims.
+- `needs-review` rows: C-55 and C-123, the second only for the Arabic
+  review. **Later the same day** the owner confirmed the Arabic, C-123
+  became `verified-approved`, and C-55 is again the only `needs-review`
+  row.
+
+### Testing method
+
+`npm test` passed with 43 checks on `b555aa7`.
+
+**New and extended checks, each negative-tested:**
+
+| Check | Assertions | Negative tests caught |
+|---|---|---|
+| `check-leads-visible.js` | 28 | `main`'s `leads.js`; a hidden Incoterm; an ignored opt-out; the export's opt-out exclusion removed; its confirmation removed |
+| `check-privacy-disclosures.js` | 13 | `main`'s page (fails four); one dropped field |
+
+**End to end** (real handlers, the Neon driver, PostgreSQL 16 and Chromium),
+with requests sent through the real form endpoints:
+
+- **The Enquiries list.** One test address was opted out via
+  `/api/unsubscribe`.
+  - Every kind showed correctly.
+  - With the leads read deliberately broken, the enquiries still showed.
+- **The export.** The seeded data held a duplicate, an unsubscribed address,
+  a formula, an Arabic name and a guide download.
+  - The downloaded file contained exactly the three right rows.
+  - The audit log recorded the export.
+
+### Rollback
+
+```
+git revert b555aa7 000f242
+```
+
+Deploys 44 and 45 are documentation only. Reverting Deploy 46 hides these
+requests again; nothing in the data is changed, except that audit entries
+for any exports remain.
+
+### Known limitations shipped with Deploys 46 and 47
+
+- **Nothing sends the quarterly market report the site promises.** The
+  export supports sending it by hand. Whether a report has ever been sent is
+  not known here.
+- **Private-label briefs are not added to the pipeline.** That is a separate
+  decision, offered and not taken up.
+- **The CRM dashboard's Enquiries card still counts contact and sample
+  enquiries only.**
+- **Email notification is still off** (outstanding item 10). It is the reason
+  all of this went unseen.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -4327,6 +4522,11 @@ last sync. It is not part of the changed-file scope of any deploy above.
     and failure alerts. A real buyer's quote request arrived on 2026-09-27 and
     reached nobody's inbox. The buyer is deliberately not named here: this
     repository is public.
+    **Wider than it looked, 2026-09-27 (Deploy 46).** The gated guide
+    downloads, market-brief signups and private-label briefs in
+    `leads_staging` had no route to a person at all: no screen, and only
+    this email. Deploy 46 puts them on the CRM's Enquiries page. The email
+    remains the only route that *notifies*.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
