@@ -3765,6 +3765,10 @@ Individually:
   This environment cannot reach the site. The owner's first sample request is
   the live test: it should appear in `/crm/inquiries` as "In pipeline", and the
   buyer should be in Sample Requested with a next action due the next day.
+  **Observed 2026-09-27:** the owner sent a test sample request through the
+  production site and reports it working. This is the first sight of intake on
+  production. The report was "working fine", not a field-by-field comparison,
+  so it is recorded as that.
 - **Enquiries from before Deploy 36 are not in the pipeline.** The inbox marks
   them "Received before automatic intake". A back-fill was offered, not done.
 - **An anonymous visitor can now cause a CRM record to be created.** They
@@ -3773,6 +3777,143 @@ Individually:
   `created_by = website`.
 - **Gated guide downloads (`leads.js`) have neither the session link nor
   pipeline intake.** Both were out of the scope approved.
+
+---
+
+## Deploys 38 to 40 — The owner's answers, shipped (PRs #157, #158, #156)
+
+**Date:** 2026-09-27, all three between 04:08:04 and 04:08:11 +0300
+**Approval:** "merge 157 158 and 156".
+**Previous recorded deploy:** `6eae97b` (Deploy 37, PR #154)
+
+| Deploy | PR | Production commit | Files | Lines |
+|---|---|---|---|---|
+| 38 | #157 | `c8259aa` | 6 | +120 / −8 |
+| 39 | #158 | `195d2aa` | 2 | +17 / −7 |
+| 40 | #156 | `cb4484f` | 2 | +302 / −1 |
+
+All three branched from `6eae97b` and touch different files, so none
+conflicted. This is the first multi-merge batch in this record where that
+was true.
+
+### Deploy 38 — What analytics consent now covers, said before it is asked for (PR #157)
+
+**This is the only deploy in this record that a returning visitor will
+notice.** `POLICY_VERSION` changed from `2026-09-01` to `2026-09-27`. A consent
+stored under another version reads as none, so everyone who had answered the
+cookie banner sees it once more.
+
+It carries three owner decisions from 2026-09-27:
+
+1. **C-112: disclose the enquiry link.** A new section on `/privacy` and
+   `/ar/privacy` states what a consenting visitor's enquiry is linked to. It
+   includes the uncomfortable part: the browser's analytics identifier
+   persists, so their *other* visits from that browser can be linked too.
+2. **Re-ask everyone, and link only consent given under the new text.** The
+   owner chose this from three options. The version bump alone enforces it:
+   `TC.currentSessionId()` returns null until the visitor answers again.
+   **Links made between Deploy 35 and this deploy were not cleared**, and the
+   owner was told so.
+3. **C-117: describe the network-owner lookup.** For every consenting
+   visitor, the site has been sending their IP address to the regional
+   internet registry to learn who the network is registered to. `/privacy`
+   never said so, and never listed the registries as a third party. It now
+   does both.
+
+**Two sentences that had become untrue were corrected in the same change:**
+- "never who pressed it" was no longer true for anyone who goes on to send an
+  enquiry.
+- The CRM was described as "a separate internal system from the
+  form-submission data", which Deploy 36 had made untrue.
+
+**Why decision 3 rode in this PR rather than its own.** It edits the same
+paragraph as decision 1, so two PRs would have conflicted. And each is a
+change to what consent covers, so shipping them apart would have meant
+bumping the version twice and showing every visitor the banner twice.
+
+**The Arabic wording of all of it is the assistant's.** The owner was asked to
+read it before merging, and was reminded after. **Whether they did is not
+stated.** Until they say so, it has the standing C-72's Arabic had before the
+owner reviewed that one, and C-112 and C-117 say so in `action_required`.
+**Settled later on 2026-09-27:** the owner read the live `/ar/privacy` and
+confirmed it ("its fine"). No change was needed, and C-112 and C-117 now have
+no open action.
+
+`check-privacy-disclosures.js` (new) ties the privacy text to the code in both
+directions. While `resolveOrg` is called, both pages must describe the lookup
+and name the registries. And the pages' storage promises must still match
+`_b2b_lib.js`: only a one-way hash is kept, for 30 days. A cache lifetime
+changed to 90 days was caught.
+
+### Deploy 39 — Turkey left for a person to judge (PR #158)
+
+C-114 was confirmed by the owner except for Turkey. Turkey is a table-olive
+exporter, so an enquiry from there is as likely to come from a competitor or
+trading partner as from a buyer. Turkey, Türkiye and تركيا now arrive
+Unassigned rather than as Middle East. This is recorded in the code under
+its own heading, because Turkey's region is not in doubt the way "Georgia"
+is. Brazil is confirmed in South America. Only future enquiries are affected.
+
+### Deploy 40 — The record for Deploys 32 to 37 (PR #156)
+
+Documentation only, inside `docs/`, which the pruner removes from the
+artifact. Nothing a visitor can reach changed. It contains:
+- Deploys 32 to 37
+- C-109 to C-117
+- the dated note on C-90
+- the owner's answers to C-112, C-114, C-115 and C-117, recorded as they
+  came in.
+
+### Claim register
+
+No new rows. **C-112, C-114 and C-117 are updated** now that the PRs they
+waited on have merged:
+- **C-114:** nothing left to do.
+- **C-112 and C-117:** the only open action is the owner's review of the
+  Arabic.
+
+The register stands at 117 claims. **C-55 is the only `needs-review` row.**
+
+### Testing method
+
+`npm test` passed with all 39 checks on `cb4484f`, the final tip. Each
+branch's own tree was also green before merge:
+- #157: 39 checks.
+- #158: 38 checks. It branched before the privacy check existed.
+
+`195d2aa` was not run on its own. Its code is identical to `cb4484f`'s, since
+Deploy 40 changed only `docs/`, so the tip's run covers it.
+
+**Negative tests, each caught:**
+- Deploy 38:
+  - the old policy version
+  - `main`'s `/privacy`
+  - `main`'s `/ar/privacy`
+  - a 90-day cache lifetime.
+- Deploy 39: Turkey restored to Middle East.
+
+### Rollback
+
+```
+git revert cb4484f 195d2aa c8259aa
+```
+
+- **Deploy 38:** reverting brings back the undisclosed practices, the two
+  untrue sentences and version `2026-09-01`. Visitors who answered under
+  `2026-09-27` would be asked once more.
+- **Deploy 39:** reverting sends Turkey to Middle East again.
+- **Deploy 40:** reverting removes documentation only.
+
+### Known limitations shipped with Deploys 38 to 40
+
+- ~~The re-shown banner has not been seen.~~ **Observed 2026-09-27:** the
+  owner opened the site in a browser that had already answered, and the
+  banner appeared again.
+- ~~The Arabic privacy wording's review status is unknown~~. The owner
+  confirmed it the same day (see Deploy 38).
+- **Enquiries linked before this deploy stay linked**, under consent given
+  before the text described the link. The owner may ask for them to be
+  cleared; nobody has.
 
 ---
 
@@ -3981,3 +4122,7 @@ last sync. It is not part of the changed-file scope of any deploy above.
     C-55.
     **Answered the same day:** the owner said to describe it, and #157 now does.
     Item 11 closes in full when #157 and #158 merge.
+    **CLOSED 2026-09-27 (Deploys 38 and 39).** Both merged. One thread is left
+    and recorded on C-112 and C-117 rather than here: whether the owner has
+    reviewed the Arabic wording that shipped in Deploy 38. **They have:
+    confirmed 2026-09-27. Nothing of item 11 remains.**
