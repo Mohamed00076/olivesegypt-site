@@ -4577,6 +4577,122 @@ change.
 
 ---
 
+## Deploy 55 — Deleted buyers hidden and recallable; erased on request (PR #173)
+
+**Previous recorded deploy:** `0ad6dd3` (Deploy 52, PR #170)
+**Approval:** "merge 171" (Deploy 53); "merge 172 and 173" (Deploys 54 and 55).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 53 | #171 | `7b60df8` | 2026-09-27 20:37:35 | 1 | +39 | Notes only |
+| 54 | #172 | `dac2141` | 2026-09-27 21:03:34 | 2 | +5 / −1 | Notes only |
+| 55 | #173 | `f78c681` | 2026-09-27 21:03:37 | 7 | +319 / −52 | Site change |
+
+This is the first entry under the recording convention at the top of this
+document, so the notes-only Deploys 53 and 54 are listed here rather than
+recorded on their own:
+- **Deploy 53** recorded Deploy 52 and adopted the convention.
+- **Deploy 54** recorded the owner's live confirmation of Deploy 51 (C-125).
+
+#172 and #173 touch no common file. Both were mergeable against the same
+`main`, and the full suite passed on the combined result, `f78c681`.
+
+### Deploy 55 — What the owner decided
+
+Outstanding item 12 asked whether a deleted buyer should be erasable. The
+owner decided two things on 2026-09-27:
+- "deleted buyer should be earasable from bieing viewed on crm but could be
+  recalled if needed from code"
+- "if buyer requested to be deleted then delete fully"
+
+So the buyer page now has two actions:
+
+| Button | For | Result | Recallable? |
+|---|---|---|---|
+| **Delete** | A test, a lost lead, a duplicate | Hidden everywhere in the CRM; kept in the database | Yes, with `docs/recall-deleted-buyer.md` |
+| **Erase (deletion request)** | The person asked for their data to be deleted | Removed from the database | No |
+
+### Deploy 55 — What changed
+
+**Delete hides the buyer everywhere.** In the database nothing changed:
+`deleted_at` is set and the row is kept.
+- **Opening a deleted buyer** answers 410 with only the date deleted. No
+  name, contact details, notes (which hold a copy of the original message)
+  or stage history are sent, and the notes and history are not even read.
+- **The 410 is `no-store`.** Browsers may cache a 410 by default. Testing
+  showed a restored buyer still reading "deleted" until this was added.
+- **The buyer list** no longer has an `include_deleted` option.
+- **No document can be issued to a deleted buyer,** since that would copy
+  its details back into the CRM.
+- **The buyer page** shows "Deleted buyer", the date and one action: Erase.
+  The Enquiries inbox's link for a deleted buyer reads "Erase options".
+
+**Recall** is from the Neon SQL Editor, with the four queries in
+`docs/recall-deleted-buyer.md`: list, view, see notes and history, and
+restore. The restore writes its own audit entry. Reading in the SQL Editor
+is not audited, and the guide says so.
+
+**Erase** is for CRM staff only and needs confirmation. It works on a live
+buyer or an already-deleted one, in one SQL statement:
+- **Removed:** the buyer, its notes, its stage history, and the website
+  enquiries linked to it.
+- **Kept:** quotations, invoices and letters already issued, and the opt-out
+  list.
+- **Audit:** one entry recording who erased it and how many rows went, with
+  no personal details.
+
+### Claim register
+
+- **C-126 added.** The register stands at 126 claims.
+- C-55 remains the only `needs-review` row.
+
+### Testing method
+
+`npm test` passed with 45 checks on `f78c681`.
+
+**`check-deleted-buyers.js`, reworked (45 assertions).** It failed 19
+against the previous code. Each of three single faults was caught: the 410
+leaking the company name, erase skipping linked enquiries, and a document
+allowed for a deleted buyer.
+
+**End to end (36/36)** with real handlers, the Neon driver, PostgreSQL 16
+and Chromium, using dummy records sent through the real form endpoints into
+a throwaway database:
+- **Delete:** the buyer was hidden from the list, the API, the dashboard
+  and the buyer page.
+- **Recall:** the guide's own four queries listed, showed and restored the
+  buyer, and the CRM showed it again with its notes.
+- **Erase:** the buyer, notes, history and linked enquiry were gone and the
+  message survived nowhere. The opt-out and an issued quotation were kept,
+  and the guide could no longer bring the buyer back.
+
+### Rollback
+
+```
+git revert -m 1 f78c681
+```
+
+Nothing is stored differently. After a revert, buyers deleted in the
+meantime show read-only again, as before Deploy 55. **Anything erased stays
+erased.** Deploys 53 and 54 are documentation only.
+
+### Known limitations shipped with Deploy 55
+
+- **Not yet confirmed on the live site.** The owner's check, with a test
+  buyer: Delete it and expect "Deleted buyer" with only the date and an
+  Erase button; then Erase it and expect "Erased … permanently", and "Not
+  found" on reopening.
+- **Erase keeps issued documents.** A quotation, invoice or letter keeps the
+  name and address it was issued to. That matches the `/privacy` wording on
+  quotation and order records, and removing invoices may conflict with
+  record-keeping duties. Whether Erase should remove them too is for the
+  owner, with counsel (C-55).
+- **Other requests from the same person are not linked to the buyer.**
+  Downloads and Market Brief signups are deleted separately, from the
+  Enquiries page. The Erase dialog says so.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -4832,3 +4948,11 @@ last sync. It is not part of the changed-file scope of any deploy above.
     keeping sales history (C-55), is a decision for the owner. It is
     recorded here so the promise on `/privacy` is not assumed to be fully
     backed.
+
+    **Decided and built, 2026-09-27 (Deploy 55).** The owner decided that an
+    ordinary Delete hides a buyer from the CRM but keeps it recallable, and
+    that a buyer who asks to be deleted is erased fully. The buyer page now
+    has an Erase button for that, and it no longer needs a database
+    administrator. **Still open:** whether Erase should also remove documents
+    already issued (see Deploy 55's known limitations), and confirmation on
+    the live site.
