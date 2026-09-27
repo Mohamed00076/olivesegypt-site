@@ -658,8 +658,19 @@
             voidBtn.style.display = '';
             voidBtn.addEventListener('click', function () {
               if (!window.confirm(t.voidConfirm)) return;
+              // This said nothing at all unless the void worked -- neither the
+              // server's refusal nor a request that never got a reply. Staff-
+              // facing, so in English like every other CRM message, whatever
+              // the document's own language.
               CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(docId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
-                if (result.ok) window.location.reload();
+                if (result.ok) { window.location.reload(); return; }
+                window.alert((result.data && result.data.error) || 'Could not void this document.');
+              }).catch(function (e) {
+                var msg = CRM.noReplyMessage(e, 'Voiding this document',
+                  'The page will reload to show whether it is void.');
+                if (!msg) return;
+                window.alert(msg);
+                window.location.reload();
               });
             });
           }

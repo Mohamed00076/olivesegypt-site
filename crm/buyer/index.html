@@ -419,7 +419,13 @@
               showStatus('Saved.', true);
               checkCertificationGap(payload);
             }
-          }).catch(function () { saveBtn.disabled = false; });
+          }).catch(function (e) {
+            saveBtn.disabled = false;
+            var msg = isNew
+              ? CRM.noReplyMessage(e, 'Adding this buyer', 'Check the Buyers list before trying again, so it is not added twice.')
+              : CRM.noReplyMessage(e, 'Saving', 'Your changes are still on this page, and saving them again does no harm.');
+            if (msg) showStatus(msg, false);
+          });
         });
 
         document.getElementById('activity-form').addEventListener('submit', function (e) {
@@ -431,6 +437,12 @@
             if (!result.ok) { showStatus(result.data.error || 'Could not add entry.', false); return; }
             entryEl.value = '';
             return loadExisting();
+          }).catch(function (e) {
+            // The note stays in the box. Not reloaded here: that would refill
+            // the form above from the server and lose any unsaved edits to it.
+            var msg = CRM.noReplyMessage(e, 'Adding the note',
+              'Save any changes above, then reload the page and check the activity list before adding it again, so it is not recorded twice.');
+            if (msg) showStatus(msg, false);
           });
         });
 

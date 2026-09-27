@@ -207,7 +207,14 @@
               textArea.value = '';
               fileInput.value = '';
               reloadList();
-            }).catch(function () { runBtn.disabled = false; });
+            }).catch(function (e) {
+              runBtn.disabled = false;
+              var msg = CRM.noReplyMessage(e, 'The import',
+                'The list below has been reloaded -- check it before importing again, so rows are not added twice.');
+              if (!msg) return;
+              resultEl.innerHTML = '<div class="crm-status crm-status-error">' + CRM.escapeHtml(msg) + '</div>';
+              reloadList().catch(function () {});
+            });
           }
 
           if (fileInput.files && fileInput.files[0]) {
