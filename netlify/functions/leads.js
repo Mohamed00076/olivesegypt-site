@@ -21,7 +21,7 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json } = require('./_lib');
-const { requireReaderSession } = require('./_crm_lib');
+const { requireReaderSession, csvCell, ensureBuyerTables } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
 const {
   GUIDES, URL_TTL_SECONDS, COOKIE_TTL_SECONDS, signGuideToken, guideCookie,
@@ -352,10 +352,59 @@ async function handlePost(event, sql) {
  * rule. client_ip is left out. Each row says whether its address has opted
  * out, so nobody is contacted who asked not to be.
  */
+/*
+ * Market-brief subscribers, as a CSV to send the quarterly report to.
+ *
+ * The site promises signups a quarterly market report and nothing in it can
+ * send one, so the owner asked for the list (2026-09-27). Only addresses it is
+ * right to write to: a market-brief signup, consent box ticked, and NOT opted
+ * out since -- one row per address, its latest signup. Held to the same rules
+ * as the buyer export (crm-csv.js): explicit confirmation, an audit entry, and
+ * formula-injection protection on every cell. A byte-order mark leads the file
+ * so a spreadsheet reads Arabic company names correctly.
+ */
+async function handleExport(event, sql, session) {
+  const qs = event.queryStringParameters || {};
+  if (qs.confirmed !== '1') {
+    return json(400, { ok: false, error: 'Export requires explicit confirmation (confirmed=1)' }, { 'Cache-Control': 'no-store, private' });
+  }
+  const rows = await sql`
+    SELECT DISTINCT ON (lower(trim(l.email)))
+      lower(trim(l.email)) AS email, l.company_name, l.country_region, l.buyer_type,
+      to_char(l.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS signed_up
+    FROM leads_staging l
+    LEFT JOIN contact_opt_outs o ON o.email = lower(trim(l.email))
+    WHERE l.segment = 'market_report' AND l.consent = true
+      AND COALESCE(o.status, '') <> 'unsubscribed'
+    ORDER BY lower(trim(l.email)), l.created_at DESC
+  `;
+  rows.sort((a, b) => String(b.signed_up).localeCompare(String(a.signed_up)));
+  const cols = ['email', 'company_name', 'country_region', 'buyer_type', 'signed_up'];
+  const csv = '\uFEFF' + [['email', 'company', 'country', 'business_type', 'signed_up'].join(',')]
+    .concat(rows.map((r) => cols.map((c) => csvCell(r[c])).join(','))).join('\r\n');
+
+  await ensureBuyerTables(sql);   // creates crm_audit_log on a new database
+  await sql`INSERT INTO crm_audit_log (actor, action, record_type, record_id, details)
+            VALUES (${session.sub || 'unknown'}, 'export', 'market_brief_subscribers', NULL, ${'rows=' + rows.length})`;
+
+  const day = new Date().toISOString().slice(0, 10);
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="market-brief-subscribers-${day}.csv"`,
+      'Cache-Control': 'no-store, private',
+    },
+    body: csv,
+  };
+}
+
 async function handleGet(event, sql) {
-  if (!requireReaderSession(event)) {
+  const session = requireReaderSession(event);
+  if (!session) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }
+  if ((event.queryStringParameters || {}).export === 'market_report') return handleExport(event, sql, session);
   const rows = await sql`
     SELECT
       l.id,

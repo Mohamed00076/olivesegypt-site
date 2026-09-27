@@ -410,6 +410,18 @@ async function ensureBuyerTables(sql) {
 }
 
 
+// CSV-injection mitigation (moved here from crm-csv.js, 2026-09-27, when a
+// second export needed it): neutralize any cell whose content, once
+// coerced to a string, starts with a character a spreadsheet app would
+// interpret as the start of a formula (=, +, -, @) by prefixing a
+// single quote so it's forced to render as plain text on open.
+function csvCell(value) {
+  let s = value === null || value === undefined ? '' : String(value);
+  if (/^[=+\-@]/.test(s)) s = "'" + s;
+  if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
 /*
  * Either session may read what the website collects from visitors.
  *
@@ -456,6 +468,7 @@ module.exports = {
   classifyCompanyName,
   findNearDuplicates,
   requireReaderSession,
+  csvCell,
   STAGES,
   REGIONS,
   ensureBuyerTables,

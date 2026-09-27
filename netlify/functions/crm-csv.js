@@ -3,7 +3,7 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const {
-  requireCrmSession, readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES,
+  requireCrmSession, readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES, csvCell,
 } = require('./_crm_lib');
 
 function connectionString() {
@@ -27,16 +27,8 @@ const EXPORT_COLUMNS = [
   'certification_gap', 'next_action', 'next_action_due', 'assigned_to', 'created_at', 'updated_at',
 ];
 
-// CSV-injection mitigation: neutralize any cell whose content, once
-// coerced to a string, starts with a character a spreadsheet app would
-// interpret as the start of a formula (=, +, -, @) by prefixing a
-// single quote so it's forced to render as plain text on open.
-function csvCell(value) {
-  let s = value === null || value === undefined ? '' : String(value);
-  if (/^[=+\-@]/.test(s)) s = "'" + s;
-  if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
-  return s;
-}
+// csvCell (CSV-injection mitigation) lives in _crm_lib.js, shared with the
+// market-brief subscriber export in leads.js.
 
 function toCsv(rows) {
   const header = EXPORT_COLUMNS.join(',');

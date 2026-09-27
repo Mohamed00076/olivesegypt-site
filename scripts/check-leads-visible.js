@@ -43,6 +43,11 @@ process.env.CRM_SESSION_SECRET = SECRET;
 process.env.SESSION_SECRET = SECRET + '-admin';
 
 let reads = [];
+let audits = [];
+const EXPORT_ROWS = [
+  { email: 'a@example.com', company_name: '=HYPERLINK("http://x","click")', country_region: 'UK', buyer_type: 'importer', signed_up: '2026-09-01' },
+  { email: 'b@example.com', company_name: 'شركة الزيتون', country_region: 'Egypt', buyer_type: 'distributor', signed_up: '2026-09-20' },
+];
 const ROW = {
   id: 7, created_at: '2026-09-20T10:00:00.000Z', email: 'buyer@example.com', company_name: 'Example Imports BV',
   country_region: 'Netherlands', buyer_type: 'importer', consent: true, source_page: '/resources/private-label',
@@ -51,6 +56,8 @@ const ROW = {
 };
 const sql = (strings, ...vals) => {
   const q = Array.isArray(strings) ? strings.join('?') : String(strings);
+  if (/INSERT INTO crm_audit_log/i.test(q)) { audits.push(vals); return Promise.resolve([]); }
+  if (/DISTINCT ON/i.test(q) && /FROM leads_staging/i.test(q)) { reads.push(q); return Promise.resolve(EXPORT_ROWS.map((r) => ({ ...r }))); }
   if (/FROM leads_staging/i.test(q)) { reads.push(q); return Promise.resolve([ROW]); }
   return Promise.resolve([]);
 };
@@ -123,6 +130,35 @@ const get = async (cookie) => {
     const mb = f(Object.assign({}, ROW, { segment: 'market_report' }));
     t('a market-brief signup is shown as consent to the brief only, not a sales enquiry', /quarterly market brief only/.test(mb) && /not a sales enquiry/.test(mb));
   }
+
+  // ---- the market-brief subscriber export ---------------------------------------------
+  const exp = async (qs, cookie) => {
+    reads = []; audits = [];
+    const r = await leads.handler({ httpMethod: 'GET', headers: cookie ? { cookie } : {}, queryStringParameters: qs });
+    return { status: r.statusCode, body: r.body, headers: r.headers || {}, reads: reads.length, audits: audits.slice() };
+  };
+  const staff = `${CRM_COOKIE_NAME}=${signCrm('staff', SECRET)}`;
+  let x = await exp({ export: 'market_report', confirmed: '1' }, null);
+  t('the subscriber export refuses anyone without a session', x.status === 401 && x.reads === 0, x.status);
+  x = await exp({ export: 'market_report' }, staff);
+  t('   and needs an explicit confirmation, like the buyer export', x.status === 400 && x.reads === 0, x.status);
+  x = await exp({ export: 'market_report', confirmed: '1' }, staff);
+  t('   downloads as a CSV file, never cached', x.status === 200 && /text\/csv/.test(x.headers['Content-Type']) &&
+    /^attachment; filename="market-brief-subscribers-\d{4}-\d{2}-\d{2}\.csv"$/.test(x.headers['Content-Disposition']) && /no-store/.test(x.headers['Cache-Control']), JSON.stringify(x.headers));
+  const lines = x.body.split('\r\n');
+  t('   with a byte-order mark, so Arabic names open correctly', x.body.charCodeAt(0) === 0xFEFF);
+  t('   a header and one row per subscriber, newest first', lines[0] === '\uFEFFemail,company,country,business_type,signed_up' && lines.length === 3 &&
+    lines[1].startsWith('b@example.com'), JSON.stringify(lines));
+  t('   and a formula in a company name is neutralised', /"'=HYPERLINK\(""http:\/\/x"",""click""\)"/.test(x.body), lines[2]);
+  t('   every export is recorded in the audit log, with the row count', x.audits.length === 1 && x.audits[0][0] === 'staff' && x.audits[0][1] === 'rows=2', JSON.stringify(x.audits));
+  const eq = (src.match(/async function handleExport[\s\S]*?ORDER BY lower\(trim\(l\.email\)\), l\.created_at DESC/) || [''])[0];
+  t('   it includes only market-brief signups who consented', /WHERE l\.segment = 'market_report' AND l\.consent = true/.test(eq));
+  t('   leaves out every address that has opted out', /COALESCE\(o\.status, ''\) <> 'unsubscribed'/.test(eq) && /LEFT JOIN contact_opt_outs o ON o\.email = lower\(trim\(l\.email\)\)/.test(eq));
+  t('   and lists each address once', /SELECT DISTINCT ON \(lower\(trim\(l\.email\)\)\)/.test(eq));
+  t('the Enquiries page has the button, asks first, and reports failures',
+    /id="export-mb-btn"/.test(page) && /window\.confirm\('Download the email addresses/.test(page) &&
+    /fetch\('\/api\/leads\?export=market_report&confirmed=1'/.test(page) && /showStatus\('The export failed: '/.test(page) &&
+    /CRM\.noReplyMessage\(e, 'The export'/.test(page));
 
   const ok = fail === 0;
   console.log(`\nleads-visible ${ok ? 'OK' : 'FAILED'} -- every request the forms collect is visible to staff, and only staff.`);

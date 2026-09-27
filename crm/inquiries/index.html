@@ -21,6 +21,7 @@
         <h1 style="margin:0;">Enquiries</h1>
         <div class="crm-flex">
           <span class="crm-muted" id="count"></span>
+          <button type="button" class="crm-btn crm-btn-secondary" id="export-mb-btn">Export market-brief subscribers</button>
         </div>
       </div>
 
@@ -212,8 +213,42 @@
           });
         }
 
+        /*
+         * The quarterly-report mailing list, as a CSV. Fetched rather than
+         * navigated to, so a refusal or a dropped request is said on this page
+         * instead of leaving a raw error page. The server decides who is in it:
+         * market-brief signups with consent, minus anyone who opted out.
+         */
+        function exportSubscribers() {
+          if (!window.confirm('Download the email addresses of everyone who signed up for the market brief? ' +
+            'Anyone who has opted out is left out. Use it only to send the quarterly market report.')) return;
+          var btn = document.getElementById('export-mb-btn');
+          btn.disabled = true;
+          fetch('/api/leads?export=market_report&confirmed=1', { credentials: 'same-origin' }).then(function (res) {
+            if (res.status === 401) { window.location.href = '/crm/login/?next=' + encodeURIComponent(window.location.pathname); return; }
+            if (!res.ok) {
+              return res.json().catch(function () { return {}; }).then(function (d) {
+                showStatus('The export failed: ' + ((d && d.error) || 'HTTP ' + res.status) + '.', false);
+              });
+            }
+            var name = (/filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '') || [])[1] || 'market-brief-subscribers.csv';
+            return res.blob().then(function (blob) {
+              var a = document.createElement('a');
+              a.href = URL.createObjectURL(blob);
+              a.download = name;
+              document.body.appendChild(a); a.click(); a.remove();
+              setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+              showStatus('Downloaded ' + name + '.', true);
+            });
+          }).catch(function (e) {
+            var msg = CRM.noReplyMessage(e, 'The export', 'Try again; downloading it twice does no harm.');
+            if (msg) showStatus(msg, false);
+          }).then(function () { btn.disabled = false; });
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Enquiries');
+          document.getElementById('export-mb-btn').addEventListener('click', exportSubscribers);
           document.getElementById('filter').addEventListener('input', applyFilter);
           return Promise.all([settle(CRM.fetchJson('/api/inquiries')), settle(CRM.fetchJson('/api/leads'))]);
         }).then(function (res) {
