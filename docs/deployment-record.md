@@ -3831,6 +3831,9 @@ bumping the version twice and showing every visitor the banner twice.
 read it before merging, and was reminded after. **Whether they did is not
 stated.** Until they say so, it has the standing C-72's Arabic had before the
 owner reviewed that one, and C-112 and C-117 say so in `action_required`.
+**Settled later on 2026-09-27:** the owner read the live `/ar/privacy` and
+confirmed it ("its fine"). No change was needed, and C-112 and C-117 now have
+no open action.
 
 `check-privacy-disclosures.js` (new) ties the privacy text to the code in both
 directions. While `resolveOrg` is called, both pages must describe the lookup
@@ -3902,7 +3905,8 @@ git revert cb4484f 195d2aa c8259aa
 - **The re-shown banner has not been seen.** This environment cannot reach
   the site. The owner's check is to open it in a browser that had already
   answered the banner: it should appear again.
-- **The Arabic privacy wording's review status is unknown** (see Deploy 38).
+- ~~The Arabic privacy wording's review status is unknown~~. The owner
+  confirmed it the same day (see Deploy 38).
 - **Enquiries linked before this deploy stay linked**, under consent given
   before the text described the link. The owner may ask for them to be
   cleared; nobody has.
@@ -4116,4 +4120,5 @@ last sync. It is not part of the changed-file scope of any deploy above.
     Item 11 closes in full when #157 and #158 merge.
     **CLOSED 2026-09-27 (Deploys 38 and 39).** Both merged. One thread is left
     and recorded on C-112 and C-117 rather than here: whether the owner has
-    reviewed the Arabic wording that shipped in Deploy 38.
+    reviewed the Arabic wording that shipped in Deploy 38. **They have:
+    confirmed 2026-09-27. Nothing of item 11 remains.**
