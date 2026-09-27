@@ -4682,6 +4682,8 @@ erased.** Deploys 53 and 54 are documentation only.
   buyer: Delete it and expect "Deleted buyer" with only the date and an
   Erase button; then Erase it and expect "Erased … permanently", and "Not
   found" on reopening.
+  **Resolved 2026-09-27:** the owner confirmed both on the live site ("delete
+  and erase confirmed on live site").
 - **Erase keeps issued documents.** A quotation, invoice or letter keeps the
   name and address it was issued to. That matches the `/privacy` wording on
   quotation and order records, and removing invoices may conflict with
@@ -4956,3 +4958,5 @@ last sync. It is not part of the changed-file scope of any deploy above.
     administrator. **Still open:** whether Erase should also remove documents
     already issued (see Deploy 55's known limitations), and confirmation on
     the live site.
+    **Confirmed on the live site by the owner, 2026-09-27.** Only the
+    question of issued documents remains open.
