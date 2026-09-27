@@ -3765,6 +3765,10 @@ Individually:
   This environment cannot reach the site. The owner's first sample request is
   the live test: it should appear in `/crm/inquiries` as "In pipeline", and the
   buyer should be in Sample Requested with a next action due the next day.
+  **Observed 2026-09-27:** the owner sent a test sample request through the
+  production site and reports it working. This is the first sight of intake on
+  production. The report was "working fine", not a field-by-field comparison,
+  so it is recorded as that.
 - **Enquiries from before Deploy 36 are not in the pipeline.** The inbox marks
   them "Received before automatic intake". A back-fill was offered, not done.
 - **An anonymous visitor can now cause a CRM record to be created.** They
@@ -3902,9 +3906,9 @@ git revert cb4484f 195d2aa c8259aa
 
 ### Known limitations shipped with Deploys 38 to 40
 
-- **The re-shown banner has not been seen.** This environment cannot reach
-  the site. The owner's check is to open it in a browser that had already
-  answered the banner: it should appear again.
+- ~~The re-shown banner has not been seen.~~ **Observed 2026-09-27:** the
+  owner opened the site in a browser that had already answered, and the
+  banner appeared again.
 - ~~The Arabic privacy wording's review status is unknown~~. The owner
   confirmed it the same day (see Deploy 38).
 - **Enquiries linked before this deploy stay linked**, under consent given
