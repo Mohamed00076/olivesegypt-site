@@ -13,7 +13,7 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
-const { parseCookies, verifySession, COOKIE_NAME, readJsonBody, json } = require('./_lib');
+const { parseCookies, verifySession, COOKIE_NAME, readJsonBody, json, parseId } = require('./_lib');
 const { ensureSchema: ensureAnalyticsSchema, auditLog } = require('./_analytics_lib');
 const { ensureSchema, currentPeriod, getOrCreatePeriod, computeStatus } = require('./_kpi_lib');
 
@@ -36,8 +36,9 @@ function requireAdmin(event) {
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 async function handleGet(sql, qs) {
-  const kpiId = qs && qs.kpi_id ? Number(qs.kpi_id) : null;
-  if (kpiId && !Number.isFinite(kpiId)) return json(400, { ok: false, error: 'kpi_id must be a number' });
+  const kpiId = qs && qs.kpi_id ? parseId(qs.kpi_id) : null;
+  // Present but malformed is refused -- "abc" used to fall through to every KPI's values.
+  if (qs && qs.kpi_id && !kpiId) return json(400, { ok: false, error: 'kpi_id must be a number' });
 
   if (kpiId) {
     // Full version history for one KPI (all periods, all versions) --
@@ -67,8 +68,8 @@ async function handleGet(sql, qs) {
 }
 
 async function handlePost(sql, body, actor) {
-  const kpiId = Number(body.kpi_id);
-  if (!Number.isFinite(kpiId)) return json(400, { ok: false, error: 'kpi_id is required' });
+  const kpiId = parseId(body.kpi_id);
+  if (!kpiId) return json(400, { ok: false, error: 'kpi_id is required' });
 
   const defRows = await sql`SELECT * FROM kpi_definitions WHERE id = ${kpiId} LIMIT 1`;
   const def = defRows[0];

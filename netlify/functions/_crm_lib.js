@@ -12,7 +12,7 @@
 // (that rule is about olivesegypt-site vs. the separate umami-olivesegypt
 // codebase, which this file has no connection to at all).
 
-const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, COOKIE_NAME: ADMIN_COOKIE_NAME } = require('./_lib');
+const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, parseId, INVALID_ID_ERROR, COOKIE_NAME: ADMIN_COOKIE_NAME } = require('./_lib');
 
 const CRM_COOKIE_NAME = 'tc_crm_session';
 const CRM_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
@@ -468,16 +468,6 @@ const SUBMISSION_KINDS = {
   inquiry: { table: 'inquiries', kindColumn: 'request_type' },
   lead: { table: 'leads_staging', kindColumn: 'segment' },
 };
-
-// A record id from a request: digits only, or null. parseInt alone would read
-// "5; anything" or "5abc" as 5 and act on record 5 -- found deleting enquiries,
-// and true of the buyer and document pages too. Never act on a guess.
-function parseId(value) {
-  const raw = typeof value === 'number' ? String(value) : typeof value === 'string' ? value : '';
-  // A safe integer too: past 2^53 Number() rounds, and would name a different record.
-  return /^[1-9][0-9]{0,15}$/.test(raw) && Number.isSafeInteger(Number(raw)) ? Number(raw) : null;
-}
-const INVALID_ID_ERROR = 'Which one? A valid id is required.';
 
 async function deleteSubmission(event, sql, kind) {
   const k = SUBMISSION_KINDS[kind];
