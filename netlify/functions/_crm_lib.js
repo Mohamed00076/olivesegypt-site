@@ -469,6 +469,16 @@ const SUBMISSION_KINDS = {
   lead: { table: 'leads_staging', kindColumn: 'segment' },
 };
 
+// A record id from a request: digits only, or null. parseInt alone would read
+// "5; anything" or "5abc" as 5 and act on record 5 -- found deleting enquiries,
+// and true of the buyer and document pages too. Never act on a guess.
+function parseId(value) {
+  const raw = typeof value === 'number' ? String(value) : typeof value === 'string' ? value : '';
+  // A safe integer too: past 2^53 Number() rounds, and would name a different record.
+  return /^[1-9][0-9]{0,15}$/.test(raw) && Number.isSafeInteger(Number(raw)) ? Number(raw) : null;
+}
+const INVALID_ID_ERROR = 'Which one? A valid id is required.';
+
 async function deleteSubmission(event, sql, kind) {
   const k = SUBMISSION_KINDS[kind];
   if (!k) throw new Error(`deleteSubmission: unknown kind ${kind}`);
@@ -478,11 +488,8 @@ async function deleteSubmission(event, sql, kind) {
   if (qs.confirmed !== '1') {
     return json(400, { ok: false, error: 'Deletion requires explicit confirmation (confirmed=1)' });
   }
-  // Digits only. parseInt alone would read "5; anything" as 5 and delete
-  // record 5 -- found by this change's own check. Never delete on a guess.
-  const raw = String(qs.id == null ? '' : qs.id);
-  if (!/^[1-9][0-9]{0,17}$/.test(raw)) return json(400, { ok: false, error: 'Which one? A valid id is required.' });
-  const id = Number(raw);
+  const id = parseId(qs.id);
+  if (!id) return json(400, { ok: false, error: INVALID_ID_ERROR });
 
   await ensureBuyerTables(sql);   // crm_audit_log, on a new database
   // Table and column come from SUBMISSION_KINDS above, never from the request.
@@ -523,6 +530,8 @@ module.exports = {
   findNearDuplicates,
   requireReaderSession,
   deleteSubmission,
+  parseId,
+  INVALID_ID_ERROR,
   csvCell,
   STAGES,
   REGIONS,

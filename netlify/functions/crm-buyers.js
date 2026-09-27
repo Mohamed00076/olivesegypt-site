@@ -4,7 +4,7 @@ const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const {
   requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
-  STAGES, REGIONS: REGION_LIST, ensureBuyerTables,
+  STAGES, REGIONS: REGION_LIST, ensureBuyerTables, parseId, INVALID_ID_ERROR,
 } = require('./_crm_lib');
 
 function connectionString() {
@@ -304,7 +304,10 @@ exports.handler = async (event) => {
   const sql = neon(cs);
 
   const qs = event.queryStringParameters || {};
-  const id = qs.id ? parseInt(qs.id, 10) : null;
+  const id = qs.id ? parseId(qs.id) : null;
+  // An id that is there but malformed is refused -- never read as its leading
+  // digits ("5abc" is not buyer 5), and a GET is not quietly given the list.
+  if (qs.id && !id) return json(400, { ok: false, error: INVALID_ID_ERROR });
 
   try {
     await dbStep('preparing the database tables', () => ensureSchema(sql));
