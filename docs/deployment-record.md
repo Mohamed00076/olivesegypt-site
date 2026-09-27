@@ -3917,6 +3917,222 @@ git revert cb4484f 195d2aa c8259aa
 
 ---
 
+## Deploys 41 to 43 — A diagnosis that started from the wrong error (PRs #160, #161, #162)
+
+**Date:** 2026-09-27, between 04:58:51 and 05:00:21 +0300
+**Approval:** "merge 160 161 and 162".
+**Previous recorded deploy:** `cb4484f` (Deploy 40, PR #156)
+
+| Deploy | PR | Production commit | Files | Lines | Checks on that commit |
+|---|---|---|---|---|---|
+| 41 | #160 | `151936e` | 11 | +299 / −25 | 40 |
+| 42 | #161 | `4e04db1` | 8 | +212 / −7 | 41 |
+| 43 | #162 | `92c4331` | 16 | +402 / −2 | 42 |
+
+`7cc8b26` (#159, the record for Deploys 38 to 40) merged six minutes after
+Deploy 43. That makes it Deploy 44. It is documentation only and will be
+recorded with the next batch, the same way Deploy 40 was recorded here.
+
+### How it started
+
+The owner sent a brief headed "DIAGNOSE AND FIX: THE DATABASE COULD NOT BE
+REACHED ON BUYER/INQUIRY DELETE". Given September's outage, it asked for a
+full root cause rather than a patch, and it asked for read-only diagnosis
+until the cause was known.
+
+**The diagnosis went down the wrong path first, and that is worth recording.**
+The brief's message led to a thorough investigation of the database path:
+
+- The driver version was pinned and correct.
+- `sql(text, params)` is valid in 0.10.4, so this was not a September-style
+  missing method.
+- Every CRM write passed through the **real** Neon driver against a real
+  PostgreSQL 16, using a local stand-in for Neon's HTTP endpoint.
+- Failure injection showed that three different infrastructure faults all
+  produce the identical "could not be reached" message.
+
+None of that was wrong. It was simply about a failure that had not happened.
+
+**The owner's screenshot changed the answer.** It showed a red **"Not found"**
+under the delete confirmation dialog, not "could not be reached". In the delete
+code, "Not found" means the buyer exists but is **already deleted**. The page
+had loaded buyer 12 without error, so buyer 12 existed. The first Delete had
+worked.
+
+When the owner said "it's still there", that first read as a contradiction,
+because the Buyers list cannot show a deleted buyer. One direct question
+settled it: the address came from the page already open, not from the list.
+The work was paused while that was asked. It was committed as marked
+work-in-progress when a hook required it, with the failing check named in the
+commit message.
+
+**Lesson:** the exact text on the screen was worth more than any amount of
+investigation of the reported text. Ask for the screenshot first.
+
+### Deploy 41 — A deleted buyer shown as deleted (PR #160)
+
+**Root cause.** A deleted buyer was hidden from the list and treated as live
+everywhere else:
+
+- A successful delete showed nothing; it was a bare redirect.
+- The Enquiries inbox still said "In pipeline →" and linked to the deleted
+  buyer.
+- The buyer page opened the deleted record exactly like a live one.
+- A second Delete said "Not found".
+- Worse, Save and Add Note on a deleted buyer **succeeded silently**, changing
+  a record that no list, board or report would ever show. That was reproduced
+  with the real driver.
+
+**Fix:**
+
+- **Server:** a delete, edit or note on a deleted buyer now answers 409 with a
+  plain reason, e.g. "This buyer was deleted on 2026-09-27…".
+- **Buyer page:** a deleted record opens read-only, titled "(deleted)", with a
+  lasting notice.
+- **Buyers list:** confirms a delete with "Deleted "<name>"…".
+- **Enquiries inbox:** says "Buyer deleted <date> · View record" instead of
+  "In pipeline →".
+
+**Observed live, 2026-09-27.** The owner opened `/crm/buyer/?id=12`: it showed
+"test123 (deleted)", read-only, with no Delete or Save button.
+
+### Deploy 42 — Pages that went silent when a request died (PR #161)
+
+This was one of the Step 3 findings. The owner asked for it to be fixed.
+
+When a request ended without a readable reply (a dropped connection, or a
+timeout's HTML error page), most write actions caught the failure and said
+nothing. The page gave no sign that anything had gone wrong.
+
+The actions affected, and what staff saw:
+- **Saving a buyer:** the button came back, nothing else.
+- **Creating a buyer:** the same.
+- **Adding a note:** there was no handler at all.
+- **Creating a document:** the button came back, nothing else.
+- **The CSV import:** the same.
+- **A Kanban move:** the card snapped back, which was a guess.
+- **Voiding a document:** nothing was said even when the server *refused* the
+  void.
+
+`CRM.noReplyMessage` now says the outcome is **unknown**. Saying "it failed"
+would be as untrue as silence, because the server may have finished the work.
+It then gives the safe next step:
+
+- **After an edit:** saving again is harmless.
+- **After creating a buyer, creating a document or an import:** check the list
+  first, so nothing is added twice.
+- **After a Kanban move:** the board reloads from the server, which knows
+  where the card really is.
+
+The two actions the owner had not listed (the note, and voiding) were found by
+a check that scans every write call on every page rather than working from a
+list. Against `main` it flagged all seven.
+
+The check also had to be corrected once. A negative test showed it missed a
+write that is split across a multi-line `? :` expression.
+
+### Deploy 43 — Failures reach a person, not only the log (PR #162)
+
+This was the other Step 3 finding. Every CRM function logged failures to
+Netlify and told nobody. `_failure_lib.js` `reportFailure()` is now called from
+every error handler that logs a failure:
+
+- all nine CRM functions
+- website enquiries
+- pipeline intake
+- guide-download leads and their opt-out check
+
+It uses two channels, because each covers what the other cannot:
+
+1. **The CRM dashboard.** A "Something failed: N operations in the last 7
+   days" card sits above everything else. It works with no setup. It cannot
+   record the database itself being down, because recording needs the
+   database.
+2. **An email** through the existing notification path. It needs no
+   database, so it covers that outage, and it says it could not record the
+   failure. It is throttled to one email per 15 minutes per function instance.
+   **It delivers nothing until `NOTIFY_EMAIL` and `RESEND_API_KEY` are set**
+   (see outstanding item 10).
+
+The check scans every error handler. Its first version **silently missed two
+functions** that log with template literals. It now names each function, so
+a scan that stops seeing one fails.
+
+**Observed live, 2026-09-27.** After the deploy, the owner reports no
+"Something failed" card on the dashboard. That means no recorded CRM failure
+since the deploy, and no false alarm from the new code. It is evidence the
+card stays quiet when nothing fails. It is **not** evidence the card appears
+when something does; that was verified locally only.
+
+### The merges
+
+**`package.json`.** Every merge after the first conflicted on the `npm test`
+line. Each was resolved by taking `main`'s file whole and re-applying the
+branch's one change, with a script that asserts no check from either side was
+lost.
+
+**Shared files that merged without conflict.** Several files were changed by
+more than one PR:
+- `crm/buyer/index.html` by #160 and #161
+- `crm-buyers.js`, `crm-activity.js` and `inquiries.js` by #160 and #162
+
+Git merged these automatically. That was not trusted:
+- Both PRs' checks were re-run on each combined file.
+- Before #162 was pushed, the combined code was run against the real driver
+  and PostgreSQL. Every CRM write passed, and the test123 sequence behaved as
+  #160 intended.
+
+One assertion in that last run was written so that it could not fail. It was
+reported as proving nothing and is not counted here.
+
+### Claim register
+
+**C-118 to C-120 added**, all `defect-fixed`. The register now stands at 120
+claims. C-55 is still the only `needs-review` row.
+
+### Testing method
+
+`npm test` passed on each merged branch before its push, and the tip of
+`main` passed with 42 checks.
+
+New checks, each negative-tested against `main`'s code:
+
+| Check | Assertions | What it reproduces against `main` |
+|---|---|---|
+| `check-deleted-buyers.js` | 22 | the owner's `404 "Not found"`, plus the silent edit and silent note |
+| `check-crm-write-failures.js` | 15 | all seven silent writes |
+| `check-failure-alerts.js` | 45 | a handler that stops reporting |
+
+In Chromium, against the real handlers and PostgreSQL:
+- a delete followed by its confirmation, and the inbox link
+- all seven actions whose request gets no reply
+- a Kanban drag, plus a control drag with the server healthy
+- a refused operation reaching the dashboard and the (dry-run) email
+- the database down, where the email still goes
+
+### Rollback
+
+```
+git revert 92c4331 4e04db1 151936e
+```
+
+`crm_failures` can stay if these are reverted, since nothing else reads it.
+
+### Known limitations shipped with Deploys 41 to 43
+
+- **Email alerts reach nobody yet.** They need the same Netlify settings as
+  enquiry notifications. The dashboard card is the working channel.
+- **The analytics functions (`/admin/analytics`) are not wired into failure
+  reporting.** The scope was the CRM and what feeds it.
+- **"Could not be reached" still covers three different faults**: a Neon
+  outage, a rejected credential and a network drop. This was proposed as a
+  follow-up and not taken up. The real cause is in the Netlify function log,
+  and now also on the dashboard card when it can be recorded.
+- **The dashboard card has been seen live only in its quiet state.** Its
+  failure state was verified locally.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -4061,6 +4277,22 @@ last sync. It is not part of the changed-file scope of any deploy above.
    hand-written, and nothing checks that any of them still resembles what it
    stands in for. No audit of the rest has been done, and this item exists so
    that absence is on the record rather than assumed.
+   **Two more instances, 2026-09-26 and 27 (Deploys 36 and 41), found by
+   accident rather than by audit:**
+   - `check-inquiries-access.js`'s double answered `INSERT … RETURNING` with
+     nothing, which Postgres never does. It was corrected in Deploy 36.
+   - `check-buyer-edit-validation.js`'s double recognised a query only by its
+     exact text. Adding `deleted_at` to that query made the double treat
+     every buyer as missing. It was corrected in Deploy 41.
+
+   Both were caught because the change under test broke them, which is the
+   lucky direction. The unlucky direction, a double that keeps passing after
+   the real thing changes, is exactly what this item is about, and it is
+   still unaudited.
+   **A method that does not depend on doubles now exists:** running the real
+   handlers and the real Neon driver against a real PostgreSQL. Deploys 36
+   and 41 to 43 were verified that way, by hand. It is not part of `npm
+   test`.
 10. **An enquiry arrives and no human is told** (promoted to an outstanding
     item 2026-09-25, Deploy 31; carried as a per-deploy limitation since
     Deploy 11, where it kept disappearing). `netlify/functions/inquiries.js`
@@ -4089,6 +4321,12 @@ last sync. It is not part of the changed-file scope of any deploy above.
     an unanswered one appears in the CRM dashboard's overdue list. That reaches
     a person **who opens the CRM**. It is still not a notification: nothing
     reaches anyone who does not look, and the fix above is unchanged.
+    **Raised again 2026-09-27 (Deploy 43).** The new failure alerts use the
+    same email path, so they are silent for the same reason. Setting the
+    three values now switches on two things at once: enquiry notifications
+    and failure alerts. A real buyer's quote request arrived on 2026-09-27 and
+    reached nobody's inbox. The buyer is deliberately not named here: this
+    repository is public.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
