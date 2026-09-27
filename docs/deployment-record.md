@@ -4328,6 +4328,107 @@ for any exports remain.
 
 ---
 
+## Deploys 48 and 49 — A delete that cannot be walked back (PRs #166, #167)
+
+**Previous recorded deploy:** `b555aa7` (Deploy 47, PR #165)
+**Approval:** "merge 166 and 167".
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines |
+|---|---|---|---|---|---|
+| 48 | #166 | `3c4810c` | 2026-09-27 16:43:01 | 2 | +204 / −1 |
+| 49 | #167 | `bb0c1c5` | 2026-09-27 16:43:03 | 8 | +274 / −18 |
+
+The two PRs touch no common file. Their combination was merged locally, and
+passed the full suite, before either was merged on GitHub.
+
+### Deploy 48 — The record for Deploys 44 to 47 (PR #166)
+
+Documentation only, inside `docs/`, which is pruned from the published site.
+It carries:
+
+- the owner's confirmation of the Arabic privacy wording (C-123 became
+  `verified-approved`)
+- what the owner's Enquiries page showed: every request surfaced from before
+  Deploy 46 was the owner's own test, including the 3 September sample
+  request, which the owner confirmed separately
+- no names or addresses, because the repository is public.
+
+### Deploy 49 — Deleting an enquiry or request, for good (PR #167)
+
+The owner asked for a delete after seeing the test entries. Asked to choose,
+they picked **permanent** deletion over hiding, because it serves both reasons
+to delete:
+- a test entry
+- a visitor asking for their data to be deleted, as `/privacy` promises.
+
+`deleteSubmission()` in `_crm_lib.js` is used by `DELETE /api/inquiries` and
+`DELETE /api/leads`:
+
+- **CRM staff only.** The analytics-dashboard session can read these, but
+  not delete them.
+- **`confirmed=1` is required.** The id must be plain digits.
+- **The row and its audit entry go in one SQL statement.** Nothing can be
+  deleted without a record of who deleted it and when.
+- **The audit entry holds only the date received and the kind of request,**
+  never the person's details.
+- **Never touched:**
+  - the opt-out list: an unsubscribed address stays unsubscribed
+  - any buyer the enquiry created. The confirmation dialog says so.
+
+**Found by the change's own check before it shipped.** `parseInt` read an id
+like `5; …` as 5, so a malformed request would have deleted record 5. It was
+not SQL injection, since the id is always passed as a parameter, but it was
+a delete made on a guess. Ids are now accepted as plain digits only.
+`crm-buyers.js` and `crm-documents.js` still parse ids the lenient way; see
+the known limitations.
+
+### Claim register
+
+- **C-124 added.** The register stands at 124 claims.
+- C-55 remains the only `needs-review` row.
+
+### Testing method
+
+`npm test` passed with 44 checks on `bb0c1c5`.
+
+**`check-request-delete.js` (32 assertions) and two fresh-database schema
+cases.** Negative tests caught:
+- the audit entry split out of the delete statement
+- the email written into the audit entry.
+
+**End to end** (real handlers, the Neon driver, PostgreSQL 16, Chromium):
+- A test enquiry that had created a buyer, and an opted-out test download,
+  were both deleted from the page.
+- Both rows were gone.
+- The buyer and the opt-out were intact.
+- Two audit entries were written, with no personal details.
+- A repeat delete answered 404.
+
+### Rollback
+
+```
+git revert bb0c1c5
+```
+
+This removes the button. **It cannot bring back anything already deleted.**
+Deploy 48 is documentation only.
+
+### Known limitations shipped with Deploy 49
+
+- **A full "delete my data" request cannot yet be carried out from the CRM.**
+  Deleting an enquiry is permanent. But if the enquiry was added to the
+  pipeline:
+  - the buyer's delete is a *soft* delete, which keeps the person's name,
+    email and phone
+  - the buyer's activity log keeps a copy of the original message.
+
+  See outstanding item 12.
+- **`crm-buyers.js` and `crm-documents.js` read ids with `parseInt`,** so a
+  malformed id acts on its leading number. The CRM pages always send clean
+  ids. This was flagged, not changed.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -4564,3 +4665,22 @@ last sync. It is not part of the changed-file scope of any deploy above.
     and recorded on C-112 and C-117 rather than here: whether the owner has
     reviewed the Arabic wording that shipped in Deploy 38. **They have:
     confirmed 2026-09-27. Nothing of item 11 remains.**
+12. **A visitor's "delete my data" request cannot yet be carried out in full
+    from the CRM** (opened 2026-09-27, Deploy 49). `/privacy` says a visitor
+    can ask for their information to be deleted.
+
+    **What the CRM can do now:**
+    - Delete the enquiry or request permanently (Deploy 49).
+    - Delete a visitor's analytics sessions by visitor ID, from
+      `/admin/analytics`.
+
+    **What it cannot do, when the enquiry was added to the pipeline:**
+    - The buyer's delete is a **soft** delete. It hides the record and keeps
+      the name, email, phone and notes.
+    - The buyer's activity log holds a copy of the original message.
+
+    Honouring such a request today would need a database administrator.
+    Whether soft-deleted buyers should be erasable, and how that squares with
+    keeping sales history (C-55), is a decision for the owner. It is
+    recorded here so the promise on `/privacy` is not assumed to be fully
+    backed.
