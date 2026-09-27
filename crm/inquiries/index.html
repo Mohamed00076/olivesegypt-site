@@ -123,12 +123,16 @@
             '?subject=' + encodeURIComponent(subject) + '">Reply by email</a>' : '';
         }
 
+        function deleteButton(r) {
+          return '<button type="button" class="crm-btn crm-btn-danger delete-row-btn" style="margin-left:8px;" data-key="' + esc(r.key) + '">Delete</button>';
+        }
+
         function enquiryDetail(r) {
           return line('Product', r.product_interest) + line('Volume', r.estimated_volume) +
             (r.phone ? '<div><span class="crm-muted">Phone:</span> <span dir="ltr">' + esc(r.phone) + '</span></div>' : '') +
             line('Sent from', r.source_page) +
             '<div class="crm-inquiry-message">' + esc(r.message) + '</div>' +
-            replyButton(r.email, 'Re: your enquiry to Triple Company');
+            replyButton(r.email, 'Re: your enquiry to Triple Company') + deleteButton(r);
         }
 
         /*
@@ -151,7 +155,34 @@
             '<div class="crm-muted" style="margin:8px 0;">' + agreed + '</div>' +
             (r.opted_out
               ? '<div class="crm-status crm-status-error">This address has since opted out of contact. Do not email it.</div>'
-              : replyButton(r.email, 'Re: your request to Triple Company'));
+              : replyButton(r.email, 'Re: your request to Triple Company')) + deleteButton(r);
+        }
+
+        /*
+         * Delete for good (owner's choice, 2026-09-27): for test entries, and
+         * for a visitor who asks for their data to be deleted. The server
+         * records who deleted what and when, without the person's details.
+         * A buyer the enquiry created is a separate record and is not touched,
+         * and neither is the opt-out list -- the confirmation says which applies.
+         */
+        function deleteRow(r) {
+          var who = r.company || r.name || r.email || 'this sender';
+          var msg = 'Permanently delete this ' + (r.kind === 'lead' ? 'request' : 'enquiry') + ' from ' + who + '?\n\n' +
+            'This cannot be undone.' +
+            (r.buyer_id && !r.buyer_deleted_on ? '\n\nIt was added to the pipeline. The buyer record is NOT deleted -- open it from the Pipeline column and delete it there if needed.' : '') +
+            (r.opted_out ? '\n\nThis address has opted out, and stays opted out.' : '');
+          if (!window.confirm(msg)) return;
+          var url = (r.kind === 'lead' ? '/api/leads' : '/api/inquiries') + '?id=' + encodeURIComponent(r.id) + '&confirmed=1';
+          CRM.fetchJson(url, { method: 'DELETE' }).then(function (result) {
+            if (!result.ok) { showStatus((result.data && result.data.error) || 'Could not delete.', false); return; }
+            rows = rows.filter(function (x) { return x.key !== r.key; });
+            updateCount();
+            applyFilter();
+            showStatus('Deleted the ' + (r.kind === 'lead' ? 'request' : 'enquiry') + ' from ' + who + '.', true);
+          }).catch(function (e) {
+            var m = CRM.noReplyMessage(e, 'Deleting it', 'Reload the page to see whether it is gone before trying again.');
+            if (m) showStatus(m, false);
+          });
         }
 
         function render(list) {
@@ -185,6 +216,13 @@
           html += '</tbody></table>';
           el.innerHTML = html;
 
+          el.querySelectorAll('.delete-row-btn').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var key = b.getAttribute('data-key');
+              var r = rows.filter(function (x) { return x.key === key; })[0];
+              if (r) deleteRow(r);
+            });
+          });
           el.querySelectorAll('.detail-btn').forEach(function (b) {
             b.addEventListener('click', function () {
               var row = document.getElementById('detail-' + b.getAttribute('data-id'));
@@ -193,6 +231,14 @@
               b.textContent = open ? 'Open' : 'Close';
             });
           });
+        }
+
+        function updateCount() {
+          var nEnq = rows.filter(function (r) { return r.kind === 'enquiry'; }).length;
+          var nLead = rows.length - nEnq;
+          document.getElementById('count').textContent =
+            nEnq + (nEnq === 1 ? ' enquiry' : ' enquiries') + ' · ' +
+            nLead + (nLead === 1 ? ' download or brief' : ' downloads and briefs');
         }
 
         function applyFilter() {
@@ -259,11 +305,7 @@
           rows = (enq.ok && Array.isArray(enq.data) ? enq.data.map(fromEnquiry) : [])
             .concat(leads.ok && Array.isArray(leads.data) ? leads.data.map(fromLead) : [])
             .sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); });
-          var nEnq = rows.filter(function (r) { return r.kind === 'enquiry'; }).length;
-          var nLead = rows.length - nEnq;
-          document.getElementById('count').textContent =
-            nEnq + (nEnq === 1 ? ' enquiry' : ' enquiries') + ' · ' +
-            nLead + (nLead === 1 ? ' download or brief' : ' downloads and briefs');
+          updateCount();
           applyFilter();
         }).catch(function (e) {
           if (e && e.message !== 'unauthorized') showStatus('Could not load page.', false);

@@ -95,7 +95,7 @@ const get = async (cookie) => {
   t('the list never returns the visitor\'s IP address', sel && !/client_ip/.test(sel), sel.slice(-400));
   t('   and says whether each address has opted out',
     /LEFT JOIN contact_opt_outs o ON o\.email = lower\(trim\(l\.email\)\)/.test(src) && /AS opted_out/.test(sel));
-  t('the POST path the forms use is unchanged', /if \(method === 'GET'\) return await handleGet\(event, sql\);\s*return await handlePost\(event, sql\);/.test(src));
+  t('the POST path the forms use is unchanged', /if \(method === 'GET'\) return await handleGet\(event, sql\);\s*(?:if \(method === 'DELETE'\) return await deleteSubmission\(event, sql, 'lead'\);\s*)?return await handlePost\(event, sql\);/.test(src));
 
   // ---- the page -------------------------------------------------------------------
   const page = fs.readFileSync(path.join(ROOT, 'crm/inquiries/index.html'), 'utf8');
@@ -119,7 +119,8 @@ const get = async (cookie) => {
     const sb = { esc: (v) => String(v == null ? '' : v), encodeURIComponent,
       BUYER_TYPES: { importer: 'Importer' },
       line: (l, v) => (v ? `<div>${l}: ${v}</div>` : ''),
-      replyButton: (e, s) => (e ? `<a href="mailto:${e}">Reply by email</a>` : '') };
+      replyButton: (e, s) => (e ? `<a href="mailto:${e}">Reply by email</a>` : ''),
+      deleteButton: () => '<button class="delete-row-btn">Delete</button>' };
     vm.createContext(sb);
     const f = vm.runInContext('(' + detail + ')', sb);
     const live = f(Object.assign({}, ROW));
@@ -129,6 +130,7 @@ const get = async (cookie) => {
     t('an opted-out address gets no Reply button, and a warning instead', !/Reply by email/.test(out) && /opted out of contact\. Do not email it\./.test(out), out.slice(-200));
     const mb = f(Object.assign({}, ROW, { segment: 'market_report' }));
     t('a market-brief signup is shown as consent to the brief only, not a sales enquiry', /quarterly market brief only/.test(mb) && /not a sales enquiry/.test(mb));
+    t('   every request, opted out or not, can be deleted', /delete-row-btn/.test(live) && /delete-row-btn/.test(out) && /delete-row-btn/.test(mb));
   }
 
   // ---- the market-brief subscriber export ---------------------------------------------

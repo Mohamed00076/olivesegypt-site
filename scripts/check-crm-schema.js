@@ -202,6 +202,19 @@ const CASES = [
     rows: () => [],
   },
   {
+    // Deleting writes crm_audit_log, which this function must create itself.
+    file: 'inquiries.js',
+    what: 'delete an enquiry',
+    event: { httpMethod: 'DELETE', queryStringParameters: { id: '1', confirmed: '1' } },
+    rows: () => [],
+  },
+  {
+    file: 'leads.js',
+    what: 'delete a guide download or brief',
+    event: { httpMethod: 'DELETE', queryStringParameters: { id: '1', confirmed: '1' } },
+    rows: () => [],
+  },
+  {
     file: 'crm-activity.js',
     what: 'add an activity entry',
     event: { httpMethod: 'POST', queryStringParameters: {}, body: JSON.stringify({ buyer_id: 1, entry: 'Called.' }) },

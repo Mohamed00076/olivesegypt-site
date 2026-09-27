@@ -445,6 +445,60 @@ function requireReaderSession(event) {
   return requireCrmSession(event);
 }
 
+/*
+ * Permanently delete one thing a visitor sent: an enquiry, or a guide
+ * download / brief / market-brief signup.
+ *
+ * The owner chose "gone for good" over hidden (2026-09-27): these rows are
+ * someone's personal details, and the two reasons to delete one -- a test
+ * entry, or a visitor asking for their data to be deleted, as /privacy
+ * promises -- both want it gone, not kept out of sight.
+ *
+ * CRM staff only, and only with confirmed=1, like every other delete here.
+ * The row and its audit entry go in ONE statement, so nothing can be deleted
+ * without a record of who deleted what and when. The audit entry carries the
+ * date received and the kind of request -- never the person's details, since
+ * the point is that those are gone.
+ *
+ * Deliberately NOT touched: contact_opt_outs (someone who unsubscribed must
+ * stay unsubscribed after their request is deleted), and any buyer the
+ * enquiry created -- that is a separate record with its own delete.
+ */
+const SUBMISSION_KINDS = {
+  inquiry: { table: 'inquiries', kindColumn: 'request_type' },
+  lead: { table: 'leads_staging', kindColumn: 'segment' },
+};
+
+async function deleteSubmission(event, sql, kind) {
+  const k = SUBMISSION_KINDS[kind];
+  if (!k) throw new Error(`deleteSubmission: unknown kind ${kind}`);
+  const session = requireCrmSession(event);
+  if (!session) return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
+  const qs = event.queryStringParameters || {};
+  if (qs.confirmed !== '1') {
+    return json(400, { ok: false, error: 'Deletion requires explicit confirmation (confirmed=1)' });
+  }
+  // Digits only. parseInt alone would read "5; anything" as 5 and delete
+  // record 5 -- found by this change's own check. Never delete on a guess.
+  const raw = String(qs.id == null ? '' : qs.id);
+  if (!/^[1-9][0-9]{0,17}$/.test(raw)) return json(400, { ok: false, error: 'Which one? A valid id is required.' });
+  const id = Number(raw);
+
+  await ensureBuyerTables(sql);   // crm_audit_log, on a new database
+  // Table and column come from SUBMISSION_KINDS above, never from the request.
+  const gone = await sql(
+    `WITH gone AS (DELETE FROM ${k.table} WHERE id = $1 RETURNING id, created_at, ${k.kindColumn} AS kind)
+     INSERT INTO crm_audit_log (actor, action, record_type, record_id, details)
+     SELECT $2, 'delete', $3, id,
+            'received ' || to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD') || ', ' || COALESCE(kind, 'unspecified')
+     FROM gone
+     RETURNING record_id`,
+    [id, session.sub || 'unknown', kind]
+  );
+  if (!gone[0]) return json(404, { ok: false, error: 'Not found -- it may already have been deleted.' });
+  return json(200, { ok: true });
+}
+
 module.exports = {
   CRM_COOKIE_NAME,
   CRM_SESSION_TTL_SECONDS,
@@ -468,6 +522,7 @@ module.exports = {
   classifyCompanyName,
   findNearDuplicates,
   requireReaderSession,
+  deleteSubmission,
   csvCell,
   STAGES,
   REGIONS,
