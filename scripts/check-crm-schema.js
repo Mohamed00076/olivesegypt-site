@@ -186,6 +186,14 @@ const CASES = [
       : /FROM buyers/i.test(q) ? [{ id: 1, current_stage: 'Lead' }] : []),
   },
   {
+    // The Enquiries inbox joins to buyers to say when one was deleted. It may
+    // be the first CRM read on a new database, so it must create buyers too.
+    file: 'inquiries.js',
+    what: 'open the Enquiries inbox',
+    event: { httpMethod: 'GET', queryStringParameters: {} },
+    rows: () => [],
+  },
+  {
     file: 'crm-activity.js',
     what: 'add an activity entry',
     event: { httpMethod: 'POST', queryStringParameters: {}, body: JSON.stringify({ buyer_id: 1, entry: 'Called.' }) },

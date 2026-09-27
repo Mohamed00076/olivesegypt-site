@@ -184,8 +184,14 @@ async function handleCreate(event, sql, actor) {
 }
 
 async function handleUpdate(event, sql, id, actor) {
-  const existingRows = await sql`SELECT current_stage FROM buyers WHERE id = ${id} LIMIT 1`;
+  const existingRows = await sql`SELECT current_stage, deleted_at FROM buyers WHERE id = ${id} LIMIT 1`;
   if (!existingRows[0]) return json(404, { ok: false, error: 'Not found' });
+  if (existingRows[0].deleted_at) {
+    return json(409, {
+      ok: false, already_deleted: true,
+      error: deletedMessage(existingRows[0], 'A deleted record is kept for the record and cannot be edited.'),
+    });
+  }
   const previousStage = existingRows[0].current_stage;
 
   const body = readJsonBody(event) || {};
@@ -240,6 +246,25 @@ async function handleUpdate(event, sql, id, actor) {
   return json(200, { ok: true });
 }
 
+/*
+ * A deleted buyer is kept (soft delete, below) but is not a live record.
+ *
+ * It was treated as one everywhere except the list. Its page still opened at
+ * /crm/buyer/?id=N looking exactly like a live buyer -- Save and Delete
+ * offered, nothing saying otherwise -- and the Enquiries inbox's "In pipeline"
+ * link still led there. A second Delete then answered "Not found", which read
+ * as a failure when the first delete had worked; and Save quietly edited a
+ * record that no list, board or report would ever show again. Found
+ * 2026-09-27 when the owner deleted test123 and was shown exactly that.
+ *
+ * So both write paths now say what actually happened, in words staff can act
+ * on, and the page renders a deleted record read-only (crm/buyer/index.html).
+ */
+function deletedMessage(row, what) {
+  const when = row.deleted_at ? new Date(row.deleted_at).toISOString().slice(0, 10) : 'an earlier date';
+  return `This buyer was deleted on ${when}. ${what}`;
+}
+
 async function handleDelete(event, sql, id, actor) {
   const qs = event.queryStringParameters || {};
   // Rule 22: explicit confirmation step required before any bulk delete
@@ -249,8 +274,14 @@ async function handleDelete(event, sql, id, actor) {
   if (qs.confirmed !== '1') {
     return json(400, { ok: false, error: 'Deletion requires explicit confirmation (confirmed=1)' });
   }
-  const rows = await sql`SELECT id FROM buyers WHERE id = ${id} AND deleted_at IS NULL LIMIT 1`;
+  const rows = await sql`SELECT id, deleted_at FROM buyers WHERE id = ${id} LIMIT 1`;
   if (!rows[0]) return json(404, { ok: false, error: 'Not found' });
+  if (rows[0].deleted_at) {
+    return json(409, {
+      ok: false, already_deleted: true,
+      error: deletedMessage(rows[0], 'Nothing more to do: it no longer appears in the buyer list, the Kanban board or the dashboard.'),
+    });
+  }
 
   // Soft delete -- preserves buyer_activity_log/buyer_stage_history for
   // append-only auditability and so historical conversion-rate reporting
