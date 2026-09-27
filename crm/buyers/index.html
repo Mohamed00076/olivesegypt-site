@@ -37,6 +37,8 @@
         </div>
       </div>
 
+      <div id="deleted-status" class="crm-status crm-status-success" style="display:none;"></div>
+
       <div class="crm-card" id="import-card" style="display:none;">
         <h2>Import Buyers From CSV</h2>
         <p class="crm-muted">
@@ -227,6 +229,24 @@
         });
 
         populateFilters();
+
+        /*
+         * Say the delete worked. A bare redirect here after Delete left no sign
+         * that anything had happened, so a buyer reached again through the
+         * Enquiries "In pipeline" link looked undeleted and was deleted twice
+         * -- the second time answering "Not found". The flag is dropped from
+         * the address bar straight away: it describes one moment, not the page.
+         */
+        (function () {
+          var deleted = new URLSearchParams(window.location.search).get('deleted');
+          if (deleted === null) return;
+          var el = document.getElementById('deleted-status');
+          el.textContent = 'Deleted ' + (deleted ? '\u201c' + deleted + '\u201d' : 'the buyer') +
+            '. It no longer appears in this list, the Kanban board or the dashboard.';
+          el.style.display = 'block';
+          if (window.history && window.history.replaceState) window.history.replaceState({}, '', '/crm/buyers/');
+        })();
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Buyers');
           return CRM.fetchJson('/api/crm/buyers');

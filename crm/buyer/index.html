@@ -363,6 +363,7 @@
             // Hidden on the just-saved view only -- see justSaved above.
             if (!justSaved) document.getElementById('delete-btn').style.display = '';
             fillForm(b);
+            if (b.deleted_at) markDeleted(b);
             if (justSaved) {
               showStatus('Saved. ' + b.company_name + ' has been added to your buyers.', true);
               /*
@@ -378,6 +379,26 @@
             renderActivity(b.activity_log || []);
             loadDocuments();
           });
+        }
+
+        /*
+         * A deleted buyer, shown for the record and nothing else.
+         *
+         * This page used to open a deleted record exactly like a live one --
+         * Save and Delete offered, nothing saying otherwise -- so a second
+         * Delete answered "Not found" after the first had worked, and Save
+         * edited a record no list or report would show again. Now the page
+         * says it was deleted and when, and offers nothing that would change it.
+         */
+        function markDeleted(b) {
+          var when = String(b.deleted_at).slice(0, 10);
+          document.getElementById('delete-btn').style.display = 'none';
+          document.getElementById('save-btn').style.display = 'none';
+          document.getElementById('page-title').textContent = b.company_name + ' (deleted)';
+          Array.prototype.forEach.call(document.getElementById('buyer-form').elements, function (el) { el.disabled = true; });
+          document.getElementById('activity-form').style.display = 'none';
+          showStatus('This buyer was deleted on ' + when + '. It no longer appears in the buyer list, the Kanban board or the dashboard. ' +
+            'It is kept here for the record only and cannot be edited.', false);
         }
 
         /*
@@ -448,9 +469,21 @@
 
         document.getElementById('delete-btn').addEventListener('click', function () {
           if (!window.confirm('Delete this buyer record? This can only be undone by a database administrator.')) return;
+          var name = document.getElementById('company_name').value;
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
-            if (!result.ok) { showStatus(result.data.error || 'Could not delete.', false); return; }
-            window.location.href = '/crm/buyers/';
+            if (!result.ok) {
+              showStatus(result.data.error || 'Could not delete.', false);
+              // Already deleted (e.g. by an earlier click): show it as such.
+              if (result.data.already_deleted) loadExisting();
+              return;
+            }
+            // Say it worked. A bare redirect left nothing to show the delete
+            // had happened, which is how a second attempt came about.
+            window.location.href = '/crm/buyers/?deleted=' + encodeURIComponent(name);
+          }).catch(function (e) {
+            if (e && e.message === 'unauthorized') return;
+            showStatus('The delete request did not complete, so it is not known whether it worked. ' +
+              'Check the buyer list before trying again.', false);
           });
         });
 
