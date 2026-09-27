@@ -4195,6 +4195,7 @@ problem.**
    older contact-form sample request (3 September) looks like a test but is
    not from the owner's address. Names and addresses are deliberately not
    recorded, because this repository is public.
+   **The owner confirmed that one was their own test too.**
 
 **What changed:**
 
