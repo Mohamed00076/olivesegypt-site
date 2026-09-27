@@ -20,6 +20,7 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const {
   requireCrmSession, json, describeDbError, dbStep,
   classifyCompanyName, findNearDuplicates,
@@ -111,6 +112,7 @@ exports.handler = async (event) => {
     console.error(
       `[crm-data-quality] error: step=${described.step || 'unknown'} code=${described.code || 'none'} ${err && err.message ? err.message : err}`
     );
+    await reportFailure(sql, { source: 'crm-data-quality', method: event.httpMethod, step: described.step, actor: session.sub }, err);
     return json(500, { ok: false, ...described });
   }
 };

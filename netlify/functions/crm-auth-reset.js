@@ -18,6 +18,7 @@
 
 const crypto = require('crypto');
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const { hashPassword, readJsonBody, json } = require('./_crm_lib');
 
 function connectionString() {
@@ -95,6 +96,7 @@ exports.handler = async (event) => {
     return json(200, { ok: true });
   } catch (err) {
     console.error('[crm-auth-reset] error:', err?.message ?? err);
+    await reportFailure(sql, { source: 'crm-auth-reset', method: event.httpMethod }, err);
     return json(500, { ok: false, error: 'Could not reset password.' });
   }
 };

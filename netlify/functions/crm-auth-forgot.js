@@ -24,6 +24,7 @@
 
 const crypto = require('crypto');
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json } = require('./_crm_lib');
 const { sendEmail } = require('./_email_lib');
 
@@ -142,6 +143,7 @@ exports.handler = async (event) => {
     }
   } catch (err) {
     console.error('[crm-auth-forgot] error:', err?.message ?? err);
+    await reportFailure(sql, { source: 'crm-auth-forgot', method: event.httpMethod }, err);
     // Still return the generic response -- an error here must not leak
     // "that username doesn't exist" vs. "something broke" to the caller.
   }

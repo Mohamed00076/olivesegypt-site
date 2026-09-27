@@ -22,6 +22,7 @@
            somebody outside the company is waiting on. Everything below is
            our own pipeline, which can wait a minute; a buyer who filled in
            the contact form cannot tell whether anyone has seen it. -->
+      <div id="failures-card"></div>
       <div id="inbox-card"></div>
 
       <div id="dashboard-content">
@@ -82,6 +83,40 @@
           '</div>';
         }
 
+        /*
+         * Something failed. Every CRM failure was already written to Netlify's
+         * function log, and nobody reads that unprompted -- which is how
+         * eighteen broken calls ran for three and a half weeks in September.
+         * Recorded failures from the last seven days are shown here, above
+         * everything else, until they age out. See _failure_lib.js.
+         */
+        var FAILURE_PLACES = {
+          'crm-buyers': 'Buyers', 'crm-activity': 'Activity notes', 'crm-documents': 'Documents',
+          'crm-csv': 'CSV import/export', 'crm-dashboard': 'Dashboard', 'crm-data-quality': 'Review names',
+          'crm-auth-login': 'Sign-in', 'crm-auth-forgot': 'Forgot password', 'crm-auth-reset': 'Password reset',
+          'inquiries': 'Website enquiries', 'leads': 'Guide downloads'
+        };
+        // When no step was recorded, say what kind of action it was -- greyed,
+        // because it is inferred from the request, not recorded.
+        var FAILURE_ACTIONS = { GET: 'loading', POST: 'creating or sending', PATCH: 'saving a change', DELETE: 'deleting' };
+        function renderFailures(f) {
+          var el = document.getElementById('failures-card');
+          if (!f || !f.count) { el.innerHTML = ''; return; }
+          el.innerHTML = '<div class="crm-card crm-failures">' +
+            '<h2>Something failed: ' + f.count + (f.count === 1 ? ' operation' : ' operations') + ' in the last ' + f.days + ' days</h2>' +
+            '<p class="crm-muted">Each one is also in the Netlify function log with full detail. ' +
+            (f.count > f.latest.length ? 'The ' + f.latest.length + ' most recent:' : '') + '</p>' +
+            '<table><thead><tr><th>When</th><th>Where</th><th>While</th><th>Error</th></tr></thead><tbody>' +
+            f.latest.map(function (r) {
+              return '<tr><td>' + CRM.fmtDate(r.occurred_at) + '</td>' +
+                '<td>' + CRM.escapeHtml(FAILURE_PLACES[r.source] || r.source) + (r.method ? ' <span class="crm-muted">' + CRM.escapeHtml(r.method) + '</span>' : '') + '</td>' +
+                '<td>' + (r.step ? CRM.escapeHtml(r.step)
+                  : '<span class="crm-muted">' + CRM.escapeHtml(FAILURE_ACTIONS[r.method] || '') + '</span>') + '</td>' +
+                '<td>' + CRM.escapeHtml(r.message || '') + (r.code ? ' <span class="crm-muted">(' + CRM.escapeHtml(r.code) + ')</span>' : '') + '</td></tr>';
+            }).join('') +
+            '</tbody></table></div>';
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Dashboard');
 
@@ -94,6 +129,7 @@
           return CRM.fetchJson('/api/crm/dashboard');
         }).then(function (result) {
           var d = result.data;
+          renderFailures(d && d.failures);
           var byStage = {};
           d.by_stage.forEach(function (s) { byStage[s.stage] = s.count; });
           var totalActive = d.by_stage.reduce(function (sum, s) { return sum + s.count; }, 0);

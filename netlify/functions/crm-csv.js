@@ -1,6 +1,7 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const {
   requireCrmSession, readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES,
 } = require('./_crm_lib');
@@ -214,6 +215,7 @@ exports.handler = async (event) => {
     return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST' });
   } catch (err) {
     console.error('[crm-csv] error:', err?.message ?? err);
+    await reportFailure(sql, { source: 'crm-csv', method: event.httpMethod, actor }, err);
     return json(500, { ok: false, error: 'Server error' });
   }
 };
