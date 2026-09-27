@@ -3522,6 +3522,260 @@ companies.
 
 ---
 
+## Deploy 32 — A table that answered a different question from its heading (PR #150)
+
+**Date:** 2026-09-25
+**Production commit:** `33cce4d`
+**Previous recorded deploy:** `6b9cae0` (Deploy 31, PR #148)
+**Delta:** 1 commit, 1 merged pull request, 3 files changed (+164 / −6)
+**Approval:** "merge 150", after the owner sent a screenshot of the dashboard's
+stage table asking "are these in the right order?" and answered "yes fix all
+three".
+
+They were not in order, and the labels described the opposite of the number.
+
+- **Order.** The query has no outer `ORDER BY`, so rows arrived in whatever
+  order the aggregate produced, and that could change between runs.
+  `stageOrderIndex` had been in `crm/index.html` since it was written and was
+  never called. It is now, on a copy of the rows.
+- **Label.** Each history row is a move *to* a stage, and `LEAD()` finds the
+  next move, so the figure is time **spent in** a stage. The headings said
+  "Average Time to Reach Each Stage" / "Avg. Days To Get There", which is a
+  different question: one tells you your cycle length, the other where deals
+  stall. They now read "Average Time Spent in Each Stage" / "Avg. Days In Stage".
+- **Missing stages.** Only stages somebody has already left can appear. That
+  is correct, because counting the current stage as zero days would drag every
+  average down, but the table now says so rather than looking broken.
+
+### Claim register
+
+**C-109 added**, `defect-fixed`. It was not written at merge time and is
+added now.
+
+### Testing method
+
+`npm test` — 33 checks, green on `33cce4d`. `check-stage-table.js` guards the
+pairing of query and label, not the pieces separately: if the query ever
+measures something else, the new labels would be wrong in the other direction.
+Four injected regressions were each caught.
+
+### Rollback
+
+```
+git revert 33cce4d
+```
+
+---
+
+## Deploys 33 to 37 — One approval, five merges, in the order given
+
+**Date:** 2026-09-26, all five between 12:31:38 and 12:34:25 +0300
+**Approval:** "merge 155 then the rest".
+
+| Deploy | PR | Production commit | Files | Lines | Checks on that commit |
+|---|---|---|---|---|---|
+| 33 | #155 | `e0400c5` | 4 | +90 / −3 | 34 |
+| 34 | #151 | `47660b4` | 3 | +129 / −1 | 35 |
+| 35 | #152 | `0023eb6` | 5 | +228 / −3 | 36 |
+| 36 | #153 | `d80ee36` | 12 | +910 / −100 | 37 |
+| 37 | #154 | `6eae97b` | 4 | +141 / −3 | 38 |
+
+Previous recorded deploy: `33cce4d` (Deploy 32).
+
+**The order was the owner's, and it mattered.** #155 had to land before #153,
+because #153 tags Kalamata enquiries and until #155 the buyer page had no
+Kalamata checkbox, so saving such a buyer would have dropped the tag.
+
+**Every merge after the first conflicted.** All five PRs added a check to the
+end of the same `npm test` line. Each was resolved the way this repository
+resolves these: take `main`'s `package.json` whole, re-apply the branch's one
+change, and assert that no check from either side was lost. Before each push
+the full suite ran on the merged tree, not on the branch as reviewed.
+
+**#153 also conflicted in real code.** #152 and #153 both changed
+`inquiries.js`: #152 added a `session_id` column and value, and #153 added two
+columns and `RETURNING id` to the same insert. Both sides were kept. Because
+the combined function had never existed on either branch, it was run against
+a real PostgreSQL 16 before pushing, not only against the suite's stubs. That
+run passed 27 scenarios, including an enquiry carrying a session id that was
+both stored and put into the pipeline, and an Arabic Kalamata request tagged
+correctly.
+
+### Deploy 33 — Kalamata back in the CRM (PR #155)
+
+Kalamata was removed from the site on 2026-09-01 and from the CRM with it. It
+returned on 2026-09-05, approved field by field (C-01 to C-09), and **the CRM
+was never told.** So the public contact form offered Kalamata while staff could
+not tag a Kalamata buyer or put it on a document, and `crm-buyers.js` silently
+dropped it from any save. The comment excusing the gap cited "Rule 12", which
+in this repository's own docs is the rule against machine-translated copy. It
+is now at position 2 in both lists, per C-17. Private label, where Kalamata is
+still excluded (C-40), is not touched. `check-crm-products.js` holds both CRM
+lists to the site's own product set. **C-110.**
+
+### Deploy 34 — Facebook clicks recorded where C-90 said to read them (PR #151)
+
+`assets/analytics.js` fired `facebook_click` into the first-party pipeline,
+which answered every one with a 400, because the type was never on its
+allowlist. Nothing reported the error. Umami still received the clicks through
+the separate `trackEvent` path. **But C-90 names `/admin/analytics` as where
+the Follow-pill counts are to be read, and that report held none.** The "check
+back in a few weeks" in C-90 therefore starts at this deploy, and C-90 now says
+so. `check-event-types.js` fails if the site fires a type the server refuses,
+or the server accepts one nothing fires. **C-111.**
+
+### Deploy 35 — An enquiry knows which visit it came from (PR #152)
+
+An enquiry now carries the analytics `session_id` of the visit that sent it,
+so a quote or sample request can be tied to how the visitor arrived (organic
+search, a referrer, a campaign). There are three rules, each tested by running
+code rather than reading it:
+
+1. There is no id without analytics consent.
+2. The form never *creates* a session.
+3. A malformed id is dropped, never allowed to refuse the enquiry.
+
+The column is deliberately not a foreign key, because sessions are purged on
+their own schedule. **Nothing reads it back yet:** attribution is now possible
+from this deploy onwards, and no report does it. **C-112, `needs-review`**,
+because it links an identified record to a browsing session, and the privacy
+notice has not been updated to say so. That sits with whoever holds C-55.
+
+### Deploy 36 — Every website request goes into the pipeline (PR #153)
+
+Quote, sample, catalogue, documents, private-label and local-pricing requests
+used to stop in the Enquiries inbox. Each is now added to the pipeline as it
+arrives.
+
+**The owner decided three things on 2026-09-26:**
+- A quote request is a **Lead flagged "Send quotation"**, with no new stage.
+- The missing **real regions** are added: Europe (non-EU), South America and
+  Oceania, plus Unassigned.
+- A **known buyer** has the request logged and moves **forward only**.
+
+**The assistant decided three things in building it, and these are not yet
+confirmed:**
+- how transcontinental countries are placed
+- the next action is due the day after the enquiry
+- the wording of each next action
+
+These are **C-114, `needs-review`**. "Due tomorrow" rests on the site's
+promise of a reply within 24 hours, and that promise turned out never to have
+been registered. It is **C-115, unverified**.
+
+The enquiry is saved before intake runs, and intake cannot undo it. Every
+pipeline write is one statement, so a failure leaves no half-made buyer, and
+the inbox shows the reason on that enquiry. Stages, regions and the buyer
+tables moved into `_crm_lib.js`, so they are defined once. The move was
+confirmed byte-identical apart from one comment line. **C-113.**
+
+**The check this deploy most depended on had a blind spot, now closed.**
+`check-crm-schema.js` passed a request whenever it did not return 500. The
+enquiry endpoint deliberately returns 200 when intake fails, because the
+enquiry itself was saved, so a missing table there would have been invisible.
+It now fails on any read of an uncreated table, whatever the status. It also
+learned that a `WITH` clause's names are not tables. A second stub, in
+`check-inquiries-access.js`, answered `INSERT … RETURNING` with nothing, which
+Postgres never does. It now returns the row.
+
+### Deploy 37 — Region checked on edit, and a refusal says why (PR #154)
+
+The region was checked on create only. An edit could store any text as a
+region, matching no dropdown or filter, or store null, which the column then
+refused as a database error. It is now checked whenever a save sends one. A
+Kanban drag sends only the stage, so old records stay movable.
+
+**Found while fixing it:** the buyer page had never shown *why* a save was
+refused. It read `data.error || 'Validation failed.' + fields`. The server
+always sends `error`, so the field list never appeared, and neither did the
+reasons Deploy 29 wrote for the company-name rules. Staff saw "Validation
+failed" and nothing else. Each refused field is now named by its label, with
+the server's reason. **C-116.**
+
+### Claim register
+
+**C-110 to C-116 added**, with C-109 for Deploy 32 above, and a dated note on
+C-90. The register now stands at **116 claims**. **Three rows are
+`needs-review`**, where C-55 used to be the only one:
+- **C-55:** contact-data retention, unchanged.
+- **C-112:** the enquiry-to-session link and the privacy notice.
+- **C-114:** the assistant's judgement calls in building intake.
+
+C-115 is `unverified`: the 24-hour reply promise, registered for the first
+time.
+
+**Updated 2026-09-27: the owner answered all three.**
+- **C-112:** disclose the link, and re-ask everyone. PR #157 does both.
+- **C-114:** confirmed, except that Turkey now goes to Unassigned. PR #158
+  does this.
+- **C-115:** both wordings confirmed as published.
+
+All three rows are now `verified-approved`. **C-117 was added, `needs-review`:**
+`/privacy` has never mentioned that a consenting visitor's IP address is used
+to look up the owner of their network. This was found while writing the C-112
+disclosure. It is pre-existing and was not approved for fixing. The register
+now stands at 117 claims, and C-55 and C-117 are the `needs-review` rows.
+**Later the same day, the owner answered C-117 too ("yes describe it").** The
+disclosure was added to PR #157, so one policy-version bump covers both
+changes, and C-117 is now `verified-approved`. **C-55 is again the only
+`needs-review` row.**
+
+### Testing method
+
+`npm test` green on every production commit in the table above (34 → 38
+checks), run on the merged tree before each push. Every new check was
+negative-tested by reverting its fix and confirming the failure:
+
+- Deploy 33: Kalamata missing from both lists, and a wrong label.
+- Deploy 34: the original 400 reproduced at `analytics.js:115`.
+- Deploy 35: nine injected faults, including removing the consent gate,
+  switching to `getSession`, and refusing a bad id.
+- Deploy 36: eight injected faults. One of them, removing the explicit
+  Lost/Stalled guard, changed nothing, because forward-only already blocks it.
+  It was recorded as a redundant guard, not a gap.
+- Deploy 37: the old create-only rule (an edit to "Narnia" saved with 200
+  again), and the old display.
+
+Deploy 36 was also run by hand against a local PostgreSQL 16, through the real
+handler: 25 scenarios on the branch, and 27 on the merged code.
+
+### Rollback
+
+Revert in reverse order, because Deploy 36 builds on Deploy 35's
+`inquiries.js`:
+
+```
+git revert 6eae97b d80ee36 0023eb6 47660b4 e0400c5
+```
+
+Individually:
+- **Deploy 37** restores create-only region checking and the bare "Validation
+  failed".
+- **Deploy 36** stops intake. Buyers it created stay, as normal records. The
+  `buyer_id` and `pipeline_note` columns are nullable and can stay. Buyers
+  given a new region keep it, which the older code accepts on edit.
+- **Deploy 35** stops sending the id. The column can stay.
+- **Deploy 34** returns `facebook_click` to a 400.
+- **Deploy 33** hides Kalamata from the checkboxes again. Existing tags stay
+  in the database.
+
+### Known limitations shipped with Deploys 32 to 37
+
+- **None of it has been observed in a browser or against production data.**
+  This environment cannot reach the site. The owner's first sample request is
+  the live test: it should appear in `/crm/inquiries` as "In pipeline", and the
+  buyer should be in Sample Requested with a next action due the next day.
+- **Enquiries from before Deploy 36 are not in the pipeline.** The inbox marks
+  them "Received before automatic intake". A back-fill was offered, not done.
+- **An anonymous visitor can now cause a CRM record to be created.** They
+  cannot choose its stage or fields. The honeypot, the 5-per-hour rate limit
+  and the company-name rules all apply first, and every such record is
+  `created_by = website`.
+- **Gated guide downloads (`leads.js`) have neither the session link nor
+  pipeline intake.** Both were out of the scope approved.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -3689,3 +3943,41 @@ last sync. It is not part of the changed-file scope of any deploy above.
     deploy in this document can close this. It is the highest-value open item
     here: every other thing on this list is about accuracy, and this one is
     about a buyer's enquiry reaching a person.
+    **Narrowed 2026-09-26 (Deploy 36), not closed.** Every saved enquiry now
+    also becomes a pipeline entry with a next action due the following day, so
+    an unanswered one appears in the CRM dashboard's overdue list. That reaches
+    a person **who opens the CRM**. It is still not a notification: nothing
+    reaches anyone who does not look, and the fix above is unchanged.
+11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
+    None is a code task, and all three are live now.
+    - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
+      linked to their analytics session. Whether `/privacy` must say so is a
+      question for whoever holds C-55, alongside the retention values already
+      with the lawyer.
+    - **C-114 — the assistant's calls in building intake:**
+      - Egypt → Africa, Turkey → Middle East, Russia → Europe (non-EU),
+        Iran → Middle East
+      - next action due the following day
+      - the wording of each next action
+
+      These were put to the owner and not yet answered.
+    - **C-115 — the 24-hour reply promise.** "We respond within 24 hours",
+      and on `/sample` "confirmed within 24 hours by a dedicated export account
+      manager", appear across the site in both languages and in every form's
+      success message. Neither was ever in the register. They are registered
+      now as unverified, and nothing on the site was changed. Deploy 36's
+      due-date rests on the first; the second also asserts a role the register
+      has no evidence for.
+
+    **Answered 2026-09-27, all three.**
+    - **C-112:** disclose, and re-ask everyone under the new text (PR #157).
+    - **C-114:** confirmed, except Turkey, which goes to Unassigned because it
+      is an olive exporter (PR #158).
+    - **C-115:** confirmed as published.
+
+    This item closes when #157 and #158 merge. **One new question replaces
+    it:** C-117, whether `/privacy` should describe the network-owner lookup
+    made from a consenting visitor's IP address. That belongs alongside
+    C-55.
+    **Answered the same day:** the owner said to describe it, and #157 now does.
+    Item 11 closes in full when #157 and #158 merge.
