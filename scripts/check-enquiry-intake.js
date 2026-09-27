@@ -126,15 +126,18 @@ const { regionForCountry, TABLE } = require(path.join(FN, '_country_regions.js')
     Object.keys(TABLE).every((r) => lib.REGIONS.includes(r)), Object.keys(TABLE).join(', '));
   const cases = [
     ['Germany', 'EU'], ['The Netherlands', 'EU'], ['Cyprus', 'EU'], ['United Kingdom', 'Europe (non-EU)'],
-    ['U.S.A.', 'North America'], ['Mexico', 'North America'], ['Brazil', 'South America'],
-    ['Australia', 'Oceania'], ['Côte d’Ivoire', 'Africa'], ['Egypt', 'Africa'], ['Türkiye', 'Middle East'],
+    ['U.S.A.', 'North America'], ['Mexico', 'North America'], ['Brazil', 'South America'], ['البرازيل', 'South America'],
+    ['Australia', 'Oceania'], ['Côte d’Ivoire', 'Africa'], ['Egypt', 'Africa'],
     ['Russia', 'Europe (non-EU)'], ['السعودية', 'Middle East'], ['المملكة العربية السعودية', 'Middle East'],
     ['الإمارات', 'Middle East'], ['مصر', 'Africa'], ['ألمانيا', 'EU'], ['سلطنة عُمان', 'Middle East'],
     ['India', 'Asia'], ['Papua New Guinea', 'Oceania'], ['Guinea', 'Africa'],
   ];
   const bad = cases.filter(([c, r]) => regionForCountry(c) !== r).map(([c, r]) => `${c}: ${regionForCountry(c)} (want ${r})`);
   t(`countries typed in English and Arabic reach the right region (${cases.length} tried)`, bad.length === 0, bad.join('; '));
-  const ambiguous = ['Georgia', 'عمان', 'Germany / Hamburg', '', 'asdf', 'Europe'];
+  // Turkey is here by the owner's decision (2026-09-27), not because its
+  // region is in doubt: it is an olive exporter, so a person should look first.
+  const ambiguous = ['Georgia', 'عمان', 'Germany / Hamburg', '', 'asdf', 'Europe',
+    'Turkey', 'Türkiye', 'تركيا'];
   const guessed = ambiguous.filter((c) => regionForCountry(c) !== 'Unassigned');
   t('an ambiguous or unknown country is left Unassigned, never guessed',
     guessed.length === 0, guessed.map((c) => `"${c}" -> ${regionForCountry(c)}`).join('; '));
