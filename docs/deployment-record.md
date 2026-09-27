@@ -25,6 +25,13 @@ verified against source code, the Netlify deploy-preview build, and (for
 this document itself) direct visual inspection of two AI-generated images —
 never against the actual production domain.
 
+**Recording convention (owner decision, 2026-09-27, from Deploy 53 on).** A
+deploy that changes only this record or the claim register gets no entry of
+its own. It is listed in the table of the next entry written for a real site
+change, with its PR, commit and date, so no deploy goes unrecorded. Recording
+each notes-only deploy separately would never end: every record's merge is
+itself a deploy.
+
 ---
 
 ## Deploy 1 — Initial site rebuild (PR #1)
@@ -4558,6 +4565,11 @@ It carries:
 **Still open from Deploy 51:** the fix is not yet confirmed on the live site.
 The check is the owner's: open a buyer, change `?id=12` to `?id=12abc`, and
 expect "Which one? A valid id is required." with no record loaded.
+
+**The last notes-only deploy with its own entry.** Merging this record
+becomes Deploy 53. Under the recording convention at the top of this
+document, Deploy 53 will be listed in the next entry written for a real site
+change.
 
 ---
 
