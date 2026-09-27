@@ -349,7 +349,12 @@
               return;
             }
             window.location.href = '/crm/document/view/?id=' + result.data.id;
-          }).catch(function () { saveBtn.disabled = false; });
+          }).catch(function (e) {
+            saveBtn.disabled = false;
+            var msg = CRM.noReplyMessage(e, 'Creating this document',
+              'Check the Documents list before trying again, so it is not created twice with two numbers.');
+            if (msg) showStatus(msg, false);
+          });
         });
 
         function init() {

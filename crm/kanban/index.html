@@ -95,8 +95,28 @@
               renderBoard();
               window.alert((result.data && result.data.error) || 'Could not move buyer.');
             }
-          }).catch(function () {
-            buyer.current_stage = previousStage;
+          }).catch(function (e) {
+            /*
+             * No reply, so the move may or may not have been saved. Putting
+             * the card back would be a guess, and could show it where it no
+             * longer is -- so reload the board from the server, which knows,
+             * and say what happened.
+             */
+            var msg = CRM.noReplyMessage(e, 'Moving ' + buyer.company_name + ' to ' + newStage,
+              'The board has been reloaded to show where it really is.');
+            if (!msg) return;
+            reloadBoard().then(function () { window.alert(msg); }, function () {
+              buyer.current_stage = previousStage;
+              renderBoard();
+              window.alert(msg + ' (The board could not be reloaded either -- refresh the page.)');
+            });
+          });
+        }
+
+        function reloadBoard() {
+          return CRM.fetchJson('/api/crm/buyers').then(function (result) {
+            if (!result.ok || !Array.isArray(result.data)) throw new Error('reload failed');
+            allRows = result.data;
             renderBoard();
           });
         }
