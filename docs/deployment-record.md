@@ -4535,6 +4535,8 @@ needs to be undone in the database. Deploy 50 is documentation only.
 - **Not yet confirmed on the live site.** The check to do is in the owner's
   hands: open a buyer, change `?id=12` to `?id=12abc`, and expect the message
   with no record loaded.
+  **Resolved 2026-09-27:** the owner confirmed the fix on the live site ("id
+  fix confirmed on live site").
 - **Other analytics settings still use `Number()`,** for retention days,
   thresholds and similar values. They read values, not record ids, and were
   deliberately left out of scope.
@@ -4565,6 +4567,8 @@ It carries:
 **Still open from Deploy 51:** the fix is not yet confirmed on the live site.
 The check is the owner's: open a buyer, change `?id=12` to `?id=12abc`, and
 expect "Which one? A valid id is required." with no record loaded.
+**Resolved 2026-09-27, after Deploy 53:** the owner confirmed it on the live
+site.
 
 **The last notes-only deploy with its own entry.** Merging this record
 becomes Deploy 53. Under the recording convention at the top of this
