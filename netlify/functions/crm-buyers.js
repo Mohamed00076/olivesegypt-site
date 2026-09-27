@@ -1,6 +1,7 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const {
   requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
   STAGES, REGIONS: REGION_LIST, ensureBuyerTables,
@@ -289,6 +290,7 @@ exports.handler = async (event) => {
     console.error(
       `[crm-buyers] error: step=${described.step || 'unknown'} code=${described.code || 'none'} ${err?.message ?? err}`
     );
+    await reportFailure(sql, { source: 'crm-buyers', method: event.httpMethod, step: described.step, actor }, err);
     // The reader here is signed-in staff, and the message is filtered by
     // describeDbError -- see the note in _crm_lib.js about what it will and
     // will not repeat from the database.

@@ -97,6 +97,9 @@ label { font-size: 12px; font-weight: 700; color: var(--crm-muted); display: blo
 .crm-badge-danger { background: var(--crm-danger-bg); color: var(--crm-danger); }
 .crm-status { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
 .crm-status-error { background: var(--crm-danger-bg); color: var(--crm-danger); }
+/* Dashboard: recent CRM failures (see _failure_lib.js). Above everything else, in the error colours. */
+.crm-failures { border-left: 4px solid var(--crm-danger); }
+.crm-failures h2 { color: var(--crm-danger); }
 .crm-status-success { background: var(--crm-success-bg); color: var(--crm-success); }
 .crm-kanban { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; }
 .crm-kanban-col { min-width: 240px; flex: 0 0 240px; background: #f0eee5; border-radius: 10px; padding: 10px; }

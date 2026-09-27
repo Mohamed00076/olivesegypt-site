@@ -1,6 +1,7 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const {
   verifyPassword,
   signSession,
@@ -104,6 +105,7 @@ exports.handler = async (event) => {
     });
   } catch (err) {
     console.error('[crm-auth-login] error:', err?.message ?? err);
+    await reportFailure(sql, { source: 'crm-auth-login', method: event.httpMethod }, err);
     return json(500, { ok: false, error: 'Could not sign in' });
   }
 };

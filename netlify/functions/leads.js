@@ -19,6 +19,7 @@
 // disabled notification never affects the response the visitor gets.
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json } = require('./_lib');
 const { sendNotification } = require('./_email_lib');
 const {
@@ -297,8 +298,10 @@ async function handlePost(event, sql) {
       console.log(`[leads] a previous opt-out was lifted by a new consented submission (form=${segment})`);
     }
   } catch (err) {
-    // Never fail a lead over the opt-out bookkeeping.
+    // Never fail a lead over the opt-out bookkeeping -- but say so: a
+    // failed check could mean contacting someone who asked not to be.
     console.error('[leads] opt-out check failed:', err?.message ?? err);
+    await reportFailure(sql, { source: 'leads', method: 'POST', step: 'checking the opt-out list' }, err);
   }
 
   await sql`
@@ -355,6 +358,7 @@ exports.handler = async (event) => {
     return await handlePost(event, sql);
   } catch (err) {
     console.error('[leads] db error:', err?.message ?? err);
+    await reportFailure(sql, { source: 'leads', method: event.httpMethod, step: 'saving a guide-download lead' }, err);
     return json(500, { ok: false, error: 'Could not save lead' });
   }
 };

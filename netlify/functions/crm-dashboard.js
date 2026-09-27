@@ -1,6 +1,7 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure, recentFailures } = require('./_failure_lib');
 const { requireCrmSession, json } = require('./_crm_lib');
 
 // Converted = ever reached one of these stages. See docs/h-crm-schema.md
@@ -108,7 +109,17 @@ exports.handler = async (event) => {
       GROUP BY to_stage
     `;
 
+    // Recent failures, for the "something failed" card. Separately guarded:
+    // a problem reading them must not take the rest of the dashboard down.
+    let failures = null;
+    try {
+      failures = await recentFailures(sql, 7);
+    } catch (e) {
+      console.error('[crm-dashboard] could not read recent failures:', e?.message ?? e);
+    }
+
     return json(200, {
+      failures,
       by_stage: byStage,
       by_region: byRegion,
       overdue_followups: overdue,
@@ -125,6 +136,7 @@ exports.handler = async (event) => {
     }, { 'Cache-Control': 'no-store, private' });
   } catch (err) {
     console.error('[crm-dashboard] error:', err?.message ?? err);
+    await reportFailure(sql, { source: 'crm-dashboard', method: event.httpMethod, actor: session.sub }, err);
     return json(500, { ok: false, error: 'Server error' });
   }
 };

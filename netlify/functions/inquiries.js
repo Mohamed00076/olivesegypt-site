@@ -1,6 +1,7 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
 const { requireCrmSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
@@ -206,6 +207,7 @@ async function handlePost(event, sql) {
     });
   } catch (err) {
     console.error('[inquiries] pipeline intake failed:', err?.message ?? err);
+    await reportFailure(sql, { source: 'inquiries', method: 'POST', step: 'adding the enquiry to the pipeline' }, err);
     try {
       const why = describeDbError(err, 'adding the enquiry to the pipeline').error;
       await sql`UPDATE inquiries SET pipeline_note = ${'Not added to pipeline: ' + why} WHERE id = ${inquiryId}`;
@@ -313,6 +315,9 @@ exports.handler = async (event) => {
     return await handleGet(event, sql);
   } catch (err) {
     console.error('[inquiries] db error:', err?.message ?? err);
+    // A failed POST is a buyer's enquiry that was NOT saved -- the failure
+    // that matters most on this whole site.
+    await reportFailure(sql, { source: 'inquiries', method, step: method === 'POST' ? 'saving a website enquiry' : 'loading enquiries' }, err);
     if (method === 'POST') {
       return json(500, { ok: false, error: 'Could not save inquiry' });
     }

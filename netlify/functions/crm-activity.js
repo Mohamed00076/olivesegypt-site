@@ -1,6 +1,7 @@
 'use strict';
 
 const { neon } = require('@neondatabase/serverless');
+const { reportFailure } = require('./_failure_lib');
 const { requireCrmSession, readJsonBody, json } = require('./_crm_lib');
 
 function connectionString() {
@@ -69,6 +70,7 @@ exports.handler = async (event) => {
     return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'POST' });
   } catch (err) {
     console.error('[crm-activity] error:', err?.message ?? err);
+    await reportFailure(sql, { source: 'crm-activity', method: event.httpMethod, actor }, err);
     return json(500, { ok: false, error: 'Server error' });
   }
 };
