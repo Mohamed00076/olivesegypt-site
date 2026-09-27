@@ -21,7 +21,7 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json } = require('./_lib');
-const { requireReaderSession, csvCell, ensureBuyerTables } = require('./_crm_lib');
+const { requireReaderSession, csvCell, ensureBuyerTables, deleteSubmission } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
 const {
   GUIDES, URL_TTL_SECONDS, COOKIE_TTL_SECONDS, signGuideToken, guideCookie,
@@ -425,8 +425,8 @@ async function handleGet(event, sql) {
 exports.handler = async (event) => {
   const method = event.httpMethod;
 
-  if (method !== 'POST' && method !== 'GET') {
-    return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST' });
+  if (method !== 'POST' && method !== 'GET' && method !== 'DELETE') {
+    return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST, DELETE' });
   }
 
   const cs = connectionString();
@@ -440,12 +440,15 @@ exports.handler = async (event) => {
     await ensureSchema(sql);
     await ensureOptOutSchema(sql);
     if (method === 'GET') return await handleGet(event, sql);
+    if (method === 'DELETE') return await deleteSubmission(event, sql, 'lead');
     return await handlePost(event, sql);
   } catch (err) {
     console.error('[leads] db error:', err?.message ?? err);
     await reportFailure(sql, { source: 'leads', method: event.httpMethod,
-      step: method === 'GET' ? 'loading guide-download and brief requests' : 'saving a guide-download lead' }, err);
+      step: method === 'GET' ? 'loading guide-download and brief requests'
+        : method === 'DELETE' ? 'deleting a guide-download or brief request' : 'saving a guide-download lead' }, err);
     if (method === 'GET') return json(500, { error: 'Could not load these requests' });
+    if (method === 'DELETE') return json(500, { ok: false, error: 'Could not delete the request' });
     return json(500, { ok: false, error: 'Could not save lead' });
   }
 };

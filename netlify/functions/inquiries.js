@@ -6,7 +6,7 @@ const { readJsonBody, json } = require('./_lib');
 const { requireReaderSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
 const { addEnquiryToPipeline } = require('./_crm_intake');
-const { describeDbError, ensureBuyerTables } = require('./_crm_lib');
+const { describeDbError, ensureBuyerTables, deleteSubmission } = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -286,8 +286,8 @@ async function handleGet(event, sql) {
 exports.handler = async (event) => {
   const method = event.httpMethod;
 
-  if (method !== 'POST' && method !== 'GET') {
-    return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST' });
+  if (method !== 'POST' && method !== 'GET' && method !== 'DELETE') {
+    return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET, POST, DELETE' });
   }
 
   const cs = connectionString();
@@ -303,12 +303,15 @@ exports.handler = async (event) => {
   try {
     await ensureSchema(sql);
     if (method === 'POST') return await handlePost(event, sql);
+    if (method === 'DELETE') return await deleteSubmission(event, sql, 'inquiry');
     return await handleGet(event, sql);
   } catch (err) {
     console.error('[inquiries] db error:', err?.message ?? err);
     // A failed POST is a buyer's enquiry that was NOT saved -- the failure
     // that matters most on this whole site.
-    await reportFailure(sql, { source: 'inquiries', method, step: method === 'POST' ? 'saving a website enquiry' : 'loading enquiries' }, err);
+    await reportFailure(sql, { source: 'inquiries', method,
+      step: method === 'POST' ? 'saving a website enquiry' : method === 'DELETE' ? 'deleting an enquiry' : 'loading enquiries' }, err);
+    if (method === 'DELETE') return json(500, { ok: false, error: 'Could not delete the enquiry' });
     if (method === 'POST') {
       return json(500, { ok: false, error: 'Could not save inquiry' });
     }
