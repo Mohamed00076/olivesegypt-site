@@ -3715,6 +3715,10 @@ All three rows are now `verified-approved`. **C-117 was added, `needs-review`:**
 to look up the owner of their network. This was found while writing the C-112
 disclosure. It is pre-existing and was not approved for fixing. The register
 now stands at 117 claims, and C-55 and C-117 are the `needs-review` rows.
+**Later the same day, the owner answered C-117 too ("yes describe it").** The
+disclosure was added to PR #157, so one policy-version bump covers both
+changes, and C-117 is now `verified-approved`. **C-55 is again the only
+`needs-review` row.**
 
 ### Testing method
 
@@ -3975,3 +3979,5 @@ last sync. It is not part of the changed-file scope of any deploy above.
     it:** C-117, whether `/privacy` should describe the network-owner lookup
     made from a consenting visitor's IP address. That belongs alongside
     C-55.
+    **Answered the same day:** the owner said to describe it, and #157 now does.
+    Item 11 closes in full when #157 and #158 merge.
