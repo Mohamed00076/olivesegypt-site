@@ -4185,6 +4185,17 @@ problem.**
    no production access. The owner is to read the Enquiries page and report
    what was waiting.
 
+   **What was found, 2026-09-27.** The owner read the page after the deploy
+   and sent a screenshot. Every guide download and private-label brief in it
+   was the owner's own test submission, four in all. In the part shown, **no
+   real buyer's request had been waiting.** The gap was real; its cost, as
+   far as can be seen, was nil.
+
+   The screenshot began at 26 September, so newer rows were not in view. One
+   older contact-form sample request (3 September) looks like a test but is
+   not from the owner's address. Names and addresses are deliberately not
+   recorded, because this repository is public.
+
 **What changed:**
 
 - `leads.js` answers `GET` for a CRM or dashboard session only. The rows
@@ -4247,7 +4258,8 @@ The owner answered "yes add". The forms section now covers:
 own consent box, not what the analytics consent covers.
 
 **The Arabic is the assistant's.** The owner was asked to review it after
-the deploy; **whether they have is not yet stated.**
+the deploy, and **confirmed it the same day ("its fine")**. C-123 is now
+`verified-approved`.
 
 `check-privacy-disclosures.js` reads the brief's project fields from the
 table definition, so a field added to the form later must be disclosed too.
@@ -4264,7 +4276,9 @@ and passed the full suite before either was merged on GitHub.
   corrected again.
 - The register stands at 123 claims.
 - `needs-review` rows: C-55 and C-123, the second only for the Arabic
-  review.
+  review. **Later the same day** the owner confirmed the Arabic, C-123
+  became `verified-approved`, and C-55 is again the only `needs-review`
+  row.
 
 ### Testing method
 
