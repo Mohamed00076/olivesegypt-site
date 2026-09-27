@@ -45,7 +45,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
-const { requireCrmSession, readJsonBody, json } = require('./_crm_lib');
+const { requireCrmSession, readJsonBody, json, parseId, INVALID_ID_ERROR } = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -218,7 +218,9 @@ function validateLineItems(raw) {
 
 async function handleList(event, sql) {
   const qs = event.queryStringParameters || {};
-  const buyerId = qs.buyer_id ? parseInt(qs.buyer_id, 10) : null;
+  const buyerId = qs.buyer_id ? parseId(qs.buyer_id) : null;
+  // A malformed buyer_id must not fall back to every buyer's documents.
+  if (qs.buyer_id && !buyerId) return json(400, { ok: false, error: INVALID_ID_ERROR });
   const rows = buyerId
     ? await sql`SELECT id, created_at, doc_type, doc_number, currency, total, language, voided_at FROM crm_documents WHERE buyer_id = ${buyerId} ORDER BY created_at DESC LIMIT 500`
     : await sql`SELECT id, created_at, doc_type, doc_number, buyer_company_name, currency, total, language, voided_at FROM crm_documents ORDER BY created_at DESC LIMIT 500`;
@@ -270,8 +272,8 @@ async function handleCreate(event, sql, actor) {
   let buyerAddress;
 
   if (hasBuyerId) {
-    buyerId = parseInt(body.buyer_id, 10);
-    if (!Number.isFinite(buyerId)) return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_id'] });
+    buyerId = parseId(body.buyer_id);
+    if (!buyerId) return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_id'] });
 
     const buyerRows = await sql`SELECT company_name, contact_name, country_region, contact_email, contact_phone FROM buyers WHERE id = ${buyerId} LIMIT 1`;
     if (!buyerRows[0]) return json(400, { ok: false, error: 'Buyer not found', fields: ['buyer_id'] });
@@ -394,7 +396,8 @@ exports.handler = async (event) => {
   const sql = neon(cs);
 
   const qs = event.queryStringParameters || {};
-  const id = qs.id ? parseInt(qs.id, 10) : null;
+  const id = qs.id ? parseId(qs.id) : null;
+  if (qs.id && !id) return json(400, { ok: false, error: INVALID_ID_ERROR });
 
   try {
     await ensureSchema(sql);

@@ -8,7 +8,7 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
-const { parseCookies, verifySession, COOKIE_NAME, readJsonBody, json } = require('./_lib');
+const { parseCookies, verifySession, COOKIE_NAME, readJsonBody, json, parseId } = require('./_lib');
 const { ensureSchema: ensureAnalyticsSchema, auditLog } = require('./_analytics_lib');
 const { ensureSchema, DIRECTIONS, FREQUENCIES, DATA_SOURCES } = require('./_kpi_lib');
 
@@ -107,8 +107,8 @@ const PATCHABLE_FIELDS = [
 ];
 
 async function handlePatch(sql, body, actor) {
-  const id = Number(body.id);
-  if (!Number.isFinite(id)) return json(400, { ok: false, error: 'id is required' });
+  const id = parseId(body.id);
+  if (!id) return json(400, { ok: false, error: 'id is required' });
 
   const existingRows = await sql`SELECT * FROM kpi_definitions WHERE id = ${id} LIMIT 1`;
   const existing = existingRows[0];

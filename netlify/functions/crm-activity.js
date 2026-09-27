@@ -2,7 +2,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
-const { requireCrmSession, readJsonBody, json } = require('./_crm_lib');
+const { requireCrmSession, readJsonBody, json, parseId } = require('./_crm_lib');
 
 function connectionString() {
   return (
@@ -53,7 +53,7 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'POST') {
       const body = readJsonBody(event) || {};
-      const buyerId = parseInt(body.buyer_id, 10);
+      const buyerId = parseId(body.buyer_id);
       const entry = typeof body.entry === 'string' ? body.entry.trim().slice(0, 4000) : '';
       if (!buyerId || entry.length < 1) {
         return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_id', 'entry'].filter((f) => (f === 'buyer_id' ? !buyerId : entry.length < 1)) });

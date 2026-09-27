@@ -126,6 +126,17 @@ function json(statusCode, body, extraHeaders = {}) {
   };
 }
 
+// A record id from a request: digits only, or null. parseInt reads "5abc" or
+// "5; anything" as 5, and Number() reads "0x10" as 16 and "1e1" as 10 -- each
+// acting on a record nobody named. Found deleting enquiries; true of the CRM
+// buyer and document pages and the KPI manager too. Never act on a guess.
+function parseId(value) {
+  const raw = typeof value === 'number' ? String(value) : typeof value === 'string' ? value : '';
+  // A safe integer too: past 2^53 Number() rounds, and would name a different record.
+  return /^[1-9][0-9]{0,15}$/.test(raw) && Number.isSafeInteger(Number(raw)) ? Number(raw) : null;
+}
+const INVALID_ID_ERROR = 'Which one? A valid id is required.';
+
 module.exports = {
   COOKIE_NAME,
   SESSION_TTL_SECONDS,
@@ -138,4 +149,6 @@ module.exports = {
   sessionCookie,
   readJsonBody,
   json,
+  parseId,
+  INVALID_ID_ERROR,
 };

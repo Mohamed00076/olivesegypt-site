@@ -12,7 +12,7 @@
 // (that rule is about olivesegypt-site vs. the separate umami-olivesegypt
 // codebase, which this file has no connection to at all).
 
-const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, COOKIE_NAME: ADMIN_COOKIE_NAME } = require('./_lib');
+const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, parseId, INVALID_ID_ERROR, COOKIE_NAME: ADMIN_COOKIE_NAME } = require('./_lib');
 
 const CRM_COOKIE_NAME = 'tc_crm_session';
 const CRM_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
@@ -478,11 +478,8 @@ async function deleteSubmission(event, sql, kind) {
   if (qs.confirmed !== '1') {
     return json(400, { ok: false, error: 'Deletion requires explicit confirmation (confirmed=1)' });
   }
-  // Digits only. parseInt alone would read "5; anything" as 5 and delete
-  // record 5 -- found by this change's own check. Never delete on a guess.
-  const raw = String(qs.id == null ? '' : qs.id);
-  if (!/^[1-9][0-9]{0,17}$/.test(raw)) return json(400, { ok: false, error: 'Which one? A valid id is required.' });
-  const id = Number(raw);
+  const id = parseId(qs.id);
+  if (!id) return json(400, { ok: false, error: INVALID_ID_ERROR });
 
   await ensureBuyerTables(sql);   // crm_audit_log, on a new database
   // Table and column come from SUBMISSION_KINDS above, never from the request.
@@ -523,6 +520,8 @@ module.exports = {
   findNearDuplicates,
   requireReaderSession,
   deleteSubmission,
+  parseId,
+  INVALID_ID_ERROR,
   csvCell,
   STAGES,
   REGIONS,
