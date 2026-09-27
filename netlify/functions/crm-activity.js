@@ -58,8 +58,13 @@ exports.handler = async (event) => {
       if (!buyerId || entry.length < 1) {
         return json(400, { ok: false, error: 'Validation failed', fields: ['buyer_id', 'entry'].filter((f) => (f === 'buyer_id' ? !buyerId : entry.length < 1)) });
       }
-      const owner = await sql`SELECT id FROM buyers WHERE id = ${buyerId} LIMIT 1`;
+      const owner = await sql`SELECT id, deleted_at FROM buyers WHERE id = ${buyerId} LIMIT 1`;
       if (!owner[0]) return json(404, { ok: false, error: 'Buyer not found' });
+      // A note on a deleted buyer would be written where nobody will look --
+      // the record appears in no list, board or report. See crm-buyers.js.
+      if (owner[0].deleted_at) {
+        return json(409, { ok: false, already_deleted: true, error: 'This buyer was deleted, so notes can no longer be added to it.' });
+      }
 
       // Append-only: no UPDATE or DELETE endpoint exists for this table.
       await sql`INSERT INTO buyer_activity_log (buyer_id, created_by, entry) VALUES (${buyerId}, ${actor}, ${entry})`;

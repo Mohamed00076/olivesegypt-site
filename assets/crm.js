@@ -79,6 +79,27 @@
   };
 
   /*
+   * A request that ended without a readable reply.
+   *
+   * CRM.fetchJson rejects when the connection drops or the server answers
+   * with an error page instead of JSON -- a function timeout, for one. Four
+   * pages caught that and said nothing: the Save button came back, a Kanban
+   * card snapped back, and staff were left to guess (found 2026-09-27).
+   *
+   * Guessing either way is wrong. The server may have finished the change and
+   * only the reply was lost, so "it failed" would be as untrue as silence. The
+   * message says what is actually known -- nothing -- and the one safe next
+   * step, which differs by action: saving an edit again does no harm, but
+   * creating a buyer, a document or an import twice does.
+   *
+   * Returns null for the sign-in redirect, which is not a failure to report.
+   */
+  CRM.noReplyMessage = function (err, what, nextStep) {
+    if (err && err.message === 'unauthorized') return null;
+    return what + ' did not get a reply from the server, so it is not known whether it went through. ' + nextStep;
+  };
+
+  /*
    * Four places, not ten links.
    *
    * The nav had grown to Dashboard, Buyers, Kanban, New Quotation, New
