@@ -62,6 +62,31 @@ if (looksUp) {
     'analytics.js no longer gates its writes on consent');
 }
 
+// ---- every form that collects personal data is named, with what it collects ----
+// Owner instruction 2026-09-27: the guide downloads and the private-label
+// brief were collecting data the page never mentioned. Tied to the code, so a
+// new detail on a form, or an IP kept with it, has to be disclosed too.
+{
+  const leads = read('netlify/functions/leads.js');
+  const inq = read('netlify/functions/inquiries.js');
+  const hasGuides = /'buyers_guide'/.test(leads) && /'private_label'/.test(leads);
+  t('/privacy names the downloads, the private-label brief and the Market Brief signup',
+    !hasGuides || /The guide and catalogue downloads, the private-label brief, and the Market Brief signup collect/.test(en));
+  const cols = (leads.match(/CREATE TABLE IF NOT EXISTS leads_staging \(([\s\S]*?)\n\s*\)/) || ['', ''])[1];
+  const PROJECT = { target_market: 'target market', variety: 'variety', format: 'format', pack_size: 'pack size', volume: 'volume',
+    certification_requirements: 'certifications required', launch_date: 'launch date', incoterm: 'Incoterm' };
+  const undisclosed = Object.keys(PROJECT).filter((c) => new RegExp('\\b' + c + '\\b').test(cols) && !en.includes(PROJECT[c]));
+  t('   and every project detail the brief collects', undisclosed.length === 0, `not on /privacy: ${undisclosed.join(', ')}`);
+  const keepsIp = /client_ip/.test(leads) && /client_ip/.test(inq);
+  t('an IP kept with every form submission is disclosed',
+    !keepsIp || /With every form, we also keep the internet \(IP\) address it was sent from/.test(en));
+  t('/ar/privacy says the same',
+    /موجز العلامة الخاصة/.test(ar) && /السوق المستهدف/.test(ar) && /Incoterm/.test(ar) &&
+    /ومع كل نموذج، نحتفظ أيضًا بعنوان الإنترنت \(IP\)/.test(ar));
+  t('the Market Brief is no longer said to collect a name, phone or message',
+    !/Contact, Sample Request, and Market Brief forms collect what you enter/.test(en));
+}
+
 const ok = fail === 0;
 console.log(`\nprivacy-disclosures ${ok ? 'OK' : 'FAILED'} -- what the code does with an IP address, the privacy pages say.`);
 console.log(`\n${pass} passed, ${fail} failed`);
