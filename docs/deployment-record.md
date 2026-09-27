@@ -3704,6 +3704,18 @@ C-90. The register now stands at **116 claims**. **Three rows are
 C-115 is `unverified`: the 24-hour reply promise, registered for the first
 time.
 
+**Updated 2026-09-27: the owner answered all three.**
+- **C-112:** disclose the link, and re-ask everyone. PR #157 does both.
+- **C-114:** confirmed, except that Turkey now goes to Unassigned. PR #158
+  does this.
+- **C-115:** both wordings confirmed as published.
+
+All three rows are now `verified-approved`. **C-117 was added, `needs-review`:**
+`/privacy` has never mentioned that a consenting visitor's IP address is used
+to look up the owner of their network. This was found while writing the C-112
+disclosure. It is pre-existing and was not approved for fixing. The register
+now stands at 117 claims, and C-55 and C-117 are the `needs-review` rows.
+
 ### Testing method
 
 `npm test` green on every production commit in the table above (34 → 38
@@ -3952,3 +3964,14 @@ last sync. It is not part of the changed-file scope of any deploy above.
       now as unverified, and nothing on the site was changed. Deploy 36's
       due-date rests on the first; the second also asserts a role the register
       has no evidence for.
+
+    **Answered 2026-09-27, all three.**
+    - **C-112:** disclose, and re-ask everyone under the new text (PR #157).
+    - **C-114:** confirmed, except Turkey, which goes to Unassigned because it
+      is an olive exporter (PR #158).
+    - **C-115:** confirmed as published.
+
+    This item closes when #157 and #158 merge. **One new question replaces
+    it:** C-117, whether `/privacy` should describe the network-owner lookup
+    made from a consenting visitor's IP address. That belongs alongside
+    C-55.
