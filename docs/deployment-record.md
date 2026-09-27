@@ -25,6 +25,13 @@ verified against source code, the Netlify deploy-preview build, and (for
 this document itself) direct visual inspection of two AI-generated images —
 never against the actual production domain.
 
+**Recording convention (owner decision, 2026-09-27, from Deploy 53 on).** A
+deploy that changes only this record or the claim register gets no entry of
+its own. It is listed in the table of the next entry written for a real site
+change, with its PR, commit and date, so no deploy goes unrecorded. Recording
+each notes-only deploy separately would never end: every record's merge is
+itself a deploy.
+
 ---
 
 ## Deploy 1 — Initial site rebuild (PR #1)
@@ -4531,6 +4538,38 @@ needs to be undone in the database. Deploy 50 is documentation only.
 - **Other analytics settings still use `Number()`,** for retention days,
   thresholds and similar values. They read values, not record ids, and were
   deliberately left out of scope.
+
+---
+
+## Deploy 52 — The record for Deploys 50 and 51 (PR #170)
+
+**Previous recorded deploy:** `0ce9e76` (Deploy 51, PR #169)
+**Approval:** "merge 170".
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines |
+|---|---|---|---|---|---|
+| 52 | #170 | `0ad6dd3` | 2026-09-27 20:33:26 | 2 | +106 |
+
+Documentation only, inside `docs/`, which is pruned from the published site.
+It carries:
+
+- the entry for Deploy 50 (the record for Deploys 48 and 49) and Deploy 51
+  (malformed record ids refused on the CRM and the KPI manager)
+- C-125, for Deploy 51. The register stands at 125 claims, and C-55 remains
+  the only `needs-review` row. This deploy adds no claim.
+
+`npm test` passed with 45 checks on `0ad6dd3`.
+
+**Rollback:** `git revert -m 1 0ad6dd3`. It removes only these notes.
+
+**Still open from Deploy 51:** the fix is not yet confirmed on the live site.
+The check is the owner's: open a buyer, change `?id=12` to `?id=12abc`, and
+expect "Which one? A valid id is required." with no record loaded.
+
+**The last notes-only deploy with its own entry.** Merging this record
+becomes Deploy 53. Under the recording convention at the top of this
+document, Deploy 53 will be listed in the next entry written for a real site
+change.
 
 ---
 
