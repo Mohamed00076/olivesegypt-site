@@ -24,7 +24,19 @@
     TC.consent.analytics = analyticsGranted === true;
   };
 
-  var POLICY_VERSION = '2026-09-01';
+  // Changing this re-asks every visitor: a consent stored under another
+  // version reads as no consent at all (readStoredConsent below), so the
+  // banner returns and nothing that depends on analytics consent runs until
+  // they answer again.
+  //
+  // 2026-09-27: bumped because analytics consent now does something it did
+  // not when most visitors gave it -- a consenting visitor's enquiry is linked
+  // to their visit's analytics record (TC.currentSessionId, disclosed on
+  // /privacy and /ar/privacy). The owner chose to re-ask everyone and to link
+  // only consent given under the text that says so; this bump is how that is
+  // enforced, with no further code. The earlier privacy change (button
+  // presses, 2026-09-17) did not bump it.
+  var POLICY_VERSION = '2026-09-27';
   var CONSENT_VERSION = '1.0';
   var STORAGE_KEY = 'tc-consent';
   var UMAMI_SRC = 'https://umami-olivesegypt.netlify.app/script.js';

@@ -148,6 +148,33 @@ if (fnMatch) {
     'session_id was added to the validation errors -- an enquiry would fail over attribution');
 }
 
+// ---- the link is disclosed, and only consent given under that text links ----
+
+{
+  const consent = read('assets/consent.js');
+  const v = (consent.match(/var POLICY_VERSION = '(\d{4}-\d{2}-\d{2})'/) || [])[1];
+  t('the consent policy version was bumped when the link was disclosed (2026-09-27 or later)',
+    !!v && v >= '2026-09-27',
+    `POLICY_VERSION is ${v} -- consent given before the privacy text described the link would still link`);
+  t('   and a consent stored under another version still counts as none',
+    /if \(parsed\.policy_version !== POLICY_VERSION\) return null;/.test(consent),
+    'readStoredConsent no longer re-asks on a version change, so the bump would do nothing');
+  const en = read('privacy/index.html');
+  const ar = read('ar/privacy/index.html');
+  t('/privacy describes the link between an enquiry and the visit',
+    /If you accepted Analytics and then send us an enquiry/.test(en) &&
+    /other recorded visits from that browser can be linked/.test(en));
+  t('   no longer says a button press is never tied to who pressed it',
+    !/never who pressed it/.test(en));
+  t('   and no longer calls the CRM separate from form submissions',
+    !/separate internal system from the form-submission data/.test(en) &&
+    /added to this record automatically/.test(en));
+  t('/ar/privacy says the same',
+    /إذا وافقت على "التحليلات" ثم أرسلت إلينا استفسارًا/.test(ar) &&
+    /تُضاف الاستفسارات المرسلة عبر نموذجَي التواصل وطلب العينة/.test(ar) &&
+    !/نظام داخلي منفصل عن بيانات إرسال النماذج/.test(ar));
+}
+
 const ok = fail === 0;
 console.log(
   `\nenquiry-attribution ${ok ? 'OK' : 'FAILED'} -- enquiries carry their session only with consent, ` +
