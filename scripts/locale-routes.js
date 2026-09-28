@@ -94,10 +94,13 @@ function toEnglish(route) {
 }
 
 /*
- * Not every gated asset is a page. The export catalogue is the generated PDF,
- * so anything that walks routes looking for links, headings or meta tags has
- * to be able to ask rather than assume -- reading a PDF as utf8 and searching
- * it for hrefs finds nothing and means nothing.
+ * What a check can read for each gated route. Every gated asset is served as
+ * a PDF (since 2026-09-28), but the seven guides are built from HTML that sits
+ * beside each PDF, and that HTML is what the checks read: its links, headings
+ * and meta tags are what went into the PDF. The export catalogue's source
+ * lives in scripts/ instead, so for its route there is only the PDF -- and
+ * reading a PDF as utf8 and searching it for hrefs finds nothing and means
+ * nothing, so anything that walks routes has to be able to ask.
  */
 const GUIDE_EXT = { 'export-catalog': 'pdf' };
 

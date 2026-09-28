@@ -2,9 +2,10 @@
 
 /*
  * Serves every gated asset, in both locales, and only to a visitor holding a
- * valid token from POST /api/leads. Seven are HTML pages; the eighth is the
- * technical export catalogue PDF, gated on the owner's instruction of
- * 2026-09-06 after being a direct public download.
+ * valid token from POST /api/leads. All eight are PDFs: the technical export
+ * catalogue, gated on the owner's instruction of 2026-09-06 after being a
+ * direct public download, and since 2026-09-28 the seven guides, which until
+ * then were served as HTML pages.
  *
  * None of them sits in the published directory -- they live in _guides/
  * inside the functions bundle, so there is no static copy for anyone to reach

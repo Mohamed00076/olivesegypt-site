@@ -58,12 +58,16 @@ const GUIDES = {
 };
 
 /*
- * Every guide is an HTML page except the export catalogue, which is the
- * generated PDF. Kept as a map rather than a filename guess so guide.js
- * cannot end up serving a PDF with a text/html content type, or reading a
- * binary as utf8.
+ * Every guide is served as a PDF (owner, 2026-09-28). The Downloads page had
+ * always offered each one as a "PDF Guide"; until then only the export
+ * catalogue was one, and the other seven opened as web pages. Their HTML stays
+ * beside each PDF as its source -- scripts/generate-export-catalog-pdf.js
+ * builds the PDFs from it -- and is never served.
+ *
+ * Kept as a map rather than a filename guess so guide.js cannot end up
+ * serving a PDF with a text/html content type, or reading a binary as utf8.
  */
-const GUIDE_EXT = { catalog_pdf: 'pdf' };
+const GUIDE_EXT = Object.fromEntries(Object.keys(GUIDES).map((segment) => [segment, 'pdf']));
 const GUIDE_TYPE = { pdf: 'application/pdf', html: 'text/html; charset=utf-8' };
 
 function guideFile(segment) {

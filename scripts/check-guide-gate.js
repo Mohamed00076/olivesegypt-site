@@ -152,15 +152,22 @@ function get(mod, requestPath, { cookie, query } = {}) {
   // ---- 5. the function's grants ------------------------------------------
   const cookieOk = `${T.COOKIE_NAME}=${T.signGuideToken('buyers_guide', SECRET, 3600)}`;
   res = await get(guide, '/downloads/buyers-guide', { cookie: cookieOk });
-  const real = fs.readFileSync(path.join(FN, '_guides', 'en', 'buyers-guide.html'), 'utf8');
-  t('a valid cookie token -> 200 with the guide itself', res.statusCode === 200 && res.body === real, res.statusCode);
+  // Every guide is a PDF (2026-09-28): the body is the file's bytes, base64.
+  const pdfB64 = (loc, slug) => fs.readFileSync(path.join(FN, '_guides', loc, `${slug}.pdf`)).toString('base64');
+  t('a valid cookie token -> 200 with the guide itself',
+    res.statusCode === 200 && res.isBase64Encoded === true && res.body === pdfB64('en', 'buyers-guide'), res.statusCode);
+  t('   served as a PDF download, never as the HTML it is built from',
+    res.headers['Content-Type'] === 'application/pdf' &&
+    res.headers['Content-Disposition'] === 'attachment; filename="buyers-guide-en.pdf"',
+    JSON.stringify(res.headers));
   t('   the guide is never cached by a shared cache', /private/.test(res.headers['Cache-Control']));
 
   res = await get(guide, '/ar/downloads/pricing-packaging-guide', {
     cookie: `${T.COOKIE_NAME}=${T.signGuideToken('pricing_guide', SECRET, 3600)}`,
   });
   t('the Arabic guide is served for an Arabic path',
-    res.statusCode === 200 && res.body === fs.readFileSync(path.join(FN, '_guides', 'ar', 'pricing-packaging-guide.html'), 'utf8'));
+    res.statusCode === 200 && res.body === pdfB64('ar', 'pricing-packaging-guide') &&
+    res.headers['Content-Disposition'] === 'attachment; filename="pricing-packaging-guide-ar.pdf"');
 
   res = await get(guide, '/downloads/origin-comparison-guide', {
     query: { t: T.signGuideToken('origin_guide', SECRET, 3600) },
@@ -247,14 +254,15 @@ function get(mod, requestPath, { cookie, query } = {}) {
       for (const [what, extra, want] of cases) {
         const res = await get(mod, `/downloads/${slug}`, { query: { g: seg, ...extra } });
         if (res.statusCode !== want) bad.push(`${seg} with ${what}: ${res.statusCode} (wanted ${want})`);
-        // a 200 must be that guide's own document, not another one
+        // a 200 must be that guide's own PDF, byte for byte -- not another
+        // guide's, and not the HTML it is built from
         if (want === 200 && res.statusCode === 200) {
           const asset = T.guideFile(seg);
-          const served = asset.ext === 'pdf'
-            // base64 of a PDF starts with the %PDF- magic bytes
-            ? res.isBase64Encoded === true && res.body.startsWith('JVBERi0')
-            : res.body.includes(slug);
-          if (!served) bad.push(`${seg} opened but did not serve its ${asset.ext}`);
+          const own = fs.readFileSync(path.join(FN, '_guides', 'en', asset.name));
+          const served = asset.ext === 'pdf' && res.headers['Content-Type'] === 'application/pdf' &&
+            res.isBase64Encoded === true && res.body === own.toString('base64') &&
+            own.subarray(0, 5).toString('latin1') === '%PDF-';
+          if (!served) bad.push(`${seg} opened but did not serve its own PDF`);
         }
       }
     }

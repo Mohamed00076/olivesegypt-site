@@ -265,14 +265,12 @@ for (const f of [...pages, ...generators]) {
 // check, because it is mistaken for coverage. The first version of this file
 // did exactly that.
 //
-// What is checked instead: the PDF *sources*, above, since both catalogues
-// are generated from scripts/export-catalog-source*.html. When those change,
-// regenerate and verify the artefacts by hand:
+// What is checked instead: the PDF *sources*, above. Every gated PDF -- both
+// catalogues and the seven guides -- is generated from HTML this file reads
+// (scripts/export-catalog-source*.html and netlify/functions/_guides/*/*.html),
+// and check-guide-pdfs.js fails until a changed source is regenerated:
 //
 //   python3 -m http.server 8899 &
-//   node scripts/generate-export-catalog-pdf.js
-//   SOURCE_FILE=scripts/export-catalog-source-ar.html \
-//   OUT_FILE=netlify/functions/_guides/ar/export-catalog.pdf \
 //   node scripts/generate-export-catalog-pdf.js
 
 if (problems.length === 0) {
