@@ -127,6 +127,15 @@ for (const gen of ['scripts/generate-product-pages.py']) {
   t(`${gen} still emits the insights tab`, src.includes(TAB));
 }
 
+// Arabic pages mirror the insights tab onto the left edge, with its accent
+// strip on the inner side: on the right it sat on the Arabic hero's headline
+// and intro text (2026-09-28).
+{
+  const css = fs.readFileSync(path.join(ROOT, 'assets/index-Dw0yUE42.css'), 'utf8');
+  t('right-to-left pages mirror the insights tab to the left edge, accent inward',
+    /\[dir="rtl"\] a\[data-testid="floating-blog-link"\] \{\s*right: auto;\s*left: 0;/.test(css) &&
+    /\[dir="rtl"\] a\[data-testid="floating-blog-link"\] > span\[aria-hidden="true"\]:first-child \{\s*left: auto;\s*right: 0;/.test(css));
+}
 console.log(`\nfloating-actions OK -- ${en + ar} browsing page(s) carry both, ${PRINTABLE.size} printable sheet(s) carry neither.`);
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

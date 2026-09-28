@@ -144,8 +144,8 @@ const lib = require(path.join(FN, '_failure_lib.js'));
   const neonId = require.resolve('@neondatabase/serverless');
   require.cache[neonId] = new Module(neonId, null);
   Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => failingSql } });
-  const { signSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
-  const cookie = `${CRM_COOKIE_NAME}=${signSession('staff', SECRET)}`;
+  const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
+  const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
   lib._resetThrottle(); emails.length = 0;
   const res = await quiet(require(path.join(FN, 'crm-buyers.js')).handler)({
     httpMethod: 'PATCH', headers: { cookie }, queryStringParameters: { id: '1' }, body: '{"current_stage":"Contacted"}' });

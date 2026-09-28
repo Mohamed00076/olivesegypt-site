@@ -14,7 +14,36 @@
 
 const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, parseId, INVALID_ID_ERROR, COOKIE_NAME: ADMIN_COOKIE_NAME } = require('./_lib');
 
+const crypto = require('crypto');
+
 const CRM_COOKIE_NAME = 'tc_crm_session';
+
+/*
+ * The key CRM sessions are signed with: always DERIVED, never a raw secret.
+ *
+ * CRM_SESSION_SECRET falls back to SESSION_SECRET, the analytics admin's key,
+ * and both apps sign with the same function. Until 2026-09-28 the fallback was
+ * used as-is, so with CRM_SESSION_SECRET unset -- or set to the same value --
+ * a CRM user's token was a valid admin session, and an admin token a valid CRM
+ * one: tested, a CRM token opened analytics-report, analytics-settings,
+ * kpi-definitions and analytics-privacy (system health audit, run 1, C2).
+ *
+ * Deriving with a fixed label separates the two whatever is configured, the
+ * same way _guide_token.js keeps guide tokens apart from both sessions. The
+ * admin key is left as it is, so the admin stays signed in; CRM users sign in
+ * once more after this deploys.
+ */
+const CRM_KEY_LABEL = 'olivesegypt:crm-session:v1';
+function crmSessionKey() {
+  const secret = process.env.CRM_SESSION_SECRET || process.env.SESSION_SECRET;
+  if (!secret) return null;
+  return crypto.createHmac('sha256', secret).update(CRM_KEY_LABEL).digest('hex');
+}
+function signCrmSession(username) {
+  const key = crmSessionKey();
+  if (!key) throw new Error('signCrmSession: no CRM_SESSION_SECRET or SESSION_SECRET');
+  return signSession(username, key);
+}
 const CRM_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 function crmSessionCookie(value, maxAgeSeconds) {
@@ -41,9 +70,9 @@ function getCrmSession(event, secret) {
 // Deny-by-default authorization gate (Rule 22): every CRM function
 // should call this first and bail out on null before touching any data.
 function requireCrmSession(event) {
-  const SESSION_SECRET = process.env.CRM_SESSION_SECRET || process.env.SESSION_SECRET;
-  if (!SESSION_SECRET) return null;
-  return getCrmSession(event, SESSION_SECRET);
+  const key = crmSessionKey();
+  if (!key) return null;
+  return getCrmSession(event, key);
 }
 
 /*
@@ -417,7 +446,9 @@ async function ensureBuyerTables(sql) {
 // single quote so it's forced to render as plain text on open.
 function csvCell(value) {
   let s = value === null || value === undefined ? '' : String(value);
-  if (/^[=+\-@]/.test(s)) s = "'" + s;
+  // OWASP's list: = + - @, and a leading TAB or CR, which some spreadsheet
+  // apps strip before evaluating (system health audit, run 1, C7).
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
   if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
   return s;
 }
@@ -499,6 +530,8 @@ async function deleteSubmission(event, sql, kind) {
 module.exports = {
   CRM_COOKIE_NAME,
   CRM_SESSION_TTL_SECONDS,
+  crmSessionKey,
+  signCrmSession,
   DB_ERROR_CODES,
   describeDbError,
   dbStep,
