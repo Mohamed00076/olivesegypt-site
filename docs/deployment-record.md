@@ -5319,6 +5319,113 @@ documentation only.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 88 to 90 — The phone check, and the last "11 varieties" (PRs #206 to #208)
+
+**Previous recorded deploy:** `0af6dcb` (Deploy 87, PR #205)
+**Approvals, all 2026-09-28:** "fix all" (the eight findings of the phone
+check, #208); "merge" (#206, #208, #207).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 88 | #206 | `55b9929` | 2026-09-28 23:08:15 | 2 | +6 / −3 | Site change |
+| 89 | #208 | `d4084af` | 2026-09-28 23:08:20 | 75 | +394 / −202 | Site change |
+| 90 | #207 | `68a0735` | 2026-09-28 23:08:25 | 1 | +79 / −2 | Notes only |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for all three before they merged. Whether each
+production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 90** recorded Deploys 86 and 87.
+
+### What each site change did
+
+- **Deploy 88 — "View Full Catalog (10 Varieties)" (#206).** The owner
+  spotted the English homepage button still saying 11 after Hamed's
+  withdrawal (Deploy 76); the Arabic button already said 10.
+  `check-product-order` exists to catch exactly this but matched only a
+  lowercase "varieties"; it is now case-blind.
+- **Deploy 89 — The phone check (#208).** The owner asked for a full check
+  of the phone version in both languages, since most traffic comes from
+  phones. All 85 public pages were opened in Chromium at 360px and 390px.
+  Nothing was wider than the screen and there were no script errors or
+  broken images. Eight findings were fixed, one commit each:
+  1. **Pinch-zoom allowed** on the 58 pages that blocked it
+     (`maximum-scale=1`).
+  2. **Form fields at 16px on phones** (90 fields), so iPhones no longer
+     zoom in on a tap.
+  3. **Floating buttons:** on phones the insights tab is a round icon above
+     WhatsApp, and "Cookie Preferences" moves into the footer beside
+     Privacy. `/privacy` says so.
+  4. **Arabic catalogue cards** get the quote button and their own spec-sheet
+     download, and the private-label band gets "الشهادات", as in English.
+     Found on the way, in both languages: the Kalamata card's brine block
+     was an icon with nothing under it; it now says it is confirmed during
+     quotation, the product page's own position.
+  5. **"lactic" → "لاكتيك"** on 12 Arabic spots; the five Arabic spec sheets
+     that carried it were rebuilt.
+  6. **12px minimum text on phones** (screen only; PDFs unchanged).
+  7. **24px link targets on phones:** the foot-of-page row, product-page
+     paths, "Back to Media Center", the business card, catalogue links.
+  8. **Arabic homepage FAQ button**, as in English.
+
+  All new Arabic labels reuse the site's own wording. New check:
+  `check-mobile-basics`. Re-run of the whole phone check afterwards: clean,
+  except the consent checkboxes, each inside a label tappable as a whole.
+
+### Owner decisions recorded, 2026-09-28
+
+- **Arabic PDFs: left as they are.** Copying or searching Arabic text in
+  them gives the words in reverse order, and the لا pair breaks (الاسم
+  extracts as السم). The pages look, print and share correctly. Chromium's
+  tagged-PDF option was tested on the company profile and extracted the
+  same. The owner decided to leave it: search engines index the Arabic web
+  pages, not the PDFs.
+- **Pricing example: kept.** `/resources/pricing` and its Arabic twin carry
+  a worked example in US dollars, labelled "made-up" throughout. It was
+  never in the register; it is now C-135, approved by the owner.
+- **C-55** (erasure and issued documents): the owner is checking with a
+  lawyer.
+
+### Claim register
+
+- **Added:** C-135 (the pricing example). The register stands at 135 claims.
+- **C-55** remains the only `needs-review` row.
+
+### Testing method
+
+The checks in `npm test` grew from 57 to 58. The suite passed on each
+branch before its merge and on `main` at `68a0735` after all three.
+Each new check or rule was run against `main` before the change and
+failed there. Beyond the suite:
+- **The phone check itself**, before and after, 85 pages × 2 widths.
+- **Chromium:** the Arabic card's download saved `kalamata-olives-ar.pdf`
+  and its quote button opened `/ar/contact/`; the footer cookie control
+  opened the preferences dialog.
+- **`check-locale-switch.js`**, by hand: 36/36.
+- **PDFs:** all 42 rebuilt and compared page by page. The five Arabic sheets
+  that carried "lactic" changed and no longer contain it; the other 37 were
+  identical and kept.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`. Reverting
+Deploy 89 brings back all eight phone findings and the five Arabic sheets
+with "lactic". Deploy 90 is documentation only.
+
+### Known limitations shipped with Deploys 88 to 90
+
+- **Not yet confirmed on the live site:** the phone fixes, and the
+  homepage button.
+- **Arabic PDF text** copies in reverse word order (above; owner's decision).
+- **Enquiry emails** (outstanding item 10) are unchanged; the owner will
+  set them later.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -5332,7 +5439,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 87 (2026-09-28).**
+**Unchanged through Deploy 90 (2026-09-28).**
 
 ## Outstanding, unresolved by this document
 
@@ -5540,7 +5647,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 87 (2026-09-28).**
+    **Unchanged at Deploy 90 (2026-09-28).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
