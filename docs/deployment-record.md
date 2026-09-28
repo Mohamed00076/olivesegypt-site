@@ -5075,8 +5075,11 @@ Two branches were behind `main` when merged, and each needed a merge of
 - "تنزيل جميع أوراق المواصفات (PDF)" (Deploy 81).
 - The new guide titles (Deploy 81).
 
-**Still awaiting review:** the Arabic `404.html` (Deploy 68), and the two
-new Arabic sentences of Deploy 82 on `/ar/company-profile` and `/ar/catalog`.
+- The Arabic `404.html` (Deploy 68). The owner also asked for its Arabic
+  block to offer the same three buttons as the English (PR #202).
+
+**Still awaiting review:** the two new Arabic sentences of Deploy 82 on
+`/ar/company-profile` and `/ar/catalog`.
 
 ### Claim register
 
