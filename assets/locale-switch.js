@@ -102,6 +102,12 @@
     var best = null;
     var bestTop = -Infinity;
     for (var i = 0; i < candidates.length; i += 1) {
+      // A hidden element reports top 0 -- "just at the top of the screen" --
+      // so it always won. The form status messages (#newsletter-status on /,
+      // #contact-form-status on /contact) are display:none until a form is
+      // sent: at the bottom of either page the switch picked one, and on the
+      // other language the reader landed at the very top (audit run 1, E3).
+      if (!isRendered(candidates[i])) continue;
       var top = candidates[i].getBoundingClientRect().top;
       if (top <= 80 && top > bestTop) {
         bestTop = top;
@@ -109,6 +115,10 @@
       }
     }
     return best;
+  }
+
+  function isRendered(el) {
+    return !!el && el.getClientRects().length > 0;
   }
 
   function maxScroll() {
@@ -226,7 +236,7 @@
     // section anchor is the best available answer.
     if (rec.anchor) {
       var el = document.getElementById(rec.anchor);
-      if (el) {
+      if (isRendered(el)) {
         el.scrollIntoView({ block: 'start' });
         return;
       }

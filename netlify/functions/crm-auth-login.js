@@ -4,7 +4,8 @@ const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const {
   verifyPassword,
-  signSession,
+  crmSessionKey,
+  signCrmSession,
   crmSessionCookie,
   CRM_SESSION_TTL_SECONDS,
   readJsonBody,
@@ -53,9 +54,9 @@ exports.handler = async (event) => {
     return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'POST' });
   }
 
-  const SESSION_SECRET = process.env.CRM_SESSION_SECRET || process.env.SESSION_SECRET;
+  const SESSION_KEY = crmSessionKey();   // derived, never a raw secret -- see _crm_lib.js
   const cs = connectionString();
-  if (!SESSION_SECRET || !cs) {
+  if (!SESSION_KEY || !cs) {
     return json(500, { ok: false, error: 'Server not configured' });
   }
 
@@ -99,7 +100,7 @@ exports.handler = async (event) => {
       return json(200, { ok: false, error: 'Incorrect username or password. Please try again.' });
     }
 
-    const token = signSession(user.username, SESSION_SECRET);
+    const token = signCrmSession(user.username);
     return json(200, { ok: true, user: { username: user.username, display_name: user.display_name || user.username } }, {
       'Set-Cookie': crmSessionCookie(token, CRM_SESSION_TTL_SECONDS),
     });

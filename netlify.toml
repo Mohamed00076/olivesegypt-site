@@ -84,6 +84,15 @@
 # consent system (a different, narrower "just Umami" toggle -- see
 # assets/consent.js -- that this widget was deliberately kept out of
 # rather than stretched to cover something it wasn't built for).
+#
+# umami-olivesegypt.netlify.app (script-src and connect-src): the Umami
+# tracker, which assets/consent.js injects only after a visitor accepts
+# analytics, and the /api/send beacon it posts back to its own host. This
+# policy was added on 2026-09-02, a day after the tracker, and allowed
+# neither, so browsers blocked Umami even for consenting visitors; nothing
+# noticed until the system health audit (run 1). Listing the host lets the
+# browser load it when consent.js asks -- it does not load it by itself.
+# scripts/check-csp-allows.js holds every third-party host to this policy.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -91,7 +100,7 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://www.facebook.com https://connect.facebook.net; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net https://umami-olivesegypt.netlify.app; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://www.facebook.com https://connect.facebook.net https://umami-olivesegypt.netlify.app; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 # A0 discovery flagged this and it was never actually done: JSON API
 # responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to
@@ -525,7 +534,7 @@
 # links into /netlify/, so a flat 404 costs nothing.
 [[redirects]]
   from = "/netlify/*"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
   force = true
 
@@ -538,7 +547,54 @@
 # "WHAT IS DELIBERATELY NOT PRUNED" note in scripts/prune-publish.js.
 [[redirects]]
   from = "/netlify.toml"
-  to = "/index.html"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# The rest of what publish = "." would otherwise serve and nobody meant to
+# publish (system health audit, run 1, A1, 2026-09-28). None of it can be
+# pruned: the function bundler reads package*.json after the build command,
+# and geo/ is bundled into analytics-collect via included_files. So, as with
+# netlify.toml, each is blocked rather than removed.
+#   geo/            the GeoLite2 database build-geo.js downloads, ~8-9 MB a
+#                   request, and MaxMind's licence does not cover serving it
+#   node_modules/   installed during the build, in the publish root
+#   package*.json   dependency list and versions
+#   .gitignore      nothing secret, nothing a visitor needs
+#   README.md       internal architecture and setup notes (owner: "fix all")
+[[redirects]]
+  from = "/geo/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/node_modules/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.gitignore"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/README.md"
+  to = "/404.html"
   status = 404
   force = true
 
@@ -554,30 +610,31 @@
 # treating it as duplicate homepage content.
 [[redirects]]
   from = "/media/triple-company-gulfood-2026"
-  to = "/index.html"
+  to = "/404.html"
   status = 410
   force = true
 
 [[redirects]]
   from = "/media/iso-22000-recertification-2025"
-  to = "/index.html"
+  to = "/404.html"
   status = 410
   force = true
 
 [[redirects]]
   from = "/media/new-brining-line-capacity"
-  to = "/index.html"
+  to = "/404.html"
   status = 410
   force = true
 
 [[redirects]]
   from = "/media/harvest-season-2025-26"
-  to = "/index.html"
+  to = "/404.html"
   status = 410
   force = true
 
-# SPA fallback — serve index.html for all non-file routes
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# No catch-all. This was an SPA fallback -- `/*` to /index.html with a 200 --
+# left from before the site became static pages, so every mistyped or retired
+# address returned the homepage as a success: a soft 404 that hid broken links
+# from the owner and from search engines (system health audit, run 1, B5).
+# Netlify now answers anything without a file or a rule above with /404.html
+# and a real 404.
