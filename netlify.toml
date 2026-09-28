@@ -564,37 +564,37 @@
 #   README.md       internal architecture and setup notes (owner: "fix all")
 [[redirects]]
   from = "/geo/*"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
   from = "/node_modules/*"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
   from = "/package.json"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
   from = "/package-lock.json"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
   from = "/.gitignore"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
   from = "/README.md"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
   force = true
 
