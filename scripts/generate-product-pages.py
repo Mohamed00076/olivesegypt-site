@@ -53,19 +53,8 @@ PRODUCTS = [
         brine=dict(salt="5–7%", acidity="0.3–0.5% lactic", ph="3.7–4.1"),
         profile="A distinctive Egyptian variety from Fayoum — slightly sweeter, rounder shape, and a high flesh-to-pit ratio.",
         best_for=["Premium glass-jar presentation", "Retail programs wanting a sweeter flavor profile", "Stuffed-olive production"],
-        related=["aggizi-green-olives", "manzanilla-green-olives", "hamed-green-olives"],
+        related=["aggizi-green-olives", "manzanilla-green-olives", "kalamata-olives"],
         image=dict(src='/assets/olive-toffahi-SpdiHPHF.jpg', alt='Toffahi Green Olives', w='1200', h='800', webp='/assets/olive-toffahi-SpdiHPHF.webp'),
-    ),
-    dict(
-        slug="hamed-green-olives", print_slug="hamed",
-        name="Hamed Green Olives", origin="North Coast, Egypt",
-        formats=["Whole", "Cracked with Herbs"],
-        calibers=["140-360"],
-        brine=dict(salt="7–9%", acidity="0.2–0.3% lactic", ph="3.9–4.3"),
-        profile="Large-caliber green olives from Egypt's North Coast. Cracked and marinated with herbs.",
-        best_for=["Middle Eastern and North African import markets", "Buyers wanting a large-caliber cracked olive"],
-        related=["aggizi-green-olives", "toffahi-green-olives", "natural-black-olives"],
-        image=dict(src='/assets/olive-hamed-DhlKuQ55.jpg', alt='Hamed Green Olives', w='1200', h='1800', webp='/assets/olive-hamed-DhlKuQ55.webp'),
     ),
     dict(
         slug="manzanilla-green-olives", print_slug="manzanilla",
@@ -86,7 +75,7 @@ PRODUCTS = [
         brine=dict(salt="4–6%", acidity="0.1–0.2% citric", ph="6.0–7.0"),
         profile="Naturally ripened on the tree and processed without oxidation agents. Deep purple-black color, soft texture, mild flavor. No iron gluconate, no artificial coloring.",
         best_for=["Buyers wanting a naturally ripened black olive (not oxidized)", "Retail and food-service"],
-        related=["oxidized-black-olives", "hamed-green-olives", "aggizi-green-olives"],
+        related=["oxidized-black-olives", "kalamata-olives", "aggizi-green-olives"],
         image=dict(src='/assets/olive-black-CzV0ukvu.jpg', alt='Natural Black Olives', w='800', h='515', webp='/assets/olive-black-CzV0ukvu.webp'),
     ),
     dict(
@@ -108,7 +97,7 @@ PRODUCTS = [
         brine=dict(salt="3–5%", acidity="0.1–0.2% citric", ph="5.5–6.5"),
         profile="California-style black olives darkened by controlled oxidation for a uniform jet-black color and smooth, mild flavor.",
         best_for=["Pizza toppings", "Food service", "Retail cans"],
-        related=["natural-black-olives", "hamed-green-olives", "aggizi-green-olives"],
+        related=["natural-black-olives", "kalamata-olives", "aggizi-green-olives"],
         image=dict(src='/assets/illus-oxidized-black.svg', alt='Oxidized Black Olives — photography pending', w='900', h='630', webp=None),
     ),
     dict(
@@ -317,6 +306,20 @@ def image_block(im):
     return tag
 
 
+# Products with a page this script does not generate, so a related link can
+# still name them. Kalamata's page is maintained by hand; it took Hamed's place
+# in these links when Hamed was withdrawn (owner, 2026-09-28: "not confirmed
+# available").
+OTHER_PAGES = {"kalamata-olives": "Kalamata Olives"}
+
+
+def name_of(slug):
+    for pp in PRODUCTS:
+        if pp["slug"] == slug:
+            return pp["name"]
+    return OTHER_PAGES[slug]
+
+
 def render(p):
     formats = "".join(
         f'<span class="inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-foreground">{f}</span>'
@@ -331,7 +334,7 @@ def render(p):
         caliber_html = '<span class="text-foreground text-sm">Confirmed during quotation</span>'
     best_for_html = "\n          ".join(f"<li>{b}</li>" for b in p["best_for"])
     related_html = "\n          ".join(
-        f'<li><a href="/products/{r}" class="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground hover:border-primary/40">{next(pp["name"] for pp in PRODUCTS if pp["slug"] == r)}</a></li>'
+        f'<li><a href="/products/{r}" class="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground hover:border-primary/40">{name_of(r)}</a></li>'
         for r in p["related"]
     )
     profile_short = p["profile"].split(".")[0] + "."

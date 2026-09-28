@@ -75,7 +75,6 @@ const PRODUCT_LABELS = {
   'aggizi-green-olives': ['Aggizi Green Olives', 'زيتون عجيزي أخضر'],
   'kalamata-olives': ['Kalamata Olives', 'زيتون كالاماتا'],
   'toffahi-green-olives': ['Toffahi Green Olives', 'زيتون تفاحي أخضر'],
-  'hamed-green-olives': ['Hamed Green Olives', 'زيتون حامد أخضر'],
   'manzanilla-green-olives': ['Manzanilla Green Olives', 'زيتون مانزانيلا أخضر'],
   'natural-black-olives': ['Natural Black Olives', 'زيتون أسود طبيعي'],
   'pepper-stuffed-green-olives': ['Stuffed Green Olives', 'زيتون أخضر محشو'],

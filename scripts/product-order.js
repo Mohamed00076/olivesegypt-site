@@ -3,7 +3,7 @@
 /*
  * Phase 3 -- the one canonical product order.
  *
- * There is no HTML build step here, so eleven product cards cannot literally
+ * There is no HTML build step here, so the product cards cannot literally
  * be rendered from one array: each surface keeps its own copy of the list.
  * What can be centralised is the *definition*, plus a test that fails when a
  * copy drifts from it (scripts/check-product-order.js).
@@ -17,14 +17,17 @@
  * Owner decision, 2026-09-05: Kalamata moves to position 2, behind Aggizi,
  * which keeps the lead as "Egypt's signature export variety". The rest of the
  * sequence is the JSON-LD order, which was the majority convention.
+ *
+ * Owner decision, 2026-09-28: Hamed is withdrawn from the range ("not
+ * confirmed available") and removed from every page and document, and
+ * Kalamata moves into the place Hamed held, after Toffahi. Ten products.
  */
 
 // slug used in ?product= and data-slug, then the page directory for each locale.
 const PRODUCTS = [
   { key: 'aggizi',         dir: 'aggizi-green-olives' },
-  { key: 'kalamata',       dir: 'kalamata-olives' },
   { key: 'toffahi',        dir: 'toffahi-green-olives' },
-  { key: 'hamed',          dir: 'hamed-green-olives' },
+  { key: 'kalamata',       dir: 'kalamata-olives' },
   { key: 'manzanilla',     dir: 'manzanilla-green-olives' },
   { key: 'black_natural',  dir: 'natural-black-olives' },
   { key: 'stuffed',        dir: 'pepper-stuffed-green-olives' },
@@ -45,4 +48,14 @@ function rank(idLike) {
   return i === -1 ? Number.MAX_SAFE_INTEGER : i;
 }
 
-module.exports = { PRODUCTS, KEYS, DIRS, KEY_OF_DIR, rank, COUNT: PRODUCTS.length };
+/*
+ * Products no longer sold. Nothing public may name them, their old addresses
+ * answer 410, and the CRM keeps them only as a tag on records that already
+ * carry it (scripts/check-withdrawn-products.js, check-crm-products.js).
+ */
+const WITHDRAWN = [
+  // Owner, 2026-09-28: "not confirmed available".
+  { key: 'hamed', dir: 'hamed-green-olives', names: ['Hamed', '\u062d\u0627\u0645\u062f'] },
+];
+
+module.exports = { PRODUCTS, KEYS, DIRS, KEY_OF_DIR, rank, COUNT: PRODUCTS.length, WITHDRAWN };

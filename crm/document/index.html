@@ -424,9 +424,13 @@
             document.getElementById('buyer-card').style.display = '';
             document.getElementById('doc-form').style.display = '';
             if (!isLetter) {
-              var firstProduct = Array.isArray(b.product_interest) && b.product_interest.length
-                ? (CRM.PRODUCTS.find(function (p) { return p[0] === b.product_interest[0]; }) || [])[1]
-                : null;
+              // The first product of interest that is still sold: a withdrawn
+              // one is never put on a new document.
+              var interests = Array.isArray(b.product_interest) ? b.product_interest : [];
+              var firstProduct = null;
+              for (var i = 0; i < interests.length && !firstProduct; i++) {
+                firstProduct = (CRM.PRODUCTS.find(function (p) { return p[0] === interests[i]; }) || [])[1] || null;
+              }
               addLine(firstProduct);
               recalc();
             }

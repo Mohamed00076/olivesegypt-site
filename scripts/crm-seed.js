@@ -56,7 +56,7 @@ const SAMPLE_BUYERS = [
     contact_name: 'Yousef Al-Harbi', contact_title: 'Head of Procurement',
     contact_email: 'y.alharbi@example-gulffinefoods.test', contact_phone: '+966 50 000 0000',
     contact_whatsapp: '+966 50 000 0000', lead_source: 'Website inquiry form',
-    current_stage: 'Qualifying', product_interest: ['hamed-green-olives', 'pepper-stuffed-green-olives'],
+    current_stage: 'Qualifying', product_interest: ['kalamata-olives', 'pepper-stuffed-green-olives'],
     certifications_required: 'Halal, HACCP', certification_gap: true,
     next_action: 'Confirm current certification coverage before quoting', next_action_due: daysFromNow(5),
     notes: 'Requires Halal certification -- cross-reference against current cert status before promising delivery timelines.',

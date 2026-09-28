@@ -20,18 +20,24 @@
     'Africa', 'Middle East', 'Asia', 'EU', 'Europe (non-EU)',
     'North America', 'South America', 'Oceania', 'Unassigned',
   ];
+  // The products the website sells, in the site's order (scripts/product-order.js).
   CRM.PRODUCTS = [
     ['aggizi-green-olives', 'Aggizi Green Olives'],
-    ['kalamata-olives', 'Kalamata Olives'],
     ['toffahi-green-olives', 'Toffahi Green Olives'],
-    ['hamed-green-olives', 'Hamed Green Olives'],
+    ['kalamata-olives', 'Kalamata Olives'],
     ['manzanilla-green-olives', 'Manzanilla Green Olives'],
     ['natural-black-olives', 'Natural Black Olives'],
     ['pepper-stuffed-green-olives', 'Stuffed Green Olives'],
     ['oxidized-black-olives', 'Oxidized Black Olives'],
+    ['sliced-jalapeno-peppers', 'Sliced Jalapeño Peppers'],
     ['marinated-artichoke-hearts', 'Marinated Artichoke Hearts'],
     ['pepperoncini-peppers', 'Pepperoncini Peppers'],
-    ['sliced-jalapeno-peppers', 'Sliced Jalapeño Peppers'],
+  ];
+  // Products no longer sold. A buyer already tagged with one keeps the tag,
+  // shown with this label, but it cannot be chosen for a new buyer or put on
+  // a new document. Hamed: withdrawn 2026-09-28, "not confirmed available".
+  CRM.WITHDRAWN_PRODUCTS = [
+    ['hamed-green-olives', 'Hamed Green Olives (withdrawn)'],
   ];
 
   CRM.escapeHtml = function (s) {

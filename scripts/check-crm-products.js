@@ -69,6 +69,20 @@ const wrong = pages.filter(([dir, label]) => {
 }).map(([dir, label]) => `${dir}: CRM says "${label}"`);
 t('every CRM product label is the heading of that product\'s page', wrong.length === 0, wrong.join('; '));
 
+// Withdrawn products (Hamed, 2026-09-28): kept on records that already carry
+// them, never offered for a new one, and never still sold on the site.
+const serverWithdrawn = require(path.join(ROOT, 'netlify/functions/crm-buyers.js')).WITHDRAWN_PRODUCTS || [];
+const pagesWithdrawn = (((sandbox.window.CRM || {}).WITHDRAWN_PRODUCTS) || []).map((p) => p[0]);
+t('the server and the pages agree on which products are withdrawn',
+  JSON.stringify([...serverWithdrawn].sort()) === JSON.stringify([...pagesWithdrawn].sort()),
+  `server: ${serverWithdrawn.join(', ')}; pages: ${pagesWithdrawn.join(', ')}`);
+const stillSold = serverWithdrawn.filter((d) => site.has(d) || fs.existsSync(path.join(ROOT, 'products', d)));
+t('a withdrawn product has no page and is not in the site\'s product list', stillSold.length === 0, stillSold.join(', '));
+const { WITHDRAWN } = require('./product-order');
+t('the CRM\'s withdrawn list is the site\'s (scripts/product-order.js)',
+  JSON.stringify([...serverWithdrawn].sort()) === JSON.stringify(WITHDRAWN.map((w) => w.dir).sort()),
+  `CRM: ${serverWithdrawn.join(', ')}; site: ${WITHDRAWN.map((w) => w.dir).join(', ')}`);
+
 t('the stale "Kalamata excluded" note is gone from the CRM',
   !/Kalamata excluded per Rule 12/.test(read('netlify/functions/crm-buyers.js')));
 
