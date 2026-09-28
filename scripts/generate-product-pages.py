@@ -278,7 +278,7 @@ PAGE_TMPL = """<!DOCTYPE html>
       </section>
 
       <div class="flex flex-wrap gap-3 mt-10 pt-8 border-t border-border">
-        <a href="/catalog/print?product={print_slug}" class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Download Spec Sheet</a>
+        <a href="/downloads/spec-sheets/{slug}-en.pdf" download class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Download Spec Sheet</a>
         <a href="/sample" class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Request a Sample</a>
         <a href="/contact" class="inline-flex items-center rounded-md bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold">Request a Quote</a>
       </div>

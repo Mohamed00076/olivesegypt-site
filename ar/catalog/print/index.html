@@ -71,19 +71,19 @@
           <img src="/assets/logo-BJ1TOn9V.png" alt="شعار الشركة الثلاثية للتنمية الصناعية" class="h-8 w-8 object-contain shrink-0" width="236" height="289"/>
           <span class="font-serif text-sm sm:text-[15px] font-bold tracking-tight text-primary whitespace-nowrap">الشركة الثلاثية</span>
         </a>
-        <button onclick="window.print()" class="inline-flex items-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold">طباعة / حفظ كملف PDF</button>
+        <a id="pdf-download" href="/ar/downloads/product-catalog-ar.pdf" download class="inline-flex items-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold">تنزيل PDF</a>
       </div>
     </header>
 
     <main class="container max-w-3xl mx-auto px-4 py-10">
       <p class="text-xs text-muted-foreground mb-2 no-print"><a href="/ar/catalog" class="hover:underline">الكتالوج</a> / طباعة</p>
       <h1 class="text-3xl font-serif font-bold text-foreground mb-1">الشركة الثلاثية للتنمية الصناعية</h1>
-      <p id="doc-subtitle" class="text-muted-foreground mb-1">مواصفات المنتجات &middot; آخر تحديث 2026-09-03</p>
+      <p id="doc-subtitle" class="text-muted-foreground mb-1">مواصفات المنتجات &middot; آخر تحديث 2026-09-28</p>
       <p id="doc-meta" class="text-xs text-muted-foreground mb-6">10 أصناف &middot; جاهزة للتصدير حول العالم &middot; التوثيق الكامل متاح عند الطلب</p>
       <div class="h-px bg-gradient-to-r from-primary/50 via-border to-transparent mb-8"></div>
 
       <div id="products">
-        <section class="spec-card" data-slug="aggizi">
+        <section class="spec-card" data-slug="aggizi" data-pdf="/ar/downloads/spec-sheets/aggizi-green-olives-ar.pdf">
           <img src="/assets/olive-aggizi-BuhWRZTd.jpg" alt="زيتون عجيزي أخضر" class="spec-thumb" width="800" height="533" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-green">زيتون أخضر</span>
@@ -110,7 +110,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="toffahi">
+        <section class="spec-card" data-slug="toffahi" data-pdf="/ar/downloads/spec-sheets/toffahi-green-olives-ar.pdf">
           <img src="/assets/olive-toffahi-SpdiHPHF.jpg" alt="زيتون تفاحي أخضر" class="spec-thumb" width="1200" height="800" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-green">زيتون أخضر</span>
@@ -137,7 +137,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="kalamata">
+        <section class="spec-card" data-slug="kalamata" data-pdf="/ar/downloads/spec-sheets/kalamata-olives-ar.pdf">
           <img src="/assets/olive-kalamata.jpg" alt="زيتون كالاماتا" class="spec-thumb spec-thumb-illus" width="671" height="310" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-black">زيتون أسود</span>
@@ -164,7 +164,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="manzanilla">
+        <section class="spec-card" data-slug="manzanilla" data-pdf="/ar/downloads/spec-sheets/manzanilla-green-olives-ar.pdf">
           <img src="/assets/olive-manzanilla-vwgGqjiA.jpg" alt="زيتون مانزانيلا أخضر" class="spec-thumb" width="1200" height="797" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-green">زيتون أخضر</span>
@@ -191,7 +191,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="black_natural">
+        <section class="spec-card" data-slug="black_natural" data-pdf="/ar/downloads/spec-sheets/natural-black-olives-ar.pdf">
           <img src="/assets/olive-black-CzV0ukvu.jpg" alt="زيتون أسود طبيعي" class="spec-thumb" width="800" height="515" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-black">زيتون أسود</span>
@@ -218,7 +218,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="stuffed">
+        <section class="spec-card" data-slug="stuffed" data-pdf="/ar/downloads/spec-sheets/pepper-stuffed-green-olives-ar.pdf">
           <img src="/assets/illus-stuffed-ar.svg" alt="زيتون أخضر محشو — صورة قيد التجهيز" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-green">زيتون أخضر</span>
@@ -245,7 +245,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="oxidized_black">
+        <section class="spec-card" data-slug="oxidized_black" data-pdf="/ar/downloads/spec-sheets/oxidized-black-olives-ar.pdf">
           <img src="/assets/illus-oxidized-black-ar.svg" alt="زيتون أسود مؤكسد — صورة قيد التجهيز" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-black">زيتون أسود</span>
@@ -272,7 +272,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="jalapeno">
+        <section class="spec-card" data-slug="jalapeno" data-pdf="/ar/downloads/spec-sheets/sliced-jalapeno-peppers-ar.pdf">
           <img src="/assets/illus-jalapeno-ar.svg" alt="فلفل هالبينو مقطّع — صورة قيد التجهيز" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-specialty">منتج مميز</span>
@@ -299,7 +299,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="artichoke">
+        <section class="spec-card" data-slug="artichoke" data-pdf="/ar/downloads/spec-sheets/marinated-artichoke-hearts-ar.pdf">
           <img src="/assets/illus-artichoke-ar.svg" alt="قلوب أرضي شوكي متبّلة — صورة قيد التجهيز" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-specialty">منتج مميز</span>
@@ -326,7 +326,7 @@
             </div>
           </div>
         </section>
-        <section class="spec-card" data-slug="pepperoncini">
+        <section class="spec-card" data-slug="pepperoncini" data-pdf="/ar/downloads/spec-sheets/pepperoncini-peppers-ar.pdf">
           <img src="/assets/illus-pepperoncini-ar.svg" alt="فلفل بيبرونشيني — صورة قيد التجهيز" class="spec-thumb spec-thumb-illus" width="96" height="96" loading="lazy"/>
           <div>
             <span class="spec-badge spec-badge-specialty">منتج مميز</span>
@@ -375,6 +375,9 @@
         cards.forEach(function (card) {
           if (card.getAttribute('data-slug') === slug) {
             found = true;
+            // the download button offers this product's own sheet
+            var pdf = document.getElementById('pdf-download');
+            if (pdf && card.getAttribute('data-pdf')) pdf.setAttribute('href', card.getAttribute('data-pdf'));
             card.classList.add('expanded');
           } else {
             card.hidden = true;
@@ -384,7 +387,7 @@
         // whole catalogue rather than an empty page.
         if (!found) cards.forEach(function (card) { card.hidden = false; });
         if (found) {
-          document.getElementById('doc-subtitle').textContent = 'ورقة مواصفات المنتج · آخر تحديث 2026-09-03';
+          document.getElementById('doc-subtitle').textContent = 'ورقة مواصفات المنتج · آخر تحديث 2026-09-28';
           var meta = document.getElementById('doc-meta');
           if (meta) meta.hidden = true;
         }

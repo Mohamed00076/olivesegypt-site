@@ -31,12 +31,13 @@
 // Environment, all optional:
 //   PORT          the local server's port (default 8899)
 //   ONLY          comma-separated slugs to build, e.g. ONLY=buyers-guide or
-//                 ONLY=export-catalog -- both locales of each
+//                 ONLY=export-catalog -- both locales of each; ONLY=spec-sheets
+//                 builds every product's spec sheet
 //   CHROMIUM_PATH a Chromium binary to use instead of Playwright's own
 
 const fs = require('fs');
 const path = require('path');
-const { ROOT, MANIFEST, SITE, JOBS, RENDER, BLOCKED_SCRIPTS, prepareForPdf, fingerprint, sha256, countPages } = require('./guide-pdfs');
+const { ROOT, MANIFEST, SITE, JOBS, renderFor, letterheadTemplates, BLOCKED_SCRIPTS, prepareForPdf, fingerprint, sha256, countPages } = require('./guide-pdfs');
 
 const PORT = process.env.PORT || 8899;
 const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim()).filter(Boolean) : null;
@@ -46,7 +47,7 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
   // neighbours needs Playwright installed.
   const { chromium } = require('playwright');
 
-  const jobs = ONLY ? JOBS.filter((j) => ONLY.includes(j.slug)) : JOBS;
+  const jobs = ONLY ? JOBS.filter((j) => ONLY.includes(j.slug) || (j.group && ONLY.includes(j.group))) : JOBS;
   if (!jobs.length) throw new Error(`ONLY=${process.env.ONLY} matches no PDF. Known: ${[...new Set(JOBS.map((j) => j.slug))].join(', ')}`);
 
   const manifestPath = path.join(ROOT, MANIFEST);
@@ -58,9 +59,28 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
   // be wrong. Nothing else is fetched from anywhere but the local server.
   await page.route(BLOCKED_SCRIPTS, (route) => route.abort());
 
+  // The letterhead, drawn once per language with the site's fonts and
+  // captured as images (see letterheadSheet in guide-pdfs.js for why).
+  const letterheads = {};
+  async function letterheadFor(locale, html) {
+    if (letterheads[locale]) return letterheads[locale];
+    const sheet = await browser.newPage({ deviceScaleFactor: 4, viewport: { width: 700, height: 300 } });
+    const url = `http://127.0.0.1:${PORT}/__letterhead-${locale}`;
+    await sheet.route(url, (route) => route.fulfill({ contentType: 'text/html; charset=utf-8', body: html }));
+    await sheet.goto(url, { waitUntil: 'networkidle' });
+    await sheet.evaluate(() => document.fonts.ready);
+    const masthead = await sheet.locator('#masthead').screenshot({ omitBackground: true });
+    const foot = await sheet.locator('#foot').screenshot({ omitBackground: true });
+    await sheet.close();
+    return (letterheads[locale] = letterheadTemplates(masthead, foot));
+  }
+
   for (const job of jobs) {
-    const render = RENDER[job.kind];
-    await page.goto(`http://127.0.0.1:${PORT}/${job.source}`, { waitUntil: 'networkidle' });
+    const render = renderFor(job);
+    const pdfOptions = render.letterhead
+      ? Object.assign({}, render.pdf, await letterheadFor(job.locale, render.letterhead))
+      : render.pdf;
+    await page.goto(`http://127.0.0.1:${PORT}/${job.source}${job.query || ''}`, { waitUntil: 'networkidle' });
     if (render.css) await page.addStyleTag({ content: render.css });
 
     await page.evaluate(prepareForPdf, SITE);
@@ -73,12 +93,13 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     const designed = job.kind === 'catalog' ? await page.locator('.pdf-page').count() : null;
 
     const outPath = path.join(ROOT, job.out);
-    const pdf = await page.pdf(render.pdf);
+    const pdf = await page.pdf(pdfOptions);
     const pages = countPages(pdf);
     if (designed !== null && pages !== designed) {
       throw new Error(`${job.source} is laid out as ${designed} pages but printed as ${pages}: ` +
         'a page\'s content is taller than A4. Tighten that page and run this again. Nothing was written for it.');
     }
+    fs.mkdirSync(path.dirname(outPath), { recursive: true });
     fs.writeFileSync(outPath, pdf);
 
     manifest[job.out] = Object.assign({ source: job.source }, fingerprint(job), { pdf: sha256(pdf) });
