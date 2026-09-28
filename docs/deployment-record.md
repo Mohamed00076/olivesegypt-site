@@ -5242,6 +5242,83 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 86 and 87 — Section links land right under the header (PRs #204, #205)
+
+**Previous recorded deploy:** `050b1b8` (Deploy 85, PR #203)
+**Approvals, both 2026-09-28:** "merge" (#204); "merge" (#205).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 86 | #204 | `e353e90` | 2026-09-28 15:54:33 | 1 | +97 / −2 | Notes only |
+| 87 | #205 | `0af6dcb` | 2026-09-28 16:11:26 | 8 | +149 / −47 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for both before they merged. Whether each
+production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 86** recorded Deploys 83 to 85.
+
+### What the site change did
+
+- **Deploy 87 — Section links land right under the header (#205).** The
+  owner followed the homepage's Food-Service card and saw the bottom of the
+  Tin Cans card above Plastic Buckets, and asked for it fixed "here and
+  anywhere else". All 11 in-site section links were measured in Chromium at
+  1280px and 390px:
+  - **Nine landed too low:** `/media#blog` and the three packaging cards,
+    in both languages. They used `scroll-mt-24` (96px) under a 65px header,
+    so 7–31px of the content above showed.
+  - **Two landed too high:** `/#certificates` and
+    `/resources/private-label#brief` (both languages for `#brief`). They had
+    no offset, so their top 65px sat behind the header. Nobody had reported
+    them.
+
+  One rule now lands every section inside `<main>` at the header's height:
+  `main [id] { scroll-margin-top: calc(4rem + 1px) }`. The per-element
+  offsets are removed. All 22 cases land exactly at 65px.
+
+  `html { scroll-padding-top }` was tried first and rejected. It made the
+  browser treat the sticky header as out of view, so pressing Tab in the
+  header scrolled the page up by about 400px. `check-locale-switch.js`
+  caught it (2 of 36 failed); with the scoped rule it passes 36/36. New
+  check: `check-anchor-offset`.
+
+### Testing method
+
+The checks in `npm test` grew from 56 to 57. The suite passed on the branch
+before the merge, and on `main` at `0af6dcb` after it (run later, once this
+environment's command tool recovered from an outage). The new check was also run against `main` before the
+change, and against the rejected `html` version, and failed on both.
+
+Beyond the suite:
+- **Chromium:** the 22 section-link cases, and Tab through the header on
+  `/resources/packaging` and `/contact`, where the page stayed put.
+- **`check-locale-switch.js`**, run by hand: 36/36.
+- **PDFs:** the shared stylesheet is an input to every PDF. All 42 were
+  rebuilt and compared page by page with the committed files (text, links
+  and pixels) and were identical, so the committed files were kept and only
+  their fingerprints recorded.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+`git revert -m 1 0af6dcb`. That brings back the 96px offset on nine links
+and none on the other two. It also restores the previous PDF fingerprints,
+so `check-guide-pdfs` stays green without rebuilding anything. Deploy 86 is
+documentation only.
+
+### Known limitations shipped with Deploys 86 and 87
+
+- **Not yet confirmed on the live site:** each homepage card, and the
+  certificates and private-label brief links, landing right under the
+  header.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -5255,7 +5332,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 85 (2026-09-28).**
+**Unchanged through Deploy 87 (2026-09-28).**
 
 ## Outstanding, unresolved by this document
 
@@ -5463,7 +5540,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 85 (2026-09-28).**
+    **Unchanged at Deploy 87 (2026-09-28).**
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
