@@ -551,3 +551,17 @@ header .container {
    `bottom` is deliberately not set here -- consent.js owns it while the
    cookie banner is showing. */
 [dir="rtl"] .fixed.bottom-6.right-6 { right: auto; left: 1.5rem; }
+
+/* A link to a section of a page (/resources/packaging#plastic-buckets,
+   /media#blog, /resources/private-label#brief) lands that section directly
+   under the sticky header: nothing of what comes before it shows above it,
+   and nothing of it is hidden behind the header. The header is h-16 (4rem)
+   plus its 1px bottom border. Until 2026-09-28 the targets that had any
+   offset used scroll-mt-24 (6rem), which left the bottom of the previous
+   card showing (owner report); the ones without it landed under the header.
+
+   Set on what is inside <main>, not as scroll-padding on <html>: that made
+   the browser treat the header itself as out of view, so moving through the
+   header with Tab scrolled the page up by hundreds of pixels. Inside <main>
+   it also keeps a focused form field from sitting under the header. */
+main [id] { scroll-margin-top: calc(4rem + 1px); }
