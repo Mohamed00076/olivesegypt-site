@@ -76,7 +76,7 @@ PRODUCTS = [
         profile="Naturally ripened on the tree and processed without oxidation agents. Deep purple-black color, soft texture, mild flavor. No iron gluconate, no artificial coloring.",
         best_for=["Buyers wanting a naturally ripened black olive (not oxidized)", "Retail and food-service"],
         related=["oxidized-black-olives", "kalamata-olives", "aggizi-green-olives"],
-        image=dict(src='/assets/olive-black-CzV0ukvu.jpg', alt='Natural Black Olives', w='800', h='515', webp='/assets/olive-black-CzV0ukvu.webp'),
+        image=dict(src='/assets/illus-natural-black.svg', alt='Natural Black Olives — photography pending', w='900', h='630', webp=None),
     ),
     dict(
         slug="pepper-stuffed-green-olives", print_slug="stuffed",
