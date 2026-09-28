@@ -55,7 +55,16 @@ t('   it is not indexed', /<meta name="robots" content="noindex, follow"/.test(p
 t('   it claims no canonical address, alternates or structured data',
   !/rel="canonical"|rel="alternate"|application\/ld\+json/.test(page));
 t('   it says what happened, in English and Arabic', /<h1[^>]*>Page not found<\/h1>/.test(page) && /lang="ar" dir="rtl"/.test(page) && /الصفحة غير موجودة/.test(page));
-t('   and offers a way on in each language', /href="\/"/.test(page) && /href="\/ar\/"/.test(page));
+// The same three ways on in each language: homepage, catalogue, contact. The
+// Arabic block offered only its homepage until the owner asked, on
+// 2026-09-28, for it to match the English.
+const arBlock = (page.match(/<div lang="ar" dir="rtl"[\s\S]*?<\/a><\/div><\/div>/) || [''])[0];
+const enBlock = arBlock ? page.slice(page.indexOf('<main'), page.indexOf(arBlock)) : page;
+const waysOn = (html, pre) => ['', 'catalog', 'contact'].map((r) => `${pre}/${r}`)
+  .filter((href) => !html.includes(`href="${href}"`));
+const enMissing = waysOn(enBlock, ''), arMissing = waysOn(arBlock, '/ar');
+t('   and offers the homepage, catalogue and contact in each language, in that language',
+  enMissing.length === 0 && arMissing.length === 0, [...enMissing, ...arMissing].join(', '));
 t('   every asset and link it uses is absolute, so it works at any depth',
   ![...page.matchAll(/(?:href|src)="([^"#]+)"/g)].map((m) => m[1]).some((u) => !/^(\/|https?:|mailto:|tel:|data:)/.test(u)),
   [...page.matchAll(/(?:href|src)="([^"#]+)"/g)].map((m) => m[1]).filter((u) => !/^(\/|https?:|mailto:|tel:|data:)/.test(u)).slice(0, 4).join(', '));
