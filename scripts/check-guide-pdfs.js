@@ -89,6 +89,21 @@ for (const job of JOBS.filter((j) => j.kind === 'catalog')) {
   t(`${job.out}: ${printed} printed page(s) for ${designed} designed -- no page spills over`,
     designed > 0 && printed === designed);
 
+  // The cover lists every page after itself, once, in order, and each page's
+  // footer carries its own number. Until 2026-09-28 the last two were
+  // numbered "8A" and "8B" in both places -- pages 8 and 9 of the printed
+  // catalogue.
+  const src = read(job.source).toString('utf8');
+  const toc = [...src.matchAll(/class="cover-toc-row"[^>]*><span>[^<]*<\/span><span>([^<]*)<\/span>/g)].map((m) => m[1].trim());
+  const want = Array.from({ length: designed - 1 }, (_, i) => String(i + 2));
+  t(`   its contents list numbers the pages ${want[0]}-${want[want.length - 1]}, as printed`,
+    JSON.stringify(toc) === JSON.stringify(want), toc.join(', '));
+  const footers = src.split(/<section class="pdf-page[\s"]/).slice(2)
+    .map((page) => ((page.match(/class="pdf-footer">[\s\S]*?<span>([^<]*)<\/span><\/div>/) || [])[1] || '').match(/\d+[A-Za-z]*$/));
+  const badFooters = footers.map((m, i) => [i + 2, m ? m[0] : '?']).filter(([n, got]) => String(n) !== got);
+  t('   and every page after the cover carries its own number in the footer',
+    footers.length === designed - 1 && badFooters.length === 0, badFooters.map(([n, got]) => `page ${n} says ${got}`).join(', '));
+
   const downloads = read(job.locale === 'ar' ? 'ar/downloads/index.html' : 'downloads/index.html').toString('utf8');
   const claim = downloads.match(job.locale === 'ar' ? /المكوّن من (\d+) صفحات/ : /printable (\d+)-page export catalogue/);
   t(`   the ${job.locale === 'ar' ? 'Arabic' : 'English'} Downloads page describes it as ${claim ? claim[1] : '?'} pages, which it is`,

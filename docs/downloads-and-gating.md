@@ -299,6 +299,12 @@ prints to more pages than it has `.pdf-page` sections. `check-guide-pdfs.js`
 also checks the page count against the "9-page" wording on both Downloads
 pages.
 
+**The contents list now matches the pages (2026-09-28).** Both catalogues
+numbered their last two pages "8A" and "8B", in the cover's contents list and
+in the page footers, although they print as pages 8 and 9. They now say 8 and
+9. `check-guide-pdfs.js` requires the contents list to number the pages 2 to
+the last in order, and every footer to carry its own page number.
+
 **Still true, now of every Arabic PDF.** The Arabic text layer is written by
 Chromium in visual order with lam-alef pairs split (§2). The pages render
 correctly, but copying text out of an Arabic PDF, or searching inside it,
