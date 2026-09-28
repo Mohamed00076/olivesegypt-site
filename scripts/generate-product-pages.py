@@ -169,8 +169,6 @@ PAGE_TMPL = """<!DOCTYPE html>
     <meta property="og:url" content="https://olivesegypt.com/products/{slug}" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://olivesegypt.com/opengraph.jpg" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script>
       (function () {{
         'use strict';
@@ -198,7 +196,7 @@ PAGE_TMPL = """<!DOCTYPE html>
         }});
       }})();
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="/assets/fonts/fonts.css" rel="stylesheet">
     <link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
 
     <script type="application/ld+json">
