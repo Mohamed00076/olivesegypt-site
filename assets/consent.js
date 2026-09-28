@@ -160,6 +160,8 @@
     '.tc-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}' +
     '.tc-btn-modal-secondary{background:transparent;color:#1c2416;border-color:#1c241633;}' +
     '#tc-consent-reopen{position:fixed;inset-inline-start:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
+    '@media (max-width:639px){#tc-consent-reopen.tc-in-footer{display:none;}}' +
+    '#tc-consent-footer-link{background:none;border:0;padding:0;font:inherit;cursor:pointer;}' +
     '.dark #tc-consent-modal{background:hsl(var(--card));color:hsl(var(--card-foreground));}' +
     '.dark .tc-modal-subtext{color:hsl(var(--muted-foreground));}' +
     '.dark .tc-cat{border-top-color:hsl(var(--card-border));}' +
@@ -187,6 +189,7 @@
       manage: 'Manage Preferences',
       accept: 'Accept All',
       reopen: '\uD83C\uDF6A Cookie Preferences',
+      reopenFooter: 'Cookie Preferences',
       modalTitle: 'Cookie Preferences',
       modalSubtext: "Choose what we're allowed to use. You can change this anytime.",
       necessary: 'Strictly Necessary',
@@ -206,6 +209,7 @@
       manage: 'إدارة التفضيلات',
       accept: 'قبول الكل',
       reopen: '\uD83C\uDF6A تفضيلات الكوكيز',
+      reopenFooter: 'تفضيلات الكوكيز',
       modalTitle: 'تفضيلات الكوكيز',
       modalSubtext: 'اختر ما يُسمح لنا باستخدامه. ويمكنك تغيير ذلك في أي وقت.',
       necessary: 'ضروري تمامًا',
@@ -323,6 +327,26 @@
     restoreFabPosition();
   }
 
+  // On a phone the floating pill joined the WhatsApp bubble and the insights
+  // tab on the bottom of every screen, covering content (owner's mobile
+  // check, 2026-09-28). So the same control also sits in the footer, beside
+  // Privacy, styled like its neighbours; below 640px the pill is hidden
+  // wherever the footer one was placed. Pages without that footer row (the
+  // printable sheets, the business card) keep the pill at every width.
+  function addFooterControl() {
+    if (document.getElementById('tc-consent-footer-link')) return true;
+    var privacy = document.querySelector('footer a[href="/privacy"], footer a[href="/ar/privacy"]');
+    if (!privacy || !privacy.parentNode) return false;
+    var btn = document.createElement('button');
+    btn.id = 'tc-consent-footer-link';
+    btn.type = 'button';
+    btn.className = privacy.className;
+    btn.textContent = T.reopenFooter;
+    btn.addEventListener('click', openPreferencesModal);
+    privacy.parentNode.insertBefore(btn, privacy.nextSibling);
+    return true;
+  }
+
   function showReopenControl() {
     if (document.getElementById('tc-consent-reopen')) return;
     var btn = document.createElement('button');
@@ -330,6 +354,7 @@
     btn.type = 'button';
     btn.textContent = T.reopen;
     btn.addEventListener('click', openPreferencesModal);
+    if (addFooterControl()) btn.className = 'tc-in-footer';
     document.body.appendChild(btn);
   }
 
