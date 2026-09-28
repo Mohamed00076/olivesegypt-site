@@ -600,3 +600,35 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     border-radius: 9999px !important;
   }
 }
+
+/* Phones (2026-09-28, the owner's mobile check), both languages:
+   - Text set below 12px -- the product pages' Salt / Acidity / pH labels,
+     the catalogue's form chips and brine labels, the small section
+     eyebrows on How We Work, Media and the homepage, the print sheets'
+     category badges -- is 12px, the smallest the site otherwise uses.
+     Screen only, so the printed sheets and PDFs keep their sizes.
+   - Links under 24px tall get padding up to it (WCAG 2.5.8): the
+     Privacy / Unsubscribe / Cookie Preferences row at the foot of every
+     page, the Home / Catalog path on product pages, "Back to Media
+     Center" on articles, the business card's email, phone and website,
+     and the catalogue cards' full-specification links. Inline links keep
+     their line: padding on an inline box grows the tap area, not the
+     line. */
+@media screen and (max-width: 639px) {
+  .text-\[9px\], .text-\[10px\], .text-\[11px\], body .spec-badge {
+    font-size: 0.75rem;
+  }
+  footer .flex.flex-wrap.items-center.gap-4.pt-2 > a,
+  footer #tc-consent-footer-link {
+    padding-block: 4px;
+  }
+  nav[aria-label="Breadcrumb"] a,
+  nav[aria-label="مسار التصفح"] a,
+  main a.text-primary.underline,
+  main a.text-sm.font-semibold.text-primary {
+    padding-block: 5px;
+  }
+  main a.inline-flex.items-center.gap-1\.5.mb-8 {
+    padding-block: 2px;
+  }
+}
