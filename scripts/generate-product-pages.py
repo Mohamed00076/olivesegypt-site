@@ -76,7 +76,7 @@ PRODUCTS = [
         profile="Naturally ripened on the tree and processed without oxidation agents. Deep purple-black color, soft texture, mild flavor. No iron gluconate, no artificial coloring.",
         best_for=["Buyers wanting a naturally ripened black olive (not oxidized)", "Retail and food-service"],
         related=["oxidized-black-olives", "kalamata-olives", "aggizi-green-olives"],
-        image=dict(src='/assets/olive-black-CzV0ukvu.jpg', alt='Natural Black Olives', w='800', h='515', webp='/assets/olive-black-CzV0ukvu.webp'),
+        image=dict(src='/assets/illus-natural-black.svg', alt='Natural Black Olives — photography pending', w='900', h='630', webp=None),
     ),
     dict(
         slug="pepper-stuffed-green-olives", print_slug="stuffed",
@@ -278,7 +278,7 @@ PAGE_TMPL = """<!DOCTYPE html>
       </section>
 
       <div class="flex flex-wrap gap-3 mt-10 pt-8 border-t border-border">
-        <a href="/catalog/print?product={print_slug}" class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Download Spec Sheet</a>
+        <a href="/downloads/spec-sheets/{slug}-en.pdf" download class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Download Spec Sheet</a>
         <a href="/sample" class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Request a Sample</a>
         <a href="/contact" class="inline-flex items-center rounded-md bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold">Request a Quote</a>
       </div>

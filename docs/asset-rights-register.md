@@ -95,7 +95,7 @@ these six — the "send the files" next step above still stands.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `assets/olive-aggizi-*.jpg` | "Aggizi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
 | `assets/olive-manzanilla-*.jpg` | "Manzanilla Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
-| `assets/olive-black-*.jpg` | "Natural Black Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
+| `assets/olive-black-*.jpg` *(deleted 2026-09-28)* | "Natural Black Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | None: replaced by `illus-natural-black*.svg`, see the 2026-09-28 note below | Do not restore: it carries a stock-photo watermark |
 | `assets/olive-hamed-*.jpg` *(deleted 2026-09-28)* | "Hamed Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | None: the product was withdrawn ("not confirmed available") and both files (`.jpg`, `.webp`) deleted | Restore from git history if the product returns |
 | `assets/olive-toffahi-*.jpg` | "Toffahi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
 | ~~`assets/olive-stuffed-new-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
@@ -248,4 +248,27 @@ above describe the site before that date.
 
 The note above about the "Page 8A" / "Page 8B" footers is also out of date:
 since 2026-09-28 (Deploy 71) those pages are numbered 8 and 9.
+
+## 2026-09-28 — Natural Black photograph withdrawn: stock watermark
+
+`assets/olive-black-CzV0ukvu.jpg` (and its `.webp`), the Natural Black Olives
+photograph, carries a faint watermark across its middle that reads as
+"dreamstime", a stock-photo site's preview mark. It was found while checking
+the new spec-sheet PDFs. The inspection of 2026-09-03 above looked for
+generation artefacts and did not record it, and the table listed the photo as
+owner-confirmed and owned.
+
+The owner decided, the same day, to take it down: "put photo pending, am
+working on bringing in real photos soon".
+- **Replacement:** everywhere it appeared, the product now shows
+  `illus-natural-black.svg` / `illus-natural-black-ar.svg`. That covers the
+  homepage, both catalogues, the print catalogues and spec sheets, the
+  Downloads thumbnails, the product pages (including their Product schema
+  image) and the export catalogue PDFs.
+- **The illustration:** a copy of the oxidized-black illustration, the same
+  "photography pending" artwork as the other placeholder products.
+- **The photo files:** deleted.
+
+Six products now await real photography: Natural Black, Stuffed,
+Oxidized Black, Sliced Jalapeño, Marinated Artichoke and Pepperoncini.
 

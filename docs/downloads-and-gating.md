@@ -314,3 +314,41 @@ correctly, but copying text out of an Arabic PDF, or searching inside it,
 gives garbled Arabic. This is not new, but it now applies to seven more
 documents.
 
+## 9. Official paper, and two public PDFs — 2026-09-28
+
+The owner asked for the downloads to look like official company paper ("no
+logo no nothing"), and for the company profile and the full product catalogue
+to download straight away instead of opening a page first.
+
+**Letterhead.** Every page of the seven guides, the company profile and the
+full product catalogue, in both languages, carries the masthead and foot of
+`/letterhead` and `/ar/letterhead`:
+- **Masthead:** the logo, "TRIPLE COMPANY / for Industrial Development", the
+  head-office address, email and phone, and a green rule.
+- **Foot:** the legal name, the page number and the website.
+
+It uses the same words as those pages, so there is no new copy. The export
+catalogue already had its own branded header and footer, so it is unchanged.
+
+Chromium draws page headers outside the page, where no web font loads. So the
+generator draws the letterhead in an ordinary page with the site's fonts,
+captures it as images at 4x, and places them on every page. Only the page
+number is live text. `scripts/guide-pdfs.js` (`letterheadSheet`) holds the
+design. The logo and font files are part of every letterhead PDF's
+fingerprint.
+
+**Public PDFs**, beside the Downloads page, with no form:
+
+| Document | English | Arabic | Built from |
+|---|---|---|---|
+| Company profile | `downloads/company-profile-en.pdf` | `ar/downloads/company-profile-ar.pdf` | `/company-profile` |
+| Full product catalogue | `downloads/product-catalog-en.pdf` | `ar/downloads/product-catalog-ar.pdf` | `/catalog/print` |
+| Spec sheet, one per product (10) | `downloads/spec-sheets/<product>-en.pdf` | `ar/downloads/spec-sheets/<product>-ar.pdf` | `/catalog/print?product=<key>` |
+
+The Downloads cards, the catalogue bar's "Download Full Catalog (PDF)" button,
+the Downloads page's spec-sheet list, the catalogue cards' and product pages'
+"Download Spec Sheet" links, and the print page's own button (the full
+catalogue, or on a single-product view that product's sheet) all download
+these directly. `ONLY=spec-sheets` rebuilds the twenty sheets. `check-guide-gate.js` allows a PDF outside
+the gated bundle only if `guide-pdfs.js` declares it public.
+
