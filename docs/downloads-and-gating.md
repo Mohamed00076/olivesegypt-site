@@ -4,6 +4,10 @@ Originally a verification pass, not a redesign. §3 recorded the one finding
 that needed an owner decision; that decision was taken on 2026-09-05 and §3
 now records what was built instead. The remaining open items are in §4.
 
+Since 2026-09-28 every gated guide is served as a PDF, not a web page. §8
+records how they are built and kept current. The sections before it describe
+the site as it was when each was written.
+
 ## 1. Parity — complete
 
 Fifteen downloadable artefacts per locale, matched one for one:
@@ -240,3 +244,64 @@ refused by the browser, an address the browser lets through (`a@b`) is caught
 by the script, a real submission reaches the store, the form closes afterwards,
 the consent label's link loads the page, and `?email=` pre-fills the field
 without ever opting anyone out on its own. 18/18.
+
+## 8. Every guide is a PDF — 2026-09-28
+
+The owner asked for all the guides to be real PDFs. The Downloads page had
+always offered each one as a "PDF Guide" behind an "Open Your Guide (PDF)"
+link, but only the export catalogue was a PDF: the other seven opened as web
+pages.
+
+**What a visitor gets now.** The same form and the same gate. The link
+downloads `<guide>-en.pdf` or `<guide>-ar.pdf`, served by `guide.js` with
+`Content-Type: application/pdf`, exactly as the catalogue already was. The
+guide routes and `netlify.toml` rules are unchanged.
+
+**What they are built from.** Each guide's HTML stays where it was, in
+`netlify/functions/_guides/<locale>/`, as the PDF's source. `guide.js` never
+serves it. Every check that read the guides still reads them, so the content
+rules (identity strings, claims, links) keep applying to what goes into each
+PDF. The catalogues are still built from `scripts/export-catalog-source*.html`.
+
+**Building them.** One generator builds all sixteen (seven guides and the
+catalogue, both locales):
+
+    npm install --no-save playwright && npx playwright install --with-deps chromium
+    python3 -m http.server 8899 &
+    node scripts/generate-export-catalog-pdf.js          # all sixteen
+    ONLY=buyers-guide node scripts/generate-export-catalog-pdf.js   # one guide, both locales
+
+For a guide, it adds a few print adjustments, set in `scripts/guide-pdfs.js`:
+- The logo and company name stay at the top.
+- Sections can break between questions instead of leaving a page nearly
+  empty.
+- Each page is numbered ("1 / 2") in the footer.
+
+Every relative link is pointed at `https://olivesegypt.com`, because a PDF
+has no site to be relative to. The consent, analytics and language-switch
+scripts are blocked while printing, so no banner lands in the PDF and no visit
+is counted.
+
+**Keeping them current.** Audit B6 found both catalogue PDFs ten days stale.
+The generator now records a fingerprint of every PDF in
+`scripts/guide-pdfs.json`: its source, the stylesheets and images the source
+uses, the render settings, and the PDF itself. `check-guide-pdfs.js` (in
+`npm test`) fails when any of them has changed since the PDF was built, and
+names the file. The fix is always to regenerate.
+
+**The catalogue is back to 9 pages.** Both catalogues are laid out as nine A4
+pages, and the Downloads pages call them 9-page. Since the product range grew
+in #182, the product-range page had spilled onto a tenth. Rendering with the
+site's own fonts (self-hosted since #180) also pushed the English cover's
+contents list over. The fix is slightly tighter table rows and cover spacing,
+with no wording changes. The generator now refuses to write a catalogue that
+prints to more pages than it has `.pdf-page` sections. `check-guide-pdfs.js`
+also checks the page count against the "9-page" wording on both Downloads
+pages.
+
+**Still true, now of every Arabic PDF.** The Arabic text layer is written by
+Chromium in visual order with lam-alef pairs split (§2). The pages render
+correctly, but copying text out of an Arabic PDF, or searching inside it,
+gives garbled Arabic. This is not new, but it now applies to seven more
+documents.
+
