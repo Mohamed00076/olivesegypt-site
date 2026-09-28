@@ -29,7 +29,6 @@ const CATEGORY = {
   aggizi: 'green',
   kalamata: 'black',
   toffahi: 'green',
-  hamed: 'green',
   manzanilla: 'green',
   black_natural: 'black',
   stuffed: 'green',          // pitted Manzanilla and Aggizi, stuffed

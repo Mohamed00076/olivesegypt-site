@@ -20,7 +20,8 @@
  * ar/catalog declared 800x515 -- the real size of olive-black -- on the
  * aggizi, toffahi and hamed photographs, which are 800x533, 1200x800 and
  * 1200x1800. The English catalogue had all three right, so the Arabic page
- * was a copy whose numbers were never updated.
+ * was a copy whose numbers were never updated. (The hamed photograph was
+ * deleted with the product on 2026-09-28.)
  *
  * None of it ever showed. Every one of those tags also carries CSS that pins
  * both axes -- h-8 w-8, h-10 w-10, .spec-thumb, w-full h-full inside a fixed
