@@ -96,6 +96,14 @@ for (const locale of ['', 'ar/']) {
     }
   }
 
+  // ---- the bar offers the full catalogue, in the page's own language -----
+  // /ar/catalog had only the product count until 2026-09-28, when the owner
+  // noticed its "download full catalogue" button was missing.
+  const printHref = `/${locale}catalog/print`;
+  if (!new RegExp(`<a href="${printHref}"[^>]*><button[^>]*>[\\s\\S]*?</button></a>`).test(html.slice(html.indexOf('data-catalog-count')))) {
+    problems.push(`${file}: the filter bar has no download-full-catalogue button linking to ${printHref}`);
+  }
+
   // ---- the buyer-intent row stays removed (owner, 2026-09-28) -----------
   const left = ['data-facet-row', 'data-facet-chip', 'data-facet-clear', 'data-facets=', 'tc-facet-']
     .filter((marker) => html.includes(marker));
