@@ -446,7 +446,9 @@ async function ensureBuyerTables(sql) {
 // single quote so it's forced to render as plain text on open.
 function csvCell(value) {
   let s = value === null || value === undefined ? '' : String(value);
-  if (/^[=+\-@]/.test(s)) s = "'" + s;
+  // OWASP's list: = + - @, and a leading TAB or CR, which some spreadsheet
+  // apps strip before evaluating (system health audit, run 1, C7).
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
   if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
   return s;
 }
