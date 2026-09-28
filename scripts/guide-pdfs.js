@@ -12,8 +12,9 @@
  * remembering.
  *
  * A PDF's fingerprint covers its source HTML, every local stylesheet and image
- * the source references, and the render settings below. Change any of them and
- * the check fails until the PDFs are regenerated.
+ * the source references, every font or image those stylesheets load, and how
+ * it is printed (the settings below, the blocked scripts and prepareForPdf).
+ * Change any of them and the check fails until the PDFs are regenerated.
  *
  * Requires nothing outside Node, so the check can load it in `npm test`.
  */
@@ -103,6 +104,19 @@ const sha256 = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 // not a page, and is excluded.
 const countPages = (buf) => (Buffer.from(buf).toString('latin1').match(/\/Type\s*\/Page(?![A-Za-z])/g) || []).length;
 
+/*
+ * Run in the page just before printing: points every relative link at the live
+ * site, since a PDF has no site to be relative to and printing from the local
+ * server would otherwise bake in http://127.0.0.1. Lives here rather than in
+ * the generator so that changing it changes every PDF's fingerprint.
+ */
+function prepareForPdf(site) {
+  for (const a of document.querySelectorAll('a[href]')) {
+    const href = a.getAttribute('href');
+    if (href.startsWith('/') && !href.startsWith('//')) a.setAttribute('href', site + href);
+  }
+}
+
 /** The local stylesheets and images a source pulls in, as repo-relative paths. */
 function assetsOf(html) {
   const out = new Set();
@@ -116,22 +130,50 @@ function assetsOf(html) {
   return [...out].sort();
 }
 
+/*
+ * The local files a stylesheet pulls in through url() -- the woff2 files in
+ * assets/fonts/fonts.css above all, since a changed font reflows every page.
+ * Relative urls resolve against the stylesheet; data: and remote urls are
+ * not files in this repository and are skipped.
+ */
+function cssAssetsOf(css, cssPath) {
+  const out = new Set();
+  for (const m of css.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/g)) {
+    const ref = m[2].trim().split(/[?#]/)[0];
+    if (!ref || /^(data:|[a-z]+:|\/\/)/i.test(ref)) continue;
+    out.add(ref.startsWith('/') ? ref.slice(1) : path.posix.join(path.posix.dirname(cssPath), ref));
+  }
+  return [...out].sort();
+}
+
+// Everything that decides how a job prints, beyond its files: the print
+// settings and CSS, the script block list, the site links are pointed at, and
+// the page preparation itself.
+const renderKey = (kind) => sha256(JSON.stringify({
+  settings: RENDER[kind], blocked: BLOCKED_SCRIPTS.source, site: SITE, prepare: prepareForPdf.toString(),
+}));
+
 /** What a job's PDF depends on, each with its hash. A missing file hashes as 'missing'. */
 function fingerprint(job, root = ROOT) {
   const read = (rel) => {
     try { return fs.readFileSync(path.join(root, rel)); } catch (e) { return null; }
   };
   const html = read(job.source);
-  const files = [job.source, ...(html ? assetsOf(html.toString('utf8')) : [])];
+  const direct = html ? assetsOf(html.toString('utf8')) : [];
+  const viaCss = direct.filter((f) => f.endsWith('.css')).flatMap((f) => {
+    const css = read(f);
+    return css ? cssAssetsOf(css.toString('utf8'), f) : [];
+  });
+  const files = [...new Set([job.source, ...direct, ...viaCss])];
   const inputs = {};
   for (const f of files) {
     const buf = read(f);
     inputs[f] = buf ? sha256(buf) : 'missing';
   }
-  return { inputs, render: sha256(JSON.stringify(RENDER[job.kind])) };
+  return { inputs, render: renderKey(job.kind) };
 }
 
 module.exports = {
   ROOT, MANIFEST, SITE, GUIDE_SLUGS, JOBS, RENDER, BLOCKED_SCRIPTS,
-  assetsOf, fingerprint, sha256, countPages,
+  prepareForPdf, assetsOf, cssAssetsOf, fingerprint, sha256, countPages,
 };

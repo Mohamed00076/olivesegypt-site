@@ -32,10 +32,11 @@
   # ~8-9MB) -- GeoLite2-City was ruled out specifically because it isn't
   # (see docs/j2-acceptance-criteria.md).
   #
-  # The three gated guides (both locales) are bundled here too. They used
-  # to be static pages in the publish directory, which is exactly why the
-  # gate never gated anything -- anyone with the URL read them without
-  # filling the form. They are now served only by guide.js, against a
+  # The gated downloads (both locales) are bundled here too: seven guides
+  # and the export catalogue, each a PDF built from HTML kept beside it. The
+  # first three guides used to be static pages in the publish directory,
+  # which is exactly why the gate never gated anything -- anyone with the
+  # URL read them without filling the form. They are now served only by guide.js, against a
   # signed token, and there is no copy left in the published root.
   included_files = ["geo/**", "netlify/functions/_guides/**"]
 

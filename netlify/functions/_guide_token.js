@@ -1,7 +1,8 @@
 'use strict';
 
 /*
- * Short-lived signed tokens that unlock the three gated guides.
+ * Short-lived signed tokens that unlock the gated downloads: the seven guides
+ * and the export catalogue, each a PDF (GUIDES below).
  *
  * Background: until now the "gate" was decoration. The three guide pages
  * were ordinary static HTML at guessable URLs, and the form only revealed
