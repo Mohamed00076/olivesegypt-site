@@ -118,7 +118,10 @@ for (const [where, file, fn, expected] of CHECKS) {
   compare(where, fn(html), expected);
 }
 
-// The visible count must agree with the canonical list length.
+// The visible count must agree with the canonical list length. Case-blind:
+// until 2026-09-28 this matched only a lowercase "varieties", so the
+// homepage's "View Full Catalog (11 Varieties)" survived Hamed's withdrawal
+// for the whole day until the owner spotted it.
 const COUNT_FILES = [
   'index.html', 'catalog/index.html', 'downloads/index.html', 'catalog/print/index.html',
   'ar/index.html', 'ar/catalog/index.html', 'ar/downloads/index.html', 'ar/catalog/print/index.html',
@@ -126,7 +129,7 @@ const COUNT_FILES = [
 for (const f of COUNT_FILES) {
   const html = read(f);
   if (html === null) continue;
-  const wrong = [...html.matchAll(/(\d+)\s*(?:product\s*)?varieties|(\d+)\s*(?:صنفًا|صنف|أصناف)/g)]
+  const wrong = [...html.matchAll(/(\d+)\s*(?:product\s*)?varieties|(\d+)\s*(?:صنفًا|صنف|أصناف)/gi)]
     .map((m) => Number(m[1] || m[2]))
     .filter((n) => n !== COUNT);
   if (wrong.length) problems.push(`${f}: states ${[...new Set(wrong)].join(', ')} varieties, expected ${COUNT}`);
