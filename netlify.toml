@@ -633,6 +633,21 @@
   status = 410
   force = true
 
+# Hamed Green Olives, withdrawn from the range on 2026-09-28 at the owner's
+# request ("not confirmed available"). Gone, not moved: there is no page to
+# send a buyer to that would not suggest the product is still offered.
+[[redirects]]
+  from = "/products/hamed-green-olives"
+  to = "/404.html"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/ar/products/hamed-green-olives"
+  to = "/404.html"
+  status = 410
+  force = true
+
 # No catch-all. This was an SPA fallback -- `/*` to /index.html with a 200 --
 # left from before the site became static pages, so every mistyped or retired
 # address returned the homepage as a success: a soft 404 that hid broken links

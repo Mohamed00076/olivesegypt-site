@@ -162,6 +162,9 @@ async function post(body) {
       JSON.stringify(out.data));
   }
 
+  const { DIRS } = require('./product-order');
+  const OFFERED = DIRS.length - 1;
+
   // ---- 5. the private-label page does not leak Kalamata -----------------
   //
   // The one product-level rule on this page, checked on the page itself
@@ -175,8 +178,12 @@ async function post(body) {
     // link placed just outside the grid would slip past
     t(`${file}: the page links to no Kalamata product page`,
       !links.includes('kalamata-olives'), links.join(','));
-    t(`${file}: exactly 10 products are offered`, links.length === 10,
+    // every product the site sells except Kalamata (C-40); derived rather
+    // than written down, so withdrawing a product (Hamed, 2026-09-28) moves it
+    t(`${file}: exactly ${OFFERED} products are offered`, links.length === OFFERED,
       `${links.length}: ${links.join(',')}`);
+    const missing = DIRS.filter((d) => d !== 'kalamata-olives' && !links.includes(d));
+    t(`${file}: every product except Kalamata is offered`, missing.length === 0, missing.join(','));
 
     // the page must still say why it is absent, rather than quietly omitting it
     t(`${file}: says why Kalamata is not offered`,

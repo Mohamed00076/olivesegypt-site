@@ -96,7 +96,7 @@ these six — the "send the files" next step above still stands.
 | `assets/olive-aggizi-*.jpg` | "Aggizi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
 | `assets/olive-manzanilla-*.jpg` | "Manzanilla Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
 | `assets/olive-black-*.jpg` | "Natural Black Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/`, `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
-| `assets/olive-hamed-*.jpg` | "Hamed Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
+| `assets/olive-hamed-*.jpg` *(deleted 2026-09-28)* | "Hamed Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | None: the product was withdrawn ("not confirmed available") and both files (`.jpg`, `.webp`) deleted | Restore from git history if the product returns |
 | `assets/olive-toffahi-*.jpg` | "Toffahi Green Olives" | Owner-confirmed | Owned by Triple Company | Triple Company for Industrial Development | No | `/catalog/`, `/catalog/print` | Swap file or fall back to no image |
 | ~~`assets/olive-stuffed-new-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
 | ~~`assets/product-artichoke-*.png`~~ | *(removed — AI-generated, see above)* | — | — | — | — | — | Replaced with `photo-pending.svg` |
@@ -236,3 +236,16 @@ compression, and packaging of files that already existed.
   visually rendered page-by-page — content matches the original word for
   word except the swapped images, and the "Page 8A" / "Page 8B" footer
   numbering (a quirk of the original document) is preserved.
+
+## 2026-09-28 — Hamed photographs deleted
+
+Hamed Green Olives were withdrawn from the range at the owner's request (C-131).
+`assets/olive-hamed-DhlKuQ55.jpg` and `.webp` were used only by the Hamed
+product pages, its catalogue card and spec-sheet thumbnail, and its row in the
+catalogue PDFs, all of which are removed, so both files are deleted. They are
+recoverable from git history. The mentions of `olive-hamed-*` in the sections
+above describe the site before that date.
+
+The note above about the "Page 8A" / "Page 8B" footers is also out of date:
+since 2026-09-28 (Deploy 71) those pages are numbered 8 and 9.
+

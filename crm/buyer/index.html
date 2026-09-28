@@ -259,6 +259,16 @@
           document.getElementById('lost_reason').value = b.lost_reason || '';
           document.getElementById('notes').value = b.notes || '';
           var interest = Array.isArray(b.product_interest) ? b.product_interest : [];
+          // A withdrawn product is offered only to a buyer who already has it,
+          // so saving the record does not silently drop the tag.
+          var checksWrap = document.getElementById('product-checks');
+          CRM.WITHDRAWN_PRODUCTS.forEach(function (p) {
+            if (interest.indexOf(p[0]) === -1 || checksWrap.querySelector('input[value="' + p[0] + '"]')) return;
+            var label = document.createElement('label');
+            label.style.cssText = 'display:flex;align-items:center;font-weight:400;font-size:13px;gap:6px;background:#f0eee5;padding:6px 10px;border-radius:6px;opacity:0.75;';
+            label.innerHTML = '<input type="checkbox" value="' + p[0] + '" style="width:auto;" /> ' + CRM.escapeHtml(p[1]);
+            checksWrap.appendChild(label);
+          });
           document.querySelectorAll('#product-checks input[type=checkbox]').forEach(function (cb) {
             cb.checked = interest.indexOf(cb.value) !== -1;
           });

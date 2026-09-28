@@ -52,7 +52,7 @@ const FUNCTION_ROUTES = [
   '/downloads/export-catalog',
 ].flatMap((r) => [r, AR_PREFIX + r]);
 
-/** Every public route on disk, e.g. '/', '/catalog', '/ar/products/hamed-green-olives'. */
+/** Every public route on disk, e.g. '/', '/catalog', '/ar/products/aggizi-green-olives'. */
 function listRoutes(root = ROOT) {
   const out = [...FUNCTION_ROUTES];
   (function walk(dir) {

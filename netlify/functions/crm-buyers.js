@@ -27,11 +27,15 @@ function connectionString() {
 // scripts/check-crm-products.js fails if this list and the site's products
 // drift apart again.
 const PRODUCTS = [
-  'aggizi-green-olives', 'kalamata-olives', 'toffahi-green-olives', 'hamed-green-olives',
+  'aggizi-green-olives', 'toffahi-green-olives', 'kalamata-olives',
   'manzanilla-green-olives', 'natural-black-olives', 'pepper-stuffed-green-olives',
-  'oxidized-black-olives', 'marinated-artichoke-hearts', 'pepperoncini-peppers',
-  'sliced-jalapeno-peppers',
+  'oxidized-black-olives', 'sliced-jalapeno-peppers', 'marinated-artichoke-hearts',
+  'pepperoncini-peppers',
 ];
+// No longer sold (Hamed: withdrawn 2026-09-28, "not confirmed available").
+// A buyer already tagged keeps the tag through an edit; a new buyer cannot be
+// given it. assets/crm.js carries the same list for the pages.
+const WITHDRAWN_PRODUCTS = ['hamed-green-olives'];
 // Stages and regions live in _crm_lib.js, shared with the CSV import and the
 // website enquiry intake, so the three cannot disagree about what is valid.
 const REGIONS = new Set(REGION_LIST);
@@ -97,7 +101,8 @@ function validateBuyerInput(body, forCreate) {
 
   let productInterest = [];
   if (Array.isArray(body.product_interest)) {
-    productInterest = body.product_interest.filter((p) => PRODUCTS.includes(p));
+    productInterest = body.product_interest.filter((p) =>
+      PRODUCTS.includes(p) || (!forCreate && WITHDRAWN_PRODUCTS.includes(p)));
   }
 
   if (body.contact_email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clean(body.contact_email, MAX.contact_email))) {
@@ -403,5 +408,6 @@ exports.handler = async (event) => {
 };
 
 module.exports.PRODUCTS = PRODUCTS;
+module.exports.WITHDRAWN_PRODUCTS = WITHDRAWN_PRODUCTS;
 module.exports.REGIONS = Array.from(REGIONS);
 module.exports.STAGES = STAGES;
