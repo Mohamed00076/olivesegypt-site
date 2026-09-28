@@ -214,6 +214,43 @@ async function reportAttribution(sql, { startAt, endAt, model }) {
   };
 }
 
+/*
+ * Enquiries by how the visitor arrived (system health audit, run 1, D4).
+ *
+ * Since Deploy 35 a website enquiry carries the analytics session of the visit
+ * that sent it -- only with analytics consent, never creating one (C-112,
+ * disclosed on /privacy). Nothing read it back, so "which searches led to a
+ * quote request" had no answer. This counts real enquiry records, not form
+ * events, by that session's source.
+ *
+ * Counts only: no name, email, company or message leaves this function.
+ * Enquiries with no session are labelled, not dropped, so the total always
+ * matches the Enquiries page for the same period.
+ */
+async function reportEnquiriesBySource(sql, { startAt, endAt }) {
+  const present = (await sql`SELECT to_regclass('public.inquiries') IS NOT NULL AS ok`)[0].ok;
+  const note = 'Each website enquiry sent with analytics consent carries the visit it came from; this counts enquiries by how that visit arrived. '
+    + '"Not linked" means the visitor declined analytics, or the enquiry predates the link (2026-09-26). '
+    + '"Visit no longer held" means the visit has passed the analytics retention window. Counts only.';
+  if (!present) return { rows: [], total: 0, note };
+  const rows = await sql(
+    `
+    SELECT COALESCE(s.attribution_source,
+                    CASE WHEN i.session_id IS NULL THEN 'Not linked' ELSE 'Visit no longer held' END) AS source,
+           count(*)::int AS enquiries,
+           count(*) FILTER (WHERE i.request_type ILIKE '%quote%')::int AS quote_requests,
+           count(*) FILTER (WHERE i.request_type ILIKE '%sample%')::int AS sample_requests
+    FROM inquiries i
+    LEFT JOIN analytics_sessions s ON s.session_id = i.session_id
+    WHERE i.created_at >= $1 AND i.created_at < $2
+    GROUP BY 1
+    ORDER BY enquiries DESC, source
+    `,
+    [startAt, endAt],
+  );
+  return { rows, total: rows.reduce((n, r) => n + r.enquiries, 0), note };
+}
+
 async function reportBotReview(sql) {
   const threshold = await getThreshold(sql);
   const rows = await sql(
@@ -427,6 +464,7 @@ exports.handler = async (event) => {
     if (report === 'funnel') return json(200, await reportFunnel(sql, { startAt, endAt, source: q.source || null, country: q.country || null, funnelId: q.funnel_id || null }), { 'Cache-Control': 'no-store, private' });
     if (report === 'hot_leads') return json(200, await reportHotLeads(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
     if (report === 'attribution') return json(200, await reportAttribution(sql, { startAt, endAt, model: q.model === 'last_touch' ? 'last_touch' : 'first_touch' }), { 'Cache-Control': 'no-store, private' });
+    if (report === 'enquiries_by_source') return json(200, await reportEnquiriesBySource(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
     if (report === 'bot_review') return json(200, await reportBotReview(sql), { 'Cache-Control': 'no-store, private' });
     if (report === 'demographics') return json(200, await reportDemographics(sql, { startAt, endAt }), { 'Cache-Control': 'no-store, private' });
     if (report === 'live_feed') {

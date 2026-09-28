@@ -412,6 +412,13 @@
       </div>
 
       <div class="card full">
+        <h2>Enquiries by How the Visitor Arrived</h2>
+        <ul class="rank" id="j-enq-source"></ul>
+        <p class="j-note" id="j-enq-source-split"></p>
+        <p class="j-note" id="j-enq-source-note"></p>
+      </div>
+
+      <div class="card full">
         <h2>Hot Leads</h2>
         <p class="j-note" id="j-hotlead-def"></p>
         <div id="j-hot-leads"></div>
@@ -822,6 +829,17 @@
     function renderAttribution(d) {
       renderRank('j-attribution', (d.rows || []).map(function (r) { return { x: r.source, y: r.conversions }; }));
       document.getElementById('j-attribution-note').textContent = d.note || '';
+    }
+
+    // Real enquiry records by the source of the visit that sent them (D4).
+    // textContent throughout; the rows carry counts and a source label only.
+    function renderEnquiriesBySource(d) {
+      var rows = (d && d.rows) || [];
+      renderRank('j-enq-source', rows.map(function (r) { return { x: r.source, y: r.enquiries }; }));
+      document.getElementById('j-enq-source-split').textContent = rows.length
+        ? rows.map(function (r) { return labelFor(r.source) + ': ' + r.quote_requests + ' quote, ' + r.sample_requests + ' sample'; }).join(' \u00b7 ')
+        : '';
+      document.getElementById('j-enq-source-note').textContent = (d && d.note) || '';
     }
 
     function renderHotLeads(d) {
@@ -1252,6 +1270,7 @@
       jApi('analytics-report', { report: 'overview' }).then(renderOverview).catch(function () {});
       refreshFunnel();
       jApi('analytics-report', { report: 'attribution', model: jState.attributionModel }).then(renderAttribution).catch(function () {});
+      jApi('analytics-report', { report: 'enquiries_by_source' }).then(renderEnquiriesBySource).catch(function () {});
       jApi('analytics-report', { report: 'hot_leads' }).then(renderHotLeads).catch(function () {});
       jApi('analytics-report', { report: 'bot_review' }).then(renderBotReview).catch(function () {});
       jApi('analytics-report', { report: 'demographics' }).then(renderDemographics).catch(function () {});
