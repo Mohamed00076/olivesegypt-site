@@ -130,8 +130,8 @@ require.cache[neonId].filename = neonId;
 require.cache[neonId].loaded = true;
 require.cache[neonId].exports = { neon: () => currentSql };
 
-const { signSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
-const COOKIE = `${CRM_COOKIE_NAME}=${signSession('staff', SECRET)}`;
+const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
+const COOKIE = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
 
 /*
  * The requests a person actually makes, in the order the UI makes them, on a

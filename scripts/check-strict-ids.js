@@ -49,9 +49,9 @@ const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
 
-const { parseId, signSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
+const { parseId, signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const base = require(path.join(FN, '_lib.js'));
-const crmCookie = `${CRM_COOKIE_NAME}=${signSession('staff', SECRET)}`;
+const crmCookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
 const adminCookie = `${base.COOKIE_NAME}=${base.signSession('owner', SECRET + '-admin')}`;
 const cookieFor = (file) => (/^kpi-/.test(file) ? adminCookie : crmCookie);
 

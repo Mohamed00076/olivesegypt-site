@@ -80,7 +80,7 @@ const t = (name, cond, extra) => {
 };
 
 const adminCookie = `${lib.COOKIE_NAME}=${lib.signSession('owner', ADMIN_SECRET)}`;
-const crmCookie = `${crmLib.CRM_COOKIE_NAME}=${crmLib.signSession('staff', CRM_SECRET)}`;
+const crmCookie = `${crmLib.CRM_COOKIE_NAME}=${crmLib.signCrmSession('staff')}`;
 
 function get(cookie) {
   return inquiries.handler({
@@ -111,7 +111,7 @@ function get(cookie) {
     ['a junk cookie', 'tc_session=not-a-token'],
     ['an admin token signed with the wrong secret', forgedAdmin],
     ['a CRM token signed with the wrong secret', forgedCrm],
-    ['a CRM token presented in the admin cookie', `${lib.COOKIE_NAME}=${crmLib.signSession('staff', CRM_SECRET)}`],
+    ['a CRM token presented in the admin cookie', `${lib.COOKIE_NAME}=${crmLib.signCrmSession('staff')}`],
   ]) {
     const before = rowsRead;
     const res = await get(cookie);

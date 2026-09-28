@@ -542,6 +542,53 @@
   status = 404
   force = true
 
+# The rest of what publish = "." would otherwise serve and nobody meant to
+# publish (system health audit, run 1, A1, 2026-09-28). None of it can be
+# pruned: the function bundler reads package*.json after the build command,
+# and geo/ is bundled into analytics-collect via included_files. So, as with
+# netlify.toml, each is blocked rather than removed.
+#   geo/            the GeoLite2 database build-geo.js downloads, ~8-9 MB a
+#                   request, and MaxMind's licence does not cover serving it
+#   node_modules/   installed during the build, in the publish root
+#   package*.json   dependency list and versions
+#   .gitignore      nothing secret, nothing a visitor needs
+#   README.md       internal architecture and setup notes (owner: "fix all")
+[[redirects]]
+  from = "/geo/*"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/node_modules/*"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.gitignore"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/README.md"
+  to = "/index.html"
+  status = 404
+  force = true
+
 # A0 canonical-route audit (re-checked 2026-09-02): these four /media/
 # article paths appeared in an old sitemap with no matching content
 # anywhere in this repo's history, and no evidence they were ever
