@@ -152,6 +152,11 @@ const get = async (cookie) => {
   t('   a header and one row per subscriber, newest first', lines[0] === '\uFEFFemail,company,country,business_type,signed_up' && lines.length === 3 &&
     lines[1].startsWith('b@example.com'), JSON.stringify(lines));
   t('   and a formula in a company name is neutralised', /"'=HYPERLINK\(""http:\/\/x"",""click""\)"/.test(x.body), lines[2]);
+  {
+    const { csvCell } = require(path.join(FN, '_crm_lib.js'));
+    t('   and so is a formula behind a leading TAB or CR (audit run 1, C7)',
+      csvCell('\t=1+1').startsWith("'\t") && csvCell('\r=1') === '"\'\r=1"' && csvCell('plain') === 'plain');
+  }
   t('   every export is recorded in the audit log, with the row count', x.audits.length === 1 && x.audits[0][0] === 'staff' && x.audits[0][1] === 'rows=2', JSON.stringify(x.audits));
   const eq = (src.match(/async function handleExport[\s\S]*?ORDER BY lower\(trim\(l\.email\)\), l\.created_at DESC/) || [''])[0];
   t('   it includes only market-brief signups who consented', /WHERE l\.segment = 'market_report' AND l\.consent = true/.test(eq));
