@@ -52,6 +52,8 @@
       .doc-meta { font-size: 0.8rem; color: hsl(var(--muted-foreground)); }
       @media print {
         header, footer, .no-print { display: none !important; }
+        /* the floating insights tab and WhatsApp button, added to every page later */
+        [data-testid="floating-blog-link"], .fixed.bottom-6 { display: none !important; }
         .profile-section { border-bottom: none; padding: 1rem 0; }
         a[href]:after { content: " (" attr(href) ")"; font-size: 0.75em; color: #555; }
         @page { margin: 2cm; }
@@ -81,7 +83,7 @@
       </p>
 
       <h1 class="text-4xl font-serif font-bold text-foreground mt-4 mb-2">الملف التعريفي للشركة</h1>
-      <p class="doc-meta mb-8">مالك المستند: الشركة الثلاثية للتنمية الصناعية &middot; آخر مراجعة: 2026-09-01</p>
+      <p class="doc-meta mb-8">مالك المستند: الشركة الثلاثية للتنمية الصناعية &middot; آخر مراجعة: 2026-09-28</p>
 
       <section class="profile-section">
         <h2 class="text-2xl font-serif font-bold mb-3">هوية الشركة</h2>
@@ -147,7 +149,7 @@
         <a href="/ar/contact" class="no-print inline-block mt-4 bg-primary text-primary-foreground px-5 py-2.5 rounded-md text-sm font-semibold">اطلب عرض سعر</a>
       </section>
 
-      <p class="doc-meta mt-8 no-print">يمكن حفظ هذه الصفحة كملف PDF باستخدام أمر الطباعة في المتصفح (تتضمن نسخة الطباعة أرقام الصفحات وروابط المصادر).</p>
+      <a href="/ar/downloads/company-profile-ar.pdf" download class="no-print inline-flex items-center gap-2 mt-8 rounded-md border border-primary px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors">تنزيل PDF</a>
     </main>
 
     <footer class="w-full border-t border-border py-12 mt-12"><div class="container max-w-screen-2xl mx-auto px-4"><div class="tc-footer-cols"><div class="tc-footer-col"><h3>المنتجات</h3><ul><li><a href="/ar/catalog">المنتجات</a></li><li><a href="/ar/downloads">الكتالوج الكامل</a></li><li><a href="/ar/catalog/print">مواصفات المنتجات</a></li></ul></div><div class="tc-footer-col"><h3>الجودة والوثائق</h3><ul><li><a href="/ar/resources/certifications">الشهادات</a></li><li><a href="/ar/downloads">التنزيلات والوثائق</a></li><li><a href="/ar/company-profile">الملف التعريفي للشركة</a></li></ul></div><div class="tc-footer-col"><h3>الموارد</h3><ul><li><a href="/ar/downloads">أدلة المشترين</a></li><li><a href="/ar/resources/private-label">العلامة الخاصة</a></li><li><a href="/ar/resources/faq">الأسئلة الشائعة</a></li><li><a href="/ar/how-we-work">كيف نعمل</a></li></ul></div><div class="tc-footer-col"><h3>مركز الإعلام</h3><ul><li><a href="/ar/media/news">أخبار الشركة</a></li><li><a href="/ar/media/blog">مدونة تجارة الزيتون</a></li><li><a href="/ar/media/inquiries">الاستفسارات الإعلامية</a></li></ul></div><div class="tc-footer-col"><h3>تواصل معنا</h3><ul><li><a href="/ar/contact">التواصل</a></li><li><a href="/ar/sample">اطلب عينة</a></li><li><a href="https://wa.me/201006045961" rel="noopener" target="_blank">واتساب</a></li></ul></div></div><div class="mt-10 pt-6 border-t border-border flex flex-col gap-3"><p class="font-serif font-bold text-primary">الشركة الثلاثية للتنمية الصناعية</p><p class="text-sm text-muted-foreground max-w-2xl">مورّد زيتون مائدة مصري مقرّه القاهرة، مصر، يستعد للتصدير الدولي عبر ترتيبات شراكة معتمدة.</p><p class="text-sm text-muted-foreground">ميدان العروبة، التجمع الخامس، القاهرة الجديدة، القاهرة، مصر</p><p class="text-sm text-muted-foreground"><span dir="ltr">sales@olivesegypt.com</span> &middot; <span dir="ltr">+20 100 604 5961</span></p><div class="flex flex-wrap items-center gap-4 pt-2"><a href="/ar/privacy" class="text-xs text-muted-foreground hover:text-foreground">الخصوصية</a><a href="/ar/unsubscribe" class="text-xs text-muted-foreground hover:text-foreground">إلغاء الاشتراك</a><span class="text-xs text-muted-foreground">&copy; الشركة الثلاثية للتنمية الصناعية. جميع الحقوق محفوظة. الموقع: olivesegypt.com</span></div></div></div></footer>

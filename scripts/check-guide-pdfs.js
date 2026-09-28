@@ -2,8 +2,9 @@
 'use strict';
 
 /*
- * Every gated PDF is present, is a PDF, and was built from its source as it
- * stands today.
+ * Every PDF the site hands out -- the gated guides and catalogue, and the
+ * public company profile -- is present, is a PDF, and was built from its
+ * source as it stands today.
  *
  *   node scripts/check-guide-pdfs.js        (part of `npm test`)
  *

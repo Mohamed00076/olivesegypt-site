@@ -63,12 +63,31 @@ const GUIDE_PDF_CSS = `
 const GUIDE_FOOTER = '<div style="width:100%;font-size:8px;color:#6b7280;text-align:center;font-family:sans-serif;">' +
   '<span class="pageNumber"></span> / <span class="totalPages"></span></div>';
 
+// The public company profile, printed from its own page. The page's print
+// rules already hide the header, footer and buttons; its own "Page N" footer
+// is a fixed element that Chromium numbers as page 1 throughout, so it gives
+// way to the same numbered footer as the guides.
+// The page prints each link's address after it, for paper; in the PDF the
+// links are clickable, so the addresses go.
+const PROFILE_PDF_CSS = `
+  .print-footer { display: none !important; }
+  a[href]:after { content: none !important; }
+`;
+
 const RENDER = {
   // Unchanged from the catalogue's original generator: the source carries its
   // own page layout, edge to edge.
   catalog: {
     pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } },
     css: '',
+  },
+  // The profile page's @page rule also sets a 2cm margin.
+  profile: {
+    pdf: {
+      format: 'A4', printBackground: true, preferCSSPageSize: true,
+      displayHeaderFooter: true, headerTemplate: '<div></div>', footerTemplate: GUIDE_FOOTER,
+    },
+    css: PROFILE_PDF_CSS,
   },
   // The guides' @page rule sets a 2cm margin; the footer sits inside it.
   guide: {
@@ -94,6 +113,13 @@ const JOBS = ['en', 'ar'].flatMap((locale) => [
     locale, slug: 'export-catalog', kind: 'catalog',
     source: locale === 'en' ? 'scripts/export-catalog-source.html' : 'scripts/export-catalog-source-ar.html',
     out: `netlify/functions/_guides/${locale}/export-catalog.pdf`,
+  },
+  // Public, not gated: the Downloads page offers it to everyone, so it is
+  // published beside that page rather than kept in the functions bundle.
+  {
+    locale, slug: 'company-profile', kind: 'profile', public: true,
+    source: locale === 'en' ? 'company-profile/index.html' : 'ar/company-profile/index.html',
+    out: locale === 'en' ? 'downloads/company-profile-en.pdf' : 'ar/downloads/company-profile-ar.pdf',
   },
 ]);
 
