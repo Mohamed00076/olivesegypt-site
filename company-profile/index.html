@@ -50,6 +50,8 @@
       .doc-meta { font-size: 0.8rem; color: hsl(var(--muted-foreground)); }
       @media print {
         header, footer, .no-print { display: none !important; }
+        /* the floating insights tab and WhatsApp button, added to every page later */
+        [data-testid="floating-blog-link"], .fixed.bottom-6 { display: none !important; }
         .profile-section { border-bottom: none; padding: 1rem 0; }
         a[href]:after { content: " (" attr(href) ")"; font-size: 0.75em; color: #555; }
         @page { margin: 2cm; }
@@ -79,7 +81,7 @@
       </p>
 
       <h1 class="text-4xl font-serif font-bold text-foreground mt-4 mb-2">Company Profile</h1>
-      <p class="doc-meta mb-8">Document owner: Triple Company for Industrial Development &middot; Last revised: 2026-09-01</p>
+      <p class="doc-meta mb-8">Document owner: Triple Company for Industrial Development &middot; Last revised: 2026-09-28</p>
 
       <section class="profile-section">
         <h2 class="text-2xl font-serif font-bold mb-3">Company Identity</h2>
@@ -145,7 +147,7 @@
         <a href="/contact" class="no-print inline-block mt-4 bg-primary text-primary-foreground px-5 py-2.5 rounded-md text-sm font-semibold">Request a Quote</a>
       </section>
 
-      <p class="doc-meta mt-8 no-print">This page can be saved as a PDF using your browser's print function (page numbers and source URLs are included in the print layout).</p>
+      <a href="/downloads/company-profile-en.pdf" download class="no-print inline-flex items-center gap-2 mt-8 rounded-md border border-primary px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors">Download PDF</a>
     </main>
 
     <footer class="w-full border-t border-border py-12 mt-12"><div class="container max-w-screen-2xl mx-auto px-4"><div class="tc-footer-cols"><div class="tc-footer-col"><h3>Products</h3><ul><li><a href="/catalog">Products</a></li><li><a href="/downloads">Full Catalog</a></li><li><a href="/catalog/print">Product Specifications</a></li></ul></div><div class="tc-footer-col"><h3>Quality &amp; Documents</h3><ul><li><a href="/resources/certifications">Certifications</a></li><li><a href="/downloads">Downloads &amp; Documents</a></li><li><a href="/company-profile">Company Profile</a></li></ul></div><div class="tc-footer-col"><h3>Resources</h3><ul><li><a href="/downloads">Buyer Guides</a></li><li><a href="/resources/private-label">Private Label</a></li><li><a href="/resources/faq">FAQ</a></li><li><a href="/how-we-work">How We Work</a></li></ul></div><div class="tc-footer-col"><h3>Media Center</h3><ul><li><a href="/media/news">Company News</a></li><li><a href="/media/blog">Olive Trade Blog</a></li><li><a href="/media/inquiries">Media Inquiries</a></li></ul></div><div class="tc-footer-col"><h3>Contact</h3><ul><li><a href="/contact">Contact</a></li><li><a href="/sample">Request a Sample</a></li><li><a href="https://wa.me/201006045961" rel="noopener" target="_blank">WhatsApp</a></li></ul></div></div><div class="mt-10 pt-6 border-t border-border flex flex-col gap-3"><p class="font-serif font-bold text-primary">Triple Company for Industrial Development</p><p class="text-sm text-muted-foreground max-w-2xl">An Egyptian table-olive supplier based in Cairo, Egypt, preparing for international export via approved partner arrangements.</p><p class="text-sm text-muted-foreground">Ouroba Square (ميدان العروبة), 5th Settlement, New Cairo, Cairo, Egypt</p><p class="text-sm text-muted-foreground"><span dir="ltr">sales@olivesegypt.com</span> &middot; <span dir="ltr">+20 100 604 5961</span></p><div class="flex flex-wrap items-center gap-4 pt-2"><a href="/privacy" class="text-xs text-muted-foreground hover:text-foreground">Privacy</a><a href="/unsubscribe" class="text-xs text-muted-foreground hover:text-foreground">Unsubscribe</a><span class="text-xs text-muted-foreground">&copy; Triple Company for Industrial Development. All rights reserved. Website: olivesegypt.com</span></div></div></div></footer>

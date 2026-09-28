@@ -83,11 +83,17 @@ function get(mod, requestPath, { cookie, query } = {}) {
   t(`no gated asset (all ${Object.keys(T.GUIDES).length}, both locales) is still a static file in the publish root`,
     leaked.length === 0, leaked.map((f) => path.relative(ROOT, f)).join(', '));
 
-  // A PDF anywhere else in the repository is published with the site: the
-  // only PDFs that should exist are the gated ones inside the functions bundle.
+  // A PDF anywhere else in the repository is published with the site. The
+  // only ones allowed there are those scripts/guide-pdfs.js declares public
+  // (the company profile, since 2026-09-28); every gated one stays inside the
+  // functions bundle.
+  const { JOBS } = require('./guide-pdfs');
+  const publicPdfs = new Set(JOBS.filter((j) => j.public).map((j) => j.out));
+  const gatedOutside = JOBS.filter((j) => !j.public && !j.out.startsWith('netlify/functions/_guides/')).map((j) => j.out);
+  t('every gated PDF is built into the functions bundle', gatedOutside.length === 0, gatedOutside.join(', '));
   const strayPdfs = execSync('git ls-files', { cwd: ROOT }).toString().split('\n')
-    .filter((f) => /\.pdf$/i.test(f) && !f.startsWith('netlify/functions/_guides/'));
-  t('no PDF is tracked outside the gated functions bundle', strayPdfs.length === 0, strayPdfs.join(', '));
+    .filter((f) => /\.pdf$/i.test(f) && !f.startsWith('netlify/functions/_guides/') && !publicPdfs.has(f));
+  t('no PDF is tracked outside the gated bundle except the declared public ones', strayPdfs.length === 0, strayPdfs.join(', '));
 
   const bundled = ['en', 'ar'].flatMap((loc) =>
     Object.keys(T.GUIDES).map((seg) => path.join(FN, '_guides', loc, T.guideFile(seg).name))
