@@ -4695,11 +4695,273 @@ erased.** Deploys 53 and 54 are documentation only.
 
 ---
 
+## Deploys 56 to 71 — The first system health audit, and what it found (PRs #174 to #189)
+
+**Previous recorded deploy:** `f78c681` (Deploy 55, PR #173)
+**Approvals, all 2026-09-27/28:** "merge 174"; "merge 175"; the audit brief
+(read-only, nothing fixed without approval); "fix all", which approved fixing
+the audit's findings; "merge all" (#176 to #187, and Umami #1); "merge
+umami 2"; "merge 188"; "merge 189".
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 56 | #174 | `5b650a3` | 2026-09-27 21:06:51 | 2 | +125 | Notes only |
+| 57 | #175 | `ff07532` | 2026-09-28 00:52:39 | 2 | +5 / −1 | Notes only |
+| 58 | #176 | `3733dd7` | 2026-09-28 07:04:54 | 1 | +205 | Notes only |
+| 59 | #177 | `b198783` | 2026-09-28 07:04:56 | 15 | +163 / −30 | Site change |
+| 60 | #178 | `b91f3c7` | 2026-09-28 07:05:19 | 8 | +22 / −22 | Site change |
+| 61 | #179 | `8640409` | 2026-09-28 07:05:22 | 2 | +71 / −6 | Site change |
+| 62 | #181 | `e143452` | 2026-09-28 07:05:24 | 3 | +4 / −3 | Site change |
+| 63 | #182 | `fc751f0` | 2026-09-28 07:05:27 | 6 | +11 / −8 | Site change |
+| 64 | #184 | `b672940` | 2026-09-28 07:05:29 | 1 | +11 / −1 | Site change |
+| 65 | #187 | `8a5865a` | 2026-09-28 07:05:32 | 2 | +30 | Site change |
+| 66 | #180 | `2999b0a` | 2026-09-28 07:06:48 | 137 | +1,276 / −320 | Site change |
+| 67 | #186 | `723d976` | 2026-09-28 07:07:42 | 3 | +91 / −2 | Site change |
+| 68 | #183 | `41cb446` | 2026-09-28 07:08:42 | 4 | +188 / −18 | Site change |
+| 69 | #185 | `0f64d73` | 2026-09-28 07:09:11 | 4 | +170 / −1 | Site change |
+| 70 | #188 | `3d47a23` | 2026-09-28 07:58:30 | 30 | +648 / −77 | Site change |
+| 71 | #189 | `e29a1cc` | 2026-09-28 08:01:39 | 7 | +33 / −12 | Site change |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Deploy numbers follow merges, not builds.** Deploys 58 to 69 merged within
+five minutes of each other. Netlify may have built fewer than twelve times,
+since a newer commit can supersede a queued build. Whatever it built last
+carried all of them. The build count is not visible from this environment.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 56** recorded Deploys 53 to 55 (C-126).
+- **Deploy 57** recorded the owner's live confirmation of Deploy 55.
+- **Deploy 58** started `docs/system-health-audit-log.md` with run 1: 32 items,
+  16 pass, 12 needs attention, 2 fail, 2 not run, 3 regressions, and one urgent
+  conditional finding. It audited `ff07532` read-only.
+
+### Umami deploys (`umami-olivesegypt`, a separate Netlify site)
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines |
+|---|---|---|---|---|---|
+| U1 | umami #1 | `cc6bdf6` | 2026-09-28 07:09:18 | 2 | +124 / −146 |
+| U2 | umami #2 | `6da67e4` | 2026-09-28 07:35:13 | 2 | +665 / −1,130 |
+
+Both change only `package.json` and `pnpm-lock.yaml`. They are the first
+commits made to this repository in any session this record covers.
+
+- **U1:** Next.js 16.3.0 → 16.3.3, for two critical advisories (audit E1).
+  One is remote code execution on Windows hosts, which does not apply on
+  Netlify. The other is in the AVIF path of Next's image optimiser, which is
+  probably not reachable here. Build succeeded, and vitest passed 739/739.
+- **U2:** the remaining advisories (43 in production dependencies: 1
+  critical, 31 high, 9 moderate, 2 low; 53 in all). The fix is three direct
+  bumps, `vite` added as a devDependency, and 20 `pnpm.overrides` pins, each
+  scoped to its vulnerable range. `pnpm audit` then reports none. A frozen
+  install from empty, `pnpm test` (739/739) and `pnpm build` all succeeded.
+  Three pins cross a major version:
+  - `d3-color` 3, used by the dashboard map
+  - `deepmerge-ts` 8, used by Prisma's config
+  - `sharp` 0.35, used for images
+
+  Each was smoke-tested. **Upkeep:** remove the pins once upstream Umami ships
+  these versions.
+
+Netlify's deploy previews for U1 and U2 both succeeded. Whether the
+production builds succeeded is not visible from here.
+
+### How the batch was merged
+
+"merge all" was carried out in PR order, with `main` merged into a branch
+wherever an earlier merge had moved under it. Three branches needed changes
+to merge cleanly. Each change was committed on its branch, and the suite
+passed before the merge:
+
+- **#180 (fonts):** `assets/fonts/fonts.css` named `fonts.googleapis.com` in
+  a comment, which fails `check-self-hosted-fonts`. It had passed on the
+  branch only because the check ran before the files were committed. The
+  comment now says "Google Fonts".
+- **#186 (Umami CSP):** the Content-Security-Policy line changed on both
+  sides. The combined line keeps #180's same-origin `style-src` and
+  `font-src`, and adds the Umami host to `script-src` and `connect-src`.
+  Checked in Chromium under the combined header: Umami loaded for a
+  consenting visitor, the six self-hosted fonts loaded, and there were no
+  violations.
+- **#183 (real 404):** two fixes.
+  - `404.html` was built before #180 and still loaded Google Fonts, so it
+    now uses the local stylesheet.
+  - The six forced-404 rules #179 added pointed at `/index.html`. They now
+    show `/404.html`.
+
+### What each site change did
+
+- **Deploy 59 — CRM and admin sessions can no longer stand in for each other
+  (#177).** This was the audit's urgent finding (C2). With
+  `CRM_SESSION_SECRET` unset, or set equal to `SESSION_SECRET`, a CRM
+  token copied into the admin cookie opened the analytics and KPI
+  endpoints, and the reverse also worked. The CRM now signs with a key
+  derived from its secret under a fixed label. **CRM users must sign in once
+  more.** The admin session is unchanged. New check:
+  `check-session-separation`.
+- **Deploy 60 — Downloads brought up to the supplier evidence (#178).**
+  Audit regressions B4 and B6:
+  - **Catalogue PDFs:** both still carried the withdrawn per-variety caliber
+    grades and the old jar and tin wording. They were regenerated.
+  - **Four gated guides** said "300g to 1.7kg" and now use the approved
+    320–1050ml and can sizes.
+  - **Barrel rows** are untouched.
+
+  Both PDFs came out at 10 pages. They were rendered on a machine that could
+  not reach Google Fonts, so they used fallback fonts. Deploy 70 superseded
+  them.
+- **Deploy 61 — The rest of the publish root blocked (#179).** Audit A1:
+  forced 404s for `/geo/*` (the ~8–9 MB GeoLite2 database), `/node_modules/*`,
+  `/package.json`, `/package-lock.json`, `/.gitignore` and `/README.md`.
+  `check-publish-exclusions` now requires a rule for every unprunable path.
+- **Deploy 62 — Content upkeep (#181).** The "2025/26 Harvest Season Now Open"
+  card is removed from `/media`, in both languages. C-127 and C-128 were
+  registered.
+- **Deploy 63 — Three small audit fixes (#182).**
+  - `csvCell` also neutralises a leading TAB or CR, which completes OWASP's
+    list for spreadsheet export.
+  - JSON-LD now names "Stuffed Green Olives" as the page shows it.
+  - `robots.txt` drops four rules for routes that do not exist.
+- **Deploy 64 — Language switch keeps the reading position (#184).** Audit E3
+  regression. Switching language at the bottom of `/` or `/contact` jumped to
+  the top, because a hidden form-status element was chosen as the anchor.
+  Hidden elements are now skipped, and `check-locale-switch.js` passes 36/36.
+- **Deploy 65 — Insights tab mirrored on Arabic pages (#187).** On Arabic
+  pages at desktop width, the floating "اقرأ مدونتنا" tab sat over the
+  homepage headline. It now sits on the left edge on right-to-left pages.
+  English pages are unchanged.
+- **Deploy 66 — Fonts served from this domain (#180).** Audit D2: every page
+  sent each visitor's IP address to Google before consent. There are 26 woff2
+  files in `assets/fonts/` under the SIL Open Font License, with its text in
+  `OFL.txt`. The CSP no longer names Google. New check:
+  `check-self-hosted-fonts`.
+- **Deploy 67 — Umami allowed by the CSP (#186).** Since 2026-09-02 the CSP
+  had blocked the Umami script and its beacon. Umami had recorded nothing from
+  the live site for almost a month, and nobody noticed. The Umami host is now
+  allowed in `script-src` and `connect-src`. Consent gating is unchanged.
+  New check: `check-csp-allows`.
+- **Deploy 68 — A real 404 (#183).** Audit B5: the catch-all `/*` →
+  `/index.html` returned the homepage with a 200 for any unknown address,
+  since 2026-08-24. It is removed. `404.html` is bilingual and noindex, and
+  every 404 and 410 rule shows it. New check: `check-not-found`, which
+  resolves every internal link the way Netlify does.
+  **The Arabic wording on `404.html` is new and awaits the owner's review.**
+- **Deploy 69 — Enquiries by how the visitor arrived (#185).** Audit D4. There
+  is a new `/admin/analytics` card. Enquiries in the period are joined to
+  their consented analytics visit and counted by source, with quote and
+  sample requests split out. Unlinked enquiries are labelled rather than
+  dropped. The card shows counts only, with no personal column. New check:
+  `check-enquiries-by-source`.
+- **Deploy 70 — Every guide is a PDF (#188).** Owner's request. The Downloads
+  page had always offered "PDF Guide", but only the catalogue was a PDF.
+  - **Serving:** `guide.js` serves each of the seven guides as a PDF.
+  - **Building:** each guide's HTML stays beside its PDF as the source, and
+    one generator builds all 16 PDFs.
+  - **Freshness:** `check-guide-pdfs` fails when a PDF no longer matches its
+    source.
+  - **Catalogue:** back to its designed 9 pages, matching "9-page" on the
+    Downloads pages. Since #178, both had spilled onto a tenth page.
+
+  C-129 and C-130 were registered.
+- **Deploy 71 — Catalogue contents list (#189).** The cover's contents list
+  and the page footers numbered the last two pages "8A" and "8B". They are
+  now 8 and 9, in both languages. The check now requires the numbering 2 to
+  the last page in order, with each footer carrying its own number.
+
+### Claim register
+
+- **Added:** C-127 and C-128 (Deploy 62), C-129 and C-130 (Deploy 70). The
+  register stands at 130 claims.
+- **C-55** remains the only `needs-review` row.
+- **Register defect.** Deploy 70 appended C-129 to a file with no final line
+  break, which glued it onto the C-128 row. No claim was lost. PR #190 repairs
+  it and adds `check-claim-register`.
+- **C-128 status.** On 2026-09-28 the owner confirmed the C-128 figures
+  "verified correct". PR #190 records that; until it merges, the deployed
+  register still shows C-128 as unverified.
+
+### Testing method
+
+The checks in `npm test` grew from 45 at Deploy 57 to 51 at Deploy 70. The
+six new checks are listed per deploy above. The suite passed:
+- on each branch before its merge
+- on `0f64d73` (Deploy 69, 50 checks)
+- on `3d47a23` (Deploy 70, 51 checks)
+- on `e29a1cc` (Deploy 71, 51 checks)
+
+The counts for Deploys 58 to 68 are read from each commit's `package.json`.
+Their runs on `main` were not captured one by one.
+
+Beyond the suite:
+- **Deploy 59:** each new check was also run against the code it replaced
+  and failed there.
+- **Deploy 66:** each new check was also run against the code it replaced
+  and failed there.
+- **Deploy 67:** Chromium with the real header, before and after.
+- **Deploy 68:** a planted broken link fails `check-not-found`.
+- **Deploy 69:** real PostgreSQL through the real form endpoint.
+- **Deploy 70:**
+  - **Browser:** the real Downloads forms in Chromium, with the real
+    `leads.js` and `guide.js` against a throwaway PostgreSQL and test data
+    only. Five guides across both languages downloaded byte-identical to the
+    committed PDFs.
+  - **Visual:** every page of all 16 PDFs was looked at. All pages were seen
+    at contact-sheet size, and the first pages at readable size.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`. What a revert
+brings back:
+
+- **Deploy 59:** the session crossover. CRM users would sign in once more.
+- **Deploys 66 and 67:** both edit the CSP line, so revert them together,
+  67 first, and read the CSP afterwards.
+  - Reverting 66 brings back Google Fonts.
+  - Reverting 67 brings back a CSP that blocks Umami.
+- **Deploy 68:** the soft-404 catch-all.
+- **Deploy 70:** revert 71 first, since both change the catalogue. Reverting
+  70 brings back guides served as HTML, and the catalogue PDFs from Deploy 60
+  (10 pages each).
+- **Deploys 56 to 58:** documentation only.
+
+**U1 and U2:** revert in `umami-olivesegypt`. U2's revert restores the
+previous lockfile exactly.
+
+### Known limitations shipped with Deploys 56 to 71
+
+- **Not yet confirmed on the live site:**
+  - An unknown address shows the new "not found" page with a 404.
+  - A consenting visit appears in Umami's Realtime view.
+  - CRM users can sign in again.
+  - A guide downloads as a PDF in each language.
+  - The catalogue has 9 pages, numbered 2 to 9.
+- **Arabic PDFs:** Chromium writes Arabic in visual order. The pages render
+  correctly, but copying or searching Arabic text in any of the eight Arabic
+  PDFs gives garbled text.
+- **`check-locale-switch.js`** still runs by hand. It needs a browser, which
+  the Netlify build does not have.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Pending at the time of writing: PR #190.** It closes gaps in the PDF and
+gate checks, repairs the register row and records C-128. It will be listed in
+the next entry. So will the merge of this record.
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
 record. It remains at the upstream `umami-software/umami` state as of the
 last sync. It is not part of the changed-file scope of any deploy above.
+**Changed 2026-09-28 (Deploys U1 and U2).** The first commits to this
+repository: Next.js 16.3.3, then patched versions of every package with a
+known advisory, using `pnpm.overrides`. Only `package.json` and
+`pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
+still at the upstream state as of the last sync. See the entry for Deploys 56
+to 71.
 
 ## Outstanding, unresolved by this document
 
@@ -4753,6 +5015,12 @@ last sync. It is not part of the changed-file scope of any deploy above.
    row, but that is one table, not a page-by-page inspection: the English
    catalogue still has never had one, and the other four documents remain
    checked only as source HTML.
+   **Partly overtaken 2026-09-28 (Deploy 70).** All 16 gated PDFs,
+   including the English catalogue, were rendered and every page looked at.
+   All pages were seen at contact-sheet size, and the first pages at readable
+   size. `check-guide-pdfs` now fails when a PDF no longer matches its
+   source. The four printable pages (`company-profile`, `letterhead`,
+   `business-card`, `catalog/print`) are still checked only as source HTML.
 4. **Certificates remain unverified** — nothing certificate-dependent has
    been published, per A1/Rule 3, and that has not changed since
    `evidence-needed.md` was written.
@@ -4894,6 +5162,9 @@ last sync. It is not part of the changed-file scope of any deploy above.
     `leads_staging` had no route to a person at all: no screen, and only
     this email. Deploy 46 puts them on the CRM's Enquiries page. The email
     remains the only route that *notifies*.
+    **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
+    raised it again (C4). The three values are still unset, and nothing in
+    Deploys 56 to 71 could set them.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
