@@ -83,8 +83,16 @@ const MUST_SURVIVE = [
 // extensions has to be pruned or added here with a reason.
 const PUBLISHED_BY_DESIGN = new Map([
   ['llms.txt', 'written to be read at the domain, like robots.txt'],
-  ['README.md', 'repository readme; served today, and whether it should be is the owner\'s call rather than this check\'s'],
 ]);
+
+// Served from the publish root unless something stops it, and not removable:
+// the function bundler reads package*.json after the build command, geo/ is
+// bundled into analytics-collect, node_modules/ is installed by the build.
+// Each needs a forced 404, placed before the catch-all (audit run 1, A1).
+const BLOCKED_BY_RULE = ['/netlify/*', '/netlify.toml', '/geo/*', '/node_modules/*', '/package.json', '/package-lock.json', '/.gitignore', '/README.md'];
+
+// Served on purpose, whatever their extension.
+const SERVED_ON_PURPOSE = new Set(['robots.txt', 'sitemap.xml', 'site.webmanifest', 'llms.txt']);
 
 let pass = 0, fail = 0;
 const t = (name, cond, extra) => {
@@ -113,6 +121,14 @@ const show = (l) => `${l.length}: ${l.slice(0, 8).join(', ')}${l.length > 8 ? ' 
   t('the pruner no longer deletes netlify.toml',
     !/^\s*'netlify\.toml',/m.test(fs.readFileSync(path.join(ROOT, 'scripts/prune-publish.js'), 'utf8')),
     'pruning netlify.toml strips every redirect and header from the deploy -- it took the CRM down once already');
+  // Every path that cannot be pruned has a forced 404, ahead of the catch-all.
+  const blocks = toml.split('[[redirects]]').slice(1);
+  const catchAll = blocks.findIndex((b) => /from\s*=\s*"\/\*"/.test(b));
+  const unblocked = BLOCKED_BY_RULE.filter((from) => {
+    const i = blocks.findIndex((b) => b.includes(`from = "${from}"`) && /status\s*=\s*404/.test(b) && /force\s*=\s*true/.test(b));
+    return i < 0 || (catchAll >= 0 && i > catchAll);
+  });
+  t(`every unprunable path is blocked by a forced 404 before the catch-all (${BLOCKED_BY_RULE.length})`, unblocked.length === 0, show(unblocked));
   t('and netlify.toml is blocked by a forced 404 instead',
     /from\s*=\s*"\/netlify\.toml"[\s\S]{0,120}?status\s*=\s*404[\s\S]{0,60}?force\s*=\s*true/.test(toml),
     'no forced 404 rule for /netlify.toml -- the file would be fetchable at the domain');
@@ -148,13 +164,15 @@ try {
       present.length === 0, show(present));
     t(`and the site is intact (${MUST_SURVIVE.length} checked)`, gone.length === 0, show(gone));
 
-    // A new internal document at the root would be served unless it is pruned.
+    // A new non-page file at the root would be served unless it is pruned or
+    // blocked. Pages, images, icons and fonts are what a site root is for.
+    const blockedNames = new Set(BLOCKED_BY_RULE.filter((b) => !b.endsWith('/*')).map((b) => b.slice(1)));
     const leftover = fs.readdirSync(tmp, { withFileTypes: true })
-      .filter((e) => e.isFile() && /\.(md|csv)$/i.test(e.name))
+      .filter((e) => e.isFile() && !/\.(html|png|jpe?g|webp|svg|ico|gif|avif|woff2?)$/i.test(e.name))
       .map((e) => e.name)
-      .filter((n) => !PUBLISHED_BY_DESIGN.has(n));
-    t('no unaccounted .md or .csv is left at the publish root', leftover.length === 0,
-      leftover.length ? `${show(leftover)} — prune it, or name it in PUBLISHED_BY_DESIGN with a reason` : '');
+      .filter((n) => !PUBLISHED_BY_DESIGN.has(n) && !SERVED_ON_PURPOSE.has(n) && !blockedNames.has(n));
+    t('no unaccounted file is left at the publish root', leftover.length === 0,
+      leftover.length ? `${show(leftover)} — prune it, block it in netlify.toml and BLOCKED_BY_RULE, or name it as served on purpose` : '');
   }
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });

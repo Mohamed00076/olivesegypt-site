@@ -82,9 +82,9 @@ const SECRET = 'test-secret-not-a-real-one';
 process.env.DATABASE_URL = `postgres://user:${SECRET_PASSWORD}@${SECRET_HOST}/db`;
 process.env.CRM_SESSION_SECRET = SECRET;
 
-const { signSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
+const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const buyers = require(path.join(FN, 'crm-buyers.js'));
-const COOKIE = `${CRM_COOKIE_NAME}=${signSession('staff', SECRET)}`;
+const COOKIE = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
 
 let pass = 0, fail = 0;
 const t = (name, cond, extra) => {

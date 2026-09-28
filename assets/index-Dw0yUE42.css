@@ -81,6 +81,27 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
   }
 }
 
+/* Right-to-left pages mirror the insights tab onto the left edge
+   (2026-09-28). It is fixed to the middle of the right edge; the English
+   hero puts its image on the right, so the tab sat over the picture, but
+   the Arabic hero is mirrored, so it sat on the headline and the intro
+   text instead (1280px, /ar/). Everything else on an Arabic page already
+   reads right to left; the tab now does too: left edge, rounded and with
+   its accent strip on the inner (right) side, sliding right on hover. The mobile
+   rule above still moves it to the bottom, on this same edge. */
+[dir="rtl"] a[data-testid="floating-blog-link"] {
+  right: auto;
+  left: 0;
+  border-radius: 0 1rem 1rem 0;
+}
+[dir="rtl"] a[data-testid="floating-blog-link"]:hover {
+  --tw-translate-x: 0.25rem;
+}
+[dir="rtl"] a[data-testid="floating-blog-link"] > span[aria-hidden="true"]:first-child {
+  left: auto;
+  right: 0;   /* the accent strip stays on the edge facing the page */
+}
+
 /* Part 2 responsive fix (2026-09-02): the 10 individual /products/*
    pages share a simpler header than the 22-page "main template" header
    (confirmed identical across all 10, no hamburger/mobile-menu system
