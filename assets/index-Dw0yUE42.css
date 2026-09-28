@@ -565,3 +565,38 @@ header .container {
    header with Tab scrolled the page up by hundreds of pixels. Inside <main>
    it also keeps a focused form field from sitting under the header. */
 main [id] { scroll-margin-top: calc(4rem + 1px); }
+
+/* Phones (2026-09-28, the owner's mobile check): the insights tab, the
+   WhatsApp bubble and the cookie-preferences pill stacked on the bottom of
+   every screen and covered what was under them -- on /ar/catalog the tab
+   sat on a product's name, and at the foot of every page they hid footer
+   links. Below 640px the tab is now a round icon the size of a thumb,
+   stacked just above the WhatsApp bubble on the same edge; its link keeps
+   its aria-label, so it still says where it goes. (The cookie pill moves
+   into the footer on phones; see assets/consent.js.) Desktop is untouched. */
+@media (max-width: 639px) {
+  a[data-testid="floating-blog-link"] {
+    width: auto !important;
+    max-width: none !important;
+    right: 28px;
+    bottom: 92px;
+    border-radius: 9999px !important;
+  }
+  a[data-testid="floating-blog-link"] > span[aria-hidden="true"]:first-child,
+  a[data-testid="floating-blog-link"] .flex.items-center > span.flex.flex-col {
+    display: none;
+  }
+  a[data-testid="floating-blog-link"] > div {
+    padding: 0.375rem !important;
+  }
+  a[data-testid="floating-blog-link"] span.rounded-xl.bg-primary\/10 {
+    height: 2.25rem !important;
+    width: 2.25rem !important;
+    border-radius: 9999px;
+  }
+  [dir="rtl"] a[data-testid="floating-blog-link"] {
+    right: auto;
+    left: 28px;
+    border-radius: 9999px !important;
+  }
+}
