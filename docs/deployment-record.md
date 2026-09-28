@@ -4949,6 +4949,199 @@ previous lockfile exactly.
 gate checks, repairs the register row and records C-128. It will be listed in
 the next entry. So will the merge of this record.
 
+## Deploys 72 to 82 — Hamed withdrawn, and every document an official-paper PDF (PRs #190 to #200)
+
+**Previous recorded deploy:** `e29a1cc` (Deploy 71, PR #189)
+**Approvals, all 2026-09-28:** "fix 2 to 4" (the pre-record review items
+that became #190); "okay record deploy all"; "merge all" (#190, #191);
+"okay merge this" (#192); "merge" (#193); "merge" (#194, #195); "yes" to
+updating the sitemap dates, then "merge" (#196); "merge" (#197, #198);
+"merge" (#199); "deploy alll", given with the answer "is available is the
+right one" (#200).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 72 | #190 | `e0aa80d` | 2026-09-28 08:17:10 | 12 | +624 / −63 | Site change |
+| 73 | #191 | `6db570a` | 2026-09-28 08:17:13 | 1 | +271 | Notes only |
+| 74 | #192 | `89a7a66` | 2026-09-28 08:26:41 | 11 | +215 / −521 | Site change |
+| 75 | #193 | `399e8df` | 2026-09-28 08:35:14 | 4 | +93 / −3 | Site change |
+| 76 | #194 | `d2df4af` | 2026-09-28 08:58:12 | 86 | +396 / −691 | Site change |
+| 77 | #195 | `a788adb` | 2026-09-28 08:58:55 | 2 | +9 / −1 | Site change |
+| 78 | #196 | `e746dee` | 2026-09-28 09:11:11 | 3 | +190 / −64 | Site change |
+| 79 | #197 | `43c46ec` | 2026-09-28 14:28:23 | 10 | +124 / −12 | Site change |
+| 80 | #198 | `421cfce` | 2026-09-28 14:29:38 | 2 | +2 / −2 | Site change |
+| 81 | #199 | `a27bd6b` | 2026-09-28 15:07:45 | 93 | +1,609 / −194 | Site change |
+| 82 | #200 | `be3181f` | 2026-09-28 15:18:33 | 7 | +19 / −6 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for #199 and #200 before they merged; the others
+were not read. Whether each production build succeeded is not visible from
+here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 73** recorded Deploys 56 to 71.
+
+**No Umami deploys.** `umami-olivesegypt` is unchanged since U2.
+
+### How the merges went
+
+Two branches were behind `main` when merged, and each needed a merge of
+`main` into it first. The suite passed on the branch after each:
+
+- **#195 (Arabic catalogue button):** `ar/catalog/index.html` conflicted on
+  the count line, which #194 had changed to "10 منتجات". Resolved by taking
+  `main`'s page whole and adding the button to it again.
+- **#198 (business card):** both Downloads pages conflicted on the Company
+  Documents line, which #197 had changed. Resolved the same way.
+
+### What each site change did
+
+- **Deploy 72 — Gaps in the PDF and gate checks closed; the register
+  repaired (#190).** The owner's pre-record review, items 2 to 4:
+  - `check-guide-gate` covers all eight gated downloads in both languages,
+    and fails on a PDF tracked outside `netlify/functions/_guides/`.
+  - A PDF's fingerprint now covers the fonts and images its stylesheets
+    load, and the page preparation.
+  - The register row glued in Deploy 70 is repaired. New check:
+    `check-claim-register`.
+  - C-128 (FAO/IOC figures) is verified-approved: the owner confirmed them.
+- **Deploy 74 — "Filter by what you need" removed (#192).** Owner request:
+  the chip row on `/catalog` and `/ar/catalog` went unused and took a lot of
+  the screen. On a phone the sticky bar fell from 313px to 121px (English).
+  The All / Green / Black / Specialty row stays and still filters.
+  `check-product-facets` became `check-product-categories`. C-39 is
+  resolved-by-removal.
+- **Deploy 75 — The gap between the Downloads cards closed (#193).** An empty
+  wrapper left behind on 2026-09-06 held a column of the Company Documents
+  grid, so the Business Card sat alone on a second row. Removed in both
+  languages. New check: `check-empty-grid-cells`, which found only these two.
+- **Deploy 76 — Hamed Green Olives withdrawn; Kalamata takes its place
+  (#194).** Owner: Hamed is "not confirmed available". The range is ten
+  products, in the order of C-131. Removed from every page, list, form,
+  guide, PDF, keyword and the sitemap, in both languages; its two product
+  pages answer 410; its photographs are deleted. Counts follow ("11
+  varieties" becomes 10). The CRM keeps Hamed on buyers already tagged,
+  marked "(withdrawn)", and refuses it on anything new. Also fixed: an
+  unknown `?product=` on the print catalogue showed a blank page. New check:
+  `check-withdrawn-products`. The owner decided North Coast stays a
+  sourcing region (C-37).
+- **Deploy 77 — The Arabic catalogue gets its download button (#195).** The
+  English bar had "Download Full Catalog (PDF)"; the Arabic had only the
+  count. It now carries "تحميل الكتالوج الكامل (PDF)", reusing existing
+  wording.
+- **Deploy 78 — Sitemap dates tell the truth (#196).** Every `<lastmod>`
+  said 4, 5 or 6 September. Each is now the day the page's own content (its
+  title, description and `<main>` text) last changed: 63 of 78 dates moved.
+  New check: `check-sitemap-lastmod`, with `--write` to set them. Done before
+  the owner resubmits the sitemap in Search Console.
+- **Deploy 79 — The company profile is a real PDF (#197).** The Downloads
+  card said "Download PDF" but opened a web page. `company-profile-en.pdf`
+  and `-ar.pdf` are now built by the guides' generator, public, and
+  downloaded by the cards and by a button on each profile page. The profile
+  pages' print styles now hide the floating insights tab and WhatsApp button.
+- **Deploy 80 — "Save to Contacts" on the business card (#198).** The
+  Downloads entry said "Download PDF", but there is no business-card PDF. It
+  now says "Save to Contacts" / "احفظ في جهات الاتصال" and saves
+  `triple-company.vcf` directly.
+- **Deploy 81 — Official-paper PDFs (#199).** Owner requests: documents that
+  download "without viewing", and look like "official paper".
+  - **Letterhead** on every page of the guides, the company profile, the
+    product catalogue and the spec sheets, in both languages: the masthead
+    and foot of `/letterhead`, drawn with the site's fonts and placed as
+    images, with a live page number. The export catalogue keeps its own
+    design, unchanged.
+  - **New public PDFs:** the product catalogue (`product-catalog-{en,ar}`),
+    one spec sheet per product (20), and all ten sheets in one file per
+    language (`all-spec-sheets-{en,ar}`, 10 pages). Every link to them
+    downloads directly. 42 PDFs in all, each fingerprinted.
+  - **Images:** the combined file first printed with empty photo frames
+    (lazy loading). The generator now loads every image and refuses to write
+    a PDF with a broken one.
+  - **Natural Black photograph withdrawn:** it carried a stock-photo
+    watermark. The product shows "photography pending" everywhere, like five
+    others, and the file is deleted. Recorded in the asset-rights register.
+  - **Documents take their own titles**, since the letterhead now carries
+    the company name.
+- **Deploy 82 — Private-label packaging "is available" (#200).** Owner
+  confirmed that the English wording is right. The Arabic company profile
+  (and its PDF), the Arabic catalogue's private-label section and
+  `llms.txt` said "full service"; they now match. `check-identity-strings`
+  had already banned the English phrase but never read `llms.txt`; it now
+  scans root `.txt` files and bans both Arabic forms. C-132.
+
+### Arabic wording confirmed by the owner, 2026-09-28
+
+- The Hamed-withdrawal wording (Deploy 76).
+- "تنزيل جميع أوراق المواصفات (PDF)" (Deploy 81).
+- The new guide titles (Deploy 81).
+
+**Still awaiting review:** the Arabic `404.html` (Deploy 68), and the two
+new Arabic sentences of Deploy 82 on `/ar/company-profile` and `/ar/catalog`.
+
+### Claim register
+
+- **Added:** C-131 (Deploy 76) and C-132 (Deploy 82). The register stands at
+  132 claims.
+- **Changed:** C-128 verified-approved (Deploy 72); C-39 resolved-by-removal
+  (Deploy 74); C-37, C-09, C-17, C-61, C-80 and C-110 annotated (Deploy 76).
+- **C-55** remains the only `needs-review` row.
+
+### Testing method
+
+The checks in `npm test` grew from 51 to 55: `check-claim-register`
+(Deploy 72), `check-empty-grid-cells` (75), `check-withdrawn-products` (76)
+and `check-sitemap-lastmod` (78). `check-product-facets` was replaced by
+`check-product-categories` (74). The counts are read from each commit's
+`package.json`. The suite passed on each branch before its merge, and on
+`main` after Deploys 81 and 82.
+
+The new checks of Deploys 75, 76, 77, 78 and 82 were also shown to fail
+on the code they replaced.
+
+Beyond the suite:
+- **Chromium, both languages,** for every visible change: the catalogue bar
+  at 1280px and 390px (74, 77), the Downloads grid at three widths (75),
+  each download button saving its own file (79 to 81).
+- **Deploy 76:** a browser pass and a crawl of every internal link.
+- **Deploy 81:** five gated guides through the real form, and every page of
+  the combined spec-sheet file looked at.
+- `check-locale-switch.js`, run by hand: 36/36 (Deploy 74).
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`, except:
+
+- **Deploy 76** touches 86 files, many of which later deploys also changed.
+  Revert 77 to 82 first, or expect conflicts. Reverting it brings Hamed back
+  everywhere, including the deleted photographs.
+- **Deploy 81:** revert 82 first, since both rebuild the Arabic company
+  profile PDF. Reverting 81 brings back the watermarked Natural Black photo
+  and PDFs without a letterhead, and links that open pages instead of
+  downloading.
+- **Deploy 78:** a revert brings back the blanket September dates, and
+  `check-sitemap-lastmod` would then fail until `--write` is run.
+- **Deploy 73:** documentation only.
+
+### Known limitations shipped with Deploys 72 to 82
+
+- **Not yet confirmed on the live site:**
+  - Every download carries the letterhead and saves directly.
+  - `/products/hamed-green-olives` answers 410.
+  - The Arabic catalogue shows its download button.
+- **Six products show "photography pending":** Natural Black, Stuffed
+  Green, Oxidized Black, Sliced Jalapeño, Marinated Artichoke Hearts and
+  Pepperoncini. The owner is bringing real photographs.
+- **Arabic PDFs:** Chromium writes Arabic in visual order, so copying or
+  searching Arabic text in any Arabic PDF gives garbled text. That now
+  covers 21 Arabic PDFs, up from eight.
+- **Search Console:** the sitemap has not yet been resubmitted.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -4962,6 +5155,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
+**Unchanged through Deploy 82 (2026-09-28).**
 
 ## Outstanding, unresolved by this document
 
@@ -5021,6 +5215,10 @@ to 71.
    size. `check-guide-pdfs` now fails when a PDF no longer matches its
    source. The four printable pages (`company-profile`, `letterhead`,
    `business-card`, `catalog/print`) are still checked only as source HTML.
+   **Narrowed 2026-09-28 (Deploys 79 and 81).** `company-profile` and
+   `catalog/print` are now printed to PDF, fingerprinted and checked by
+   `check-guide-pdfs`, in both languages. Only `letterhead` and
+   `business-card` remain checked as source HTML.
 4. **Certificates remain unverified** — nothing certificate-dependent has
    been published, per A1/Rule 3, and that has not changed since
    `evidence-needed.md` was written.
@@ -5165,6 +5363,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
+    **Unchanged at Deploy 82 (2026-09-28).**
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
