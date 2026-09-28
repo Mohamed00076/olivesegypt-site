@@ -223,6 +223,13 @@ const JOBS = ['en', 'ar'].flatMap((locale) => [
     query: `?product=${key}`,
     out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/${dir}-${locale}.pdf`,
   })),
+  // All ten sheets in one file, one product per page (?product=all).
+  {
+    locale, slug: 'spec-sheets-all', group: 'spec-sheets', kind: 'print', public: true,
+    source: locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html',
+    query: '?product=all',
+    out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/all-spec-sheets-${locale}.pdf`,
+  },
 ]);
 
 /** Where a product's spec sheet PDF is published, as a site path. */
@@ -242,6 +249,11 @@ const countPages = (buf) => (Buffer.from(buf).toString('latin1').match(/\/Type\s
  * the generator so that changing it changes every PDF's fingerprint.
  */
 function prepareForPdf(site) {
+  // Images below the fold wait to be scrolled to (loading="lazy"), and a
+  // page printed before they arrive has empty frames where the photos go --
+  // two pages of the combined spec sheets did. Load them all now; the
+  // generator then waits for every one before printing.
+  for (const img of document.querySelectorAll('img[loading="lazy"]')) img.loading = 'eager';
   for (const a of document.querySelectorAll('a[href]')) {
     const href = a.getAttribute('href');
     if (href.startsWith('/') && !href.startsWith('//')) a.setAttribute('href', site + href);

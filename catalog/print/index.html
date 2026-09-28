@@ -45,6 +45,8 @@
          compact 96x96 list view, since that's already square. */
       .spec-thumb-illus { object-fit: contain; background: #3d5a2e; }
       .spec-card.expanded .spec-full { display: block; margin-top: 1.25rem; }
+      /* ?product=all: every full sheet, each starting a new printed page */
+      .all-sheets .spec-card.expanded + .spec-card.expanded { break-before: page; page-break-before: always; }
       .spec-full-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem; margin-bottom: 1.25rem; }
       .spec-full-span2 { grid-column: 1 / -1; }
       .spec-full-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); margin-bottom: 0.35rem; }
@@ -86,7 +88,7 @@
           <img src="/assets/logo-BJ1TOn9V.png" alt="Triple Company for Industrial Development logo" class="h-8 w-8 object-contain shrink-0" width="236" height="289"/>
           <span class="font-serif text-sm sm:text-[15px] font-bold tracking-tight text-primary whitespace-nowrap">TRIPLE COMPANY</span>
         </a>
-        <a id="pdf-download" href="/downloads/product-catalog-en.pdf" download class="inline-flex items-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold">Download PDF</a>
+        <a id="pdf-download" href="/downloads/product-catalog-en.pdf" data-all="/downloads/spec-sheets/all-spec-sheets-en.pdf" download class="inline-flex items-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold">Download PDF</a>
       </div>
     </header>
 
@@ -389,6 +391,14 @@
         if (!slug) return;
         var cards = document.querySelectorAll('#products .spec-card');
         var found = false;
+        // ?product=all: every product's full sheet, one after another
+        if (slug === 'all') {
+          document.getElementById('products').classList.add('all-sheets');
+          cards.forEach(function (card) { card.classList.add('expanded'); });
+          var all = document.getElementById('pdf-download');
+          if (all && all.getAttribute('data-all')) all.setAttribute('href', all.getAttribute('data-all'));
+          return;
+        }
         cards.forEach(function (card) {
           if (card.getAttribute('data-slug') === slug) {
             found = true;

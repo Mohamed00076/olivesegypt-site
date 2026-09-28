@@ -84,6 +84,13 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     if (render.css) await page.addStyleTag({ content: render.css });
 
     await page.evaluate(prepareForPdf, SITE);
+    // Every image loaded (or failed) before printing; a broken one fails the build.
+    const broken = await page.evaluate(async () => {
+      const imgs = [...document.images];
+      await Promise.all(imgs.map((img) => (img.complete ? null : new Promise((ok) => { img.onload = img.onerror = ok; }))));
+      return imgs.filter((img) => img.naturalWidth === 0 && img.getBoundingClientRect().width > 0).map((img) => img.src);
+    });
+    if (broken.length) throw new Error(`${job.source}${job.query || ''}: image(s) failed to load: ${broken.join(', ')}. Nothing was written for it.`);
     await page.evaluate(() => document.fonts.ready);
 
     // The catalogue is laid out as fixed A4 pages. One whose content outgrows
