@@ -208,7 +208,7 @@ its 7-day expiry or rotating `CRM_SESSION_SECRET` (which invalidates
 
 | Variable | Purpose |
 | --- | --- |
-| `CRM_SESSION_SECRET` | HMAC key signing the `tc_crm_session` cookie. Falls back to `SESSION_SECRET` if unset, but a **separate** value is recommended so a leaked CRM session secret can't be used against the analytics dashboard, or vice versa. |
+| `CRM_SESSION_SECRET` | Root of the key signing the `tc_crm_session` cookie. Falls back to `SESSION_SECRET` if unset. Either way the CRM signs with a key *derived* from it under a fixed label (`_crm_lib.js` `crmSessionKey`), so a CRM session is never valid as an admin session, or the reverse, even if the two values are the same (`scripts/check-session-separation.js`). A **separate** value is still recommended, so that leaking one secret does not expose both. |
 
 `DATABASE_URL` (or `POSTGRES_URL` / `POSTGRES_URL_NON_POOLING` /
 `DATABASE_URL_UNPOOLED`) is reused from the table above — no separate

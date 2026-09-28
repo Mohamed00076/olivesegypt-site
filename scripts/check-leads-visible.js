@@ -65,7 +65,7 @@ const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
 
-const { signSession: signCrm, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
+const { signCrmSession: signCrm, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const { signSession: signAdmin, COOKIE_NAME: ADMIN_COOKIE } = require(path.join(FN, '_lib.js'));
 const leads = require(path.join(FN, 'leads.js'));
 const src = fs.readFileSync(path.join(FN, 'leads.js'), 'utf8');
@@ -83,7 +83,7 @@ const get = async (cookie) => {
   t('   before a single request is read', r.reads === 0, r.reads);
   r = await get(`${CRM_COOKIE_NAME}=forged.value`);
   t('a forged CRM cookie is refused', r.status === 401, r.status);
-  r = await get(`${CRM_COOKIE_NAME}=${signCrm('staff', SECRET)}`);
+  r = await get(`${CRM_COOKIE_NAME}=${signCrm('staff')}`);
   t('CRM staff can read them', r.status === 200 && Array.isArray(r.body) && r.body.length === 1, JSON.stringify(r.body).slice(0, 120));
   t('   never cached', /no-store/.test(r.headers['Cache-Control'] || ''), JSON.stringify(r.headers));
   t('   each carries a readable label', r.body[0] && r.body[0].segment_label === 'private-label brief', r.body[0] && r.body[0].segment_label);
@@ -139,7 +139,7 @@ const get = async (cookie) => {
     const r = await leads.handler({ httpMethod: 'GET', headers: cookie ? { cookie } : {}, queryStringParameters: qs });
     return { status: r.statusCode, body: r.body, headers: r.headers || {}, reads: reads.length, audits: audits.slice() };
   };
-  const staff = `${CRM_COOKIE_NAME}=${signCrm('staff', SECRET)}`;
+  const staff = `${CRM_COOKIE_NAME}=${signCrm('staff')}`;
   let x = await exp({ export: 'market_report', confirmed: '1' }, null);
   t('the subscriber export refuses anyone without a session', x.status === 401 && x.reads === 0, x.status);
   x = await exp({ export: 'market_report' }, staff);
