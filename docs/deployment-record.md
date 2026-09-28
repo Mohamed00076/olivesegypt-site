@@ -5147,6 +5147,101 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`, except:
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 83 to 85 — The 404 page's Arabic buttons, and buyer cards that lead somewhere of their own (PRs #201 to #203)
+
+**Previous recorded deploy:** `be3181f` (Deploy 82, PR #200)
+**Approvals, all 2026-09-28:** "okay for both and merge" (#202 and #201);
+"ok for arabic, 2 yes manufacter wording is true, 3 merge" (#203).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 83 | #202 | `7da6081` | 2026-09-28 15:34:14 | 2 | +11 / −2 | Site change |
+| 84 | #201 | `b525aa3` | 2026-09-28 15:34:17 | 2 | +205 / −1 | Notes only |
+| 85 | #203 | `050b1b8` | 2026-09-28 15:51:31 | 7 | +88 / −5 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for all three before they merged. Whether each
+production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 84** recorded Deploys 72 to 82, and the owner's confirmation of
+  the Arabic wording of Deploys 68 and 82 (C-132).
+
+### What each site change did
+
+- **Deploy 83 — The 404 page's Arabic block matches the English (#202).**
+  The owner confirmed its Arabic wording and asked for the same buttons as
+  the English. It had one, to the Arabic homepage. It now has three:
+  الصفحة الرئيسية, تصفّح الكتالوج and تواصل معنا, to `/ar/`, `/ar/catalog`
+  and `/ar/contact`. Both new labels are existing site wording.
+  `check-not-found` now requires the homepage, catalogue and contact in
+  each language's block.
+- **Deploy 85 — Each homepage buyer card leads somewhere of its own
+  (#203).** The owner reported that most of the "Who Are You Sourcing For?"
+  cards went to the same place. In both languages:
+
+  | Card | Was | Now |
+  |---|---|---|
+  | Importer / Distributor | How We Work | unchanged |
+  | Retail | Catalogue | Packaging, Glass Jars section |
+  | Food-Service | Catalogue | Packaging, Plastic Buckets section |
+  | Private-Label | Packaging | Private Label page |
+  | Manufacturer | Why Egyptian Olives | Packaging, Plastic Barrels section |
+  | Local / Egypt | Contact form | Contact form set to local pricing |
+
+  The three Packaging sections gained an `id` and a scroll margin, so they
+  land below the sticky header. Their text is unchanged, the barrel card's
+  included.
+
+  The Local card said "Smaller order sizes, EGP pricing, and direct
+  delivery within Egypt". The owner confirmed a 10-ton minimum, EGP
+  pricing, and delivery within Egypt only on discussion. It now reads
+  "Pricing in EGP from a 10-metric-ton minimum order, with no export
+  logistics. Delivery within Egypt can be discussed." The owner approved
+  the Arabic. New check: `check-buyer-path-cards`.
+
+### Claim register
+
+- **Added:** C-133 (the Local card) and C-134 (the Manufacturer card's
+  "Co-packing and OEM supply", confirmed true by the owner). Neither card's
+  claims had been registered before. The register stands at 134 claims.
+- **C-55** remains the only `needs-review` row.
+
+### Testing method
+
+The checks in `npm test` grew from 55 to 56 with `check-buyer-path-cards`.
+The suite passed on each branch before its merge and on `main` after
+Deploys 83, 84 and 85. Both changed checks were also run against `main`
+before the change and failed there.
+
+Beyond the suite, in Chromium:
+- **Deploy 83:** the 404 page at 390px and 1280px: three Arabic buttons,
+  right to left, no sideways overflow, no script errors.
+- **Deploy 85:** every card clicked, English at 1280px and Arabic at 390px.
+  Each landed on its page. The Packaging sections sat 96px from the top,
+  below the 65px header, and the contact page showed the local-pricing
+  badge in each language.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`.
+- **Deploy 83:** the Arabic block goes back to one button.
+- **Deploy 85:** Retail and Food-Service share the catalogue again, and the
+  Local card says "Smaller order sizes" again, which the owner said is not
+  true. If it is reverted, correct that wording separately.
+- **Deploy 84:** documentation only.
+
+### Known limitations shipped with Deploys 83 to 85
+
+- **Not yet confirmed on the live site:** the 404 page's Arabic buttons, and
+  each homepage card's destination.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -5160,7 +5255,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 82 (2026-09-28).**
+**Unchanged through Deploy 85 (2026-09-28).**
 
 ## Outstanding, unresolved by this document
 
@@ -5368,7 +5463,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 82 (2026-09-28).**
+    **Unchanged at Deploy 85 (2026-09-28).**
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
