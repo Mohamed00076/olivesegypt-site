@@ -26,7 +26,7 @@
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
     "inputs": {
-      "scripts/export-catalog-source-ar.html": "2568e625104cdd97380e00d974dde3d9ac95e0688880f353cc5a07250f2198e6",
+      "scripts/export-catalog-source-ar.html": "e38f58b8cd53d37f15e979b324e72cde10961cf1b4a20b39db2ad44b47fea6ad",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-jalapeno-ar.svg": "63edb69453049c7bf11e70b4cca1d70f356e8cab95b237a883cca8e412104563",
@@ -44,7 +44,7 @@
       "assets/photo-pending-ar.svg": "8cd97c34f21aaddff0213328ac35e6e109d808c98142909192b354a3c07847ae"
     },
     "render": "dc684d73885f6d7817b35cc8e02aa255d4593460fc692fce92abad07fa1e55b0",
-    "pdf": "1cf2e8e49ce276c234fc31da2b41669d4cbb578938a40e392a11e97f3bacc654"
+    "pdf": "0ae7ffc6ffdd585e8645404ebf6a9074016867946f6c42fcabf31e6b9f958220"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/ar/export-documentation-checklist.html",
@@ -131,7 +131,7 @@
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
     "inputs": {
-      "scripts/export-catalog-source.html": "b45f00f118a2e2113871b19c9ad54d20598b98fcb5c629c0bdbc7e7deb3e672a",
+      "scripts/export-catalog-source.html": "c97789828e79924382cf725bf47654f05947d72fc14783fd09a53719a457efe4",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-jalapeno.svg": "4c1136f79f7a7d6561310833166e8db0c43d8aeff6a071977c0bae23e015ceb1",
@@ -149,7 +149,7 @@
       "assets/photo-pending.svg": "72bad47866ea0de6910ba9a88a23379a51ae8f931dee49df56a0715e179b5f74"
     },
     "render": "dc684d73885f6d7817b35cc8e02aa255d4593460fc692fce92abad07fa1e55b0",
-    "pdf": "e7f8e0e4e7c24cbaf6ce22f198fefc348282c86792090abcc6d4e50996c4ac21"
+    "pdf": "e3d0b431cda6e501e0686212b98cd4862c2fdbcdb0d9842136b708174c20723a"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/en/export-documentation-checklist.html",
