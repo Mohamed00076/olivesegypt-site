@@ -30,9 +30,10 @@ const AR_PREFIX = '/ar';
 /*
  * Routes that exist but have no index.html to find, because a Netlify
  * function serves them (netlify.toml rewrites the path). Today that is the
- * three gated guides in both locales: their HTML moved into the functions
- * bundle so that the gate is a real check rather than an honour system, and
- * a filesystem walk can no longer see them.
+ * eight gated downloads in both locales -- seven guides and the export
+ * catalogue, all served as PDFs from the functions bundle so that the gate is
+ * a real check rather than an honour system, where a filesystem walk cannot
+ * see them.
  *
  * Listing them here keeps the map honest -- they are still public routes,
  * still one-for-one across locales, and still something a link should be

@@ -190,7 +190,8 @@ function leadEmailText(f) {
 }
 
 /*
- * A successful lead for one of the three gated guides is what unlocks
+ * A successful lead for one of the gated downloads (GUIDES in
+ * _guide_token.js: seven guides and the export catalogue) is what unlocks
  * that guide -- see netlify/functions/guide.js. Two tokens go back: one
  * in an HttpOnly cookie (24h, cannot be copied out of the browser) and
  * one in the JSON for the client to hang on the download link (1h,

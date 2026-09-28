@@ -21,6 +21,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const Module = require('module');
 
 const ROOT = path.join(__dirname, '..');
@@ -67,12 +68,26 @@ function get(mod, requestPath, { cookie, query } = {}) {
 
 (async () => {
   // ---- 1. no static copy survives in the publish root --------------------
+  // Every gated asset, in every form it could be left behind in: the page it
+  // used to be, a bare HTML file, or the PDF itself. Until 2026-09-28 this
+  // looked only for the first three guides' pages, so a stray copy of any of
+  // the four Part E guides, or of a PDF, would have passed.
   const leaked = ['downloads', 'ar/downloads'].flatMap((base) =>
-    ['buyers-guide', 'origin-comparison-guide', 'pricing-packaging-guide']
-      .map((slug) => path.join(ROOT, base, slug, 'index.html'))
-      .filter((f) => fs.existsSync(f))
+    Object.values(T.GUIDES).flatMap((slug) => [
+      path.join(ROOT, base, slug, 'index.html'),
+      path.join(ROOT, base, `${slug}.html`),
+      path.join(ROOT, base, `${slug}.pdf`),
+      path.join(ROOT, base, slug, `${slug}.pdf`),
+    ]).filter((f) => fs.existsSync(f))
   );
-  t('no gated guide is still a static file in the publish root', leaked.length === 0, leaked.join(', '));
+  t(`no gated asset (all ${Object.keys(T.GUIDES).length}, both locales) is still a static file in the publish root`,
+    leaked.length === 0, leaked.map((f) => path.relative(ROOT, f)).join(', '));
+
+  // A PDF anywhere else in the repository is published with the site: the
+  // only PDFs that should exist are the gated ones inside the functions bundle.
+  const strayPdfs = execSync('git ls-files', { cwd: ROOT }).toString().split('\n')
+    .filter((f) => /\.pdf$/i.test(f) && !f.startsWith('netlify/functions/_guides/'));
+  t('no PDF is tracked outside the gated functions bundle', strayPdfs.length === 0, strayPdfs.join(', '));
 
   const bundled = ['en', 'ar'].flatMap((loc) =>
     Object.keys(T.GUIDES).map((seg) => path.join(FN, '_guides', loc, T.guideFile(seg).name))

@@ -36,7 +36,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { ROOT, MANIFEST, SITE, JOBS, RENDER, BLOCKED_SCRIPTS, fingerprint, sha256, countPages } = require('./guide-pdfs');
+const { ROOT, MANIFEST, SITE, JOBS, RENDER, BLOCKED_SCRIPTS, prepareForPdf, fingerprint, sha256, countPages } = require('./guide-pdfs');
 
 const PORT = process.env.PORT || 8899;
 const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim()).filter(Boolean) : null;
@@ -63,15 +63,7 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     await page.goto(`http://127.0.0.1:${PORT}/${job.source}`, { waitUntil: 'networkidle' });
     if (render.css) await page.addStyleTag({ content: render.css });
 
-    // A relative link in a PDF has no site to be relative to, and printing
-    // from the local server would bake in http://127.0.0.1. Point every link
-    // at the live site instead.
-    await page.evaluate((site) => {
-      for (const a of document.querySelectorAll('a[href]')) {
-        const href = a.getAttribute('href');
-        if (href.startsWith('/') && !href.startsWith('//')) a.setAttribute('href', site + href);
-      }
-    }, SITE);
+    await page.evaluate(prepareForPdf, SITE);
     await page.evaluate(() => document.fonts.ready);
 
     // The catalogue is laid out as fixed A4 pages. One whose content outgrows

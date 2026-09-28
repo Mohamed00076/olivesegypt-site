@@ -285,7 +285,10 @@ is counted.
 **Keeping them current.** Audit B6 found both catalogue PDFs ten days stale.
 The generator now records a fingerprint of every PDF in
 `scripts/guide-pdfs.json`: its source, the stylesheets and images the source
-uses, the render settings, and the PDF itself. `check-guide-pdfs.js` (in
+uses, the font files and images those stylesheets load, how it is printed (the
+settings, the blocked scripts and the link preparation, all in
+`scripts/guide-pdfs.js`), and the PDF itself. Fonts and link preparation were
+added on 2026-09-28, after the first version was found not to watch them. `check-guide-pdfs.js` (in
 `npm test`) fails when any of them has changed since the PDF was built, and
 names the file. The fix is always to regenerate.
 
