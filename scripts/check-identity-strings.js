@@ -81,6 +81,14 @@ const BANNED = [
     why: '"full" overstates a service whose artwork requirements are confirmed per project' },
   { pattern: /Full private-label ?\/ ?OEM service/i,
     why: 'same overstatement, shorter form' },
+  // The Arabic forms of the same "full service" claim. The owner confirmed on
+  // 2026-09-28 that the offer is private-label / OEM packaging being
+  // *available*, as the English pages say; the Arabic company profile and
+  // catalogue, and llms.txt, still said "full service" until then.
+  { pattern: /خدمة كاملة للعلامة الخاصة/,
+    why: 'Arabic "full private-label service"; the confirmed wording is that private-label / OEM packaging is available' },
+  { pattern: /خدمات OEM والعلامة الخاصة كاملة/,
+    why: 'Arabic "full OEM and private-label services"; same overstatement' },
   { pattern: /Triple Company Export Specialist/i,
     why: 'not the company name; the approved name is "Triple Company for Industrial Development"' },
 
@@ -241,7 +249,11 @@ for (const f of [...pages, ...generators]) {
 }
 
 // ---- service-scope claims ------------------------------------------------
-for (const f of [...pages, ...generators]) {
+// Also the plain-text files served from the site root (llms.txt), which AI
+// crawlers read as a summary of the company: that is where "Full
+// private-label / OEM service available" outlived the pages' correction.
+const texts = tracked.filter((f) => f.endsWith('.txt') && !f.includes('/'));
+for (const f of [...pages, ...generators, ...texts]) {
   const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
   for (const { pattern, why } of BANNED) {
     const hit = src.match(pattern);
