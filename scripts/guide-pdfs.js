@@ -119,12 +119,23 @@ function letterheadSheet(locale) {
 </body></html>`;
 }
 
-/** The page templates, around the two captured images (PNG buffers). */
+/**
+ * The page templates, around the two captured images (PNG buffers).
+ *
+ * The masthead -- logo, name, address and contact line -- is printed once, at
+ * the top of page 1 (owner, 2026-10-02: "just make it once at the top of page
+ * 1 i want it to look proffessional"). A page header template repeats on
+ * every page and cannot tell page 1 from the rest, so the masthead is not a
+ * header template: the generator places it in the document itself, before
+ * the first line (masthead below), and the header template is empty. The
+ * slim foot -- company name, website, page number -- stays on every page.
+ */
 function letterheadTemplates(masthead, foot) {
   const img = (buf) => `data:image/png;base64,${Buffer.from(buf).toString('base64')}`;
   const box = 'width:100%;box-sizing:border-box;padding:0 2cm;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
   return {
-    headerTemplate: `<div style="${box}margin-top:0.75cm;"><img src="${img(masthead)}" style="width:100%;display:block;" /></div>`,
+    masthead: img(masthead),
+    headerTemplate: '<span></span>',
     footerTemplate: `<div style="${box}margin-bottom:0.65cm;position:relative;">` +
       `<img src="${img(foot)}" style="width:100%;display:block;" />` +
       `<div dir="ltr" style="position:absolute;left:0;right:0;bottom:1px;text-align:center;font-family:sans-serif;font-size:7px;color:${COLOUR.muted};">` +
@@ -132,9 +143,13 @@ function letterheadTemplates(masthead, foot) {
   };
 }
 
-// Room for the letterhead: a taller top margin for the masthead, a bottom one
-// for the foot. Applied after each page's own @page rule, so it wins.
-const LETTERHEAD_PAGE = `@page { margin: 3.2cm 2cm 2.3cm 2cm; }`;
+// Margins: a bottom one for the foot on every page. Page 1 starts near the top
+// edge, where the masthead sits in the flow (0.75cm, where the header used to
+// be drawn); later pages, with no masthead, start at 1.6cm. Applied after each
+// page's own @page rule, so it wins.
+const LETTERHEAD_PAGE = `@page { margin: 1.6cm 2cm 2.3cm 2cm; } @page :first { margin-top: 0.75cm; }
+  .tc-pdf-masthead { margin: 0 0 0.9cm 0; break-inside: avoid; page-break-inside: avoid; }
+  .tc-pdf-masthead img { width: 100%; display: block; }`;
 
 /*
  * Print adjustments for the guides. Their own print rules keep each section

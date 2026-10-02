@@ -77,11 +77,25 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
 
   for (const job of jobs) {
     const render = renderFor(job);
-    const pdfOptions = render.letterhead
-      ? Object.assign({}, render.pdf, await letterheadFor(job.locale, render.letterhead))
+    const letterhead = render.letterhead ? await letterheadFor(job.locale, render.letterhead) : null;
+    const pdfOptions = letterhead
+      ? Object.assign({}, render.pdf, { headerTemplate: letterhead.headerTemplate, footerTemplate: letterhead.footerTemplate })
       : render.pdf;
     await page.goto(`http://127.0.0.1:${PORT}/${job.source}${job.query || ''}`, { waitUntil: 'networkidle' });
     if (render.css) await page.addStyleTag({ content: render.css });
+    // The masthead, once: the first thing in the document, so it heads page 1
+    // only (see letterheadTemplates in guide-pdfs.js).
+    if (letterhead) {
+      await page.evaluate((src) => {
+        const box = document.createElement('div');
+        box.className = 'tc-pdf-masthead';
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        box.appendChild(img);
+        document.body.insertBefore(box, document.body.firstChild);
+      }, letterhead.masthead);
+    }
 
     await page.evaluate(prepareForPdf, SITE);
     // Every image loaded (or failed) before printing; a broken one fails the build.
