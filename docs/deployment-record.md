@@ -5534,6 +5534,177 @@ documentation only.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 93 to 95 — The articles speak as Triple Company, and no trial order (PRs #211 to #213)
+
+**Previous recorded deploy:** `e9cf629` (Deploy 92, PR #210)
+**Approvals, all 2026-10-02:** the owner's consolidated brief
+("MEDIA/ARTICLE CORRECTIONS + FULL VOICE REWRITE", five decisions
+confirmed); "triple company was estabilished in 2025 not 2024"; the
+brief "ADD BRINING INVESTMENT TO OUR STORY"; the brief "FIX: HOMEPAGE
+PRODUCT COUNT"; "its correct" (Arabic, below); "merge all" (#211, #212,
+#213).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 93 | #211 | `5c83d84` | 2026-10-02 11:17:35 | 1 | +110 / −2 | Notes only |
+| 94 | #212 | `d2e11ea` | 2026-10-02 11:17:38 | 44 | +294 / −88 | Site change |
+| 95 | #213 | `6645306` | 2026-10-02 11:17:41 | 3 | +36 / −9 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for #212 and #213 before they merged. Whether each
+production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 93** recorded Deploys 91 and 92.
+
+### What each site change did
+
+- **Deploy 94 — Articles, trial orders, brining line, dates, founding year
+  (#212).** An external audit, read against the 4 August site snapshot,
+  found the seven articles written as generic trade advice ("a reputable
+  exporter will…") that never named the company, and carrying a
+  "trial pallet (100–500 kg)" minimum. The owner's brief settled five
+  points:
+  1. **No trial order exists.** "Smaller trial quantities may be
+     possible…" is gone from the homepage FAQ, `/resources/faq` (with its
+     FAQPage JSON-LD), the buyer's guide and company overview (sources and
+     PDFs), `llms.txt` and the import guide, in both languages. Each now
+     says smaller trial orders are not available and a 1–5 kg sample can
+     come first. Minimum: one 20ft container, about 16–18 MT.
+  2. **The brining line is real.** The `/media` card carries the owner's
+     wording verbatim, with the badge "Investment" / "استثمار" and no date
+     (the "September 2025" label is gone). About 2,000 MT is the
+     facility's total capacity, not the line's. The same wording, word for
+     word, now sits in "Our Story" on `/company-profile`, on page 2 of the
+     export catalogue, and in all four PDFs built from them, both
+     languages. The article URL `/media/new-brining-line-capacity` still
+     answers 410.
+  3. **Gulfood was never attended and is not planned.** Nothing to remove:
+     no page named it, its URL already answered 410, and it was not in the
+     sitemap.
+  4. **Real dates.** 42 template dates (February to 2 June 2026) now read
+     4 August 2026 / 4 أغسطس 2026: the seven article headers, `/media` and
+     `/media/blog`, both languages. None was removed.
+  5. **The articles rewritten**, 7 per language (14 pages), in Triple
+     Company's own voice and only with registered facts: newly
+     established, no export shipment yet; the partner facility in the
+     10th of Ramadan, which we do not own; samples confirmed within 24
+     hours; the container minimum; Incoterms, currency and payment terms;
+     the document set; caliber and brine figures; ten products; packaging
+     sizes; Mohamed Abdullah, Sales. Removed with the old text: "issues the
+     full set with every container as a matter of routine" (no shipment
+     has been made), caliber examples outside the published range, and
+     every "reliable / reputable / genuine exporter" sentence. The article
+     CTA says "within 24 hours" (C-115) instead of "one business day".
+
+  Also: **founded 2025**, not 2024, on both company-profile pages and in
+  `llms.txt` (the schema still has no `foundingDate`, C-25).
+
+  Eight PDFs were rebuilt: the buyer's guide, company overview, company
+  profile and export catalogue, each in both languages. The catalogue
+  stays at 9 pages (C-130), and page 2 was checked by eye in both
+  languages.
+
+  New check: `check-article-claims`. Across every article in both
+  languages, it fails on:
+  - a minimum other than the container, or a tonnage below 16 MT
+  - a certification history, or a certification held by us
+  - ownership wording
+  - a trade show no verified-approved row names, or any attendance wording
+  - a date before 4 August 2026, or a missing date
+  - an article whose body never names the company
+  - an article no register row covers
+
+  On any page, guide source or `llms.txt`, it fails on a trial order
+  below the container.
+- **Deploy 95 — "10 Product Varieties" (#213).** The homepage hero stat
+  still said 11, in both languages, after Hamed's withdrawal on
+  2026-09-28. Deploy 88, recorded as "the last 11 varieties", fixed the
+  catalogue button but missed this stat: it sets the number in a `<span>`
+  and the label in the next `<p>`, and `check-product-order` read only
+  markup, on eight named pages. The Arabic label is now "أصناف", the
+  plural that follows 10. The check now reads every public page, guide
+  and catalogue source, and `llms.txt`, as text, so a number and its label
+  are read together whichever elements hold them. It also reads Arabic
+  digits and numbers written as words. It reads 32 product counts on 22
+  surfaces, all 10. A sweep of pages, PDFs, schema and `llms.txt` found
+  no other 11.
+
+### Owner decisions and confirmations, 2026-10-02
+
+- **The five decisions** above, confirmed in the brief.
+- **Founded 2025.**
+- **"Our Story"** carries the brining investment, in the card's wording.
+- **Arabic approved ("its correct"):** the brining wording, on the card
+  and in Our Story, and "أصناف" on the homepage stat.
+- **Arabic merged but not separately confirmed:** the seven Arabic
+  article bodies and the Arabic no-trial sentence. The owner had been
+  asked to review them before "merge all". They are listed as open below.
+
+### Claim register
+
+- **Added:** C-140 (no trial order), C-141 (founded 2025), C-142 (Mohamed
+  Abdullah, Sales), C-143 (article dates), C-144 (no trade show claimed).
+  The register stands at 144 claims.
+- **Changed:**
+  - C-127, the brining line: the owner's wording, a 2,000 MT facility
+    total, Our Story among its locations, and the Arabic confirmed.
+  - C-139, the articles: the full rewrite, and every article routed
+    through the register.
+- **C-55** remains the only `needs-review` row.
+
+### Testing method
+
+The checks in `npm test` grew from 59 to 60. Before merging, #212 and
+#213 were merged together in a throwaway worktree, and the suite passed
+there. It passed again on `main` at `6645306` after all three. Beyond the
+suite:
+- **Bad-article test.** A deliberately bad article in English and
+  Arabic, in a throwaway worktree, failed 8 of the 11 article checks. It
+  caught the trial pallet, kilogram and 5-ton minimums, recertification,
+  "our ISO", Gulfood / جلفود, "Visit us at" / "زورونا في", "our own factory" /
+  "نمتلك مصنع", the early dates, a nameless article and an unregistered
+  one. The test found two gaps in the check itself, both fixed:
+  - JavaScript's `\b` does not work before Arabic letters
+  - the Arabic headlines' company suffix let a nameless body pass
+- **Planted counts.** In a throwaway worktree, the count check failed on
+  all five planted values: "11 Product Varieties", "١١ أصناف", "eleven
+  products", "أحد عشر منتجًا" and "11 products" in `llms.txt`.
+- **The "before" state.** `main` before the change failed the article
+  check on the trial pallet, 40ft, the exporter voice, "certified,
+  traceable supplier", the unnamed articles and 23 early dates.
+- **Chromium.** The import and choosing articles and `/media` were opened
+  at 390px and 1280px in both languages, with no overflow and no script
+  errors. Every page shows its date.
+- **PDFs.** All 42 match their sources (`check-guide-pdfs`). The text of
+  the rebuilt PDFs carries 2025, the brining sentence and the no-trial
+  sentence.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`:
+- **Reverting Deploy 94** brings back the trial wording, "Founded 2024",
+  the template dates, the dated "lifts capacity past 2000 MT" card, and
+  the generic articles with their trial-pallet minimum. All of these are
+  wrong, by the owner's own decisions.
+- **Reverting Deploy 95** brings back "11" on the homepage.
+- **Deploy 93** is documentation only.
+
+### Known limitations shipped with Deploys 93 to 95
+
+- **Not yet confirmed on the live site:** any of the above.
+- **Arabic review open:** the seven Arabic article bodies and the Arabic
+  no-trial sentence.
+- **`scripts/crm-seed.js`**, a CRM test fixture, still says "Trial order,
+  500 units". It is dummy data, not site copy.
+- **Search Console:** the sitemap has not been resubmitted.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -5547,7 +5718,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 92 (2026-10-02).**
+**Unchanged through Deploy 95 (2026-10-02).**
 
 ## Outstanding, unresolved by this document
 
@@ -5755,7 +5926,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 92 (2026-10-02).** The owner will set the values later.
+    **Unchanged at Deploy 95 (2026-10-02).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
