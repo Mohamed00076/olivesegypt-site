@@ -116,6 +116,27 @@ t(`every capacity quoted for a barrel reads 220 (${sized} figure(s))`,
 
 t('a barrel capacity is actually stated somewhere', sized > 0, `found ${sized}`);
 
+// ---- buckets: 2, 5, 10 and 20 kg (owner, 2026-10-02) ----------------------
+// The homepage table said 2 / 5 / 10 / 20 kg while the packaging pages, the
+// guides, the catalogue, the Food-Service pages and two articles said
+// "typically 1-10 kg". The owner confirmed the homepage. The old range, in
+// any spelling, must not come back, and both homepage tables keep all four.
+const OLD_BUCKET_RANGE = /\b1\s*[–-]\s*10\s*(kg|كجم)|من 1 إلى 10 كجم/i;
+const oldRange = [];
+for (const file of files) {
+  const rel = path.relative(ROOT, file);
+  if (/^scripts\/check-/.test(rel)) continue;
+  const text = flatten(fs.readFileSync(file, 'utf8'));
+  if (OLD_BUCKET_RANGE.test(text)) oldRange.push(rel);
+}
+t('no page, guide or catalogue gives buckets as "1-10 kg"; they are 2, 5, 10 and 20 kg',
+  oldRange.length === 0, oldRange.join(', '));
+const homeTables = ['index.html', 'ar/index.html'].filter((f) => {
+  const text = flatten(fs.readFileSync(path.join(ROOT, f), 'utf8'));
+  return !/(Plastic Bucket|دلو بلاستيك) 2 kg 5 kg 10 kg 20 kg/.test(text);
+});
+t('   and both homepage packaging tables list 2, 5, 10 and 20 kg buckets', homeTables.length === 0, homeTables.join(', '));
+
 console.log(`\npackaging-claims OK -- ${surfaces} surface(s) mention a barrel, none of them wooden, and all ${sized} capacity figure(s) read 220 kg.`);
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);
