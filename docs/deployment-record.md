@@ -5916,6 +5916,167 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 107 to 111 — Real photographs, one PDF letterhead, and Arabic confirmed (PRs #225 to #229)
+
+**Previous recorded deploy:** `a77f662` (Deploy 106, PR #224)
+**Approvals:** "merge" (#225, 2026-10-02); the owner's photographs with "i
+own those photos" and "leave the green olives for now"; the PDF briefs
+("do not put the company logo and name ... in every page", "header is not
+consistant across diffrent pdfs files", "yes make it uniform"); "merge all"
+(#226, #227); "they are all fine" (Arabic) and "fix this" (#228, #229);
+"merge" (#228, #229). The merges of #226 to #229 fell after midnight, on
+2026-10-03 (+0300).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 107 | #225 | `d73fb25` | 2026-10-02 19:33:10 | 1 | +213 / −2 | Notes only |
+| 108 | #226 | `c1641c9` | 2026-10-03 01:14:34 | 32 | +138 / −117 | Site change |
+| 109 | #227 | `4a5132e` | 2026-10-03 01:14:38 | 58 | +221 / −144 | Site change |
+| 110 | #228 | `0679da2` | 2026-10-03 01:24:23 | 1 | +5 / −5 | Notes only |
+| 111 | #229 | `3c94a3f` | 2026-10-03 01:24:25 | 16 | +43 / −41 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for the site changes before they merged. Whether
+each production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 107** recorded Deploys 96 to 106.
+- **Deploy 110** recorded the owner's confirmation of the outstanding
+  Arabic wording (register only).
+
+### What each site change did
+
+- **Deploy 108 — Real photographs for two products (#226).** The owner
+  supplied three photographs and stated they are the company's own. Two
+  are in use:
+  - **Oxidized Black Olives:** pitted olives in brine.
+  - **Sliced Jalapeño Peppers:** rings in brine.
+
+  The edits:
+  - **Crop:** to the product only, with no barrels, lids, bucket markings
+    or other equipment, so no facility is shown (C-38).
+  - **Tone and colour:** levels and gamma applied evenly across the colour
+    channels, a white-balance correction capped at ±8%, mild contrast and
+    saturation.
+  - **Detail and size:** clarity and sharpening, exported at 1200×800 as
+    JPEG and WebP.
+  - **The product itself:** nothing added, removed or recoloured. A first
+    green-olive edit drifted too yellow and was redone.
+
+  The photographs replace the "photography pending" illustrations
+  everywhere: the product pages (in `<picture>` with WebP), both
+  catalogues and print catalogues, Downloads, the homepage (jalapeño) and
+  the Product schema image, in both languages. Ten PDFs were rebuilt with
+  them; the other 32 rebuilt identical. The green-olive photograph is held
+  back at the owner's request (it was also only 520px wide). Four products
+  still await photography: Natural Black, Stuffed, Artichoke and
+  Pepperoncini.
+- **Deploy 109 — One consistent letterhead (#227).** Three owner briefs:
+  - **The masthead heads page 1 only.** The logo, name, address and
+    contact line had been a Chromium page header template, which repeats
+    on every page. The generator now places it in the document itself,
+    first thing on page 1. Later pages start at 1.6cm instead of 3.2cm.
+  - **One letterhead and one footer in every PDF.** The two export
+    catalogues had their own brand line and footer. Their cover now carries
+    the same masthead image. Pages 2–9 keep their section label, with the
+    logo and name hidden, keeping the space. Their footers now match the
+    letterhead foot: company name · "n / total" · website.
+  - **One title line.** Under every title: "Revised YYYY-MM-DD" /
+    "آخر تحديث YYYY-MM-DD". Gone are:
+    - the descriptors before the date in four guides
+    - the company profile's "Document owner: … · Last revised:", on the
+      page as well as in the PDF
+    - the product catalogue's second line (PDF only)
+    - the export catalogue cover's tagline, with the date moved out of its
+      badge
+
+    In the PDFs, the company profile and the catalogue cover use the
+    guides' title and date sizes.
+
+  All 42 PDFs regenerated, with every page count unchanged. The
+  catalogue's letterhead is now part of its render settings, and
+  `check-guide-pdfs` reads its page number from its own span.
+- **Deploy 111 — Acid names in Arabic (#229).** The owner spotted
+  "acetic" in English on the Arabic jalapeño card. It was wider: 15 places
+  in 7 Arabic files, across five products.
+  - "acetic" became أسيتيك (jalapeño, pepperoncini).
+  - "citric" became ستريك (oxidized black, natural black, artichoke).
+
+  This matches لاكتيك (2026-09-28). `check-mobile-basics` now fails on any
+  of the three acid names in English on an Arabic page. Six Arabic spec
+  sheets were rebuilt.
+
+### Owner decisions and confirmations
+
+- **Photographs:** "i own those photos". Green olives deferred until the
+  product list is updated.
+- **PDFs:** the masthead once on page 1; one consistent letterhead and
+  footer; one uniform title line.
+- **Arabic confirmed** ("they are all fine", recorded in Deploy 110):
+  - the seven Arabic article bodies (C-139)
+  - the no-trial sentence (C-140)
+  - the bucket sizes (C-146)
+  - the `/ar/media/news` pointer line (C-127)
+  - the privacy sentence on cookie preferences (C-123)
+- **أسيتيك and ستريك:** merged on the owner's "merge" after being asked to
+  confirm. As in Deploy 92, the merge is taken as approval of the wording.
+
+### Claim register
+
+- **Added:** C-147, the two photographs (real, company-owned, edited only
+  for crop, exposure, colour balance and sharpness). The register stands
+  at 147 claims.
+- **Changed:** C-123, C-127, C-139, C-140 and C-146 each record the
+  confirmed Arabic. No row now waits on an Arabic review.
+- **Flagged for the owner:** C-16 ("All product imagery is illustration,
+  not photography") no longer describes the site.
+- **C-55** remains the only `needs-review` row.
+- **`docs/asset-rights-register.md`:** has rows for both photographs. Their
+  illustrations are marked superseded and kept as the rollback path.
+
+### Testing method
+
+The checks in `npm test` stay at 60; these deploys add rules to existing
+checks. The suite passed on each branch before its merge and on `main` at
+`3c94a3f` after all of them. #227 was stacked on #226, and its PDFs were
+built on top of the photographs. Each new rule was run against `main`
+before its change and failed there. Beyond the suite:
+- **Chromium, photographs:** each loads at its full 1200px on ten pages in
+  both languages, with WebP on the product pages and no failed requests.
+- **PDFs:** after each change, all 42 were rebuilt and compared page by
+  page with their committed versions (text, links, pixels):
+  - files that came out identical were kept
+  - changed ones were taken
+  - page counts were checked every time
+  - the tops of page 1 of every distinct PDF were rendered side by side to
+    confirm one masthead, title size and date line
+- **Generator parity:** the product-page generator reproduces the two
+  English product pages byte for byte.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`:
+- **Deploy 109 is stacked on 108:** revert 109 before 108. Reverting 108
+  alone would leave 109's PDFs carrying the photographs.
+- **Deploy 108:** reverting brings back the illustrations, which remain in
+  the repo.
+- **Deploy 111:** reverting brings back the English acid names.
+- **Deploys 107 and 110** are documentation only.
+
+### Known limitations shipped with Deploys 107 to 111
+
+- **`www.olivesegypt.com` does not load:** the GoDaddy DNS steps are with
+  the owner.
+- **Not yet confirmed on the live site:** all of the above.
+- **Green olives photograph:** deferred by the owner.
+- **Search Console:** the sitemap has not been resubmitted.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -5929,7 +6090,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 106 (2026-10-02).**
+**Unchanged through Deploy 111 (2026-10-03).**
 
 ## Outstanding, unresolved by this document
 
@@ -6137,7 +6298,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 106 (2026-10-02).** The owner will set the values later.
+    **Unchanged at Deploy 111 (2026-10-03).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
