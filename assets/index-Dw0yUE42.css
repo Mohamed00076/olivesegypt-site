@@ -742,5 +742,9 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
 @media (prefers-reduced-motion: reduce) {
   #tc-quote-fab, .tc-quote-fab-label, .tc-quote-fab-icon { transition: none; }
 }
-.tc-has-quote-fab footer { padding-bottom: 6.5rem; }
+/* Phones only (owner, 2026-10-02): from 768px the header shows its own
+   "Request a Quote" button (hidden md:flex), so the floating one is not
+   needed there, nor the room the footer kept for it. */
+@media (min-width: 768px) { #tc-quote-fab { display: none !important; } }
+@media (max-width: 767.98px) { .tc-has-quote-fab footer { padding-bottom: 6.5rem; } }
 @media print { #tc-quote-fab { display: none !important; } }

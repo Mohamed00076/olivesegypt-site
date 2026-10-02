@@ -165,6 +165,10 @@ for (const gen of ['scripts/generate-product-pages.py']) {
     /\.tc-has-quote-fab footer \{ padding-bottom:/.test(css) &&
     /background: linear-gradient\(135deg, #e6c25a 0%, #c9a032 55%, #b08a24 100%\);\s*color: #1f2a0f;/.test(rule) &&
     /@media print \{ #tc-quote-fab \{ display: none/.test(css));
+  t('   it is a phone-only button: hidden from 768px, where the header shows its own quote button',
+    /@media \(min-width: 768px\) \{ #tc-quote-fab \{ display: none !important; \} \}/.test(css) &&
+    /@media \(max-width: 767\.98px\) \{ \.tc-has-quote-fab footer \{ padding-bottom:/.test(css) &&
+    /class="hidden md:flex items-center gap-2"><a href="\/contact"/.test(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')));
   t('   on phones it shrinks to its icon while scrolling down, keeping its link and its aria-label',
     /matchMedia\('\(max-width: 1023\.98px\)'\)/.test(nav) && /a\.setAttribute\('aria-label', label\)/.test(nav) &&
     /#tc-quote-fab\.tc-quote-fab--compact \.tc-quote-fab-label \{ max-width: 0; opacity: 0; \}/.test(css));
