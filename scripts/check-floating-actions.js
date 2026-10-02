@@ -161,10 +161,16 @@ for (const gen of ['scripts/generate-product-pages.py']) {
     /\(ar \? '\/ar' : ''\) \+ '\/contact\?intent=quote'/.test(nav) && nav.includes("'اطلب عرض سعر'") && nav.includes("'Request a Quote'"));
   t('   its corner follows the reading direction, opposite the bubble',
     /inset-inline-start:/.test(rule) && !/(^|[;{\s])(left|right):/.test(rule), rule.slice(0, 120));
-  t('   the footer makes room for it, it is gold with dark text (5.8:1, both themes), and it is never printed',
+  t('   the footer makes room for it, it is a gold gradient with dark text (4.7:1 at its darkest), and it is never printed',
     /\.tc-has-quote-fab footer \{ padding-bottom:/.test(css) &&
-    /background: hsl\(var\(--secondary\)\);\s*color: hsl\(75 40% 14%\);/.test(rule) &&
+    /background: linear-gradient\(135deg, #e6c25a 0%, #c9a032 55%, #b08a24 100%\);\s*color: #1f2a0f;/.test(rule) &&
     /@media print \{ #tc-quote-fab \{ display: none/.test(css));
+  t('   on phones it shrinks to its icon while scrolling down, keeping its link and its aria-label',
+    /matchMedia\('\(max-width: 1023\.98px\)'\)/.test(nav) && /a\.setAttribute\('aria-label', label\)/.test(nav) &&
+    /#tc-quote-fab\.tc-quote-fab--compact \.tc-quote-fab-label \{ max-width: 0; opacity: 0; \}/.test(css));
+  t('   and it pulses once a visit, never for a visitor who asks for reduced motion',
+    /sessionStorage\.getItem\('tc-quote-pulsed'\)/.test(nav) &&
+    /@media \(prefers-reduced-motion: no-preference\) \{\s*#tc-quote-fab\.tc-quote-fab--pulse::after \{ animation:/.test(css));
   t('   the cookie banner lifts it clear, as it does the bubble',
     /q\.style\.bottom = h \? \(28 \+ h\)/.test(consent) && /TC\.positionFloating = positionFab;/.test(consent) && /TC\.positionFloating\(\)/.test(nav));
   t('the cookie pill, whose corner it took, lives in the footer at every width',
