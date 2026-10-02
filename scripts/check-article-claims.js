@@ -40,7 +40,8 @@
  *     without being read against it
  * and, on every page, on a trial order offered below the container
  * ("smaller trial quantities may be possible"; owner, 2026-10-02: there is
- * no trial order), and the "a approved" typo.
+ * no trial order), a reply promised in "one business day" when the reply
+ * time is 24 hours (C-115), and the "a approved" typo.
  *
  * A new article, or an edit, gets the same review as any page: its company
  * facts must already be in docs/claim-and-evidence-register.csv.
@@ -191,6 +192,12 @@ for (const f of articles) {
   }
 }
 t('no article states a tonnage below the 20ft container\'s 16 MT', lowTonnage.length === 0, lowTonnage.join(' | '));
+
+// ---- one reply time: 24 hours (C-115) --------------------------------------
+// The articles' CTA and /media (and its Inquiries page) said "one business day"
+// until 2026-10-02, beside the 24 hours promised on every form.
+const slowReply = [...pages, ...guides].filter((f) => /one business day|يوم عمل واحد/i.test(read(f)));
+t('no page or guide promises a reply in "one business day"; the reply time is 24 hours (C-115)', slowReply.length === 0, slowReply.join(', '));
 
 const typo = tracked.filter((f) => !/^(docs|scripts)\//.test(f) && /\ba approved\b/.test(read(f)));
 t('no page carries the "a approved" typo', typo.length === 0, typo.join(', '));
