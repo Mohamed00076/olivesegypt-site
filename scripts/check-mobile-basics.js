@@ -89,8 +89,10 @@ for (const [f, contact, loc] of [['catalog/index.html', '/contact', 'en'], ['ar/
     !/lucide-flask-conical[^>]*>(?:(?!<\/svg>)[\s\S])*<\/svg><\/div><\/div>/.test(html));
 }
 
-const lactic = pages.filter((f) => f.startsWith('ar/') && /\blactic\b/.test(read(f)));
-t('no Arabic page leaves "lactic" in English', lactic.length === 0, lactic.join(', '));
+// "lactic" was fixed on 2026-09-28; "acetic" and "citric" on 2026-10-02
+// (owner: the Arabic jalapeño card showed "acetic"), as أسيتيك and ستريك.
+const lactic = pages.filter((f) => f.startsWith('ar/') && /\b(lactic|acetic|citric)\b/i.test(read(f)));
+t('no Arabic page leaves an acid name ("lactic", "acetic", "citric") in English', lactic.length === 0, lactic.join(', '));
 
 const faq = (f, href) => { const h = read(f); return h.slice(h.indexOf('<main'), h.indexOf('</main>')).includes(`href="${href}"`); };
 t('both homepages link to their FAQ page from the FAQ section', faq('index.html', '/resources/faq') && faq('ar/index.html', '/ar/resources/faq'));
