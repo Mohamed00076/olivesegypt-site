@@ -187,6 +187,16 @@ for (const gen of ['scripts/generate-product-pages.py']) {
     /html\[lang="en"\] body:has\(#mobile-menu-panel:not\(\[hidden\]\)\) #tc-quote-fab \{ display: none; \}/.test(css));
 }
 
+// The insights tab steps aside for the footer (2026-10-02): pinned to the
+// middle of the edge, it sat over the footer's Contact column at the end of
+// every page on desktop. site-nav.js fades it once the footer reaches it.
+{
+  const nav = fs.readFileSync(path.join(ROOT, 'assets', 'site-nav.js'), 'utf8');
+  t('the insights tab fades out when the footer reaches it, and leaves the tab order',
+    /footer\.getBoundingClientRect\(\)\.top < tab\.getBoundingClientRect\(\)\.bottom/.test(nav) &&
+    /tab\.style\.pointerEvents = reach \? 'none'/.test(nav) && /tab\.setAttribute\('tabindex', '-1'\)/.test(nav));
+}
+
 console.log(`\nfloating-actions OK -- ${en + ar} browsing page(s) carry both, ${PRINTABLE.size} printable sheet(s) carry neither.`);
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);
