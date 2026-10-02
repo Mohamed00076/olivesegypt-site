@@ -200,3 +200,40 @@
   // itself; this one may have arrived after that first measurement.
   if (window.TC && typeof window.TC.positionFloating === 'function') window.TC.positionFloating();
 })();
+
+/*
+ * The "Read Our Insights" tab steps aside for the footer (owner, 2026-10-02).
+ *
+ * The tab is pinned to the middle of the right edge (the left on Arabic
+ * pages), so at the end of a page it sat over the footer's Contact column --
+ * WhatsApp at 1100-1280px, "Request a Sample" at 1440px. Once the footer's
+ * top rises past the tab's bottom edge the tab fades out, and comes back
+ * when the reader scrolls up. While faded it is out of the tab order and
+ * hidden from screen readers; the footer has its own blog link. Inline
+ * styles only, so this cannot collide with consent.js, which moves and
+ * hides the tab by `top`, `transform` and `visibility` around the cookie
+ * banner.
+ */
+(function () {
+  var tab = document.querySelector('[data-testid="floating-blog-link"]');
+  var footer = document.querySelector('footer');
+  if (!tab || !footer) return;
+  tab.style.transition = (tab.style.transition ? tab.style.transition + ', ' : '') + 'opacity 0.2s';
+  var tucked = false;
+  var queued = false;
+  function update() {
+    queued = false;
+    // while tucked the tab keeps its place, so its box is still the measure
+    var reach = footer.getBoundingClientRect().top < tab.getBoundingClientRect().bottom + 8;
+    if (reach === tucked) return;
+    tucked = reach;
+    tab.style.opacity = reach ? '0' : '';
+    tab.style.pointerEvents = reach ? 'none' : '';
+    if (reach) { tab.setAttribute('aria-hidden', 'true'); tab.setAttribute('tabindex', '-1'); }
+    else { tab.removeAttribute('aria-hidden'); tab.removeAttribute('tabindex'); }
+  }
+  function queue() { if (!queued) { queued = true; window.requestAnimationFrame(update); } }
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue);
+  update();
+})();
