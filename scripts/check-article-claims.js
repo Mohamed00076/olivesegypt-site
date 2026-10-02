@@ -98,7 +98,9 @@ for (const f of articles) {
     const m = text.match(re);
     if (m) bad.push(`${f}: "${m[0]}" (${why})`);
   }
-  if (!/Triple Company|الشركة الثلاثية/.test(text)) unnamed.push(f);
+  // the article itself: the Arabic headlines end "| الشركة الثلاثية للتنمية الصناعية", which would pass any body
+  const own = body((read(f).match(/<article[\s\S]*?<\/article>/) || [''])[0].replace(/^/, '<main>') + '</main>');
+  if (!/Triple Company|الشركة الثلاثية/.test(own)) unnamed.push(f);
   for (const s of text.split(/\n|(?<=[.؟!])\s/)) {
     if (/minimum order|MOQ|الحد الأدنى للطلب|الحد الأدنى لطلب/i.test(s) && /\d[\d.,–-]*\s*(MT|metric|tons?|tonnes?|kg|كجم|طن|ft|قدم)/i.test(s) && !/20ft|20 قدمًا/.test(s)) moq.push(`${f}: "${s.trim().slice(0, 120)}"`);
   }
