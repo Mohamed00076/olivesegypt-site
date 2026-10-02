@@ -13,13 +13,17 @@
  * article about Egypt's olive market; and Local / Egypt went to the plain
  * contact form rather than its local-pricing entry. The owner spotted it.
  *
+ * On 2026-09-29 the owner's Solutions brief gave each card a page of its own
+ * under /solutions/. Private-Label keeps its existing page, by the owner's
+ * choice: /resources/private-label already serves that buyer.
+ *
  * This holds, on / and /ar/:
  *   - six cards, no two with the same destination (address and section)
  *   - each destination is a page that exists, and a #section on it is an id
  *     that page carries
  *   - the Arabic cards lead to the Arabic twins of the English destinations
- *   - the Local card sets the local-pricing intent, which the contact form
- *     records against the enquiry
+ *   - each card leads to its own Solutions page, and Private-Label to the
+ *     private-label page
  */
 
 const fs = require('fs');
@@ -66,9 +70,12 @@ for (const [loc, list] of Object.entries(sets)) {
   }
   t(`${where}: every card leads to a page that exists, and to a section it has`, broken.length === 0, broken.join('; '));
 
-  const local = list[5];
-  t(`${where}: the Local / Egypt card opens the contact form set to local pricing`,
-    !!local && local.href === `${loc === 'ar' ? '/ar' : ''}/contact?intent=local_pricing`, local && local.href);
+  const pre = loc === 'ar' ? '/ar' : '';
+  const want = ['/solutions/importer-distributor', '/solutions/retail', '/solutions/food-service',
+    '/resources/private-label', '/solutions/manufacturer', '/solutions/local-egypt'].map((r) => pre + r);
+  const wrong = list.map((c, i) => [c, want[i]]).filter(([c, w]) => c.href !== w);
+  t(`${where}: each card leads to its own Solutions page, and Private-Label to the private-label page`,
+    wrong.length === 0, wrong.map(([c, w]) => `${c.title}: ${c.href}, expected ${w}`).join('; '));
 }
 
 const mirrored = sets.en.map((c, i) => [c.href, sets.ar[i] && sets.ar[i].href])
