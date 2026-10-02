@@ -190,15 +190,62 @@
   if (document.getElementById('tc-quote-fab')) return;
   var ar = (document.documentElement.getAttribute('lang') || '').slice(0, 2) === 'ar';
   if (/^\/(ar\/)?contact(\/|\/index\.html)?$/.test(window.location.pathname)) return;
+  var label = ar ? 'اطلب عرض سعر' : 'Request a Quote';
   var a = document.createElement('a');
   a.id = 'tc-quote-fab';
   a.href = (ar ? '/ar' : '') + '/contact?intent=quote';
-  a.textContent = ar ? 'اطلب عرض سعر' : 'Request a Quote';
+  a.setAttribute('aria-label', label);
+  // a paper plane ("send"), then the label; the icon is decorative
+  a.innerHTML = '<svg class="tc-quote-fab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>';
+  var span = document.createElement('span');
+  span.className = 'tc-quote-fab-label';
+  span.textContent = label;
+  a.appendChild(span);
   document.body.appendChild(a);
   document.documentElement.classList.add('tc-has-quote-fab');
   // The cookie banner, when it is up, lifts the floating buttons clear of
   // itself; this one may have arrived after that first measurement.
   if (window.TC && typeof window.TC.positionFloating === 'function') window.TC.positionFloating();
+
+  /*
+   * Below 1024px -- phones and tablets, where it would otherwise sit on what
+   * the reader is looking at -- the button shrinks to its round icon while
+   * the page scrolls down, and opens back to the full label when the reader
+   * scrolls up, pauses for a moment, or is near the top of the page.
+   * Desktop always shows the full label. The link, its target and its
+   * aria-label never change, so a tap on the icon does exactly what a tap on
+   * the label does.
+   */
+  var narrow = window.matchMedia('(max-width: 1023.98px)');
+  var lastY = window.pageYOffset;
+  var idle = null;
+  function setCompact(on) { a.classList.toggle('tc-quote-fab--compact', !!on && narrow.matches); }
+  window.addEventListener('scroll', function () {
+    var y = window.pageYOffset;
+    if (y < 200) setCompact(false);
+    else if (y > lastY + 6) setCompact(true);
+    else if (y < lastY - 6) setCompact(false);
+    lastY = y;
+    if (idle) clearTimeout(idle);
+    idle = setTimeout(function () { setCompact(false); }, 1200);
+  }, { passive: true });
+  if (narrow.addEventListener) narrow.addEventListener('change', function () { if (!narrow.matches) setCompact(false); });
+
+  /*
+   * One gentle pulse, five seconds after the first page of a visit loads, to
+   * draw the eye once. Not on every page (sessionStorage), and never for a
+   * visitor whose device asks for reduced motion (the stylesheet has no
+   * animation for them).
+   */
+  var pulsed = false;
+  try { pulsed = window.sessionStorage.getItem('tc-quote-pulsed') === '1'; } catch (e) {}
+  if (!pulsed) {
+    setTimeout(function () {
+      a.classList.add('tc-quote-fab--pulse');
+      try { window.sessionStorage.setItem('tc-quote-pulsed', '1'); } catch (e) {}
+      setTimeout(function () { a.classList.remove('tc-quote-fab--pulse'); }, 2000);
+    }, 5000);
+  }
 })();
 
 /*
