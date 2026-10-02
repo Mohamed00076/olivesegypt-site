@@ -108,6 +108,18 @@ for (const rel of pages) {
 }
 t(`every internal link on ${pages.length} pages resolves (${links} links)`, pages.length > 100 && links > 5000 && broken.length === 0, show(broken));
 
+// ---- the bare product folder goes to the catalogue ----------------------------------
+// /products and /ar/products have no page; since 2026-10-02 they redirect to the
+// catalogue rather than answering 404. The ten product pages beneath them must
+// still be served from their own files.
+const target = (p) => (rules.find((r) => r.force && match(r.from, p)) || {}).to;
+const bare = [['/products', '/catalog'], ['/products/', '/catalog'], ['/ar/products', '/ar/catalog'], ['/ar/products/', '/ar/catalog']]
+  .filter(([p, to]) => resolve(p) !== '301' || target(p) !== to).map(([p]) => p);
+t('/products and /ar/products redirect permanently to the catalogue', bare.length === 0, bare.join(', '));
+const productDirs = ['products', 'ar/products'].flatMap((d) => fs.readdirSync(path.join(ROOT, d)).map((s) => `/${d}/${s}`));
+const notServed = productDirs.filter((p) => resolve(p) !== 'file' && resolve(p) !== '410');
+t(`   while every product page beneath them is still served (${productDirs.length})`, productDirs.length >= 20 && notServed.length === 0, notServed.join(', '));
+
 const ok = fail === 0;
 console.log(`\nnot-found ${ok ? 'OK' : 'FAILED'} -- an unknown address answers 404, and no link on the site leads to one.`);
 console.log(`\n${pass} passed, ${fail} failed`);

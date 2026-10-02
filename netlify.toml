@@ -648,6 +648,34 @@
   status = 410
   force = true
 
+# /products has never had a page of its own -- the ten product pages live
+# under it, and the range is listed on /catalog. A bare /products answered
+# 404; it now goes to the catalogue, permanently (owner, 2026-10-02, after an
+# external audit). Only the bare address: /products/<slug> is untouched.
+[[redirects]]
+  from = "/products"
+  to = "/catalog"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/products/"
+  to = "/catalog"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ar/products"
+  to = "/ar/catalog"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ar/products/"
+  to = "/ar/catalog"
+  status = 301
+  force = true
+
 # No catch-all. This was an SPA fallback -- `/*` to /index.html with a 200 --
 # left from before the site became static pages, so every mistyped or retired
 # address returned the homepage as a success: a soft 404 that hid broken links
