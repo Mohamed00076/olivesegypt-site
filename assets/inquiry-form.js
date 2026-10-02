@@ -69,6 +69,16 @@
     return el ? el.value.trim() : '';
   }
 
+  // Solutions pages send buyers here as /contact?intent=...&from=/solutions/<page>,
+  // so the enquiry records which buyer page it came from even when the browser
+  // withholds the referrer. Only a Solutions path is accepted; anything else
+  // falls back to the referrer, as before.
+  function sourcePage() {
+    var m = /[?&]from=(\/(?:ar\/)?solutions(?:\/[a-z-]+)?)(?:&|$)/.exec(window.location.search);
+    if (m) return window.location.origin + m[1];
+    return document.referrer || window.location.href;
+  }
+
   function requestType(fallback) {
     var m = /[?&]intent=([a-z_]+)/.exec(window.location.search);
     return (m && INTENTS[m[1]]) || fallback;
@@ -104,7 +114,7 @@
 
       var payload = buildPayload();
       payload.request_type = requestType(defaultType);
-      payload.source_page = document.referrer || window.location.href;
+      payload.source_page = sourcePage();
       payload.website = val(prefix + '-website');
 
       // Ties this enquiry to the visit that produced it, so it can be
