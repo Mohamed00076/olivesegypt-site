@@ -327,7 +327,7 @@ PAGES['food-service'] = {
     'en': dict(
         crumb='Food Service',
         title=f'Bulk Olives for Restaurants, Caterers &amp; Repackers | {ORG}',
-        desc='Egyptian table olives for kitchens, caterers and repackers: food-grade buckets (typically 1–10 kg), tin cans, 220 kg barrels, and a 4 kg PET pail for sliced jalapeños.',
+        desc='Egyptian table olives for kitchens, caterers and repackers: food-grade buckets (typically 1–10 kg), tin cans, a 4 kg PET pail for sliced jalapeños, and 220 kg barrels.',
         keywords='bulk olives for restaurants, food-service olive supplier Egypt, olives for caterers and repackers',
         main=lambda: hero('Solutions', 'For Food-Service Buyers',
                           'Olives in practical, larger packs for kitchens, caterers and repackers — where volume and cost per kilogram matter more than shelf presentation.')
@@ -353,7 +353,7 @@ PAGES['food-service'] = {
     'ar': dict(
         crumb='خدمات الأغذية',
         title=f'زيتون بالجملة للمطاعم ومقدمي خدمات التموين وإعادة التعبئة | {ORG_AR}',
-        desc='زيتون مائدة مصري للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة: دِلاء درجة غذائية (عادة 1–10 كجم)، وعلب صفيح، وبراميل 220 كجم، ووعاء PET سعة 4 كجم للهالبينو المقطّع.',
+        desc='زيتون مائدة مصري للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة: دِلاء درجة غذائية (عادة 1–10 كجم)، وعلب صفيح، ووعاء PET سعة 4 كجم للهالبينو المقطّع، وبراميل سعة 220 كجم.',
         keywords='زيتون بالجملة للمطاعم, مورد زيتون لخدمات الأغذية مصر, زيتون لمقدمي التموين وإعادة التعبئة',
         main=lambda: hero('الحلول', 'لمشتري خدمات الأغذية',
                           'زيتون في عبوات عملية وأكبر حجمًا للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة — حيث يهم الحجم والتكلفة لكل كيلوجرام أكثر من العرض على الرف.')
