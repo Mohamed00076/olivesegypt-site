@@ -98,7 +98,7 @@ PRODUCTS = [
         profile="California-style black olives darkened by controlled oxidation for a uniform jet-black color and smooth, mild flavor.",
         best_for=["Pizza toppings", "Food service", "Retail cans"],
         related=["natural-black-olives", "kalamata-olives", "aggizi-green-olives"],
-        image=dict(src='/assets/illus-oxidized-black.svg', alt='Oxidized Black Olives — photography pending', w='900', h='630', webp=None),
+        image=dict(src='/assets/olive-oxidized-black.jpg', alt='Oxidized Black Olives', w='1200', h='800', webp='/assets/olive-oxidized-black.webp'),
     ),
     dict(
         slug="marinated-artichoke-hearts", print_slug="artichoke",
@@ -128,7 +128,7 @@ PRODUCTS = [
         profile="Crisp jalapeño rings pickled for a bright, medium heat, in green or red. Packed in glass jars from 320ml to 1050ml, in 65mm, A9, A10 and A12 cans, and in a 4kg PET pail.",
         best_for=["Nachos, pizza, and Tex-Mex food-service applications", "Retail"],
         related=["pepperoncini-peppers", "marinated-artichoke-hearts", "oxidized-black-olives"],
-        image=dict(src='/assets/illus-jalapeno.svg', alt='Sliced Jalapeño Peppers — photography pending', w='900', h='630', webp=None),
+        image=dict(src='/assets/jalapeno-sliced.jpg', alt='Sliced Jalapeño Peppers', w='1200', h='800', webp='/assets/jalapeno-sliced.webp'),
     ),
 ]
 
