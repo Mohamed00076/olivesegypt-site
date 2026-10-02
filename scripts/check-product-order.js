@@ -121,7 +121,8 @@ for (const [where, file, fn, expected] of CHECKS) {
 // The visible count must agree with the canonical list length. Case-blind:
 // until 2026-09-28 this matched only a lowercase "varieties", so the
 // homepage's "View Full Catalog (11 Varieties)" survived Hamed's withdrawal
-// for the whole day until the owner spotted it.
+// for the whole day until the owner spotted it. The hero stat (number and
+// label in separate elements) was caught only once the text was read too.
 const COUNT_FILES = [
   'index.html', 'catalog/index.html', 'downloads/index.html', 'catalog/print/index.html',
   'ar/index.html', 'ar/catalog/index.html', 'ar/downloads/index.html', 'ar/catalog/print/index.html',
@@ -129,7 +130,11 @@ const COUNT_FILES = [
 for (const f of COUNT_FILES) {
   const html = read(f);
   if (html === null) continue;
-  const wrong = [...html.matchAll(/(\d+)\s*(?:product\s*)?varieties|(\d+)\s*(?:صنفًا|صنف|أصناف)/gi)]
+  // Read as text as well as markup: the hero's stat sets the number in its
+  // own <span> and the label in the next <p>, so "11 Product Varieties"
+  // never appeared as one string and survived to 2026-10-02.
+  const text = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/g, ' ').replace(/<[^>]+>/g, ' ');
+  const wrong = [...`${html}\n${text}`.matchAll(/(\d+)\s*(?:product\s*)?varieties|(\d+)\s*(?:صنفًا|صنف|أصناف)/gi)]
     .map((m) => Number(m[1] || m[2]))
     .filter((n) => n !== COUNT);
   if (wrong.length) problems.push(`${f}: states ${[...new Set(wrong)].join(', ')} varieties, expected ${COUNT}`);
