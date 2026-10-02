@@ -327,14 +327,14 @@ PAGES['food-service'] = {
     'en': dict(
         crumb='Food Service',
         title=f'Bulk Olives for Restaurants, Caterers &amp; Repackers | {ORG}',
-        desc='Egyptian table olives for kitchens, caterers and repackers: food-grade buckets (typically 1–10 kg), tin cans, a 4 kg PET pail for sliced jalapeños, and 220 kg barrels.',
+        desc='Egyptian table olives for kitchens, caterers and repackers: food-grade buckets (2, 5, 10 and 20 kg), tin cans, a 4 kg PET pail for sliced jalapeños, and 220 kg barrels.',
         keywords='bulk olives for restaurants, food-service olive supplier Egypt, olives for caterers and repackers',
         main=lambda: hero('Solutions', 'For Food-Service Buyers',
                           'Olives in practical, larger packs for kitchens, caterers and repackers — where volume and cost per kilogram matter more than shelf presentation.')
         + body(
             forwhom('This page is for restaurants, caterers, food-service suppliers and repackers &mdash; and the importers who supply them.'),
             block('Food-service formats', extra=cards([
-                ('Plastic buckets', 'Food-grade buckets, typically 1&ndash;10 kg, for restaurants, caterers and repackers. They balance cost, volume and convenience.'),
+                ('Plastic buckets', 'Food-grade buckets in 2, 5, 10 and 20 kg sizes, for restaurants, caterers and repackers. They balance cost, volume and convenience.'),
                 ('Tin cans', 'Shelf-stable and durable, and suited to food service: 65mm, A9, A10 and A12.'),
                 ('Plastic barrels', '220 kg barrels for the lowest cost per kilogram on large volumes &mdash; the usual choice for repacking.'),
                 ('Vacuum pouches', 'Compact and light, for pitted or sliced product where brine weight and volume need to be kept down.'),
@@ -353,14 +353,14 @@ PAGES['food-service'] = {
     'ar': dict(
         crumb='خدمات الأغذية',
         title=f'زيتون بالجملة للمطاعم ومقدمي خدمات التموين وإعادة التعبئة | {ORG_AR}',
-        desc='زيتون مائدة مصري للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة: دِلاء درجة غذائية (عادة 1–10 كجم)، وعلب صفيح، ووعاء PET سعة 4 كجم للهالبينو المقطّع، وبراميل سعة 220 كجم.',
+        desc='زيتون مائدة مصري للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة: دِلاء درجة غذائية (2 و5 و10 و20 كجم)، وعلب صفيح، ووعاء PET سعة 4 كجم للهالبينو المقطّع، وبراميل سعة 220 كجم.',
         keywords='زيتون بالجملة للمطاعم, مورد زيتون لخدمات الأغذية مصر, زيتون لمقدمي التموين وإعادة التعبئة',
         main=lambda: hero('الحلول', 'لمشتري خدمات الأغذية',
                           'زيتون في عبوات عملية وأكبر حجمًا للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة — حيث يهم الحجم والتكلفة لكل كيلوجرام أكثر من العرض على الرف.')
         + body(
             forwhom('هذه الصفحة للمطاعم ومقدمي خدمات التموين وموردي خدمات الأغذية وشركات إعادة التعبئة &mdash; وللمستوردين الذين يوردون لهم.'),
             block('صيغ خدمات الأغذية', extra=cards([
-                ('دِلاء بلاستيكية', 'دِلاء درجة غذائية، عادة من 1 إلى 10 كجم، للمطاعم ومقدمي خدمات الطعام وشركات إعادة التعبئة. توازن بين التكلفة والحجم والملاءمة.'),
+                ('دِلاء بلاستيكية', 'دِلاء درجة غذائية بأحجام 2 و5 و10 و20 كجم، للمطاعم ومقدمي خدمات الطعام وشركات إعادة التعبئة. توازن بين التكلفة والحجم والملاءمة.'),
                 ('علب صفيح', 'ثابتة ومتينة، ومناسبة لخدمات الأغذية: 65 مم و A9 و A10 و A12.'),
                 ('براميل بلاستيكية', 'براميل سعة 220 كجم لأقل تكلفة لكل كيلوجرام في الأحجام الكبيرة &mdash; الخيار المعتاد لإعادة التعبئة.'),
                 ('أكياس مفرّغة من الهواء', 'صيغة مدمجة وخفيفة للمنتج المنزوع النواة أو المقطع حيث يلزم تقليل وزن وحجم المحلول الملحي.'),
