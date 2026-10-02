@@ -6077,6 +6077,169 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`:
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 112 to 116 — Hero photograph, a new share card, and C-16 retired (PRs #230 to #234)
+
+**Previous recorded deploy:** `3c94a3f` (Deploy 111, PR #229)
+**Approvals:**
+- "merge" (#230, #231)
+- for the hero: the photograph with "i want you to use this picture for this place in home screen"; "yes the company own the photo of red pepper"
+- for the share card: "yes" to replacing it, then "use the last 3 photos i uploaded" and "let me see first"; the card was shown before merge
+- "merge" (#232, #233)
+- for the sharper hero: "can you fix it to better quality ?", "just use this one", then "merge" (#234)
+
+All five merged on 2026-10-03 (+0300).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 112 | #230 | `2ed0002` | 2026-10-03 01:37:36 | 1 | +163 / −2 | Notes only |
+| 113 | #231 | `755c05b` | 2026-10-03 01:37:39 | 1 | +2 / −2 | Notes only |
+| 114 | #232 | `cba93c3` | 2026-10-03 02:08:01 | 6 | +6 / −4 | Site change |
+| 115 | #233 | `e468c41` | 2026-10-03 02:08:04 | 38 | +73 / −39 | Site change |
+| 116 | #234 | `39e4845` | 2026-10-03 02:15:19 | 5 | +3 / −3 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for the site changes before they merged. Whether
+each production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 112** recorded Deploys 107 to 111.
+- **Deploy 113** retired C-16 ("All product imagery is illustration, not
+  photography") as superseded, on the owner's "yes retire it".
+
+### What each site change did
+
+- **Deploy 114 — A photograph in the home-page hero (#232).** The hero slot
+  on `/` and `/ar/` showed "Product photography pending". It now shows the
+  owner's photograph of sliced red peppers in brine, as a `<picture>` with
+  WebP.
+  - **Crop:** to the product only. The bucket rim, the barrels behind it
+    and the bucket label are out of frame. The label names an importer, so
+    the crop also keeps the supplier unnamed and shows no facility (C-38).
+  - **Alt text:** "Sliced red peppers in brine" / "شرائح فلفل أحمر في
+    محلول ملحي". It names no variety, and the catalogue has no red-pepper
+    product, so the hero points at none.
+  - **Placeholders:** `photo-pending.svg` and its Arabic twin stay in use
+    for the four packaging slots and the catalogue cover.
+  - **Phones:** the slot is hidden below 768px, as before.
+- **Deploy 115 — A share card in place of an old-site screenshot (#233).**
+  `opengraph.jpg` is the `og:image`/`twitter:image` on all 94 pages, the
+  preview WhatsApp, Facebook and LinkedIn show, and a hint Google may use
+  for a thumbnail.
+  - **What it was:** a 1280×720 screenshot of the old homepage. It showed
+    the retired tagline (C-91), "EST. 2010" (against the site's own
+    "newly established"), "Shipping certified, traceable containers", and
+    stock-style jars of unconfirmed origin. It had been flagged "replace
+    once source art is settled" since September.
+  - **What it is now:** a 1200×630 card.
+    - Left: the logo, the approved tagline "Egyptian Table Olive Export"
+      (C-91), and the legal name in English and Arabic, with
+      olivesegypt.com.
+    - Right: the owner's three photographs (green olives, oxidized black,
+      sliced jalapeño), unedited beyond the edits already recorded.
+    - It keeps the same URL, so no `og:image` tag changed.
+  - **Size tags:** 32 pages had declared 1200×630 for the old 1280×720
+    file. The two home pages declared 1280×720 and now declare 1200×630.
+    All 34 declarations now match the file.
+  - **Alt text:** `og:image:alt` on those 34 pages now describes the card;
+    the old text said "premium" / "فاخر".
+  - **Source:** `scripts/og-card.html`, with the green-olive photograph
+    beside it. The green olives stay off the site's pages, at the owner's
+    request, and `scripts/` is pruned from the published site.
+- **Deploy 116 — A sharper hero photograph (#234).** The owner asked
+  whether the photo could be better quality.
+  - **What limited it:**
+    - the source is a messaging-app copy, 960×1280 and already compressed
+    - the first crop was a cautious 540×720
+    - on a 2× laptop screen the slot needs about 1112 pixels across
+  - **The re-cut:**
+    - a 690×690 crop from the rim-free area, about 28% more real width;
+      each corner was checked by eye
+    - a light edge-preserving clean-up of compression blocks before
+      sharpening
+    - the same tone and colour steps as before
+    - Lanczos enlargement to 1120×1120, with lighter sharpening
+  - **No AI upscaling,** so no detail is invented.
+  - **The original file from the phone** would allow a sharper version
+    still. The owner chose to keep this one.
+
+### Owner decisions and confirmations
+
+- **Hero photograph:** the company owns it ("yes the company own the
+  photo of red pepper").
+- **Share card photographs:** the three supplied together on 2026-10-02.
+  The owner saw the card before merge.
+- **Arabic, assistant-written, merged on the owner's "merge"** after being
+  flagged for review. As in Deploys 92 and 111, the merge is taken as
+  approval of the wording:
+  - the hero alt text, شرائح فلفل أحمر في محلول ملحي (#232)
+  - the share card alt text on `/ar/` (#233), whose wording is in the PR
+- **Higher quality:** "just use this one", declining to send the original
+  file for now.
+
+### Claim register
+
+- **Added:** C-148, the hero photograph (`verified-approved`: real,
+  company-owned, edited only for crop, exposure, colour balance and
+  sharpness). Its action column now records the Arabic alt text as
+  approved. The register stands at 148 claims.
+- **Superseded:** C-16 (Deploy 113).
+- **No row for the share card:** it makes no new claim. Its text is the
+  legal name, the C-91 tagline and the domain.
+- **C-55** remains the only `needs-review` row.
+- **`docs/asset-rights-register.md`:**
+  - a row for `red-peppers-sliced.jpg` with every edit, updated by
+    Deploy 116
+  - the `opengraph.jpg` row rewritten: it had read UNCONFIRMED in every
+    column
+  - the two placeholder rows no longer list the hero slot
+
+### Testing method
+
+The checks in `npm test` stay at 60. The suite passed on each branch before
+its merge and on `main` at `39e4845` after all of them. One check earned its
+place: `check-image-dimensions` failed the card source for an undeclared
+logo size, which was fixed before the PR. Beyond the suite:
+- **Chromium, hero:** EN and AR at 800, 1100, 1280 and 1536px wide.
+  - The browser loads the WebP.
+  - The photo fills the slot at every width, with no failed requests.
+  - At 390px the slot stays hidden.
+  - Deploy 116 was compared with Deploy 114 at 2× pixel density.
+- **Share card:**
+  - rendered with all three site fonts loaded
+  - the committed source re-renders pixel-identical to the shipped file
+  - no page still declares 1280×720 or carries the old alt text
+- **Sitemap:** dates unchanged on every branch.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`:
+- **Deploy 116 builds on 114:** revert 116 before 114.
+- **Deploy 114:** reverting brings back the placeholder.
+- **Deploy 115:** reverting brings back the old screenshot with its retired
+  wording. Re-render from `scripts/og-card.html` instead.
+- **Deploys 112 and 113** are documentation only.
+
+### Known limitations shipped with Deploys 112 to 116
+
+- **Share previews are cached:** WhatsApp and Facebook may show the old
+  preview until refreshed (Facebook Sharing Debugger, "Scrape Again"), and
+  Google updates on its next crawl.
+- **Pre-existing hero differences, not changed:**
+  - at 768–1023px the English hero stacks the image under the text, while
+    the Arabic hero sits side by side
+  - the "Single origin · Egypt" badge appears on the English hero only
+- **Hero photograph:** limited by its messaging-app source.
+- **`www.olivesegypt.com` does not load:** the GoDaddy DNS steps are with
+  the owner.
+- **Search Console:** the owner resubmitted the sitemap on 2026-10-02.
+- **Not yet confirmed on the live site:** all of the above.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -6090,7 +6253,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 111 (2026-10-03).**
+**Unchanged through Deploy 116 (2026-10-03).**
 
 ## Outstanding, unresolved by this document
 
@@ -6298,7 +6461,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 111 (2026-10-03).** The owner will set the values later.
+    **Unchanged at Deploy 116 (2026-10-03).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
