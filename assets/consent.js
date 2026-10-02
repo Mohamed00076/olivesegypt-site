@@ -160,7 +160,7 @@
     '.tc-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}' +
     '.tc-btn-modal-secondary{background:transparent;color:#1c2416;border-color:#1c241633;}' +
     '#tc-consent-reopen{position:fixed;inset-inline-start:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
-    '@media (max-width:639px){#tc-consent-reopen.tc-in-footer{display:none;}}' +
+    '#tc-consent-reopen.tc-in-footer{display:none;}' +
     '#tc-consent-footer-link{background:none;border:0;padding:0;font:inherit;cursor:pointer;}' +
     '.dark #tc-consent-modal{background:hsl(var(--card));color:hsl(var(--card-foreground));}' +
     '.dark .tc-modal-subtext{color:hsl(var(--muted-foreground));}' +
@@ -284,13 +284,25 @@
     }
   }
 
+  // The floating "Request a Quote" button (assets/site-nav.js) sits in the
+  // opposite bottom corner, at the same height as the bubble, so the banner
+  // would cover it in exactly the same way. It moves with the bubble.
+  function quoteFab() {
+    return document.getElementById('tc-quote-fab');
+  }
+
   function positionFab() {
     var banner = document.getElementById('tc-consent-banner');
     var h = banner ? banner.offsetHeight : 0;
     var el = fab();
     if (el) el.style.bottom = h ? (24 + h) + 'px' : '';
+    var q = quoteFab();
+    if (q) q.style.bottom = h ? (28 + h) + 'px' : '';
     positionTab(h);
   }
+  // site-nav.js adds the quote button after this file has run; it calls this
+  // so the button starts clear of a banner that is already up.
+  TC.positionFloating = positionFab;
 
   function shiftFabForBanner() {
     positionFab();
@@ -318,6 +330,8 @@
     }
     var el = fab();
     if (el) el.style.bottom = '';
+    var q = quoteFab();
+    if (q) q.style.bottom = '';
     positionTab(0);
   }
 
@@ -330,9 +344,11 @@
   // On a phone the floating pill joined the WhatsApp bubble and the insights
   // tab on the bottom of every screen, covering content (owner's mobile
   // check, 2026-09-28). So the same control also sits in the footer, beside
-  // Privacy, styled like its neighbours; below 640px the pill is hidden
-  // wherever the footer one was placed. Pages without that footer row (the
-  // printable sheets, the business card) keep the pill at every width.
+  // Privacy, styled like its neighbours, and the pill is hidden wherever the
+  // footer one was placed -- below 640px from 2026-09-28, and at every width
+  // from 2026-10-02, when the floating "Request a Quote" button took the
+  // pill's corner on desktop (owner's choice). Pages without that footer row
+  // (the printable sheets, the business card) keep the pill at every width.
   function addFooterControl() {
     if (document.getElementById('tc-consent-footer-link')) return true;
     var privacy = document.querySelector('footer a[href="/privacy"], footer a[href="/ar/privacy"]');

@@ -136,6 +136,40 @@ for (const gen of ['scripts/generate-product-pages.py']) {
     /\[dir="rtl"\] a\[data-testid="floating-blog-link"\] \{\s*right: auto;\s*left: 0;/.test(css) &&
     /\[dir="rtl"\] a\[data-testid="floating-blog-link"\] > span\[aria-hidden="true"\]:first-child \{\s*left: auto;\s*right: 0;/.test(css));
 }
+// The floating "Request a Quote" button (owner, 2026-10-02), in the corner
+// opposite the WhatsApp bubble. site-nav.js adds it on every page that has
+// the bubble -- so every browsing page, and no printable sheet -- except the
+// contact page it leads to. Its corner comes from inset-inline-start, the
+// same logical property as the cookie pill whose corner it took: bottom-left
+// in English, bottom-right in Arabic. A physical left would put it under the
+// Arabic bubble, the mix C-87 warns about.
+{
+  const nav = fs.readFileSync(path.join(ROOT, 'assets', 'site-nav.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'assets', 'index-Dw0yUE42.css'), 'utf8');
+  const consent = fs.readFileSync(path.join(ROOT, 'assets', 'consent.js'), 'utf8');
+  const rule = (css.match(/#tc-quote-fab \{[^}]*\}/) || [''])[0];
+  const noNav = [];
+  for (const file of walk(ROOT)) {
+    const rel = path.relative(ROOT, file).split(path.sep).join('/');
+    const html = fs.readFileSync(file, 'utf8');
+    if (html.includes(FAB) && !html.includes('/assets/site-nav.js')) noNav.push(rel);
+  }
+  t('every page with the WhatsApp bubble loads site-nav.js, which adds the quote button', noNav.length === 0, show(noNav));
+  t('   it is added only beside the bubble, and not on the contact page',
+    /if \(!document\.querySelector\('\.fixed\.bottom-6\.right-6'\)\) return;/.test(nav) && /contact\(\\\/\|\\\/index\\\.html\)\?\$/.test(nav));
+  t('   it opens the quote form in the page\'s own language',
+    /\(ar \? '\/ar' : ''\) \+ '\/contact\?intent=quote'/.test(nav) && nav.includes("'اطلب عرض سعر'") && nav.includes("'Request a Quote'"));
+  t('   its corner follows the reading direction, opposite the bubble',
+    /inset-inline-start:/.test(rule) && !/(^|[;{\s])(left|right):/.test(rule), rule.slice(0, 120));
+  t('   the footer makes room for it, it keeps contrast in dark mode, and it is never printed',
+    /\.tc-has-quote-fab footer \{ padding-bottom:/.test(css) && /\.dark #tc-quote-fab \{ background-color:/.test(css) &&
+    /@media print \{ #tc-quote-fab \{ display: none/.test(css));
+  t('   the cookie banner lifts it clear, as it does the bubble',
+    /q\.style\.bottom = h \? \(28 \+ h\)/.test(consent) && /TC\.positionFloating = positionFab;/.test(consent) && /TC\.positionFloating\(\)/.test(nav));
+  t('the cookie pill, whose corner it took, lives in the footer at every width',
+    /'#tc-consent-reopen\.tc-in-footer\{display:none;\}'/.test(consent) && !/@media \(max-width:639px\)\{#tc-consent-reopen\.tc-in-footer/.test(consent));
+}
+
 console.log(`\nfloating-actions OK -- ${en + ar} browsing page(s) carry both, ${PRINTABLE.size} printable sheet(s) carry neither.`);
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);
