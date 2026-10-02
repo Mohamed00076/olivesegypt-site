@@ -179,6 +179,13 @@ const PAGE_PDF_CSS = `
   main { padding-top: 0 !important; padding-bottom: 0 !important; }
   .print-footer { display: none !important; }
   a[href]:after { content: none !important; }
+  /* One line under every PDF title: "Revised <date>" (owner, 2026-10-02).
+     The product catalogue's second line stays on the web page only. */
+  #doc-meta { display: none !important; }
+  /* The same title and date line as the guides: the company profile's web
+     page sets a larger title with space above it. */
+  main h1 { font-size: 1.875rem !important; line-height: 2.25rem !important; margin-top: 0 !important; margin-bottom: 0.25rem !important; }
+  main h1 + p { font-size: 1rem !important; line-height: 1.5rem !important; }
 `;
 
 const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true };
