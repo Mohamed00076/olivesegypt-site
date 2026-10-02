@@ -199,6 +199,25 @@ t('no article states a tonnage below the 20ft container\'s 16 MT', lowTonnage.le
 const slowReply = [...pages, ...guides].filter((f) => /one business day|يوم عمل واحد/i.test(read(f)));
 t('no page or guide promises a reply in "one business day"; the reply time is 24 hours (C-115)', slowReply.length === 0, slowReply.join(', '));
 
+// ---- /media/news carries the same news as /media ----------------------------
+// Until 2026-10-02 the brining-line announcement was on /media only, and
+// /media/news still said "Company updates will appear here." A news card on
+// /media is an <article> card with no link (the blog cards link to their
+// article); each one must appear, word for word, on /media/news in the same
+// language, and the empty-state box must not be shown while there is news.
+const newsCards = (html) => [...html.matchAll(/<article class="group rounded-2xl[\s\S]*?<\/article>/g)]
+  .map((m) => m[0]).filter((c) => !/href=/.test(c));
+const newsDrift = [];
+for (const pre of ['', 'ar/']) {
+  const onMedia = newsCards(read(`${pre}media/index.html`));
+  const newsPage = read(`${pre}media/news/index.html`);
+  const onNews = newsCards(newsPage);
+  for (const c of onMedia) if (!onNews.includes(c)) newsDrift.push(`${pre}media/news lacks a card on ${pre}media`);
+  for (const c of onNews) if (!onMedia.includes(c)) newsDrift.push(`${pre}media/news has a card not on ${pre}media`);
+  if (onMedia.length && /Company updates will appear here|ستظهر أخبار الشركة هنا/.test(newsPage)) newsDrift.push(`${pre}media/news still shows the empty state`);
+}
+t('/media/news carries exactly the news cards on /media, in both languages', newsDrift.length === 0, newsDrift.join(' | '));
+
 const typo = tracked.filter((f) => !/^(docs|scripts)\//.test(f) && /\ba approved\b/.test(read(f)));
 t('no page carries the "a approved" typo', typo.length === 0, typo.join(', '));
 
