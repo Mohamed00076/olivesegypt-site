@@ -175,7 +175,9 @@
  * Its CSS uses inset-inline-start, so the page's own direction decides the
  * corner. It appears only where the WhatsApp bubble does -- every browsing
  * page, never a printable sheet, the CRM or the admin -- and not on the
- * contact page, which is where it leads.
+ * contact page, which is where it leads. It shows on phones only, below
+ * 768px (owner, 2026-10-02): from there up the header carries its own
+ * "Request a Quote" button, and the stylesheet hides this one.
  *
  * The link is /contact?intent=quote: the form shows the quote badge, and
  * records the page the visitor came from through the referrer, as the
