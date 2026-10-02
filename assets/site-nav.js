@@ -20,7 +20,10 @@
  */
 
 (function () {
-  var mq = window.matchMedia('(min-width: 1024px)');
+  // The width at which the full menu replaces the drawer: 1024px, except on
+  // English pages, whose labels need 1140px (see the stylesheet's header rules).
+  var ar = (document.documentElement.getAttribute('lang') || '').slice(0, 2) === 'ar';
+  var mq = window.matchMedia('(min-width: ' + (ar ? 1024 : 1140) + 'px)');
 
   /* ---- desktop dropdowns ------------------------------------------------- */
 

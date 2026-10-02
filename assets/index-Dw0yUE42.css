@@ -230,7 +230,8 @@ html:not(.dark) .tc-pkg-chip {
    support here matches the rest of the site) and only below the lg
    breakpoint, where the toggle that can even open the panel exists. */
 @media (max-width: 1023px) {
-  body:has(#mobile-menu-panel:not([hidden])) .fixed.bottom-6.right-6 {
+  body:has(#mobile-menu-panel:not([hidden])) .fixed.bottom-6.right-6,
+  body:has(#mobile-menu-panel:not([hidden])) #tc-quote-fab {
     display: none;
   }
 }
@@ -264,6 +265,46 @@ header .container {
 
 .tc-nav { display: none; }
 @media (min-width: 1024px) { .tc-nav { display: flex; align-items: center; gap: 1.25rem; } }
+/* The header between laptop widths (2026-10-02, owner screenshot). The full
+   menu switches on at 1024px, but with "Solutions" added the English header
+   needs 1242px: on any window from 1024 to about 1240px wide the header was
+   wider than the screen, the page scrolled sideways and the logo was cut off.
+   Arabic, with shorter labels, needed 999px and always fitted.
+   - 1024-1279px: the menu tightens (smaller gaps, 13px labels) and the
+     Facebook button shows its icon only, as it already does on small phones.
+     English then needs 1117px, Arabic 900px.
+   - 1024-1139px, English only: the menu button and drawer stay, as on a
+     tablet, rather than squeezing further. site-nav.js uses the same 1140px.
+   From 1280px nothing changes. */
+@media (min-width: 1024px) and (max-width: 1279.98px) {
+  .tc-nav { gap: 0.85rem; }
+  .tc-nav-link, .tc-nav-trigger { font-size: 0.8125rem; }
+  header .tc-social-pill .tc-social-pill-label { display: none; }
+  header .tc-social-pill { padding: 0.4rem 0.5rem; gap: 0; }
+}
+@media (min-width: 1024px) and (max-width: 1139.98px) {
+  html[lang="en"] .tc-nav { display: none; }
+  html[lang="en"] #mobile-menu-toggle { display: inline-flex; }
+  /* the drawer as it is below 1024px (Part 2B, above): a full-width panel
+     under the header, 44px links, the floating buttons out of its way */
+  html[lang="en"] #mobile-menu-panel:not([hidden]) {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 50;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+  }
+  html[lang="en"] #mobile-menu-panel nav > a,
+  html[lang="en"] #mobile-menu-panel nav > div > a { min-height: 44px; display: flex; align-items: center; }
+  html[lang="en"] #mobile-menu-panel nav > div > a { justify-content: center; }
+  html[lang="en"] body:has(#mobile-menu-panel:not([hidden])) .fixed.bottom-6.right-6,
+  html[lang="en"] body:has(#mobile-menu-panel:not([hidden])) #tc-quote-fab { display: none; }
+}
 
 .tc-nav-item { position: relative; }
 
@@ -637,7 +678,7 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
    corner opposite the WhatsApp bubble: inset-inline-start puts it bottom-left
    on English pages and bottom-right on Arabic ones, where the bubble is
    mirrored left. Same height band as the bubble (bottom 24px), a 48px-tall
-   pill in the site's primary colour. The footer gets extra room at its foot
+   pill in the site's gold. The footer gets extra room at its foot
    so its last row of links can scroll clear of both buttons. Never printed. */
 #tc-quote-fab {
   position: fixed;
@@ -649,8 +690,9 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   height: 48px;
   padding: 0 20px;
   border-radius: 9999px;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background: hsl(var(--secondary));
+  color: hsl(75 40% 14%);
+  border: 2px solid hsl(45 60% 38%);
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 1;
@@ -661,8 +703,9 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
 }
 #tc-quote-fab:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.2); }
 #tc-quote-fab:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
-/* Dark mode: the same darker green as the header's quote button (.tc-cta-primary),
-   for white text that passes contrast. */
-.dark #tc-quote-fab { background-color: hsl(75 40% 28%); }
+/* Gold, the site's accent (--secondary), so it stands apart from the green
+   buttons on every page (owner, 2026-10-02); dark olive text for contrast,
+   in both themes -- white on this gold measures 2.3:1. */
+#tc-quote-fab:hover { background: hsl(45 60% 56%); }
 .tc-has-quote-fab footer { padding-bottom: 6.5rem; }
 @media print { #tc-quote-fab { display: none !important; } }

@@ -147,7 +147,7 @@ for (const gen of ['scripts/generate-product-pages.py']) {
   const nav = fs.readFileSync(path.join(ROOT, 'assets', 'site-nav.js'), 'utf8');
   const css = fs.readFileSync(path.join(ROOT, 'assets', 'index-Dw0yUE42.css'), 'utf8');
   const consent = fs.readFileSync(path.join(ROOT, 'assets', 'consent.js'), 'utf8');
-  const rule = (css.match(/#tc-quote-fab \{[^}]*\}/) || [''])[0];
+  const rule = (css.match(/#tc-quote-fab \{\s*position: fixed;[^}]*\}/) || [''])[0];
   const noNav = [];
   for (const file of walk(ROOT)) {
     const rel = path.relative(ROOT, file).split(path.sep).join('/');
@@ -161,13 +161,30 @@ for (const gen of ['scripts/generate-product-pages.py']) {
     /\(ar \? '\/ar' : ''\) \+ '\/contact\?intent=quote'/.test(nav) && nav.includes("'اطلب عرض سعر'") && nav.includes("'Request a Quote'"));
   t('   its corner follows the reading direction, opposite the bubble',
     /inset-inline-start:/.test(rule) && !/(^|[;{\s])(left|right):/.test(rule), rule.slice(0, 120));
-  t('   the footer makes room for it, it keeps contrast in dark mode, and it is never printed',
-    /\.tc-has-quote-fab footer \{ padding-bottom:/.test(css) && /\.dark #tc-quote-fab \{ background-color:/.test(css) &&
+  t('   the footer makes room for it, it is gold with dark text (5.8:1, both themes), and it is never printed',
+    /\.tc-has-quote-fab footer \{ padding-bottom:/.test(css) &&
+    /background: hsl\(var\(--secondary\)\);\s*color: hsl\(75 40% 14%\);/.test(rule) &&
     /@media print \{ #tc-quote-fab \{ display: none/.test(css));
   t('   the cookie banner lifts it clear, as it does the bubble',
     /q\.style\.bottom = h \? \(28 \+ h\)/.test(consent) && /TC\.positionFloating = positionFab;/.test(consent) && /TC\.positionFloating\(\)/.test(nav));
   t('the cookie pill, whose corner it took, lives in the footer at every width',
     /'#tc-consent-reopen\.tc-in-footer\{display:none;\}'/.test(consent) && !/@media \(max-width:639px\)\{#tc-consent-reopen\.tc-in-footer/.test(consent));
+}
+
+// The header between laptop widths (2026-10-02). The English header needs
+// 1242px at full size; it tightens from 1024 to 1279px (1117px) and keeps the
+// drawer below 1140px, and site-nav.js switches at the same width. Without
+// these, a 1024-1240px window scrolled sideways and cut the logo off.
+{
+  const css = fs.readFileSync(path.join(ROOT, 'assets', 'index-Dw0yUE42.css'), 'utf8');
+  const nav = fs.readFileSync(path.join(ROOT, 'assets', 'site-nav.js'), 'utf8');
+  t('the header tightens between 1024 and 1279px, and English keeps the drawer, full width under the header, below 1140px',
+    /@media \(min-width: 1024px\) and \(max-width: 1279\.98px\) \{\s*\.tc-nav \{ gap:/.test(css) &&
+    /@media \(min-width: 1024px\) and \(max-width: 1139\.98px\) \{\s*html\[lang="en"\] \.tc-nav \{ display: none; \}\s*html\[lang="en"\] #mobile-menu-toggle \{ display: inline-flex; \}[\s\S]*?html\[lang="en"\] #mobile-menu-panel:not\(\[hidden\]\) \{\s*display: block;\s*position: absolute;\s*top: 100%;/.test(css));
+  t('   and the menu script switches at the same widths', /\(ar \? 1024 : 1140\)/.test(nav));
+  t('the quote button steps aside while the menu drawer is open, as WhatsApp does',
+    /body:has\(#mobile-menu-panel:not\(\[hidden\]\)\) \.fixed\.bottom-6\.right-6,\s*body:has\(#mobile-menu-panel:not\(\[hidden\]\)\) #tc-quote-fab \{\s*display: none;/.test(css) &&
+    /html\[lang="en"\] body:has\(#mobile-menu-panel:not\(\[hidden\]\)\) #tc-quote-fab \{ display: none; \}/.test(css));
 }
 
 console.log(`\nfloating-actions OK -- ${en + ar} browsing page(s) carry both, ${PRINTABLE.size} printable sheet(s) carry neither.`);
