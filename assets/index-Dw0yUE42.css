@@ -270,19 +270,20 @@ header .container {
    needs 1242px: on any window from 1024 to about 1240px wide the header was
    wider than the screen, the page scrolled sideways and the logo was cut off.
    Arabic, with shorter labels, needed 999px and always fitted.
-   - 1024-1279px: the menu tightens (smaller gaps, 13px labels) and the
-     Facebook button shows its icon only, as it already does on small phones.
-     English then needs 1117px, Arabic 900px.
-   - 1024-1139px, English only: the menu button and drawer stay, as on a
-     tablet, rather than squeezing further. site-nav.js uses the same 1140px.
+   - 1024-1279px: the menu tightens (smaller gaps, 13px labels). The
+     Facebook "Follow" pill keeps its label (owner, 2026-10-02: an icon-only
+     version on laptops read as the old square icon). English then needs
+     1182px, Arabic 939px.
+   - 1024-1199px, English only: the menu button and drawer stay, as on a
+     tablet, rather than squeezing further. site-nav.js uses the same 1200px.
    From 1280px nothing changes. */
 @media (min-width: 1024px) and (max-width: 1279.98px) {
-  .tc-nav { gap: 0.85rem; }
+  .tc-nav { gap: 0.75rem; }
   .tc-nav-link, .tc-nav-trigger { font-size: 0.8125rem; }
-  header .tc-social-pill .tc-social-pill-label { display: none; }
-  header .tc-social-pill { padding: 0.4rem 0.5rem; gap: 0; }
+  header .container { column-gap: 0.75rem; }
+  header .container > div:last-child { column-gap: 0.5rem; }
 }
-@media (min-width: 1024px) and (max-width: 1139.98px) {
+@media (min-width: 1024px) and (max-width: 1199.98px) {
   html[lang="en"] .tc-nav { display: none; }
   html[lang="en"] #mobile-menu-toggle { display: inline-flex; }
   /* the drawer as it is below 1024px (Part 2B, above): a full-width panel

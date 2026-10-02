@@ -172,16 +172,18 @@ for (const gen of ['scripts/generate-product-pages.py']) {
 }
 
 // The header between laptop widths (2026-10-02). The English header needs
-// 1242px at full size; it tightens from 1024 to 1279px (1117px) and keeps the
-// drawer below 1140px, and site-nav.js switches at the same width. Without
+// 1242px at full size; it tightens from 1024 to 1279px (1182px, with the
+// Facebook pill's label kept) and keeps the drawer below 1200px, and site-nav.js switches at the same width. Without
 // these, a 1024-1240px window scrolled sideways and cut the logo off.
 {
   const css = fs.readFileSync(path.join(ROOT, 'assets', 'index-Dw0yUE42.css'), 'utf8');
   const nav = fs.readFileSync(path.join(ROOT, 'assets', 'site-nav.js'), 'utf8');
-  t('the header tightens between 1024 and 1279px, and English keeps the drawer, full width under the header, below 1140px',
+  t('the header tightens between 1024 and 1279px, and English keeps the drawer, full width under the header, below 1200px',
     /@media \(min-width: 1024px\) and \(max-width: 1279\.98px\) \{\s*\.tc-nav \{ gap:/.test(css) &&
-    /@media \(min-width: 1024px\) and \(max-width: 1139\.98px\) \{\s*html\[lang="en"\] \.tc-nav \{ display: none; \}\s*html\[lang="en"\] #mobile-menu-toggle \{ display: inline-flex; \}[\s\S]*?html\[lang="en"\] #mobile-menu-panel:not\(\[hidden\]\) \{\s*display: block;\s*position: absolute;\s*top: 100%;/.test(css));
-  t('   and the menu script switches at the same widths', /\(ar \? 1024 : 1140\)/.test(nav));
+    /@media \(min-width: 1024px\) and \(max-width: 1199\.98px\) \{\s*html\[lang="en"\] \.tc-nav \{ display: none; \}\s*html\[lang="en"\] #mobile-menu-toggle \{ display: inline-flex; \}[\s\S]*?html\[lang="en"\] #mobile-menu-panel:not\(\[hidden\]\) \{\s*display: block;\s*position: absolute;\s*top: 100%;/.test(css));
+  t('   and the Facebook pill keeps its "Follow" label at every desktop width',
+    !/@media \(min-width: 1024px\)[^{]*\{[^@]*tc-social-pill-label \{ display: none; \}/.test(css));
+  t('   and the menu script switches at the same widths', /\(ar \? 1024 : 1200\)/.test(nav));
   t('the quote button steps aside while the menu drawer is open, as WhatsApp does',
     /body:has\(#mobile-menu-panel:not\(\[hidden\]\)\) \.fixed\.bottom-6\.right-6,\s*body:has\(#mobile-menu-panel:not\(\[hidden\]\)\) #tc-quote-fab \{\s*display: none;/.test(css) &&
     /html\[lang="en"\] body:has\(#mobile-menu-panel:not\(\[hidden\]\)\) #tc-quote-fab \{ display: none; \}/.test(css));
