@@ -190,14 +190,18 @@ const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize:
  */
 function renderFor(job) {
   if (job.kind === 'catalog') {
-    // Unchanged from the catalogue's original generator: the source carries
-    // its own branded layout, edge to edge.
-    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } }, css: '', letterhead: null };
+    // The catalogue lays out its own A4 pages, edge to edge, with its own
+    // footers (styled like the letterhead's foot). Its cover carries the same
+    // masthead as every other PDF (owner, 2026-10-02: one consistent header),
+    // placed by the generator in place of the cover's own brand line.
+    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } }, css: '',
+      letterhead: letterheadSheet(job.locale), masthead: 'catalogue-cover' };
   }
   return {
     pdf: LETTERHEAD_PDF,
     css: job.kind === 'guide' ? GUIDE_PDF_CSS : PAGE_PDF_CSS,
     letterhead: letterheadSheet(job.locale),
+    masthead: 'first-page',
   };
 }
 

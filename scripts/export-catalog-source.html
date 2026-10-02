@@ -44,7 +44,15 @@
   .pdf-h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 28px; color: hsl(var(--foreground)); margin: 0 0 7mm; }
   .pdf-h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 17px; color: hsl(var(--foreground)); margin: 6mm 0 3mm; }
   .pdf-p { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 14px; line-height: 1.7; color: hsl(var(--muted-foreground)); margin: 0 0 3.5mm; }
-  .pdf-footer { position: absolute; bottom: 14mm; left: 24mm; right: 24mm; display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; color: hsl(var(--muted-foreground)); border-top: 1px solid hsl(var(--border)); padding-top: 4mm; }
+  /* The footer and the cover's masthead match every other PDF's letterhead
+     (owner, 2026-10-02): company name, page number, website, in the same
+     small grey type over a hairline, 2cm from the sides and 0.65cm from the
+     bottom; the masthead 0.75cm from the top, 170mm wide. */
+  .pdf-footer { position: absolute; bottom: 6.5mm; left: 20mm; right: 20mm; display: flex; justify-content: space-between; align-items: center; font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 8.5px; letter-spacing: 0.03em; color: #78756d; border-top: 1px solid #dddad5; padding-top: 7px; }
+  .pdf-footer .pdf-pageno { position: absolute; left: 0; right: 0; bottom: 1px; text-align: center; font-family: sans-serif; font-size: 7px; }
+  .pdf-page:first-child { padding-top: 7.5mm; }
+  .tc-pdf-masthead { margin: 0 -2mm 10mm; }
+  .tc-pdf-masthead img { width: 100%; display: block; }
   table.pdf-table { width: 100%; border-collapse: collapse; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 13px; margin: 3mm 0 5mm; }
   table.pdf-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); border-bottom: 1px solid hsl(var(--border)); padding: 2mm 4mm 2mm 0; }
   table.pdf-table td { padding: 1.2mm 4mm 1.2mm 0; border-bottom: 1px solid hsl(var(--border) / 0.5); color: hsl(var(--foreground)); vertical-align: top; line-height: 1.4; }
@@ -106,7 +114,7 @@
     <div class="cover-toc-row" style="border-bottom:none;"><span>Contact</span><span>9</span></div>
   </div>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Cover</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">1 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 2: COMPANY PROFILE -->
@@ -130,7 +138,7 @@
   <h2 class="pdf-h2">Requesting Current Documentation</h2>
   <p class="pdf-p">Qualified buyers can request the current status of our quality documentation, along with product specification sheets, at any time via olivesegypt.com/contact.</p>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 2</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">2 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 3: PRODUCT RANGE & QUICK-MATRIX -->
@@ -167,7 +175,7 @@
   </table>
   <p class="pdf-caption">Packaging-format photography is not yet available for this catalog — the images previously used for these formats were found to be AI-generated and were removed from the site and this document. Real packaging photography will be added once available.</p>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 3</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">3 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 4: GREEN OLIVES -->
@@ -204,7 +212,7 @@
   </div>
   <p class="pdf-caption">Brine/pH parameters and per-product packaging sizes: confirmed during quotation — not published for these varieties at this time.</p>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 4</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">4 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 5: BLACK OLIVES & STUFFED VARIETIES -->
@@ -248,7 +256,7 @@
     </div>
   </div>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 5</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">5 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 6: SPECIALTY, PEPPERS & ANTIPASTO -->
@@ -284,7 +292,7 @@
     </div>
   </div>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 6</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">6 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 7: PRIVATE LABEL -->
@@ -304,7 +312,7 @@
   </ul>
   <p class="pdf-caption">Structured "best for" channel guidance is not published for every product — shown here only where the site specifies it.</p>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 7</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">7 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 8: LOGISTICS & TRADE TERMS -->
@@ -327,7 +335,7 @@
   </table>
   <p class="pdf-p">Every order is prepared with standard export documentation — commercial invoice, packing list, certificate of origin, phytosanitary or health certificate, and bill of lading.</p>
 
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 8</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">8 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 9: CONTACT -->
@@ -355,7 +363,7 @@
     </div>
     <div class="contact-cta">Request a Quote → olivesegypt.com/contact</div>
   </div>
-  <div class="pdf-footer"><span>Triple Company for Industrial Development · olivesegypt.com</span><span>Page 9</span></div>
+  <div class="pdf-footer"><span>Triple Company for Industrial Development</span><span class="pdf-pageno" dir="ltr">9 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 </body>

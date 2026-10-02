@@ -99,9 +99,11 @@ for (const job of JOBS.filter((j) => j.kind === 'catalog')) {
   const want = Array.from({ length: designed - 1 }, (_, i) => String(i + 2));
   t(`   its contents list numbers the pages ${want[0]}-${want[want.length - 1]}, as printed`,
     JSON.stringify(toc) === JSON.stringify(want), toc.join(', '));
+  // Since 2026-10-02 the footer matches the letterhead's: name, "n / total",
+  // website, with the number in its own span.
   const footers = src.split(/<section class="pdf-page[\s"]/).slice(2)
-    .map((page) => ((page.match(/class="pdf-footer">[\s\S]*?<span>([^<]*)<\/span><\/div>/) || [])[1] || '').match(/\d+[A-Za-z]*$/));
-  const badFooters = footers.map((m, i) => [i + 2, m ? m[0] : '?']).filter(([n, got]) => String(n) !== got);
+    .map((page) => page.match(/class="pdf-pageno"[^>]*>(\d+) \/ (\d+)</));
+  const badFooters = footers.map((m, i) => [i + 2, m ? (m[2] === String(designed) ? m[1] : `${m[1]} / ${m[2]}`) : '?']).filter(([n, got]) => String(n) !== got);
   t('   and every page after the cover carries its own number in the footer',
     footers.length === designed - 1 && badFooters.length === 0, badFooters.map(([n, got]) => `page ${n} says ${got}`).join(', '));
 

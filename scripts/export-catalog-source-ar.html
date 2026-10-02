@@ -41,7 +41,15 @@
   .pdf-h1 { font-family: 'Playfair Display', 'Noto Naskh Arabic', Georgia, serif; font-weight: 700; font-size: 26px; color: hsl(var(--foreground)); margin: 0 0 7mm; }
   .pdf-h2 { font-family: 'Playfair Display', 'Noto Naskh Arabic', Georgia, serif; font-weight: 600; font-size: 17px; color: hsl(var(--foreground)); margin: 6mm 0 3mm; }
   .pdf-p { font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 14px; line-height: 1.85; color: hsl(var(--muted-foreground)); margin: 0 0 3.5mm; }
-  .pdf-footer { position: absolute; bottom: 14mm; left: 24mm; right: 24mm; display: flex; justify-content: space-between; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 10.5px; color: hsl(var(--muted-foreground)); border-top: 1px solid hsl(var(--border)); padding-top: 4mm; }
+  /* The footer and the cover's masthead match every other PDF's letterhead
+     (owner, 2026-10-02): company name, page number, website, in the same
+     small grey type over a hairline, 2cm from the sides and 0.65cm from the
+     bottom; the masthead 0.75cm from the top, 170mm wide. */
+  .pdf-footer { position: absolute; bottom: 6.5mm; left: 20mm; right: 20mm; display: flex; justify-content: space-between; align-items: center; font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 8.5px; letter-spacing: 0.03em; color: #78756d; border-top: 1px solid #dddad5; padding-top: 7px; }
+  .pdf-footer .pdf-pageno { position: absolute; left: 0; right: 0; bottom: 1px; text-align: center; font-family: sans-serif; font-size: 7px; }
+  .pdf-page:first-child { padding-top: 7.5mm; }
+  .tc-pdf-masthead { margin: 0 -2mm 10mm; }
+  .tc-pdf-masthead img { width: 100%; display: block; }
   table.pdf-table { width: 100%; border-collapse: collapse; font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', Arial, sans-serif; font-size: 13px; margin: 3mm 0 5mm; }
   table.pdf-table th { text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 0.02em; color: hsl(var(--muted-foreground)); border-bottom: 1px solid hsl(var(--border)); padding: 2mm 0 2mm 4mm; }
   table.pdf-table td { padding: 1.2mm 0 1.2mm 4mm; border-bottom: 1px solid hsl(var(--border) / 0.5); color: hsl(var(--foreground)); vertical-align: top; line-height: 1.6; }
@@ -105,7 +113,7 @@
     <div class="cover-toc-row" style="border-bottom:none;"><span>التواصل</span><span>9</span></div>
   </div>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>الغلاف</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">1 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 2: COMPANY PROFILE -->
@@ -129,7 +137,7 @@
   <h2 class="pdf-h2">طلب المستندات الحالية</h2>
   <p class="pdf-p">يمكن للمشترين المؤهلين طلب الحالة الراهنة لمستندات الجودة لدينا، إلى جانب أوراق مواصفات المنتج، في أي وقت عبر olivesegypt.com/ar/contact.</p>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 2</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">2 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 3: PRODUCT RANGE & QUICK-MATRIX -->
@@ -166,7 +174,7 @@
   </table>
   <p class="pdf-caption">لا تتوفر بعد صور توضيحية حقيقية لصيغ التغليف في هذا الكتالوج — تبيّن أن الصور المستخدمة سابقًا لهذه الصيغ مولّدة بالذكاء الاصطناعي، وقد أُزيلت من الموقع ومن هذا المستند. ستُضاف صور تغليف حقيقية عند توفرها.</p>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 3</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">3 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 4: GREEN OLIVES -->
@@ -203,7 +211,7 @@
   </div>
   <p class="pdf-caption">معايير المحلول الملحي/الرقم الهيدروجيني وأحجام التغليف لكل منتج: تُؤكَّد أثناء عرض السعر — غير منشورة لهذه الأصناف في الوقت الحالي.</p>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 4</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">4 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 5: BLACK OLIVES & STUFFED VARIETIES -->
@@ -247,7 +255,7 @@
     </div>
   </div>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 5</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">5 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 6: SPECIALTY, PEPPERS & ANTIPASTO -->
@@ -283,7 +291,7 @@
     </div>
   </div>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 6</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">6 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 7: PRIVATE LABEL -->
@@ -303,7 +311,7 @@
   </ul>
   <p class="pdf-caption">إرشادات القنوات المنظّمة ("الأنسب لـ") غير منشورة لكل منتج — تظهر هنا فقط حيث يحددها الموقع.</p>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 7</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">7 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 8: LOGISTICS & TRADE TERMS -->
@@ -326,7 +334,7 @@
   </table>
   <p class="pdf-p">تُجهَّز مستندات التصدير القياسية لكل طلب: فاتورة تجارية، وقائمة تعبئة، وشهادة منشأ، وشهادة صحية أو نباتية، وبوليصة شحن.</p>
 
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 8</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">8 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 <!-- PAGE 9: CONTACT -->
@@ -354,7 +362,7 @@
     </div>
     <div class="contact-cta">اطلب عرض سعر ← olivesegypt.com/ar/contact</div>
   </div>
-  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية &middot; olivesegypt.com</span><span>صفحة 9</span></div>
+  <div class="pdf-footer"><span>الشركة الثلاثية للتنمية الصناعية</span><span class="pdf-pageno" dir="ltr">9 / 9</span><span dir="ltr">olivesegypt.com</span></div>
 </section>
 
 </body>

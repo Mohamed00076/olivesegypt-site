@@ -78,14 +78,27 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
   for (const job of jobs) {
     const render = renderFor(job);
     const letterhead = render.letterhead ? await letterheadFor(job.locale, render.letterhead) : null;
-    const pdfOptions = letterhead
+    const pdfOptions = letterhead && render.masthead === 'first-page'
       ? Object.assign({}, render.pdf, { headerTemplate: letterhead.headerTemplate, footerTemplate: letterhead.footerTemplate })
       : render.pdf;
     await page.goto(`http://127.0.0.1:${PORT}/${job.source}${job.query || ''}`, { waitUntil: 'networkidle' });
     if (render.css) await page.addStyleTag({ content: render.css });
     // The masthead, once: the first thing in the document, so it heads page 1
     // only (see letterheadTemplates in guide-pdfs.js).
-    if (letterhead) {
+    if (letterhead && render.masthead === 'catalogue-cover') {
+      // The same masthead, heading the catalogue's cover in place of its own
+      // brand line; the rest of the catalogue keeps its section labels.
+      await page.evaluate((src) => {
+        const eyebrow = document.querySelector('.pdf-page .pdf-eyebrow');
+        const box = document.createElement('div');
+        box.className = 'tc-pdf-masthead';
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        box.appendChild(img);
+        eyebrow.replaceWith(box);
+      }, letterhead.masthead);
+    } else if (letterhead) {
       await page.evaluate((src) => {
         const box = document.createElement('div');
         box.className = 'tc-pdf-masthead';
