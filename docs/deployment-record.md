@@ -5705,6 +5705,217 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`:
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 96 to 106 — A second audit checked, buckets, /products, Company News, and the floating quote button (PRs #214 to #224)
+
+**Previous recorded deploy:** `6645306` (Deploy 95, PR #213)
+**Approvals, all 2026-10-02:** "merge" (#214); "fix 9, keep 10 as it is" (#215,
+C-145); bucket sizes "a", "yes" to the /products redirect, "merge all"
+(#215, #216, #217); "where is the artical we shuld have here" and "merge"
+(#218); the floating quote button, option A ("i changed my mind lets do A"),
+then "merge all" (#218, #219); "fix it" for the header and "change the
+colour" (#220, "merge"); the insights tab "fix this" (#221, "merge"); the
+Facebook pill "fix that" and "do your recommendation" for the button
+(#222, #223, "merge"); "keep it only in mobile view" (#224, "merge").
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 96 | #214 | `265533c` | 2026-10-02 15:59:43 | 1 | +173 / −2 | Notes only |
+| 97 | #215 | `6c4d579` | 2026-10-02 16:37:16 | 7 | +16 / −8 | Site change |
+| 98 | #216 | `fb1fa44` | 2026-10-02 16:37:19 | 24 | +57 / −35 | Site change |
+| 99 | #217 | `72bd9cf` | 2026-10-02 16:37:21 | 2 | +40 / −0 | Site change |
+| 100 | #218 | `74f35a5` | 2026-10-02 17:06:28 | 5 | +26 / −11 | Site change |
+| 101 | #219 | `8366f7c` | 2026-10-02 17:06:31 | 8 | +168 / −50 | Site change |
+| 102 | #220 | `4ed93ba` | 2026-10-02 17:25:12 | 4 | +116 / −53 | Site change |
+| 103 | #221 | `e0a6cba` | 2026-10-02 17:31:33 | 2 | +47 / −0 | Site change |
+| 104 | #222 | `affb308` | 2026-10-02 19:08:56 | 4 | +61 / −58 | Site change |
+| 105 | #223 | `5b2868d` | 2026-10-02 19:18:59 | 4 | +147 / −60 | Site change |
+| 106 | #224 | `a77f662` | 2026-10-02 19:27:06 | 4 | +54 / −44 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for the site changes before they merged. Whether
+each production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 96** recorded Deploys 93 to 95.
+
+### A second external audit, checked before anything was changed
+
+On 2026-10-02 the owner pasted a second external audit. It reported that
+`/products` was "a stale clone of the old homepage", that four retired
+`/media` posts were still in the sitemap, that `/media` rendered empty, and
+that bucket sizes disagreed. Each point was checked against the repository
+first:
+
+- **`/products`, the four posts, the empty `/media`:** not true of the
+  site as deployed. `/products` had no page and answered 404. The four
+  posts already answered 410 and were not in the 90-URL sitemap. `/media`
+  is static HTML. All three match the old single-page app's fallback,
+  which answered every address with the homepage until the system health
+  audit removed it (run 1, B5). The audit's crawl predates that.
+- **The owner's own checks of the live site:** `olivesegypt.com/products`
+  showed the 404 page, so production is current. `www.olivesegypt.com`
+  did not load at all. That is the `www` item below.
+- **Buckets:** true, and older than the article rewrite. Fixed in Deploy 98.
+- **The audit's drafted `/products` page** was not used. Its brine figures
+  matched the product pages, but it added claims no register row supports:
+  - that varieties can be mixed in one container
+  - "machine-stuffed"
+  - "European food service"
+  - that sliced and custom calibers are available
+  - buckets of 2–20 kg (at the time)
+
+  It would also have duplicated `/catalog`.
+
+### What each site change did
+
+- **Deploy 97: one reply time (#215).** `/media` and `/media/inquiries`,
+  in both languages, said media and trade requests get a reply "within one
+  business day". They now say 24 hours, like every form, the FAQ and the
+  articles (C-115). `check-article-claims` fails on "one business day" or
+  "يوم عمل واحد" on any page or guide. The How We Work wording the owner
+  chose to keep is registered as C-145: a sample pack within 5–7 business
+  days, and T/T deposits, L/C at sight and negotiable terms.
+- **Deploy 98: buckets are 2, 5, 10 and 20 kg (#216).** The homepage
+  table said so. The packaging pages, Food-Service, two articles, two
+  guides and the export catalogue said "typically 1–10 kg". The owner
+  confirmed the homepage (C-146). Fourteen places changed across both
+  languages, the Solutions generator reproduces its pages byte for byte,
+  and six PDFs were rebuilt with their page counts unchanged.
+  `check-packaging-claims` fails on the old range anywhere, and on either
+  homepage table losing one of the four sizes.
+- **Deploy 99: `/products` → `/catalog` (#217).** A permanent redirect
+  for `/products` and `/ar/products` (both slash forms), forced. The ten
+  product pages beneath are untouched. `check-not-found` asserts both
+  redirects and that all 20 product pages are still served from their own
+  files.
+- **Deploy 100: Company News (#218).** `/media/news` and its Arabic twin
+  still showed "Company updates will appear here", while the brining-line
+  announcement was on `/media`. Both now carry the same card, word for
+  word, plus a pointer to the blog and the catalogue. `check-article-claims`
+  requires each news card on `/media` to appear verbatim on `/media/news`.
+- **Deploy 101: a floating "Request a Quote" button (#219).** It sits in
+  the corner opposite WhatsApp: bottom-left in English, bottom-right in
+  Arabic, using `inset-inline-start`. It opens `/contact?intent=quote` and
+  is added by `site-nav.js` on every page that has the WhatsApp bubble,
+  never on `/contact`. The cookie control left that corner for the footer
+  at every width, and `/privacy` and `/ar/privacy` now say so. The Arabic
+  had said "bottom-left", which was already wrong on Arabic pages. The
+  footer gained room at its foot, and the cookie banner lifts the button
+  clear of itself.
+- **Deploy 102: the header on laptops, and a gold button (#220).** Since
+  "Solutions" joined the menu, the English header needed 1242px, while the
+  full menu switched on at 1024px. Any window 1024–1240px wide scrolled
+  sideways and cut off the logo, as in the owner's screenshot. The header
+  now tightens between 1024 and 1279px, and English keeps the drawer below
+  a set width, with the drawer laid out as on a tablet. The button turned
+  gold with dark olive text, and it now also hides while the menu drawer
+  is open, which #219 had missed.
+- **Deploy 103: the insights tab steps aside (#221).** Pinned to the
+  middle of the edge, the "Read Our Insights" tab covered the footer's
+  WhatsApp link (1100–1280px) or "Request a Sample" (1440px) at the end
+  of every page, in both languages. It now fades once the footer reaches
+  it, leaves the tab order, and returns when the reader scrolls up.
+- **Deploy 104: the Facebook "Follow" pill keeps its label (#222).**
+  Deploy 102 had shown the button as an icon only on laptops, which the
+  owner saw as the old square icon. The label now shows at every width.
+  To make room, English pages show the full menu from 1200px and keep the
+  drawer below it. Arabic, which needs 939px, keeps the full menu from
+  1024px.
+- **Deploy 105: the button's design (#223).** The owner chose the
+  recommended combination:
+  - **Look:** a gold gradient with a paper-plane icon, a soft glow and a
+    top highlight; dark text at 4.7:1 or better.
+  - **On phones:** it shrinks to a round icon while scrolling down and
+    reopens on scrolling up, after a pause, or near the top.
+  - **Pulse:** a single gold pulse five seconds into a visit, once per
+    visit, never under reduced motion.
+
+  Testing found two Arabic rendering faults, both fixed before merge:
+  - letter-spacing pulled the joined letters apart
+  - the label's tight line clipped letters below the baseline
+- **Deploy 106: phones only (#224).** The header shows its own "Request a
+  Quote" from 768px, so the floating button now shows only below 768px,
+  and the footer room is phones-only too. At every width exactly one quote
+  button is on screen.
+
+### Owner decisions recorded, 2026-10-02
+
+- **How We Work wording:** kept as it is (C-145).
+- **Buckets:** 2, 5, 10 and 20 kg (C-146).
+- **`/products`:** a redirect to `/catalog`, not a second product page.
+- **Floating quote button:**
+  - first declined (option C)
+  - then chosen (option A)
+  - made gold
+  - given the recommended design
+  - limited to phones
+- **Facebook:** the "Follow" pill with its label, at every width.
+- **`www.olivesegypt.com`:** the domain is at GoDaddy. The steps were
+  given: add `www` as a Netlify domain alias, and add a `www` CNAME to
+  `stirring-manatee-ca2643.netlify.app`. Not yet confirmed done.
+
+### Claim register
+
+- **Added:** C-145 (How We Work wording) and C-146 (bucket sizes). The
+  register stands at 146 claims.
+- **Changed:**
+  - C-115: lists the articles' call to action and the two media pages
+  - C-127: lists `/media/news`
+- **C-55** remains the only `needs-review` row.
+
+### Testing method
+
+The checks in `npm test` grew from 59 to 60. That was `check-article-claims`
+in Deploy 94; the deploys here add rules to existing checks. The suite
+passed on each branch before its merge and on `main` at `a77f662` after
+all of them. Pairs merged together (#215–#217, #218–#219) were first
+merged in a throwaway worktree and tested there. Every new rule or
+assertion was run against `main` before its change and failed there.
+Beyond the suite:
+- **Chromium, header:** all 92 browsing pages at nine widths from 1024 to
+  1366px. No sideways scroll, the logo whole, the "Follow" label visible,
+  and the full menu or the drawer where intended.
+- **Chromium, floating buttons:**
+  - 6 pages × 3 widths × light and dark × with and without the cookie
+    banner
+  - corners, no overlap, every footer link clear
+  - a control run with the footer room removed showed the button covering
+    Privacy and Cookie Preferences
+  - the phone shrink, expand and pulse behaviour, including reduced motion
+  - from Deploy 106, one quote button on screen at seven widths
+- **PDFs:** the stylesheet is an input to all 42. Each time it changed,
+  all 42 were rebuilt and compared page by page (text, links, pixels).
+  They were identical every time, so the committed files were kept and
+  only the fingerprints recorded. In Deploy 98, six PDFs changed in content
+  and were rebuilt.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it. The owner checked `/products` and `www` by hand.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`.
+- **Deploy 98:** reverting brings back "1–10 kg".
+- **Deploy 99:** reverting returns `/products` to a 404.
+- **Deploys 101–106 build on each other:** revert newest first. Reverting
+  101 alone would leave the later CSS without the button it styles.
+- **Deploy 96** is documentation only.
+
+### Known limitations shipped with Deploys 96 to 106
+
+- **`www.olivesegypt.com` does not load.** The DNS steps at GoDaddy are
+  with the owner.
+- **Not yet confirmed on the live site:** all of the above.
+- **Arabic awaiting the owner's review:**
+  - the bucket wording ("بأحجام 2 و5 و10 و20 كجم")
+  - the `/media/news` pointer line
+  - the privacy sentence
+  - from earlier, the seven Arabic article bodies and the no-trial sentence
+- **Search Console:** the sitemap has not been resubmitted.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -5718,7 +5929,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 95 (2026-10-02).**
+**Unchanged through Deploy 106 (2026-10-02).**
 
 ## Outstanding, unresolved by this document
 
@@ -5926,7 +6137,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 95 (2026-10-02).** The owner will set the values later.
+    **Unchanged at Deploy 106 (2026-10-02).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
