@@ -632,3 +632,37 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     padding-block: 2px;
   }
 }
+
+/* The floating "Request a Quote" button (assets/site-nav.js), in the bottom
+   corner opposite the WhatsApp bubble: inset-inline-start puts it bottom-left
+   on English pages and bottom-right on Arabic ones, where the bubble is
+   mirrored left. Same height band as the bubble (bottom 24px), a 48px-tall
+   pill in the site's primary colour. The footer gets extra room at its foot
+   so its last row of links can scroll clear of both buttons. Never printed. */
+#tc-quote-fab {
+  position: fixed;
+  bottom: 28px;
+  inset-inline-start: 24px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#tc-quote-fab:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.2); }
+#tc-quote-fab:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
+/* Dark mode: the same darker green as the header's quote button (.tc-cta-primary),
+   for white text that passes contrast. */
+.dark #tc-quote-fab { background-color: hsl(75 40% 28%); }
+.tc-has-quote-fab footer { padding-bottom: 6.5rem; }
+@media print { #tc-quote-fab { display: none !important; } }

@@ -163,3 +163,37 @@
     });
   }
 })();
+
+/*
+ * The floating "Request a Quote" button (owner, 2026-10-02).
+ *
+ * It sits in the bottom corner opposite the WhatsApp bubble: bottom-left in
+ * English, bottom-right in Arabic, where the bubble is mirrored to the left.
+ * Its CSS uses inset-inline-start, so the page's own direction decides the
+ * corner. It appears only where the WhatsApp bubble does -- every browsing
+ * page, never a printable sheet, the CRM or the admin -- and not on the
+ * contact page, which is where it leads.
+ *
+ * The link is /contact?intent=quote: the form shows the quote badge, and
+ * records the page the visitor came from through the referrer, as the
+ * header button's enquiries already are.
+ *
+ * The cookie-preferences pill used to hold this corner on desktop; it now
+ * lives in the footer at every width (assets/consent.js). The footer gets
+ * room at its foot so the button never sits on its last row of links.
+ */
+(function () {
+  if (!document.querySelector('.fixed.bottom-6.right-6')) return;
+  if (document.getElementById('tc-quote-fab')) return;
+  var ar = (document.documentElement.getAttribute('lang') || '').slice(0, 2) === 'ar';
+  if (/^\/(ar\/)?contact(\/|\/index\.html)?$/.test(window.location.pathname)) return;
+  var a = document.createElement('a');
+  a.id = 'tc-quote-fab';
+  a.href = (ar ? '/ar' : '') + '/contact?intent=quote';
+  a.textContent = ar ? 'اطلب عرض سعر' : 'Request a Quote';
+  document.body.appendChild(a);
+  document.documentElement.classList.add('tc-has-quote-fab');
+  // The cookie banner, when it is up, lifts the floating buttons clear of
+  // itself; this one may have arrived after that first measurement.
+  if (window.TC && typeof window.TC.positionFloating === 'function') window.TC.positionFloating();
+})();
