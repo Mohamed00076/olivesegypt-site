@@ -123,21 +123,43 @@ for (const [where, file, fn, expected] of CHECKS) {
 // homepage's "View Full Catalog (11 Varieties)" survived Hamed's withdrawal
 // for the whole day until the owner spotted it. The hero stat (number and
 // label in separate elements) was caught only once the text was read too.
+// Every public page, every guide and catalogue source, and llms.txt -- not
+// a list of eight pages, so a count on a page nobody thought of is still read.
+const { execSync: listFiles } = require('child_process');
 const COUNT_FILES = [
-  'index.html', 'catalog/index.html', 'downloads/index.html', 'catalog/print/index.html',
-  'ar/index.html', 'ar/catalog/index.html', 'ar/downloads/index.html', 'ar/catalog/print/index.html',
+  ...listFiles('git ls-files "*.html"', { cwd: ROOT }).toString().trim().split('\n')
+    .filter((f) => !/^(docs|crm|admin|letterhead|ar\/letterhead|node_modules)\//.test(f)),
+  'llms.txt',
 ];
+// Numbers as digits (Western or Arabic-Indic) or words, before a product-count label.
+const WORDS = { nine: 9, ten: 10, eleven: 11, twelve: 12, 'تسعة': 9, 'عشرة': 10, 'أحد عشر': 11, 'إحدى عشرة': 11, 'اثنا عشر': 12 };
+const NUM = `(\\d+|[٠-٩]+|${Object.keys(WORDS).join('|')})`;
+const LABEL = '(?:product\\s+)?(?:varieties|products)\\b|(?:صنفًا|صنف|أصناف|منتجات|منتجًا)';
+const COUNT_RE = new RegExp(`(?<![\\w-])${NUM}\\s+(?:olive\\s+)?(?:${LABEL})`, 'gi');
+const toNumber = (s) => {
+  const k = s.toLowerCase();
+  if (k in WORDS) return WORDS[k];
+  return Number(s.replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+};
+// Counts that are not the size of the range: "nine of our ten products" (private
+// label), "seven of them olives", a page's own sub-list.
+const NOT_THE_RANGE = /\b(nine|seven|9|7) (of (our|the) ten|olive) |تسعة من (منتجاتنا|المنتجات) العشرة|سبعة منها/i;
 for (const f of COUNT_FILES) {
   const html = read(f);
   if (html === null) continue;
-  // Read as text as well as markup: the hero's stat sets the number in its
-  // own <span> and the label in the next <p>, so "11 Product Varieties"
-  // never appeared as one string and survived to 2026-10-02.
-  const text = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/g, ' ').replace(/<[^>]+>/g, ' ');
-  const wrong = [...`${html}\n${text}`.matchAll(/(\d+)\s*(?:product\s*)?varieties|(\d+)\s*(?:صنفًا|صنف|أصناف)/gi)]
-    .map((m) => Number(m[1] || m[2]))
-    .filter((n) => n !== COUNT);
-  if (wrong.length) problems.push(`${f}: states ${[...new Set(wrong)].join(', ')} varieties, expected ${COUNT}`);
+  // Read the text, not only the markup: the hero's stat sets the number in its
+  // own <span> and the label in the next <p>, so "11 Product Varieties" never
+  // appeared as one string and survived to 2026-10-02. With the tags gone the
+  // number and its label sit side by side, whatever elements hold them.
+  const text = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/g, ' ').replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;|&#160;/g, ' ').replace(/\s+/g, ' ');
+  const wrong = [];
+  for (const m of text.matchAll(COUNT_RE)) {
+    const n = toNumber(m[1]);
+    const around = text.slice(Math.max(0, m.index - 25), m.index + m[0].length + 25);
+    if (n !== COUNT && !NOT_THE_RANGE.test(around)) wrong.push(`"${m[0]}"`);
+  }
+  if (wrong.length) problems.push(`${f}: states ${[...new Set(wrong)].join(', ')}, expected ${COUNT}`);
 }
 
 /*
