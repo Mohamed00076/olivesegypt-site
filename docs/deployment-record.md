@@ -6240,6 +6240,172 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`:
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 117 to 120 — Arabic hero parity, one header for both languages, and the brand colour pass (PRs #235 to #238)
+
+**Previous recorded deploy:** `39e4845` (Deploy 116, PR #234)
+**Approvals:**
+- "merge" (#235, #236), after "fix both" and "add both" for the Arabic hero
+- "okay merge" (#237), after the header questions, the choice of "Two rows" from three layouts shown, and "make the arabic and english header consistant"
+- "merge" (#238), after "the website is very white in light mode and very black in dark mode … use the colours of my design … use buyer behaviour studies and implement it"
+
+All on 2026-10-03 (+0300).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 117 | #235 | `0add567` | 2026-10-03 02:24:34 | 2 | +166 / −3 | Notes only |
+| 118 | #236 | `d37714a` | 2026-10-03 02:25:17 | 2 | +2 / −1 | Site change |
+| 119 | #237 | `d88d32d` | 2026-10-03 12:32:30 | 5 | +106 / −79 | Site change |
+| 120 | #238 | `501a542` | 2026-10-03 12:51:16 | 17 | +247 / −76 | Site change |
+
+Files and lines are each merge against the `main` it landed on. #236 was
+brought up to date with `main` first (merge commit `2107f30`). Its register
+line conflicted with #235's change to C-148, and both changes were kept.
+Netlify's deploy preview succeeded for the site changes before they merged.
+Whether each production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 117** recorded Deploys 112 to 116 and closed C-148.
+
+### What each site change did
+
+- **Deploy 118 — The Arabic home hero matches the English (#236).** Four
+  differences closed on `/ar/`:
+  - **Layout:** the English breakpoints and grid; it stacks until 1024px,
+    then splits 1.1 : 1. Arabic had gone side by side from 768px and
+    squeezed its text column.
+  - **Badge:** "منشأ واحد · مصر" on the photograph.
+  - **Eyebrow:** "منشأ مصري" above the heading.
+  - **Corner frames:** the two decorative gold frames, mirrored for RTL.
+
+  The Arabic labels carry no letter-spacing, so the letters stay joined.
+  The English page is unchanged.
+- **Deploy 119 — One header for both languages (#237).** Three causes:
+  - **The menu floated in Arabic.** It was centred between the name and the
+    buttons, and the shorter Arabic menu floated with about 157px either
+    side. It now sits right after the name in both languages: 20px at
+    1024–1279px, 36px from 1280px.
+  - **The Arabic name looked light.** It used the English pixel sizes; it
+    is now 16/17px, with a 12px subtitle.
+  - **English kept the drawer at 1024–1199px.** That band now has **two
+    rows in both languages**: logo and buttons on top, the full menu
+    centred below. The header is 105px there and 65px elsewhere.
+    `site-nav.js` switches at 1024px for both.
+
+  Section links in the two-row band land under the taller header. The
+  rule needed `html` specificity: measurement showed a link landing 40px
+  under the header before that.
+- **Deploy 120 — Brand colour pass (#238).** One new block at the end of
+  the stylesheet, under `@media screen`:
+  - **Light:** a warmer cream page, warm-white cards, olive-tinted muted
+    surfaces. Secondary text is a step darker: the old shade measured
+    4.27:1 on the cream page, below WCAG AA, and the new one is at least
+    4.9:1 everywhere.
+  - **Dark:** olive-charcoal (hue 80), slightly lighter, in place of the
+    blue-black (hue 210) that is not a brand colour.
+  - **Deep olive:** the homepage "How We Work" and the footer on all 93
+    public pages, with cream text, gold accents and a gold rule above the
+    footer. It works by redefining the colour tokens inside them.
+  - **Washes:** gold on the trust strip, olive on "Who Are You Sourcing
+    For?".
+  - **Icons:** 78 emoji on 10 pages (EN and AR) are now line icons from
+    Lucide (lucide-static 0.460.0, ISC), in `scripts/site_icons.py`.
+    `generate-solutions-pages.py` uses the same module and reproduces the
+    hub byte for byte.
+
+  No wording changed anywhere.
+  - **Research basis cited to the owner:**
+    - Lindgaard et al. (2006): first impressions form in about 50 ms
+    - the Stanford Web Credibility study (Fogg et al., 2002): design is
+      the most-cited credibility factor
+    - Gartner's B2B buying journey: independent online research outweighs
+      supplier meetings
+    - WCAG 2.x AA for contrast
+
+### Owner decisions and confirmations
+
+- **Arabic, assistant-written, merged on the owner's "merge"** (#236). As
+  in Deploys 92, 111 and 114, the merge is taken as approval:
+  - the badge "منشأ واحد · مصر"
+  - the eyebrow "منشأ مصري"
+- **Header:** two rows at 1024–1199px, chosen from three layouts shown;
+  then the same layout in both languages.
+- **Colour pass:** approved as shown in before/after screenshots. The
+  proposed next steps were not implemented:
+  - photographs for the four products still marked "photography pending"
+  - packaging photographs
+  - a calmer Market Brief panel in dark mode
+  - certificates, once verified
+
+### Claim register
+
+- **Added:** C-149 (Deploy 118), the homepage origin labels in both
+  languages. The English labels had shipped since the first commit without
+  a row. Its basis is C-37: every confirmed sourcing region is in Egypt.
+  Its action column now records the Arabic as approved. The register
+  stands at 149 claims.
+- **No claim added, removed or reworded** by Deploys 119 and 120.
+- **C-55** remains the only `needs-review` row.
+- **`docs/asset-rights-register.md`:** a row for the Lucide icons and their
+  licence (Deploy 120).
+
+### Testing method
+
+`npm test` stays at 60 checks. It passed on each branch before its merge
+and on `main` at `501a542` after all of them. Rules added to existing
+checks:
+- **`check-floating-actions`:** the two-row band in both languages, the
+  1024px switch, and the menu placement.
+- **`check-anchor-offset`:** the two-row offset, scoped to its band.
+
+These failed on the previous `main` and pass now.
+`check-script-integrity` now treats a Python module beside its script as
+local.
+
+Beyond the suite:
+- **Header (Chromium):** English against mirrored Arabic, element by
+  element, at nine widths from 390 to 1536px. Header heights, rows and the
+  name-to-menu gap are identical in both languages, with no horizontal
+  overflow at any width.
+- **Section links:** they land under the header at 1100 and 1280px in both
+  languages, and dropdowns open within the screen.
+- **Colour pass:** pages checked at 1280 and 390px, light and dark: home,
+  `/ar/`, catalogue, a product page, Resources. Contrast was computed for
+  every text/surface pair.
+- **PDFs:** the stylesheet is a PDF source. After each stylesheet change,
+  all 42 PDFs were rebuilt and compared page by page (text and pixels).
+  They were **identical every time** (four rebuilds), so the committed
+  PDFs were kept and only the stylesheet hash changed in
+  `scripts/guide-pdfs.json`.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`:
+- **Deploy 120:** one revert restores the old colours and the emoji.
+- **Deploy 119:** reverting restores the centred menu and the English
+  drawer below 1200px.
+- **Deploy 118:** reverting restores the old Arabic hero.
+- **Deploy 117** is documentation only.
+- **No PDF needs anything** in any of these rollbacks.
+
+### Known limitations shipped with Deploys 117 to 120
+
+- **Placeholder imagery:** four products and the four packaging formats
+  still show placeholders. They now stand out more against the coloured
+  surfaces.
+- **Market Brief in dark mode:** the panel stays bright lime-olive. It is
+  pre-existing, and recalming it was proposed but not done.
+- **Browser caches:** returning visitors need a refresh to get the new
+  stylesheet.
+- **`www.olivesegypt.com` does not load:** the GoDaddy DNS steps are with
+  the owner.
+- **Not yet confirmed on the live site:** all of the above.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -6253,7 +6419,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 116 (2026-10-03).**
+**Unchanged through Deploy 120 (2026-10-03).**
 
 ## Outstanding, unresolved by this document
 
@@ -6461,7 +6627,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 116 (2026-10-03).** The owner will set the values later.
+    **Unchanged at Deploy 120 (2026-10-03).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
