@@ -213,8 +213,17 @@ for (const { key, dir } of require('./product-order').PRODUCTS) {
     if (p.inLanguage !== locale) {
       problems.push(`${file}: inLanguage is ${JSON.stringify(p.inLanguage)}, expected ${JSON.stringify(locale)}`);
     }
-    if (typeof p.image !== 'string' || !p.image.startsWith(`${ORIGIN}/assets/`)) {
-      problems.push(`${file}: image is ${JSON.stringify(p.image)}, expected an asset URL`);
+    // The page's own product image: the first image inside <main>. A product
+    // still shown with its "photography pending" illustration (assets/illus-*)
+    // names no image in its structured data, so search engines are not
+    // offered the illustration as the product (2026-10-03); a photographed
+    // product must name a photograph.
+    const shown = (html.slice(Math.max(0, html.indexOf('<main'))).match(/<img[^>]+src="(\/assets\/[^"]+)"/) || [])[1] || '';
+    const pending = shown.startsWith('/assets/illus-');
+    if (pending) {
+      if (p.image !== undefined) problems.push(`${file}: shows the illustration ${shown} but its structured data names image ${JSON.stringify(p.image)}; leave image out until there is a photograph`);
+    } else if (typeof p.image !== 'string' || !p.image.startsWith(`${ORIGIN}/assets/`) || p.image.includes('/assets/illus-')) {
+      problems.push(`${file}: image is ${JSON.stringify(p.image)}, expected the product photograph's asset URL`);
     } else {
       const rel = p.image.slice(ORIGIN.length + 1);
       if (!fs.existsSync(path.join(ROOT, rel))) {

@@ -209,8 +209,7 @@ PAGE_TMPL = """<!DOCTYPE html>
       "description": "{profile}",
       "inLanguage": "en",
       "url": "https://olivesegypt.com/products/{slug}",
-      "image": "https://olivesegypt.com{image_src}",
-      "countryOfOrigin": "Egypt"
+{image_ld}      "countryOfOrigin": "Egypt"
     }}
     </script>
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -344,6 +343,10 @@ def render(p):
         brine_salt=p["brine"]["salt"], brine_acidity=p["brine"]["acidity"], brine_ph=p["brine"]["ph"],
         best_for_html=best_for_html, related_html=related_html,
         image_block=image_block(p["image"]), image_src=p["image"]["src"],
+        # Structured data names an image only when it is a photograph: a
+        # "photography pending" illustration is not offered to search engines
+        # as the product (2026-10-03).
+        image_ld=('' if p["image"]["src"].startswith('/assets/illus-') else f'      "image": "https://olivesegypt.com{p["image"]["src"]}",\n'),
     )
 
 
