@@ -6613,6 +6613,154 @@ together. Deploy 123 is documentation only.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 125 to 129 — Accessibility, page speed, packaging icons and an owned hero texture (PRs #243 to #247)
+
+**Previous recorded deploy:** `743c95b` (Deploy 124, PR #242)
+**Approvals:**
+- "merge" (#243)
+- "do 1, 2 and 3": a full-site quality check, a speed check, and icons on the packaging cards. Then "merge all" (#244, #245, #246, merged in that order because each is stacked on the one before).
+- for the hero texture: the owner asked where it is, was shown it, chose option B from three mock-ups ("go with B"), then "merge" (#247).
+
+All on 2026-10-03 (+0300).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 125 | #243 | `a33d21e` | 2026-10-03 16:06:29 | 2 | +114 / −3 | Notes only |
+| 126 | #244 | `58ab7b3` | 2026-10-03 16:44:58 | 53 | +158 / −111 | Site change |
+| 127 | #245 | `d127bb2` | 2026-10-03 16:45:04 | 23 | +92 / −55 | Site change |
+| 128 | #246 | `9f6ed14` | 2026-10-03 16:45:10 | 6 | +68 / −46 | Site change |
+| 129 | #247 | `f856af7` | 2026-10-03 17:01:42 | 9 | +66 / −45 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for the site changes before they merged. Whether
+each production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 125** recorded Deploys 123 and 124 and closed C-150.
+
+### What each site change did
+
+- **Deploy 126 — Accessibility sweep (#244).**
+  - **Method:** axe-core 4.10.2 (WCAG 2.1 A/AA) in Chromium on all 90
+    sitemap pages in light and dark: 180 page loads. Before: **377
+    violations** (337 contrast on 46 pages, 40 unnamed dropdowns). After:
+    **0**.
+  - **Fixes**, all in the stylesheet's screen-only block:
+    - **Gold buttons:** dark olive text (2.31 → 5.78:1).
+    - **Facebook pill:** Meta's current blue `#0866ff` (4.23 → 4.82:1).
+    - **Dark mode:** a lighter olive with dark text for buttons and links
+      (3.6 → 7.2:1), and deep olive with cream text for large olive
+      surfaces.
+    - **Light mode:** a deeper gold for small gold text (about 2.2 →
+      5.2:1+).
+    - **Smaller items:** full-strength "STEP" labels; the subscribe button
+      back on the standard gold; 90% opacity for small notes on olive
+      cards.
+  - **20 dropdowns** got an `aria-label` from their own placeholder
+    ("Buyer type" / "نوع المشتري").
+  - **Two more fixes found by Lighthouse:**
+    - **Heading order:** the homepage packaging and How We Work titles
+      went from h4 to h3.
+    - **Facebook pill's spoken name:** it now contains its visible word
+      "Follow" (48 files, including the product-page generator).
+  - **Results:** Lighthouse accessibility 100 on /, /ar/, /catalog and
+    the Kalamata page. Internal `href`/`src` references: 7,746 checked,
+    none broken. Failed requests and broken images: 0.
+  - **Two pre-existing errors corrected:**
+    - a stylesheet note claiming the Facebook pill passed as "large text"
+    - a one-off darker gold on the subscribe button
+- **Deploy 127 — Page speed (#245).**
+  - **Method:** Lighthouse 12.2 (mobile) on four pages, before and after.
+    Local-server findings that Netlify handles in production
+    (compression, caching, the trailing-slash redirect) were set aside.
+  - **Fixes:**
+    - **Hero photo on phones:** no longer downloaded (a 1×1 data-URI
+      `<source>` below 768px). It saves 226 KB per mobile visit.
+    - **Card images:** responsive WebP with 600px variants on 30 card
+      images over 6 pages (catalogue, downloads, home; EN and AR).
+    - **Hero texture:** re-encoded from 329 KB to 37 KB.
+    - **Fallback fonts:** sized to Plus Jakarta Sans and Playfair Display
+      (metrics from fontTools, against Arial, Roboto and Times New Roman),
+      so the font swap no longer shifts the page. Phone CLS 0.117 → 0.001.
+  - **Results:** homepage performance 68 → 83, LCP 6.6 → 3.9 s, weight
+    1,037 → 524 KiB; /ar/ 71 → 81.
+  - **Unchanged:** `/catalog/print`, a PDF source.
+- **Deploy 128 — Packaging icons (#246).** The four homepage packaging
+  cards in both languages show line icons (jar, tin, bucket, barrel) in
+  gold tiles instead of the "photography pending" placeholder. Lucide has
+  none of these, so the icons were drawn for the site in the same style:
+  `PACK_ICONS` in `scripts/site_icons.py`.
+- **Deploy 129 — Owned hero texture (#247).** The homepage hero's
+  olive-grove texture had unconfirmed ownership. At 8% under a cream fade
+  it changed no pixel by more than 2/255, so it was invisible.
+  - **Replacement:** the owner's own green olives photograph (blurred,
+    colour reduced to 55%, 16% opacity, 20 KB), masked to fade out before
+    the hero photograph and mirrored for Arabic.
+  - **Removed:** the old texture files.
+  - **Check:** axe 0 violations over it in both languages and themes.
+
+### Owner decisions and confirmations
+
+- **Items 1 to 3** as proposed ("do 1, 2 and 3", "merge all").
+- **Hero texture:** option B, the green olives at 16%, from three options
+  shown (none, 16%, 26%).
+- **No Arabic wording was written** in these deploys. The new
+  `aria-label`s reuse each dropdown's existing placeholder text.
+
+### Claim register
+
+No change; it stands at 150 claims, and C-55 remains the only
+`needs-review` row. `docs/asset-rights-register.md`:
+- a row for the derived image sizes (Deploy 127)
+- a row for the four packaging icons; the `photo-pending` rows now
+  name only the export-catalogue cover (Deploy 128)
+- the old hero texture marked removed, and the new one added
+  (Deploy 129)
+
+### Testing method
+
+`npm test`: all 60 checks, passing on every branch and on `main` at
+`f856af7`. Beyond the suite, as described above:
+- axe-core on every page
+- Lighthouse
+- a network capture of which image file each screen size downloads
+- Chromium screenshots in both languages and themes
+
+**PDFs:** each change touched the stylesheet, and #244 also touched the
+company-profile page (a PDF source). After each, all 42 PDFs were rebuilt
+and compared page by page (text and pixels). They were identical every
+time, so the committed PDFs were kept and only the hashes in
+`scripts/guide-pdfs.json` changed.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`. #245 and
+#246 are stacked on #244, so revert newest first: 129, then 128, 127, 126.
+- **Deploy 126:** reverting brings back the contrast failures.
+- **Deploy 129:** reverting brings back the texture of unconfirmed
+  ownership. Deleting the `.tc-hero-texture` div instead gives a plain
+  hero.
+- **Deploy 125** is documentation only.
+
+### Known limitations shipped with Deploys 125 to 129
+
+- **Lighthouse figures** were measured on a local server without
+  compression. Live figures should be better, but none were measured
+  live.
+- **/catalog performance** stays about 72 locally. Most of the remainder
+  is the uncompressed stylesheet and HTML, which Netlify compresses.
+- **Photographs** are still needed for four products and the four
+  packaging formats (now icons). The sliced red peppers are not yet a
+  product.
+- **`www.olivesegypt.com` does not load:** the GoDaddy DNS steps are with
+  the owner.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -6626,7 +6774,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 124 (2026-10-03).**
+**Unchanged through Deploy 129 (2026-10-03).**
 
 ## Outstanding, unresolved by this document
 
@@ -6834,7 +6982,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 124 (2026-10-03).** The owner will set the values later.
+    **Unchanged at Deploy 129 (2026-10-03).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
