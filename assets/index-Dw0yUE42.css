@@ -857,6 +857,11 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   }
   .tc-ico svg { width: 1.5rem; height: 1.5rem; }
   .dark .tc-ico { color: hsl(var(--secondary)); }
+  /* Packaging cards (homepage): the four formats as large line icons in a
+     gold-tinted tile, in place of the "photography pending" placeholder,
+     until there are photographs (2026-10-03). */
+  .tc-ico-pack { width: 6rem; height: 6rem; border-radius: 0.75rem; }
+  .tc-ico-pack svg { width: 3rem; height: 3rem; }
   /* inside the "How We Work" step circles the circle is already the badge */
   .rounded-full > .tc-ico { width: auto; height: auto; background: none; box-shadow: none; }
 
