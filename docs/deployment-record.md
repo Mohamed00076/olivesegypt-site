@@ -6761,6 +6761,154 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`. #245 and
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 130 to 132 — Structured data, Arabic article headings, and the Lighthouse outliers (PRs #248 to #250)
+
+**Previous recorded deploy:** `f856af7` (Deploy 129, PR #247)
+**Approvals:**
+- "merge" (#248)
+- "do 1, 2 and 3": a phone layout check on every page, a check of the structured data Google reads, and Lighthouse on every page. Then "merge all" (#249, #250).
+
+All on 2026-10-03 (+0300).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 130 | #248 | `477b626` | 2026-10-03 17:04:10 | 1 | +150 / −2 | Notes only |
+| 131 | #249 | `d20f616` | 2026-10-03 19:04:09 | 30 | +105 / −50 | Site change |
+| 132 | #250 | `15e0b7e` | 2026-10-03 19:05:50 | 97 | +200 / −154 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Before
+#250 merged, `main` (with #249) was merged into its branch as `4cf1426`.
+The 7 Arabic articles conflicted: #249 removed the heading suffix and #250
+retagged the footer headings, both on the pages' single body line. Each
+was resolved to `main`'s version with #250's footer change re-applied.
+Afterwards both generators reproduced their pages exactly and all checks
+passed. Netlify's deploy preview succeeded for the site changes before
+they merged. Whether each production build succeeded is not visible from
+here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 130** recorded Deploys 125 to 129.
+
+### What each site change did
+
+- **Item 1, the phone layout check, found nothing to fix.** All 90
+  sitemap pages were loaded at 360, 390 and 430px in mobile emulation
+  (270 loads), with:
+  - **horizontal overflow:** 0
+  - **tap targets under 24×24px** (axe `target-size`, WCAG 2.2): 0
+  - **text under 12px:** 0, because an existing phone rule raises small
+    labels to 12px
+
+  The only elements past the edge were deliberate: decorative circles and
+  the off-screen anti-spam fields.
+- **Deploy 131 — Structured data (#249).** Every JSON-LD block on the 90
+  pages was checked against Google's requirements for its type. There
+  were no parse errors and no broken references.
+  - **Articles (14):** `datePublished` from each article's visible
+    "Published 4 August 2026", `author.url`, and an `image` on the 7
+    Arabic articles, which had none.
+  - **Three English headlines** carried `&#x27;`, which JSON-LD does not
+    decode. They now have a plain apostrophe.
+  - **Visible bug: the 7 Arabic article headings** (`<h1>`) ended with
+    " | الشركة الثلاثية للتنمية الصناعية", the browser-title suffix.
+    Removed from the headings and the data headlines; `<title>` and
+    `og:title` keep it. Two headlines had exceeded 110 characters; each
+    data headline now equals its visible heading.
+  - **The four products without photographs** no longer name their
+    "photography pending" illustration as the product `image`. That
+    covers the generator (English) and the Arabic pages. The six
+    photographed products' photographs were added to the Product lists
+    on /, /catalog, /downloads, /ar/ and /ar/catalog.
+  - **`check-product-order`:**
+    - a product showing a photograph must name it
+    - a product showing an illustration must name no image
+
+    Negative-tested against the old Natural Black page.
+- **Deploy 132 — Lighthouse outliers (#250).** Lighthouse 12.2 (mobile) on
+  all 90 pages:
+  - **Scores:** SEO and best practices 100 everywhere; accessibility
+    98–100; performance 69–90 (median 85).
+  - **The outliers:** two articles with layout shift (0.191, 0.136), the
+    catalogue (69/71), and heading order on 10 pages.
+
+  The fixes:
+  - **Bold fallback fonts:** each fallback now has a regular and a bold
+    face. Bold was being synthesised from the regular fallback, wider than
+    Playfair Display Bold, so headings wrapped late. The bold face is sized
+    with fontTools from the variable font at wght 700 against Times New
+    Roman / Arial / Roboto Bold. Packaging guide CLS 0.136 → 0.01.
+  - **The article info row on phones:** the published date takes its own
+    line below 640px. The longest category's row was 378px of 380 with the
+    fallback font and 383px with the web font, so it wrapped late
+    (Lighthouse trace). CLS 0.191 → 0.005.
+  - **Catalogue photographs** lazy-load after the first two cards.
+    /catalog 69 → 76 and 961 → 642 KiB; /ar/catalog 71 → 75.
+  - **Heading order:**
+    - How We Work: h4 → h3
+    - card titles on /media/blog, /media/news and /resources: h3 → h2
+    - footer column titles: h3 → h2 on all 93 public pages and the
+      product generator, with the CSS selector updated so nothing looks
+      different
+
+    Accessibility is 100 on every re-tested page.
+  - **`check-article-claims`:** its /media ↔ /media/news card comparison
+    ignores the card heading level.
+
+### Owner decisions
+
+- **Items 1 to 3** as proposed ("do 1, 2 and 3", "merge all").
+- **Left to the owner:** Google shows richer product results only with a
+  published price (`offers`) or reviews. None of the 25 Product entries has
+  one; that is a business decision, and nothing was changed.
+- **No Arabic wording was written.** The Arabic heading change only
+  removed the title suffix.
+
+### Claim register
+
+No change; it stands at 150 claims, and C-55 remains the only
+`needs-review` row.
+
+### Testing method
+
+`npm test`: all 60 checks, passing on each branch and on `main` at
+`15e0b7e`. Beyond the suite:
+- **Layout:** the 270-load phone sweep
+- **Structured data:** the JSON-LD validator, run before and after
+- **Lighthouse:** all 90 pages, then re-runs on the fixed pages
+- **Layout shift:** reproduced in Chromium with Lighthouse's phone
+  emulation and 4× CPU throttling, and traced from Lighthouse's own
+  saved trace
+- **PDFs:** all 42 rebuilt and compared page by page after the
+  stylesheet change; all identical
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts on its own with `git revert -m 1 <commit>`, newest
+first: 132, then 131.
+- **Deploy 131:** reverting restores the suffix in the Arabic article
+  headings.
+- **Deploy 132:** reverting restores the late wraps and heading order.
+- **Deploy 130** is documentation only.
+
+### Known limitations shipped with Deploys 130 to 132
+
+- **Lighthouse figures** were measured on a local server without
+  compression, not on the live site.
+- **The catalogue** remains the heaviest page: about 640 KiB uncompressed
+  locally.
+- **No price is published,** so the products are not eligible for Google's
+  product rich results. This is the owner's choice.
+- **Photographs** are still needed for four products and the four
+  packaging formats. The sliced red peppers are not yet a product.
+- **`www.olivesegypt.com` does not load:** the GoDaddy DNS steps are with
+  the owner.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -6774,7 +6922,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 129 (2026-10-03).**
+**Unchanged through Deploy 132 (2026-10-03).**
 
 ## Outstanding, unresolved by this document
 
@@ -6982,7 +7130,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 129 (2026-10-03).** The owner will set the values later.
+    **Unchanged at Deploy 132 (2026-10-03).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
