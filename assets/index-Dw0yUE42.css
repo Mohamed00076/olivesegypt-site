@@ -274,37 +274,47 @@ header .container {
      Facebook "Follow" pill keeps its label (owner, 2026-10-02: an icon-only
      version on laptops read as the old square icon). English then needs
      1182px, Arabic 939px.
-   - 1024-1199px, English only: the menu button and drawer stay, as on a
-     tablet, rather than squeezing further. site-nav.js uses the same 1200px.
-   From 1280px nothing changes. */
+   - 1024-1199px: two rows, in both languages (owner, 2026-10-03, who saw
+     the English drawer on a laptop and wanted the menu shown, then asked for
+     the two headers to be consistent). The logo and the buttons keep the
+     4rem top row; the full menu sits centred on a 2.5rem row under it. Until
+     then English kept the tablet drawer here and Arabic, which fits, showed
+     one row. site-nav.js switches at 1024px in both languages.
+   From 1280px nothing changes.
+   The menu sits right after the company name, a fixed gap away, in both
+   languages (owner, 2026-10-03). It used to be centred between the name and
+   the buttons, so the shorter Arabic menu floated with about 157px either
+   side of it at 1280px while the English one sat 35px from the name. */
+@media (min-width: 1024px) { header .container > .tc-nav { margin-inline-start: 1.25rem; margin-inline-end: auto; } }
 @media (min-width: 1024px) and (max-width: 1279.98px) {
   .tc-nav { gap: 0.75rem; }
   .tc-nav-link, .tc-nav-trigger { font-size: 0.8125rem; }
   header .container { column-gap: 0.75rem; }
   header .container > div:last-child { column-gap: 0.5rem; }
+  header .container > .tc-nav { margin-inline-start: 0.5rem; }
 }
 @media (min-width: 1024px) and (max-width: 1199.98px) {
-  html[lang="en"] .tc-nav { display: none; }
-  html[lang="en"] #mobile-menu-toggle { display: inline-flex; }
-  /* the drawer as it is below 1024px (Part 2B, above): a full-width panel
-     under the header, 44px links, the floating buttons out of its way */
-  html[lang="en"] #mobile-menu-panel:not([hidden]) {
-    display: block;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 50;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
-    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+  header .container { flex-wrap: wrap; height: auto; row-gap: 0; }
+  header .container > a:first-child { height: 4rem; }
+  header .container > .tc-nav {
+    order: 3;
+    flex-basis: 100%;
+    height: 2.5rem;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-inline: 0;
+    border-top: 1px solid hsl(var(--border));
   }
-  html[lang="en"] #mobile-menu-panel nav > a,
-  html[lang="en"] #mobile-menu-panel nav > div > a { min-height: 44px; display: flex; align-items: center; }
-  html[lang="en"] #mobile-menu-panel nav > div > a { justify-content: center; }
-  html[lang="en"] body:has(#mobile-menu-panel:not([hidden])) .fixed.bottom-6.right-6,
-  html[lang="en"] body:has(#mobile-menu-panel:not([hidden])) #tc-quote-fab { display: none; }
+  /* html raises it above the base main [id] rule further down this file */
+  html main [id] { scroll-margin-top: calc(6.5rem + 1px); }
+}
+/* Arabic letters read smaller than Latin capitals at the same pixel size, so
+   the Arabic company name and its subtitle are set a step larger than the
+   English (owner, 2026-10-03: the Arabic header looked lighter). */
+html[lang="ar"] header .container > a:first-child > div > span:first-child { font-size: 1rem; }
+html[lang="ar"] header .container > a:first-child > div > span:last-child { font-size: 0.75rem; }
+@media (min-width: 640px) {
+  html[lang="ar"] header .container > a:first-child > div > span:first-child { font-size: 1.0625rem; }
 }
 
 .tc-nav-item { position: relative; }
