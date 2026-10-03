@@ -7,7 +7,7 @@
  *
  *   node scripts/check-product-categories.js        (part of `npm test`)
  *
- * The category row (All / Green / Black / Specialty) filters on each card's
+ * The category row (All / Green / Black / Pickled Vegetables) filters on each card's
  * data-category. Each locale's grid is its own hand-maintained copy of the
  * product list, so this is exactly where a card gets filed under one category
  * while its badge says another.

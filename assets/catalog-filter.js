@@ -2,7 +2,7 @@
 
 // Catalogue filtering by variety category.
 //
-// The category row (All Varieties / Green / Black / Specialty) was already in
+// The category row (All Varieties / Green / Black / Pickled Vegetables) was already in
 // the markup on both /catalog and /ar/catalog, with data-filter attributes,
 // aria-pressed, and an active-button style. None of it did anything: no
 // script anywhere in the repository ever bound to those buttons. Clicking
