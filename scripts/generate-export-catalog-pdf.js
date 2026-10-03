@@ -37,7 +37,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { ROOT, MANIFEST, SITE, JOBS, renderFor, letterheadTemplates, BLOCKED_SCRIPTS, prepareForPdf, fingerprint, sha256, countPages } = require('./guide-pdfs');
+const { ROOT, MANIFEST, SITE, JOBS, renderFor, letterheadTemplates, LETTERHEAD_FILES, BLOCKED_SCRIPTS, prepareForPdf, fingerprint, sha256, countPages } = require('./guide-pdfs');
 
 const PORT = process.env.PORT || 8899;
 const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim()).filter(Boolean) : null;
@@ -59,8 +59,8 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
   // be wrong. Nothing else is fetched from anywhere but the local server.
   await page.route(BLOCKED_SCRIPTS, (route) => route.abort());
 
-  // The letterhead, drawn once per language with the site's fonts and
-  // captured as images (see letterheadSheet in guide-pdfs.js for why).
+  // The letterhead's foot, drawn once per language with the site's fonts and
+  // captured as an image (see letterheadSheet in guide-pdfs.js for why).
   const letterheads = {};
   async function letterheadFor(locale, html) {
     if (letterheads[locale]) return letterheads[locale];
@@ -69,10 +69,9 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     await sheet.route(url, (route) => route.fulfill({ contentType: 'text/html; charset=utf-8', body: html }));
     await sheet.goto(url, { waitUntil: 'networkidle' });
     await sheet.evaluate(() => document.fonts.ready);
-    const masthead = await sheet.locator('#masthead').screenshot({ omitBackground: true });
     const foot = await sheet.locator('#foot').screenshot({ omitBackground: true });
     await sheet.close();
-    return (letterheads[locale] = letterheadTemplates(masthead, foot));
+    return (letterheads[locale] = letterheadTemplates(foot));
   }
 
   for (const job of jobs) {
@@ -85,29 +84,26 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     if (render.css) await page.addStyleTag({ content: render.css });
     // The masthead, once: the first thing in the document, so it heads page 1
     // only (see letterheadTemplates in guide-pdfs.js).
-    if (letterhead && render.masthead === 'catalogue-cover') {
-      // The same masthead, heading the catalogue's cover in place of its own
-      // brand line; the rest of the catalogue keeps its section labels.
-      await page.evaluate((src) => {
-        const eyebrow = document.querySelector('.pdf-page .pdf-eyebrow');
+    // Live text, so the masthead is drawn with the letterhead's own fonts
+    // stylesheet, added here in case the page does not already load it.
+    if (letterhead) {
+      await page.evaluate(async ({ html, fonts, cover }) => {
+        if (!document.querySelector(`link[href="${fonts}"]`)) {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = fonts;
+          const loaded = new Promise((ok) => { link.onload = link.onerror = ok; });
+          document.head.appendChild(link);
+          await loaded;
+        }
         const box = document.createElement('div');
         box.className = 'tc-pdf-masthead';
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = '';
-        box.appendChild(img);
-        eyebrow.replaceWith(box);
-      }, letterhead.masthead);
-    } else if (letterhead) {
-      await page.evaluate((src) => {
-        const box = document.createElement('div');
-        box.className = 'tc-pdf-masthead';
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = '';
-        box.appendChild(img);
-        document.body.insertBefore(box, document.body.firstChild);
-      }, letterhead.masthead);
+        box.innerHTML = html;
+        // The catalogue's cover carries it in place of its own brand line;
+        // the rest of the catalogue keeps its section labels.
+        if (cover) document.querySelector('.pdf-page .pdf-eyebrow').replaceWith(box);
+        else document.body.insertBefore(box, document.body.firstChild);
+      }, { html: render.mastheadHtml, fonts: `/${LETTERHEAD_FILES.fonts}`, cover: render.masthead === 'catalogue-cover' });
     }
 
     await page.evaluate(prepareForPdf, SITE);
