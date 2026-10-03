@@ -616,7 +616,7 @@
   "downloads/company-profile-en.pdf": {
     "source": "company-profile/index.html",
     "inputs": {
-      "company-profile/index.html": "1ca8b2971f714782ba7023e6bf22014676ac2ba59ef3bd0db9ea70240369a918",
+      "company-profile/index.html": "d78a4ed9eb79fc1e759be1e8dd1bfd42dd86d92ed8704ed361ff848936cadf46",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/index-Dw0yUE42.css": "cb4346275432fa0209bdc4ecbae2fb314bce5175321a582a7214ea019866baf1",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
