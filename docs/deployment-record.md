@@ -6502,6 +6502,117 @@ documentation only.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 123 and 124 — The "Pickled Vegetables" group (PRs #241 and #242)
+
+**Previous recorded deploy:** `1ac18ab` (Deploy 122, PR #240)
+**Approvals:**
+- "merge" (#241)
+- for #242: the owner asked why the third group was called "Specialty &
+  Antipasti" when products such as sliced red peppers will be added, and
+  chose "Pickled Vegetables" from three names offered. "خضروات متبّلة"
+  confirmed the artichoke label. Then "merge" (#242).
+
+All on 2026-10-03 (+0300).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 123 | #241 | `3bd7a8e` | 2026-10-03 15:44:47 | 1 | +98 / −2 | Notes only |
+| 124 | #242 | `743c95b` | 2026-10-03 16:03:45 | 32 | +79 / −76 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for #242 before it merged. Whether each production
+build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 123** recorded Deploys 121 and 122.
+
+### What the site change did
+
+- **Deploy 124 — "Pickled Vegetables" in place of "Specialty & Antipasti"
+  (#242).** The third catalogue group (Sliced Jalapeño, Pepperoncini,
+  Marinated Artichoke Hearts) is now "Pickled Vegetables" / "خضروات
+  مخللة". "Pickled vegetables" was already the site's own term, in the
+  announcement bar and the peppers' Product schema.
+
+  | Where | Now |
+  |---|---|
+  | The filter and the export-catalogue section titles | Pickled Vegetables / خضروات مخللة |
+  | The company overview | Pickled vegetables / خضروات مخللة |
+  | The pepper card labels | Pickled Pepper / فلفل مخلل |
+  | The artichoke card label | Marinated Vegetable / خضروات متبّلة |
+  | The artichoke's Product schema `category` | Pickled Vegetables / Marinated Vegetables, and Arabic to match |
+
+  - **Arabic cards now agree.** The pepper cards had read مخللات, خضروات
+    مخللة and منتج مميز on different pages.
+  - **Old labels can't return.** `scripts/product-categories.js` now
+    allows only the new labels for the group.
+  - **14 PDFs changed:**
+    - product catalogue, EN and AR
+    - all-spec-sheets, EN and AR
+    - the three spec sheets for the jalapeño, pepperoncini and
+      artichoke, EN and AR
+    - export catalogue, EN and AR
+    - company overview, EN and AR
+
+    Each was diffed by text, and the only differences are the new
+    wording. Page counts are unchanged. The other 28 rebuilt
+    byte-identical and were kept.
+  - **Unchanged:** products, specifications, prices, order, the internal
+    `specialty` key, and descriptive uses of "antipasto".
+
+### Owner decisions and confirmations
+
+- **The group name:** "Pickled Vegetables".
+- **The artichoke card label:** خضروات متبّلة, confirmed by the owner. It
+  replaces مقبلات there; C-83 is annotated as partly superseded.
+- **The pepper card label:** فلفل مخلل, merged on the owner's "merge"
+  after being flagged for review. As in earlier deploys, the merge is taken
+  as approval.
+
+### Claim register
+
+- **Added:** C-150 (the group and its labels). Its action column records
+  the artichoke label as confirmed; فلفل مخلل is approved by the merge, as
+  recorded here. The register stands at 150 claims.
+- **C-83** is annotated as partly superseded.
+- **C-55** remains the only `needs-review` row.
+
+### Testing method
+
+`npm test`: all 60 checks, passing on the branch and on `main` at
+`743c95b`. Beyond the suite:
+- **Card labels:** all 16 relabelled cards were checked against their
+  product on six card surfaces. The check caught one error before commit:
+  the English homepage artichoke card had picked up "Pickled Pepper".
+- **Chromium:** the new filter shows exactly the three products, at 1280px
+  (EN, AR) and 390px.
+- **PDFs:** rebuilt and compared as described above.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+`git revert -m 1 743c95b` restores the previous wording, pages and PDFs
+together. Deploy 123 is documentation only.
+
+### Known limitations shipped with Deploys 123 and 124
+
+- **Sliced red peppers:** not yet a product. The owner will supply the
+  details; they will sit in this group as a "Pickled Pepper".
+- **Placeholder imagery** remains for four products and four packaging
+  formats.
+- **`www.olivesegypt.com` does not load:** the GoDaddy DNS steps are with
+  the owner, as is the check that `@` has only the Netlify A record.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+- **An external AI audit** keeps reporting the 4 August site (an 18-URL
+  sitemap dated 2026-06-02, the four removed posts, an empty /media). The
+  owner checked the live site in a browser on 2026-10-03: 90 URLs, current
+  dates, /media showing its articles, and the removed posts returning the
+  not-found page. The audit tool also cannot read response headers.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -6515,7 +6626,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 122 (2026-10-03).**
+**Unchanged through Deploy 124 (2026-10-03).**
 
 ## Outstanding, unresolved by this document
 
@@ -6723,7 +6834,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 122 (2026-10-03).** The owner will set the values later.
+    **Unchanged at Deploy 124 (2026-10-03).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
