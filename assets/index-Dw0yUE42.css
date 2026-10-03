@@ -862,6 +862,26 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
      until there are photographs (2026-10-03). */
   .tc-ico-pack { width: 6rem; height: 6rem; border-radius: 0.75rem; }
   .tc-ico-pack svg { width: 3rem; height: 3rem; }
+  /* Homepage hero texture (2026-10-03, owner chose option B): the owner's own
+     green olives photograph (scripts/og-card-green-olives.jpg), blurred,
+     desaturated to 55% and shown at 16% behind the heading, fading out
+     before the hero photograph (mirrored on the Arabic page). It replaces
+     an olive-grove texture of unconfirmed ownership that, at 8% under a
+     cream fade, changed no pixel by more than 2/255. */
+  .tc-hero-texture {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.16;
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 35%, transparent 62%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 35%, transparent 62%);
+  }
+  html[dir="rtl"] .tc-hero-texture {
+    -webkit-mask-image: linear-gradient(270deg, #000 0%, #000 35%, transparent 62%);
+    mask-image: linear-gradient(270deg, #000 0%, #000 35%, transparent 62%);
+  }
   /* inside the "How We Work" step circles the circle is already the badge */
   .rounded-full > .tc-ico { width: auto; height: auto; background: none; box-shadow: none; }
 
