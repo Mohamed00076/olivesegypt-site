@@ -391,7 +391,7 @@ html[lang="ar"] header .container > a:first-child > div > span:last-child { font
 @media (min-width: 640px)  { .tc-footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) { .tc-footer-cols { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
-.tc-footer-col h3 {
+.tc-footer-col :is(h2, h3) {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -882,6 +882,14 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     -webkit-mask-image: linear-gradient(270deg, #000 0%, #000 35%, transparent 62%);
     mask-image: linear-gradient(270deg, #000 0%, #000 35%, transparent 62%);
   }
+  /* Article info row on phones (category · read time · published date): the
+     date takes its own line. On a 412px screen the row of the longest
+     category ("Product Knowledge") fitted with the fallback font and wrapped
+     with the web font, pushing the article down when the font arrived
+     (Lighthouse CLS 0.191). On its own line it lays out the same either way. */
+  @media (max-width: 639.98px) {
+    main .flex-wrap:has(+ h1) > :last-child { flex-basis: 100%; }
+  }
   /* inside the "How We Work" step circles the circle is already the badge */
   .rounded-full > .tc-ico { width: auto; height: auto; background: none; box-shadow: none; }
 
@@ -980,8 +988,15 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     --app-font-serif: "Playfair Display", "PD Fallback Times", serif;
   }
 }
+/* Each fallback has a regular face (100-500) and a bold face (600-900), each
+   sized to that weight of the web font. With only a regular face, bold text
+   (every heading) was drawn as a synthesised bold of the regular fallback and
+   ran wider than Playfair Display Bold, so a heading could wrap one line
+   further and push the page down when the web font arrived (Lighthouse CLS
+   0.191 on /media/green-vs-black-vs-oxidized-olives; 2026-10-03). */
 @font-face {
   font-family: "PJS Fallback Arial";
+  font-weight: 100 500;
   src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Helvetica");
   size-adjust: 105%;
   ascent-override: 98.9%;
@@ -989,7 +1004,17 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   line-gap-override: 0%;
 }
 @font-face {
+  font-family: "PJS Fallback Arial";
+  font-weight: 600 900;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Helvetica Bold");
+  size-adjust: 100%;
+  ascent-override: 103.8%;
+  descent-override: 22.2%;
+  line-gap-override: 0%;
+}
+@font-face {
   font-family: "PJS Fallback Roboto";
+  font-weight: 100 500;
   src: local("Roboto"), local("Roboto-Regular");
   size-adjust: 104.7%;
   ascent-override: 99.1%;
@@ -997,10 +1022,29 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   line-gap-override: 0%;
 }
 @font-face {
+  font-family: "PJS Fallback Roboto";
+  font-weight: 600 900;
+  src: local("Roboto Bold"), local("Roboto-Bold");
+  size-adjust: 106.3%;
+  ascent-override: 97.6%;
+  descent-override: 20.9%;
+  line-gap-override: 0%;
+}
+@font-face {
   font-family: "PD Fallback Times";
+  font-weight: 100 500;
   src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif"), local("Times");
   size-adjust: 112.4%;
   ascent-override: 96.2%;
   descent-override: 22.3%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "PD Fallback Times";
+  font-weight: 600 900;
+  src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Liberation Serif Bold"), local("Times Bold");
+  size-adjust: 107.8%;
+  ascent-override: 100.4%;
+  descent-override: 23.3%;
   line-gap-override: 0%;
 }
