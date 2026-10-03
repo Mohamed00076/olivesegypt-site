@@ -29,6 +29,10 @@ import html
 import json
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from site_icons import icon_html  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SITE = 'https://olivesegypt.com'
@@ -154,34 +158,35 @@ LOCAL_CARD_EN = ('Local delivery-within-Egypt orders: 10-metric-ton minimum for 
 LOCAL_CARD_AR = ('طلبات التسليم داخل مصر: حد أدنى 10 أطنان مترية لطلبات البراميل سعة 220 كجم بالجملة؛ وتتبع صيغ التغليف الأخرى '
                  'الحد الأدنى القياسي للحاوية 16–18 طنًا متريًا. ويُؤكَّد التسعير أثناء عرض السعر.')
 
-# The hub's cards: the homepage cards' own wording and order.
+# The hub's cards: the homepage cards' own wording and order, and their icons
+# (scripts/site_icons.py; emoji until 2026-10-03).
 HUB_CARDS = [
-    ('🚢', 'importer-distributor', 'Importer / Distributor', 'مستورد / موزّع',
+    ('ship', 'importer-distributor', 'Importer / Distributor', 'مستورد / موزّع',
      'Bulk container orders, export terms, MOQ, and logistics.',
      'طلبات حاويات بالجملة، وشروط تصدير، وحد أدنى للطلب، ولوجستيات.'),
-    ('🏬', 'retail', 'Retail', 'تجزئة',
+    ('store', 'retail', 'Retail', 'تجزئة',
      'Retail-ready glass and tin formats for supermarket and specialty shelves.',
      'تغليف زجاجي وصفيح جاهز للتجزئة يلائم أرفف السوبر ماركت والمتاجر المتخصصة.'),
-    ('🍕', 'food-service', 'Food-Service', 'خدمات الأغذية',
+    ('utensils-crossed', 'food-service', 'Food-Service', 'خدمات الأغذية',
      'Bulk buckets and tins sized for kitchens, caterers, and repackers.',
      'دِلاء وعلب بالجملة بأحجام مناسبة للمطابخ ومقدمي خدمات التموين وموزّعي التعبئة.'),
-    ('🏷️', None, 'Private-Label', 'علامة خاصة',
+    ('tag', None, 'Private-Label', 'علامة خاصة',
      'Your brand, your packaging design, our export-ready product.',
      'علامتك التجارية، تصميم تغليفك، ومنتجنا الجاهز للتصدير.'),
-    ('🏭', 'manufacturer', 'Manufacturer', 'مُصنّع',
+    ('factory', 'manufacturer', 'Manufacturer', 'مُصنّع',
      'Co-packing and OEM supply for buyers who repack or process further.',
      'تعبئة تعاقدية (Co-packing) وتوريد OEM للمشترين الذين يعيدون التعبئة أو المعالجة.'),
-    ('🇪🇬', 'local-egypt', 'Local / Egypt-Based', 'محلي / داخل مصر', LOCAL_CARD_EN, LOCAL_CARD_AR),
+    ('map-pin', 'local-egypt', 'Local / Egypt-Based', 'محلي / داخل مصر', LOCAL_CARD_EN, LOCAL_CARD_AR),
 ]
 
 
 def hub_grid(lang):
     cells = ''
-    for emoji, slug, en_t, ar_t, en_d, ar_d in HUB_CARDS:
+    for icon, slug, en_t, ar_t, en_d, ar_d in HUB_CARDS:
         href = f'{pre(lang)}/solutions/{slug}' if slug else f'{pre(lang)}/resources/private-label'
         t, d = (ar_t, ar_d) if lang == 'ar' else (en_t, en_d)
         cells += (f'<a href="{href}" class="group rounded-2xl border border-border bg-card p-6 text-center hover:border-primary/40 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">'
-                  f'<div class="text-3xl mb-3">{emoji}</div><h2 class="font-serif font-bold text-base text-foreground mb-1.5 group-hover:text-primary transition-colors">{t}</h2>'
+                  f'<div class="text-3xl mb-3">{icon_html(icon)}</div><h2 class="font-serif font-bold text-base text-foreground mb-1.5 group-hover:text-primary transition-colors">{t}</h2>'
                   f'<p class="text-xs text-muted-foreground leading-relaxed">{d}</p></a>')
     return f'<div class="grid grid-cols-2 lg:grid-cols-3 gap-5">{cells}</div>'
 

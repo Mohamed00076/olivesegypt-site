@@ -34,7 +34,8 @@
  *   3. every relative require() resolves to a file that exists;
  *   4. every bare require() is a Node builtin, a dependency declared in
  *      package.json, or named in TOOLING_ONLY below;
- *   5. every third-party Python import is stdlib or named in TOOLING_ONLY;
+ *   5. every third-party Python import is stdlib, a module beside the script,
+ *      or named in TOOLING_ONLY;
  *   6. the script netlify.toml names in its build command exists and parses.
  *
  * That last one is the reason this file exists. Renaming build-geo.js without
@@ -147,6 +148,8 @@ for (const rel of pyFiles) {
     if (!m) continue;
     const top = (m[1] || m[2]).split('.')[0];
     if (stdlib.has(top)) continue;
+    // a module kept in the repo beside the script (e.g. scripts/site_icons.py) is local, not third-party
+    if (fs.existsSync(path.join(ROOT, path.dirname(rel), top + '.py'))) continue;
     if (TOOLING_ONLY.get(top) === rel) continue;
     pyUndeclared.push(`${rel} imports "${top}"`);
   }

@@ -758,3 +758,103 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
 @media (min-width: 768px) { #tc-quote-fab { display: none !important; } }
 @media (max-width: 767.98px) { .tc-has-quote-fab footer { padding-bottom: 6.5rem; } }
 @media print { #tc-quote-fab { display: none !important; } }
+
+
+/* ---- Brand colour pass (2026-10-03) -----------------------------------------
+   Owner: "the website is very white in light mode and very black in dark mode
+   ... make it a bit colourful, use the colours of my design". The light theme
+   was cream on white with near-identical sections; the dark theme was a
+   blue-black (hue 210) found nowhere in the brand. This pass keeps the brand's
+   two colours -- olive (75 40% 25%) and gold (45 60% 50%) -- and uses them as
+   surfaces, not only as accents:
+   - light: a warmer cream page, warm-white cards, olive-tinted muted bands,
+     and secondary text a step darker (40 8% 38%), so it keeps at least
+     4.5:1 (WCAG AA) on every new band -- the old 40 5% 45% measured 4.27:1
+     on the cream page;
+   - dark: olive-charcoal (hue 80, a little lighter) in place of blue-black;
+   - .tc-band-deep (homepage "How We Work") and the site footer: deep olive
+     with cream text and gold accents, by redefining the colour tokens inside
+     them, so every element in them follows without per-element rules;
+   - .tc-band-gold (homepage trust strip): a soft gold wash;
+   - .tc-band-olive (homepage "Who Are You Sourcing For?"): a soft olive wash;
+   - .tc-ico: the line icons that replaced emoji (scripts/site_icons.py).
+   Screen only: the PDFs are printed from these same pages and stylesheet, and
+   keep their white paper. */
+@media screen {
+  :root {
+    --background: 40 33% 96%;
+    --card: 40 50% 99%;
+    --card-border: 40 22% 87%;
+    --border: 40 18% 84%;
+    --muted: 75 18% 89%;
+    --muted-foreground: 40 8% 38%;
+    --accent: 75 25% 88%;
+    --popover: 40 50% 99%;
+  }
+  .dark {
+    --background: 80 13% 11%;
+    --foreground: 45 25% 93%;
+    --card: 80 11% 15%;
+    --card-foreground: 45 25% 93%;
+    --card-border: 80 9% 22%;
+    --border: 80 9% 23%;
+    --muted: 80 10% 18%;
+    --muted-foreground: 60 9% 70%;
+    --accent: 75 30% 20%;
+    --input: 80 9% 24%;
+    --popover: 80 11% 15%;
+  }
+
+  .tc-band-deep,
+  footer.mt-12 {
+    --background: 75 40% 17%;
+    --foreground: 45 30% 94%;
+    --card: 75 32% 22%;
+    --card-foreground: 45 30% 94%;
+    --card-border: 75 25% 30%;
+    --border: 75 22% 30%;
+    --muted: 75 25% 24%;
+    --muted-foreground: 60 14% 78%;
+    --primary: 45 62% 58%;
+    --primary-foreground: 75 40% 14%;
+    --secondary: 45 62% 58%;
+    --secondary-foreground: 75 40% 14%;
+    --accent: 75 30% 26%;
+    --accent-foreground: 45 30% 94%;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  .tc-band-deep {
+    background-image: radial-gradient(60% 80% at 15% 0%, hsl(45 60% 50% / 0.10), transparent 70%),
+                      radial-gradient(50% 70% at 100% 100%, hsl(75 40% 30% / 0.55), transparent 70%);
+  }
+  .dark .tc-band-deep,
+  .dark footer.mt-12 { --background: 75 35% 15%; --card: 75 28% 19%; --muted: 75 22% 21%; }
+  footer.mt-12 { border-top: 3px solid hsl(45 60% 50%); }
+
+  .tc-band-gold {
+    background-image: linear-gradient(180deg, hsl(45 60% 50% / 0.13), hsl(45 60% 50% / 0.05));
+    border-color: hsl(45 60% 50% / 0.25);
+  }
+  .dark .tc-band-gold { background-image: linear-gradient(180deg, hsl(45 60% 50% / 0.08), hsl(45 60% 50% / 0.03)); }
+
+  .tc-band-olive { background-image: linear-gradient(180deg, hsl(75 35% 40% / 0.11), hsl(75 35% 40% / 0.05)); }
+  .dark .tc-band-olive { background-image: linear-gradient(180deg, hsl(75 35% 40% / 0.14), hsl(75 35% 40% / 0.06)); }
+
+  .tc-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    vertical-align: top;
+    color: hsl(var(--primary));
+    background: hsl(var(--secondary) / 0.16);
+    box-shadow: inset 0 0 0 1px hsl(var(--secondary) / 0.35);
+  }
+  .tc-ico svg { width: 1.5rem; height: 1.5rem; }
+  .dark .tc-ico { color: hsl(var(--secondary)); }
+  /* inside the "How We Work" step circles the circle is already the badge */
+  .rounded-full > .tc-ico { width: auto; height: auto; background: none; box-shadow: none; }
+}
