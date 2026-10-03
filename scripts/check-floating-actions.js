@@ -184,16 +184,17 @@ for (const gen of ['scripts/generate-product-pages.py']) {
 // The header between laptop widths (2026-10-02, two rows 2026-10-03). The
 // English header needs 1242px at full size; it tightens from 1024 to 1279px
 // (1182px, with the Facebook pill's label kept), and from 1024 to 1199px the
-// English menu moves to a second header row instead of the drawer. site-nav.js
+// menu moves to a second header row in both languages (English had the drawer). site-nav.js
 // switches at 1024px in both languages. Without these, a 1024-1240px window
 // scrolled sideways and cut the logo off, and then hid the menu in a drawer.
 {
   const css = fs.readFileSync(path.join(ROOT, 'assets', 'index-Dw0yUE42.css'), 'utf8');
   const nav = fs.readFileSync(path.join(ROOT, 'assets', 'site-nav.js'), 'utf8');
-  t('the header tightens between 1024 and 1279px, and English puts the menu on a second row below 1200px',
+  const band = (css.match(/@media \(min-width: 1024px\) and \(max-width: 1199\.98px\) \{[\s\S]*?\n\}/) || [''])[0];
+  t('the header tightens between 1024 and 1279px, and puts the menu on a second row below 1200px, in both languages',
     /@media \(min-width: 1024px\) and \(max-width: 1279\.98px\) \{\s*\.tc-nav \{ gap:/.test(css) &&
-    /@media \(min-width: 1024px\) and \(max-width: 1199\.98px\) \{\s*html\[lang="en"\] header \.container \{ flex-wrap: wrap; height: auto;[^}]*\}[\s\S]*?html\[lang="en"\] header \.container > \.tc-nav \{[^}]*order: 3;[^}]*flex-basis: 100%;/.test(css) &&
-    !/html\[lang="en"\] \.tc-nav \{ display: none; \}/.test(css));
+    /^@media[^{]*\{\s*header \.container \{ flex-wrap: wrap; height: auto;[^}]*\}[\s\S]*?\n  header \.container > \.tc-nav \{[^}]*order: 3;[^}]*flex-basis: 100%;/.test(band) &&
+    !/html\[lang=/.test(band) && !/\.tc-nav \{ display: none; \}\s*html/.test(css));
   t('   and the Facebook pill keeps its "Follow" label at every desktop width',
     !/@media \(min-width: 1024px\)[^{]*\{[^@]*tc-social-pill-label \{ display: none; \}/.test(css));
   t('   and the menu script switches at 1024px in both languages',

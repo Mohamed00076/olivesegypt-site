@@ -274,11 +274,12 @@ header .container {
      Facebook "Follow" pill keeps its label (owner, 2026-10-02: an icon-only
      version on laptops read as the old square icon). English then needs
      1182px, Arabic 939px.
-   - 1024-1199px, English only: two rows (owner, 2026-10-03, who saw the
-     drawer on a laptop and wanted the menu shown). The logo and the buttons
-     keep the 4rem top row; the full menu sits centred on a 2.5rem row under
-     it. Until then this band kept the tablet drawer. site-nav.js switches
-     at 1024px in both languages.
+   - 1024-1199px: two rows, in both languages (owner, 2026-10-03, who saw
+     the English drawer on a laptop and wanted the menu shown, then asked for
+     the two headers to be consistent). The logo and the buttons keep the
+     4rem top row; the full menu sits centred on a 2.5rem row under it. Until
+     then English kept the tablet drawer here and Arabic, which fits, showed
+     one row. site-nav.js switches at 1024px in both languages.
    From 1280px nothing changes.
    The menu sits right after the company name, a fixed gap away, in both
    languages (owner, 2026-10-03). It used to be centred between the name and
@@ -293,9 +294,9 @@ header .container {
   header .container > .tc-nav { margin-inline-start: 0.5rem; }
 }
 @media (min-width: 1024px) and (max-width: 1199.98px) {
-  html[lang="en"] header .container { flex-wrap: wrap; height: auto; row-gap: 0; }
-  html[lang="en"] header .container > a:first-child { height: 4rem; }
-  html[lang="en"] header .container > .tc-nav {
+  header .container { flex-wrap: wrap; height: auto; row-gap: 0; }
+  header .container > a:first-child { height: 4rem; }
+  header .container > .tc-nav {
     order: 3;
     flex-basis: 100%;
     height: 2.5rem;
@@ -304,7 +305,8 @@ header .container {
     margin-inline: 0;
     border-top: 1px solid hsl(var(--border));
   }
-  html[lang="en"] main [id] { scroll-margin-top: calc(6.5rem + 1px); }
+  /* html raises it above the base main [id] rule further down this file */
+  html main [id] { scroll-margin-top: calc(6.5rem + 1px); }
 }
 /* Arabic letters read smaller than Latin capitals at the same pixel size, so
    the Arabic company name and its subtitle are set a step larger than the
