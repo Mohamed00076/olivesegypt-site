@@ -544,8 +544,10 @@ html[lang="ar"] header .container > a:first-child > div > span:last-child { font
    recognised.
 
    Solid rather than tinted because a comparison between two quiet buttons
-   tells you nothing. White on #1877f2 is 3.8:1 -- above the 3:1 required for
-   large or bold text at this weight, and the label is 13px semibold.
+   tells you nothing. The blue is Meta's current brand blue, #0866ff: white
+   on it is 4.82:1. (Until 2026-10-03 it was #1877f2 at 4.23:1, recorded here
+   as passing the 3:1 large-text rule; a 13px semibold label is not large
+   text and needs 4.5:1. Found by the axe-core sweep.)
 
    Dark mode lifts the blue rather than darkening it: the header is near-black
    there, so the same blue reads as a hole rather than a button.
@@ -557,8 +559,8 @@ html[lang="ar"] header .container > a:first-child > div > span:last-child { font
   flex-shrink: 0;
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
-  background: #1877f2;
-  border: 1px solid #1877f2;
+  background: #0866ff;
+  border: 1px solid #0866ff;
   color: #fff;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -568,12 +570,12 @@ html[lang="ar"] header .container > a:first-child > div > span:last-child { font
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 .tc-social-pill:hover {
-  background: #0f62d0;
-  border-color: #0f62d0;
+  background: #0756d6;
+  border-color: #0756d6;
   transform: translateY(-1px);
 }
 .tc-social-pill:focus-visible {
-  outline: 2px solid #1877f2;
+  outline: 2px solid #0866ff;
   outline-offset: 2px;
 }
 .tc-social-pill svg { width: 15px; height: 15px; flex-shrink: 0; }
@@ -895,4 +897,49 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   .dark main section:has(h1):not(.tc-home-hero) {
     background-image: linear-gradient(135deg, hsl(75 35% 40% / 0.18) 0%, hsl(75 35% 40% / 0.06) 45%, hsl(45 60% 50% / 0.08) 100%);
   }
+
+  /* Accessibility sweep (2026-10-03, owner "do 1, 2 and 3"). axe-core 4.10
+     (WCAG 2.1 A/AA) on all 90 sitemap pages, light and dark: 337 contrast
+     failures on 46 pages, nearly all from a few shared colours.
+     - Gold buttons (bg-secondary): white on gold was 2.31:1. Dark olive
+       text, as the cookie banner's gold button already uses: 5.78:1.
+     - Dark mode, olive: --primary was 75 40% 40%, so olive text on the dark
+       surfaces measured 4.0-4.4:1 and white on olive buttons 3.6:1. A
+       lighter olive with dark olive text on it: text 6.7-8.1:1, buttons
+       7.2:1. .tc-cta-primary follows it (it pinned a dark olive under the
+       old white text).
+     - Light mode, small gold text (text-secondary eyebrows, "Minimum order",
+       "Partner", privacy tags): 2.0-2.3:1. A deeper gold for text only,
+       42 70% 30%: 5.2:1 or more. Gold surfaces are unchanged, and gold text
+       stays the brand gold where the background is dark.
+     - "STEP 01" labels (text-primary/60): 2.75:1 at 60%; full olive: 6.7:1. */
+  :root { --secondary-foreground: 75 40% 14%; }
+  .dark {
+    --primary: 75 45% 55%;
+    --primary-foreground: 75 40% 12%;
+    --ring: 75 45% 55%;
+    --secondary-foreground: 75 40% 14%;
+  }
+  .dark .tc-cta-primary { background-color: hsl(var(--primary)); }
+  .dark .tc-cta-primary:hover { background-color: hsl(75 45% 50%); }
+  .text-secondary { color: hsl(42 70% 30%); }
+  .dark .text-secondary,
+  .tc-band-deep .text-secondary,
+  footer.mt-12 .text-secondary,
+  .bg-primary .text-secondary,
+  .from-primary .text-secondary { color: hsl(var(--secondary)); }
+  .text-primary\/60 { color: hsl(var(--primary)); }
+  /* The Market Brief's subscribe button had its own darker gold (above,
+     45 60% 32%) so that white text could pass. With dark olive text on gold
+     it takes the standard gold like every other gold button: 5.78:1. */
+  #newsletter-submit { background-color: hsl(var(--secondary)); }
+  #newsletter-submit:hover { background-color: hsl(45 60% 45%); }
+  /* Small notes at 75% opacity on olive cards (/contact, "WhatsApp
+     available 24/7") measured 4.48:1 light and 3.6:1 dark; 90% passes. */
+  .bg-primary .opacity-75 { opacity: 0.9; }
+  /* The lighter dark-mode olive is for buttons and links. Large olive
+     surfaces (CTA bands, the /contact card, the announcement bar, badges)
+     would turn bright lime with it, so in dark mode they take the deep olive
+     of the other bands with cream text (cream on it: about 12:1). */
+  .dark :is(section, div, aside, p).bg-primary { --primary: 75 35% 17%; --primary-foreground: 45 30% 94%; }
 }
