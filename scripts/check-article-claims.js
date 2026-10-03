@@ -206,7 +206,9 @@ t('no page or guide promises a reply in "one business day"; the reply time is 24
 // article); each one must appear, word for word, on /media/news in the same
 // language, and the empty-state box must not be shown while there is news.
 const newsCards = (html) => [...html.matchAll(/<article class="group rounded-2xl[\s\S]*?<\/article>/g)]
-  .map((m) => m[0]).filter((c) => !/href=/.test(c));
+  // the card's heading level follows its page (h3 under /media's section
+  // headings, h2 directly under /media/news's h1), so it is not compared
+  .map((m) => m[0].replace(/<(\/?)h[23]\b/g, '<$1h')).filter((c) => !/href=/.test(c));
 const newsDrift = [];
 for (const pre of ['', 'ar/']) {
   const onMedia = newsCards(read(`${pre}media/index.html`));
