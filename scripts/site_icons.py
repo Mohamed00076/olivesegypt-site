@@ -32,6 +32,16 @@ ICONS = {
     'utensils-crossed': '<path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/><path d="m2.1 21.8 6.4-6.3"/><path d="m19 5-7 7"/>',
 }
 
+# Packaging formats (2026-10-03). Lucide has no jar, tin can, bucket or barrel, so
+# these four were drawn for this site in the same style (24 grid, round caps and
+# joins); they are not Lucide icons.
+PACK_ICONS = {
+    'pack-jar': '<rect x="7" y="2.5" width="10" height="3" rx="1"/><path d="M8.5 5.5v1c-2 .7-3.5 2.4-3.5 4.6V19a2.5 2.5 0 0 0 2.5 2.5h9A2.5 2.5 0 0 0 19 19v-7.9c0-2.2-1.5-3.9-3.5-4.6v-1"/><path d="M5 12.5h14M5 17.5h14"/>',
+    'pack-tin': '<ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v14c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5"/><path d="M5 8.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5M5 17c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>',
+    'pack-bucket': '<path d="M6.5 8C6.5 3.5 17.5 3.5 17.5 8"/><path d="M3.5 8h17"/><path d="M4.5 8l1.6 11.6A2 2 0 0 0 8.1 21.5h7.8a2 2 0 0 0 2-1.9L19.5 8"/><path d="M5.3 12.5h13.4"/>',
+    'pack-barrel': '<path d="M7 2.5h10c1.4 3 2 6.2 2 9.5s-.6 6.5-2 9.5H7c-1.4-3-2-6.2-2-9.5s.6-6.5 2-9.5Z"/><path d="M5.5 8h13M5.5 16h13"/><path d="M12 2.5v19"/>',
+}
+
 # What each emoji meant on the page, as an icon.
 EMOJI = {
     '\U0001F1EA\U0001F1EC': 'map-pin',      # Egyptian origin / Egypt-based
@@ -60,3 +70,9 @@ def icon_html(name):
     return ('<span class="tc-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" '
             'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" '
             f'stroke-linejoin="round">{ICONS[name]}</svg></span>')
+
+
+def pack_icon_html(name):
+    return ('<span class="tc-ico tc-ico-pack" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" '
+            'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" '
+            f'stroke-linejoin="round">{PACK_ICONS[name]}</svg></span>')
