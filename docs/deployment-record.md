@@ -6406,6 +6406,102 @@ Each deploy reverts on its own with `git revert -m 1 <commit>`:
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 121 and 122 — Colour pass follow-ups (PRs #239 and #240)
+
+**Previous recorded deploy:** `501a542` (Deploy 120, PR #238)
+**Approvals:**
+- "marge" (#239), read as "merge"
+- "do 1, 2 and 3" for the follow-ups; "ok" was not taken as approval and
+  was answered with a request for "merge"; then "merge" (#240)
+
+All on 2026-10-03 (+0300).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 121 | #239 | `8b1afdb` | 2026-10-03 15:06:45 | 2 | +169 / −3 | Notes only |
+| 122 | #240 | `1ac18ab` | 2026-10-03 15:15:44 | 4 | +82 / −44 | Site change |
+
+Files and lines are each merge against the `main` it landed on. Netlify's
+deploy preview succeeded for #240 before it merged. Whether each production
+build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 121** recorded Deploys 117 to 120 and closed C-149.
+
+### What the site change did
+
+- **Deploy 122 — Colour pass follow-ups (#240).** Additions to the
+  screen-only stylesheet block from Deploy 120:
+  1. **Category labels readable** (pre-existing defect). The 90 labels
+     ("Green Olive", "Black Olive", "Specialty" …) were white on a 20% gold
+     tint: 1.19:1 on a light card. They now use dark olive text, about
+     7.5:1. Dark mode keeps white (9.9:1); inside the deep-olive bands
+     they are cream.
+  2. **Market Brief panel in dark mode:** the deep olive of the other
+     bands with a soft gold glow, in place of the bright lime gradient
+     (white text 3.6:1 before, 10–13:1 now).
+     - **Defect found while checking it (pre-existing):** in dark mode the
+       panel's white form fields took cream text. Typed email, company and
+       country and the "Buyer type" choice were practically invisible.
+       They now have dark text; confirmed by typing into the field in EN
+       and AR.
+  3. **Page headers:** the section holding each inner page's `h1` gets a
+     soft olive-to-gold wash and a gold hairline, through one rule
+     (`main section:has(h1):not(.tc-home-hero)`).
+     - **Measured:** exactly one section on each page checked.
+     - **Excluded:** the home pages, via the new `tc-home-hero` class on
+       their hero.
+     - **Unchanged:** product pages, /contact and /sample, whose `h1` sits
+       outside a section.
+
+### Owner decisions
+
+- **Approved:** items 1–3 as proposed ("do 1, 2 and 3"), and the form-text
+  fix with them.
+- **Still proposed, not done:**
+  - photographs for four products and the four packaging formats
+  - certificates, once verified
+
+### Claim register
+
+No change. It stands at 149 claims, and C-55 remains the only
+`needs-review` row.
+
+### Testing method
+
+`npm test`: all 60 checks, passing on the branch and on `main` at
+`1ac18ab`. Beyond the suite:
+- **Chromium,** 1280px, light and dark: the labels, the Market Brief panel
+  and its fields (computed text colour `rgb(31, 38, 46)` on white), and
+  page headers on ten pages. No horizontal overflow.
+- **Contrast** computed (WCAG) for each pair.
+- **PDFs:** none of the 20 PDF source pages uses the label style. All 42
+  PDFs were rebuilt and compared page by page (text and pixels): all
+  identical. Committed PDFs kept; only the stylesheet hash changed in
+  `scripts/guide-pdfs.json`.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+`git revert -m 1 1ac18ab` undoes Deploy 122. That also brings back the
+unreadable labels and the invisible dark-mode form text. Deploy 121 is
+documentation only.
+
+### Known limitations shipped with Deploys 121 and 122
+
+- **Older browsers:** a browser without CSS `:has()` shows the plain page
+  header (Chrome 105+, Safari 15.4+ and Firefox 121+ support it).
+- **Placeholder imagery** remains for four products and four packaging
+  formats.
+- **`www.olivesegypt.com` does not load:** the GoDaddy DNS steps are with
+  the owner.
+- **Enquiry emails** (outstanding item 10) are unchanged.
+- **Not yet confirmed on the live site:** all of the above.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -6419,7 +6515,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 120 (2026-10-03).**
+**Unchanged through Deploy 122 (2026-10-03).**
 
 ## Outstanding, unresolved by this document
 
@@ -6627,7 +6723,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 120 (2026-10-03).** The owner will set the values later.
+    **Unchanged at Deploy 122 (2026-10-03).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
