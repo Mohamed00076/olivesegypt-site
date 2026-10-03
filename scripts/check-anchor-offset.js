@@ -49,8 +49,18 @@ const t = (name, cond, extra) => {
 };
 
 const css = fs.readFileSync(path.join(ROOT, CSS), 'utf8');
-const rules = [...css.matchAll(/(^|[}\s])main \[id\]\s*\{[^}]*scroll-margin-top:\s*([^;}]+)/g)].map((m) => m[2].trim());
+// the base rule, not the two-row English one below, which is prefixed html[lang="en"]
+const rules = [...css.matchAll(/(^|[}\s])(?<!html\[lang="en"\] )main \[id\]\s*\{[^}]*scroll-margin-top:\s*([^;}]+)/g)].map((m) => m[2].trim());
 t(`${CSS} sets main [id] { scroll-margin-top: ${OFFSET} }, once`, rules.length === 1 && rules[0] === OFFSET, rules.join(', ') || 'not set');
+// From 1024 to 1199px the English header has two rows (2026-10-03): the 4rem
+// top row, a 2.5rem menu row (its 1px top border inside that height), and the
+// header's own 1px border -- 6.5rem + 1px, set for that band and language only.
+const TWO_ROW = 'calc(6.5rem + 1px)';
+const twoRow = [...css.matchAll(/html\[lang="en"\] main \[id\]\s*\{\s*scroll-margin-top:\s*([^;}]+)/g)].map((m) => m[1].trim());
+const band = (css.match(/@media \(min-width: 1024px\) and \(max-width: 1199\.98px\) \{[\s\S]*?\n\}/) || [''])[0];
+t(`   and the two-row English header (1024-1199px) gets ${TWO_ROW}, inside that band only`,
+  twoRow.length === 1 && twoRow[0] === TWO_ROW && band.includes(`html[lang="en"] main [id] { scroll-margin-top: ${TWO_ROW}; }`)
+  && /height: 4rem;/.test(band) && /height: 2\.5rem;/.test(band) && /border-top: 1px solid/.test(band), twoRow.join(', ') || 'not set');
 t('   and no scroll-padding on html, which scrolls the page when the header takes focus',
   !/(^|[}\s,])(html|:root)\s*\{[^}]*scroll-padding/.test(css));
 
