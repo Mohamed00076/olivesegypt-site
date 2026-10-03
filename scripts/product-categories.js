@@ -2,7 +2,7 @@
 
 /*
  * The variety category of each product: what the /catalog and /ar/catalog
- * "All / Green / Black / Specialty" row filters on.
+ * "All / Green / Black / Pickled Vegetables" row filters on.
  *
  * Until 2026-09-28 this file was scripts/product-facets.js and also defined
  * Part B's buyer-intent facets ("Filter by what you need": Retail-ready,
@@ -14,7 +14,7 @@
  */
 
 /*
- * The variety category behind the /catalog "All / Green / Black / Specialty"
+ * The variety category behind the /catalog "All / Green / Black / Pickled Vegetables"
  * row. This is not a new taxonomy -- it is the badge each product card
  * already displays, written down so the filter and the badge cannot disagree.
  *
@@ -44,7 +44,9 @@ const CATEGORY = {
 const CATEGORY_BADGES = {
   green: { en: ['Green Olive'], ar: ['\u0632\u064a\u062a\u0648\u0646 \u0623\u062e\u0636\u0631', '\u0632\u064a\u062a\u0648\u0646 \u0645\u062d\u0634\u0648'] },
   black: { en: ['Black Olive'], ar: ['\u0632\u064a\u062a\u0648\u0646 \u0623\u0633\u0648\u062f'] },
-  specialty: { en: ['Specialty'], ar: ['\u0645\u062e\u0644\u0644\u0627\u062a', '\u0645\u0642\u0628\u0644\u0627\u062a'] },
+  // "Pickled Vegetables" group (owner, 2026-10-03; was "Specialty & Antipasti"): each
+  // card says what it is -- a pickled pepper, or the artichoke, which is marinated.
+  specialty: { en: ['Pickled Pepper', 'Marinated Vegetable'], ar: ['\u0641\u0644\u0641\u0644 \u0645\u062e\u0644\u0644', '\u062e\u0636\u0631\u0648\u0627\u062a \u0645\u062a\u0628\u0651\u0644\u0629'] },
 };
 
 module.exports = { CATEGORY, CATEGORY_BADGES };

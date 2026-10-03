@@ -40,7 +40,7 @@
   "ar/downloads/product-catalog-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -83,12 +83,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "6e10d96414d6fd478596da328ad74368d314a148591ef2f460dae5bc3046e376",
-    "pdf": "ba81bd8da9d48ea6747d1b0f7adb44d9d89d412cad04011c50d263ed5c1176e3"
+    "pdf": "77c77fbeccc4a1ebe83a649de84510842d12cac79e519ec1eb93d50a593c55ec"
   },
   "ar/downloads/spec-sheets/aggizi-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -136,7 +136,7 @@
   "ar/downloads/spec-sheets/all-spec-sheets-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -179,12 +179,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "6e10d96414d6fd478596da328ad74368d314a148591ef2f460dae5bc3046e376",
-    "pdf": "c09c9482573490296918db8f9961ef9935da73e3921f7c8e1c1d8d4f74babba8"
+    "pdf": "47a14ef6b8990dba5613308cb970fc1c35f3ca5b068b3fa627a1ca9f28bcd8b1"
   },
   "ar/downloads/spec-sheets/kalamata-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -232,7 +232,7 @@
   "ar/downloads/spec-sheets/manzanilla-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -280,7 +280,7 @@
   "ar/downloads/spec-sheets/marinated-artichoke-hearts-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -323,12 +323,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "6e10d96414d6fd478596da328ad74368d314a148591ef2f460dae5bc3046e376",
-    "pdf": "d2c2fc34c0035f67e130e1fbdbc5b4eb865bdb41dad461adb21bc4adb7e4a5c8"
+    "pdf": "bf47a5d5f67b644d6dee5dfecc5bf71f32e7466dcd1b5c756a90381a13ec9cdc"
   },
   "ar/downloads/spec-sheets/natural-black-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -376,7 +376,7 @@
   "ar/downloads/spec-sheets/oxidized-black-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -424,7 +424,7 @@
   "ar/downloads/spec-sheets/pepper-stuffed-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -472,7 +472,7 @@
   "ar/downloads/spec-sheets/pepperoncini-peppers-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -515,12 +515,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "6e10d96414d6fd478596da328ad74368d314a148591ef2f460dae5bc3046e376",
-    "pdf": "a7c0749c23bbc5bf546f0337cbe325b5ba97fa191ea905566e4aa696f9b3bf80"
+    "pdf": "c7ee95f2ced9e5926c6f2537d11ade635ff1cb42bdeffb14baa8c128acbaef6c"
   },
   "ar/downloads/spec-sheets/sliced-jalapeno-peppers-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -563,12 +563,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "6e10d96414d6fd478596da328ad74368d314a148591ef2f460dae5bc3046e376",
-    "pdf": "89d6631ad23fdcc3b1762651a65781217093bc34b5ac6a7d6432e51d8b926e2e"
+    "pdf": "1f87ee638f90bac21f21795dad156caf8c37fd5efd38544c71e8df266881f62d"
   },
   "ar/downloads/spec-sheets/toffahi-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "126f5b8cbbd56d3292840b9cfa9f23b7b6bd77f6f3843cbabaeaa02458eed9d8",
+      "ar/catalog/print/index.html": "69adcfbd13d16008647748e1f04fa3f683c9daca4d7a3032ec050014609945f8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -653,7 +653,7 @@
   "downloads/product-catalog-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -695,12 +695,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "03abb61f9145d9c2855642d280b30e146e53d26cb270f3af364671aae95b9c7c",
-    "pdf": "b993c3f6317880189147f3012d332af5bdc0b5e5b7fe7e9c5e129174f094dea0"
+    "pdf": "28a0d3bd9f132909c48d7d8216a5cc4d7084e560afb2861c9064bd87f1f24e6c"
   },
   "downloads/spec-sheets/aggizi-green-olives-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -747,7 +747,7 @@
   "downloads/spec-sheets/all-spec-sheets-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -789,12 +789,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "03abb61f9145d9c2855642d280b30e146e53d26cb270f3af364671aae95b9c7c",
-    "pdf": "a7461194004ee193f2e05fbd94f9a19b003c3bf6afc6516e2996461e43579380"
+    "pdf": "af7714177327be8337bdd25eb0ff874848452e58f235fb5be7eaaf92826f3562"
   },
   "downloads/spec-sheets/kalamata-olives-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -841,7 +841,7 @@
   "downloads/spec-sheets/manzanilla-green-olives-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -888,7 +888,7 @@
   "downloads/spec-sheets/marinated-artichoke-hearts-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -930,12 +930,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "03abb61f9145d9c2855642d280b30e146e53d26cb270f3af364671aae95b9c7c",
-    "pdf": "b4609b327af3f41c91c2fb4336c56646ce9851a7a19cbb08424f9903cb3d0cca"
+    "pdf": "0316b3b87480297d668908d14d5103b5aed34aaa11ebd57c818477e28ea86e9d"
   },
   "downloads/spec-sheets/natural-black-olives-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -982,7 +982,7 @@
   "downloads/spec-sheets/oxidized-black-olives-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -1029,7 +1029,7 @@
   "downloads/spec-sheets/pepper-stuffed-green-olives-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -1076,7 +1076,7 @@
   "downloads/spec-sheets/pepperoncini-peppers-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -1118,12 +1118,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "03abb61f9145d9c2855642d280b30e146e53d26cb270f3af364671aae95b9c7c",
-    "pdf": "db4a628132941c08d62e9a4f493d18cdad96105f8761bc4c7f825a0c4635fac6"
+    "pdf": "8774a052d121018c5822188cd727392db67b73eecd40d240519287306d2c708e"
   },
   "downloads/spec-sheets/sliced-jalapeno-peppers-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -1165,12 +1165,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "03abb61f9145d9c2855642d280b30e146e53d26cb270f3af364671aae95b9c7c",
-    "pdf": "db1e14d693b416d23bc7a6b414408894317fa50ebc5f73bd64da83a18182856c"
+    "pdf": "55e445668db808557bb71b285efe208248152439a07564f433d86ace7f51e456"
   },
   "downloads/spec-sheets/toffahi-green-olives-en.pdf": {
     "source": "catalog/print/index.html",
     "inputs": {
-      "catalog/print/index.html": "4cc549661375b6eeb784c2f936c768c37ee4f17bf86a22b8a537682e0e9cb061",
+      "catalog/print/index.html": "a9c212c0fcaa4aba30d02c5a98d9ff9a32a668ffe05b7989cb674d8d5517eeaa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -1255,7 +1255,7 @@
   "netlify/functions/_guides/ar/company-overview.pdf": {
     "source": "netlify/functions/_guides/ar/company-overview.html",
     "inputs": {
-      "netlify/functions/_guides/ar/company-overview.html": "4c23164b95309e62c9294b026279c5e8d8b251ea4f11a5c6ed830e3a8238d58a",
+      "netlify/functions/_guides/ar/company-overview.html": "213786e4f59084f04ae43a88e7456af44a5ac615890fa0258c691a6cb883618a",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/index-Dw0yUE42.css": "1747e17048bb15ca5346d4a26fd28f21f6bd177de0172812c8f1bed2b7af1ee8",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
@@ -1288,12 +1288,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "35221a20e0d4b34dcc086e0e4e1f3a1c72111827bef73d6ae0dcb336a93d7577",
-    "pdf": "d1b9620e2075b78596af46d433f63e1986efa714cf363122d5781bdc2048efc7"
+    "pdf": "53fbc0a4ae13e97c4f0e8fac78e978488564d8c72ee902c581bf7f87d4d05193"
   },
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
     "inputs": {
-      "scripts/export-catalog-source-ar.html": "4e9bdbe7b1592faa5114ddecb0c10fb33ac241b30e11e4a9a081f59e5fd5aed3",
+      "scripts/export-catalog-source-ar.html": "64f188f460abd43b288ef45103c7d1c09335ca2e23ac985854320cbdc6421e85",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -1336,7 +1336,7 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "d524c42a01d563dc7d1ce2cedab5b25f0c6db6cea89108276725c711fd36f17d",
-    "pdf": "2cf468c15c777b2015fe8b2e2b28647e816299c3f9768b93664e81fe8c9fa080"
+    "pdf": "f7cd60a05652efcc9ccafd0fbbdd77b92c706dac8ef5037669043a0e975362fd"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/ar/export-documentation-checklist.html",
@@ -1568,7 +1568,7 @@
   "netlify/functions/_guides/en/company-overview.pdf": {
     "source": "netlify/functions/_guides/en/company-overview.html",
     "inputs": {
-      "netlify/functions/_guides/en/company-overview.html": "dfc0a86fc8a57b002f6c8b8adc8313efedf9dbca6d4f6dc1bec196d8aec34288",
+      "netlify/functions/_guides/en/company-overview.html": "d80438b610bbc6af69f1f7600495b8bf612b3f4a1612bd7e59a3b74b4af0c02f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/index-Dw0yUE42.css": "1747e17048bb15ca5346d4a26fd28f21f6bd177de0172812c8f1bed2b7af1ee8",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
@@ -1600,12 +1600,12 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "e74595cd589c5403ac4b543f284a2def63eab8676933b055fb605b4a1c6f0a50",
-    "pdf": "90637a17a6b806472bc6050a68515aa3b2da393b98bf006db938e8528b5445b4"
+    "pdf": "ca58f8b9cdf228bf4978c2ea6c383e7c1d35ab57cdf3843e6cab719be5421525"
   },
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
     "inputs": {
-      "scripts/export-catalog-source.html": "8896ebf69d1165ff63a2a144fe9cd071401fe2f396f3a727f7b31d4a730ea63a",
+      "scripts/export-catalog-source.html": "e7549b72db3a4d75ff4759628a0287885c9d1f05666c51bf7895c91d2ccba2c5",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -1648,7 +1648,7 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b"
     },
     "render": "77135f24a9fcb60065ec9438139608c699f3832f5253f612b1bee524c534c3fa",
-    "pdf": "7b3851ed9e866a2c613a4c15b86d81fb097b9524ee02f8ed54accf4a7b3a9cc3"
+    "pdf": "f51e128aabcbcfd6819f22f103b60e3c00fc014722d935366dc39c8655de685b"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/en/export-documentation-checklist.html",

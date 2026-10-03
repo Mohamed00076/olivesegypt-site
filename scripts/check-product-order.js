@@ -244,7 +244,7 @@ for (const { key, dir } of require('./product-order').PRODUCTS) {
 /*
  * The two export-catalogue PDFs are the one deliberate exception to the
  * canonical order, decided by the owner on 2026-09-05: they are grouped by
- * category (Green Olives / Black Olives & Stuffed / Specialty & Peppers)
+ * category (Green Olives / Black Olives & Stuffed / Pickled Vegetables)
  * rather than run in the site's priority order, and Kalamata leads the Black
  * Olives section rather than sitting second overall.
  *
