@@ -68,6 +68,57 @@ const LETTERHEAD_FILES = {
 const COLOUR = { primary: '#4c5926', muted: '#78756d', border: '#dddad5' };
 const LETTERHEAD_WIDTH_PX = 643;
 
+/*
+ * Arabic in the Arabic PDFs. The site's own font stacks have no Arabic face
+ * except the masthead's Noto Naskh Arabic, so most Arabic text was printed in
+ * whatever system font the build machine had (DejaVu Sans here), and the
+ * Naskh that was used is a variable font, which Chromium can only embed as a
+ * Type3 font with each letter's dots as separate, offset pieces. Copying text
+ * out of those PDFs gave reversed, broken fragments. Owner, 2026-10-03: "fix
+ * this".
+ *
+ * Amiri (static Regular and Bold, unmodified, SIL OFL; scripts/pdf-fonts,
+ * which the deploy prunes, so the site itself is unchanged) was chosen by
+ * measurement: of seven Arabic families printed through this same Chromium,
+ * it was the only one whose words came back whole and in reading order.
+ * It is mapped onto every family the Arabic sources name, for Arabic
+ * characters only, so Latin text, numbers and the layout keep their fonts.
+ */
+const PDF_ARABIC_FONTS = { regular: 'scripts/pdf-fonts/Amiri-Regular.ttf', bold: 'scripts/pdf-fonts/Amiri-Bold.ttf' };
+// The word space is in the range too: left in the Latin face, it split every
+// Arabic line into one-word runs, which PDF readers then put back together
+// left to right, reversing the word order.
+const ARABIC_RANGE = 'U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFE';
+// Amiri draws small for its size beside the Latin faces and the system font
+// it replaces; this brings its letters back to about the same visual size.
+const ARABIC_SIZE_ADJUST = '115%';
+// CSS composes a family from faces by unicode-range only among faces whose
+// style and weight descriptors are identical, so each Arabic face copies an
+// existing face's descriptors exactly: one per face the site's stylesheets
+// declare (Great Vibes, a script face never set on Arabic text, aside).
+// Weights up to 500 take Amiri Regular, 600 and above Amiri Bold.
+const ARABIC_PDF_SOURCES = ['assets/fonts/fonts.css', 'assets/index-Dw0yUE42.css'];
+function arabicPdfCss() {
+  const faces = new Map();
+  for (const file of ARABIC_PDF_SOURCES) {
+    const css = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    for (const [, body] of css.matchAll(/@font-face\s*\{([^}]*)\}/g)) {
+      const get = (prop, fallback) => ((body.match(new RegExp(`${prop}\\s*:\\s*([^;]+)`)) || [])[1] || fallback).trim();
+      const family = get('font-family', '').replace(/^['"]|['"]$/g, '');
+      if (!family || family === 'Great Vibes') continue;
+      const style = get('font-style', 'normal');
+      const weight = get('font-weight', '400');
+      faces.set(`${family}|${style}|${weight}`, { family, style, weight });
+    }
+  }
+  return [...faces.values()].map(({ family, style, weight }) => {
+    const file = parseInt(weight, 10) >= 600 ? PDF_ARABIC_FONTS.bold : PDF_ARABIC_FONTS.regular;
+    return `@font-face { font-family: '${family}'; src: url(/${file}) format('truetype'); font-style: ${style}; ` +
+      `font-weight: ${weight}; size-adjust: ${ARABIC_SIZE_ADJUST}; unicode-range: ${ARABIC_RANGE}; }`;
+  }).join('\n');
+}
+const ARABIC_PDF_CSS = arabicPdfCss();
+
 const LETTERHEAD_TEXT = {
   en: {
     dir: 'ltr', wordmark: 'TRIPLE COMPANY', tagline: 'for Industrial Development',
@@ -127,6 +178,7 @@ function letterheadSheet(locale) {
 <style>
   html, body { margin: 0; padding: 0; background: transparent; }
   .bar { width: ${LETTERHEAD_WIDTH_PX}px; box-sizing: border-box; font-family: ${sans}; }
+${locale === 'ar' ? ARABIC_PDF_CSS : ''}
 </style></head><body>
 <div id="foot" class="bar" style="display:flex;justify-content:space-between;align-items:center;padding:7px 0 2px;border-top:1px solid ${COLOUR.border};font-size:8.5px;letter-spacing:0.03em;color:${COLOUR.muted};">
   <span>${t.legal}</span><span dir="ltr">olivesegypt.com</span>
@@ -214,12 +266,13 @@ function renderFor(job) {
     // footers (styled like the letterhead's foot). Its cover carries the same
     // masthead as every other PDF (owner, 2026-10-02: one consistent header),
     // placed by the generator in place of the cover's own brand line.
-    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } }, css: '',
+    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } },
+      css: job.locale === 'ar' ? ARABIC_PDF_CSS : '',
       letterhead: letterheadSheet(job.locale), mastheadHtml: mastheadHtml(job.locale), masthead: 'catalogue-cover' };
   }
   return {
     pdf: LETTERHEAD_PDF,
-    css: job.kind === 'guide' ? GUIDE_PDF_CSS : PAGE_PDF_CSS,
+    css: (job.kind === 'guide' ? GUIDE_PDF_CSS : PAGE_PDF_CSS) + (job.locale === 'ar' ? ARABIC_PDF_CSS : ''),
     letterhead: letterheadSheet(job.locale),
     mastheadHtml: mastheadHtml(job.locale),
     masthead: 'first-page',
@@ -352,7 +405,8 @@ function fingerprint(job, root = ROOT) {
   // The letterhead is drawn with the logo and the site's fonts.
   const letterhead = renderFor(job).letterhead ? [LETTERHEAD_FILES.logo, LETTERHEAD_FILES.fonts,
     ...cssAssetsOf((read(LETTERHEAD_FILES.fonts) || '').toString('utf8'), LETTERHEAD_FILES.fonts)] : [];
-  const files = [...new Set([job.source, ...direct, ...viaCss, ...letterhead])];
+  const arabic = job.locale === 'ar' ? [PDF_ARABIC_FONTS.regular, PDF_ARABIC_FONTS.bold] : [];
+  const files = [...new Set([job.source, ...direct, ...viaCss, ...letterhead, ...arabic])];
   const inputs = {};
   for (const f of files) {
     const buf = read(f);
