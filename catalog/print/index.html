@@ -391,6 +391,7 @@
         if (!slug) return;
         var cards = document.querySelectorAll('#products .spec-card');
         var found = false;
+        var match = null;
         // ?product=all: every product's full sheet, one after another
         if (slug === 'all') {
           document.getElementById('products').classList.add('all-sheets');
@@ -402,6 +403,7 @@
         cards.forEach(function (card) {
           if (card.getAttribute('data-slug') === slug) {
             found = true;
+            match = card;
             // the download button offers this product's own sheet
             var pdf = document.getElementById('pdf-download');
             if (pdf && card.getAttribute('data-pdf')) pdf.setAttribute('href', card.getAttribute('data-pdf'));
@@ -418,6 +420,8 @@
           document.getElementById('doc-subtitle').textContent = 'Revised 2026-09-28';
           var meta = document.getElementById('doc-meta');
           if (meta) meta.hidden = true;
+          // The tab, and the title a PDF printed from this view carries, name the product.
+          document.title = match.querySelector('h2').textContent + ' \u2014 Product Specification Sheet | Triple Company for Industrial Development';
         }
       })();
     </script>

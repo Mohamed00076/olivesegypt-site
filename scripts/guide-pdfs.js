@@ -52,11 +52,12 @@ const GUIDE_SLUGS = [
  *
  * Chromium draws page headers and footers outside the page, where neither the
  * site's fonts nor embedded ones load: the text came out invisible, or in
- * whatever system font the machine had. So the generator draws the masthead
- * and foot below in an ordinary page, with the site's own fonts, captures
- * each as a high-resolution image, and places the images on every page. Only
- * the page number is live text. The result is the same on any machine that
- * rebuilds the PDFs.
+ * whatever system font the machine had. So the generator draws the foot
+ * below in an ordinary page, with the site's own fonts, captures it as a
+ * high-resolution image, and places the image on every page; the page number
+ * is live text over it. The masthead is printed inside page 1, where the
+ * fonts do load, so it is live text throughout (mastheadHtml). The result is
+ * the same on any machine that rebuilds the PDFs.
  *
  * Widths: A4 is 210mm; the 2cm side margins leave 170mm, drawn at 643px.
  */
@@ -81,12 +82,15 @@ const LETTERHEAD_TEXT = {
 };
 const CONTACT_LINE = 'sales@olivesegypt.com &middot; +20 100 604 5961';
 
-/**
- * The letterhead as an ordinary page, to be drawn with the site's fonts and
- * captured: #masthead and #foot are the two images. The foot leaves its
- * middle empty for the live page number.
+/*
+ * The masthead -- logo, wordmark, tagline, head-office address and contact
+ * line, over a green rule -- as live HTML. Unlike the foot it sits inside the
+ * page (see letterheadTemplates), where the site's fonts load, so the
+ * generator places it as real text: selectable, searchable and read by
+ * screen readers, where it used to be a picture of the same words (owner,
+ * 2026-10-03: each sheet "opens with real, selectable text").
  */
-function letterheadSheet(locale) {
+function mastheadHtml(locale) {
   const t = LETTERHEAD_TEXT[locale];
   const rtl = t.dir === 'rtl';
   const arabic = "'Noto Naskh Arabic'";
@@ -95,24 +99,35 @@ function letterheadSheet(locale) {
   const sans = `'Plus Jakarta Sans', ${arabic}, sans-serif`;
   const wordmark = rtl
     ? `<div style="font-family:${arabic},serif;font-weight:700;font-size:19px;line-height:1.25;color:${COLOUR.primary};">${t.wordmark}</div>
-       <div style="font-family:${arabic},sans-serif;font-size:10.5px;color:${COLOUR.muted};">${t.tagline}</div>`
+       <div style="font-family:${arabic},sans-serif;font-size:10.5px;line-height:1.5;color:${COLOUR.muted};">${t.tagline}</div>`
     : `<div style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:18px;line-height:1.1;color:${COLOUR.primary};letter-spacing:0.02em;">${t.wordmark}</div>
-       <div style="font-size:7.5px;text-transform:uppercase;letter-spacing:0.18em;color:${COLOUR.muted};margin-top:3px;">${t.tagline}</div>`;
+       <div style="font-size:7.5px;line-height:1.5;text-transform:uppercase;letter-spacing:0.18em;color:${COLOUR.muted};margin-top:3px;">${t.tagline}</div>`;
+  return `<div dir="${t.dir}" lang="${locale}" style="display:flex;justify-content:space-between;align-items:center;gap:18px;padding:4px 0 8px;border-bottom:2px solid ${COLOUR.primary};font-family:${sans};text-align:start;">
+  <div style="display:flex;align-items:center;gap:11px;">
+    <img src="/${LETTERHEAD_FILES.logo}" alt="" style="width:38px;height:46px;max-width:none;object-fit:contain;" />
+    <div>${wordmark}</div>
+  </div>
+  <div style="text-align:${rtl ? 'left' : 'right'};font-size:9px;line-height:1.65;color:${COLOUR.muted};">
+    ${t.address.join('<br/>')}<br/><span dir="ltr">${CONTACT_LINE}</span>
+  </div>
+</div>`;
+}
+
+/**
+ * The foot as an ordinary page, to be drawn with the site's fonts and
+ * captured as an image: it is printed by a page footer template, outside the
+ * page, where those fonts do not load. It leaves its middle empty for the
+ * live page number.
+ */
+function letterheadSheet(locale) {
+  const t = LETTERHEAD_TEXT[locale];
+  const sans = "'Plus Jakarta Sans', 'Noto Naskh Arabic', sans-serif";
   return `<!DOCTYPE html><html lang="${locale}" dir="${t.dir}"><head><meta charset="UTF-8">
 <link rel="stylesheet" href="/${LETTERHEAD_FILES.fonts}">
 <style>
   html, body { margin: 0; padding: 0; background: transparent; }
   .bar { width: ${LETTERHEAD_WIDTH_PX}px; box-sizing: border-box; font-family: ${sans}; }
 </style></head><body>
-<div id="masthead" class="bar" style="display:flex;justify-content:space-between;align-items:center;gap:18px;padding:4px 0 8px;border-bottom:2px solid ${COLOUR.primary};">
-  <div style="display:flex;align-items:center;gap:11px;">
-    <img src="/${LETTERHEAD_FILES.logo}" style="width:38px;height:46px;object-fit:contain;" />
-    <div>${wordmark}</div>
-  </div>
-  <div style="text-align:${rtl ? 'left' : 'right'};font-size:9px;line-height:1.65;color:${COLOUR.muted};">
-    ${t.address.join('<br/>')}<br/><span dir="ltr">${CONTACT_LINE}</span>
-  </div>
-</div>
 <div id="foot" class="bar" style="display:flex;justify-content:space-between;align-items:center;padding:7px 0 2px;border-top:1px solid ${COLOUR.border};font-size:8.5px;letter-spacing:0.03em;color:${COLOUR.muted};">
   <span>${t.legal}</span><span dir="ltr">olivesegypt.com</span>
 </div>
@@ -120,21 +135,20 @@ function letterheadSheet(locale) {
 }
 
 /**
- * The page templates, around the two captured images (PNG buffers).
+ * The page templates, around the captured foot (a PNG buffer).
  *
  * The masthead -- logo, name, address and contact line -- is printed once, at
  * the top of page 1 (owner, 2026-10-02: "just make it once at the top of page
  * 1 i want it to look proffessional"). A page header template repeats on
  * every page and cannot tell page 1 from the rest, so the masthead is not a
  * header template: the generator places it in the document itself, before
- * the first line (masthead below), and the header template is empty. The
+ * the first line (mastheadHtml above), and the header template is empty. The
  * slim foot -- company name, website, page number -- stays on every page.
  */
-function letterheadTemplates(masthead, foot) {
+function letterheadTemplates(foot) {
   const img = (buf) => `data:image/png;base64,${Buffer.from(buf).toString('base64')}`;
   const box = 'width:100%;box-sizing:border-box;padding:0 2cm;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
   return {
-    masthead: img(masthead),
     headerTemplate: '<span></span>',
     footerTemplate: `<div style="${box}margin-bottom:0.65cm;position:relative;">` +
       `<img src="${img(foot)}" style="width:100%;display:block;" />` +
@@ -148,8 +162,7 @@ function letterheadTemplates(masthead, foot) {
 // be drawn); later pages, with no masthead, start at 1.6cm. Applied after each
 // page's own @page rule, so it wins.
 const LETTERHEAD_PAGE = `@page { margin: 1.6cm 2cm 2.3cm 2cm; } @page :first { margin-top: 0.75cm; }
-  .tc-pdf-masthead { margin: 0 0 0.9cm 0; break-inside: avoid; page-break-inside: avoid; }
-  .tc-pdf-masthead img { width: 100%; display: block; }`;
+  .tc-pdf-masthead { margin: 0 0 0.9cm 0; break-inside: avoid; page-break-inside: avoid; }`;
 
 /*
  * Print adjustments for the guides. Their own print rules keep each section
@@ -202,12 +215,13 @@ function renderFor(job) {
     // masthead as every other PDF (owner, 2026-10-02: one consistent header),
     // placed by the generator in place of the cover's own brand line.
     return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } }, css: '',
-      letterhead: letterheadSheet(job.locale), masthead: 'catalogue-cover' };
+      letterhead: letterheadSheet(job.locale), mastheadHtml: mastheadHtml(job.locale), masthead: 'catalogue-cover' };
   }
   return {
     pdf: LETTERHEAD_PDF,
     css: job.kind === 'guide' ? GUIDE_PDF_CSS : PAGE_PDF_CSS,
     letterhead: letterheadSheet(job.locale),
+    mastheadHtml: mastheadHtml(job.locale),
     masthead: 'first-page',
   };
 }
@@ -318,7 +332,7 @@ function cssAssetsOf(css, cssPath) {
 // Everything that decides how a job prints, beyond its files: the print
 // settings and CSS, the script block list, the site links are pointed at, and
 // the page preparation itself.
-// Includes the letterhead sheet's HTML. The logo and fonts it draws with are
+// Includes the letterhead sheet's and the masthead's HTML. The logo and fonts it draws with are
 // fingerprinted as files (see fingerprint below).
 const renderKey = (job) => sha256(JSON.stringify({
   settings: renderFor(job), blocked: BLOCKED_SCRIPTS.source, site: SITE, prepare: prepareForPdf.toString(),
