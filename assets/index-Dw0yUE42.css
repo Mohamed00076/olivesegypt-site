@@ -942,4 +942,40 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
      would turn bright lime with it, so in dark mode they take the deep olive
      of the other bands with cream text (cream on it: about 12:1). */
   .dark :is(section, div, aside, p).bg-primary { --primary: 75 35% 17%; --primary-foreground: 45 30% 94%; }
+
+  /* Page speed (2026-10-03): fallback fonts sized to the web fonts, so the
+     swap when Plus Jakarta Sans / Playfair Display arrive moves nothing.
+     Measured on a throttled phone load of /, the swap re-flowed the cookie
+     banner and shifted the page by 0.113 (Lighthouse CLS 0.121; good is
+     under 0.1). The overrides are the web fonts' own metrics against Arial /
+     Times New Roman (Liberation Sans / Serif) and Roboto, computed with
+     fontTools from the files in assets/fonts. */
+  :root {
+    --app-font-sans: "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
+    --app-font-serif: "Playfair Display", "PD Fallback Times", serif;
+  }
+}
+@font-face {
+  font-family: "PJS Fallback Arial";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Helvetica");
+  size-adjust: 105%;
+  ascent-override: 98.9%;
+  descent-override: 21.2%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "PJS Fallback Roboto";
+  src: local("Roboto"), local("Roboto-Regular");
+  size-adjust: 104.7%;
+  ascent-override: 99.1%;
+  descent-override: 21.2%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "PD Fallback Times";
+  src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif"), local("Times");
+  size-adjust: 112.4%;
+  ascent-override: 96.2%;
+  descent-override: 22.3%;
+  line-gap-override: 0%;
 }
