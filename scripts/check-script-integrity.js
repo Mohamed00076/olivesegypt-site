@@ -66,7 +66,7 @@ const SELF = 'scripts/check-script-integrity.js';
 // appearing anywhere else still fails.
 const TOOLING_ONLY = new Map([
   ['playwright', ['scripts/generate-export-catalog-pdf.js']],
-  ['PIL', ['scripts/build-favicons.py']],
+  ['PIL', ['scripts/build-favicons.py', 'scripts/make-logo-header.py', 'scripts/make-card-image-sizes.py']],
   ['fontTools', ['scripts/make-pdf-static-fonts.py', 'scripts/make-arabic-web-fonts.py']],
 ]);
 const toolingAllows = (top, rel) => (TOOLING_ONLY.get(top) || []).includes(rel);

@@ -55,6 +55,14 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
 
   const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
   const page = await browser.newPage();
+  // Lay pages out for print from the start. Loaded as a screen and then
+  // printed, a page waits only for the fonts its screen styles ask for; a
+  // font that only its print styles use is then still loading at print time
+  // and its text prints blank. That happened on 2026-10-04: Arabic headings
+  // on screen moved to the one Arabic web font, so the Amiri Bold the Arabic
+  // PDFs set them in was never requested before printing, and every bold
+  // Arabic line in the 20 Arabic PDFs came out empty.
+  await page.emulateMedia({ media: 'print' });
   // A consent banner in the PDF, or a visit counted in analytics, would both
   // be wrong. Nothing else is fetched from anywhere but the local server.
   await page.route(BLOCKED_SCRIPTS, (route) => route.abort());
