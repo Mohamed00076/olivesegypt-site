@@ -7689,6 +7689,74 @@ passed on the branch and on `main` at `62e3f41`.
 
 ---
 
+## Deploys 160 and 161 — Visual upgrade Phase 3b: catalogue and solutions pages (PRs #278, #279)
+
+**Previous recorded deploy:** `62e3f41` (Deploy 159, PR #277)
+**Approvals:**
+- "go" (Phase 3b under the approved Phase 3 plan).
+- "merge and record deploy" (#278 and #279, and this entry).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 160 | #278 | `a7d8cf8` | 2026-10-05 02:49:51 | 1 | +72 / −1 | Notes only |
+| 161 | #279 | `54ac144` | 2026-10-05 02:49:59 | 15 | +157 / −110 | Design (Phase 3b) |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch and on `main` at `54ac144`.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 160** recorded Deploys 158 and 159.
+
+### What the deploys did
+
+- **Deploy 161 — Phase 3b (#279).**
+  - **Catalogue (EN + AR):**
+    - every card in a row is one height, with its buttons on the bottom line
+    - the image box is the 16:10 `.tc-media` slot instead of a fixed 176px
+    - on the English cards, origin sits under the name
+    - CSS plus one class per card; the category filter (inline `display:none`) and every word are unchanged
+  - **Solutions (generator, 10 buyer pages; hub unchanged):**
+    - key terms carry a check icon
+    - format cards carry the packaging icon their title names (the 4 kg PET pail takes the bucket icon)
+    - the range is a row of chips, each linking to its product page
+    - Every word was checked by script to be unchanged on all 12 pages.
+  - **Caught before the PR:** the first catalogue rule made `.product-card` a flex row. The Arabic `.product-card` *is* the card, so its image, text and specs sat side by side; the English one wraps a single card element. The 768px screenshots showed it. The rule is now a column, with the wrapper rule applied only where a wrapper exists, and every measurement was retaken.
+  - **Lab results (mobile, median of 3, main vs branch):**
+    - catalogue 2.28 → 2.25 s (EN) and 2.21 → 2.17 s (AR)
+    - solutions pages 1.74–1.82 s
+    - transfer unchanged; CLS 0.000
+  - **Checks:** axe found 0 violations over 180 loads; the mobile and clipped-text sweeps were clean; 48 screenshots were taken with no horizontal overflow.
+
+### Owner decisions
+
+- Phase 3b approved and merged.
+- **Pending:** the English catalogue's Stuffed Green Olives card says "stuffed with various fillings", while the Arabic card, the structured data and the print catalogue say "pepper or carrot" (C-152). The proposal is to say "pepper or carrot". It was not changed and awaits the owner's answer.
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 161:** `git revert -m 1 54ac144`.
+- **Deploy 160** is documentation only.
+
+### Known limitations shipped with Deploys 160 and 161
+
+- **Phase 3 is complete.** Phase 4 (remaining pages and an Arabic pass) follows on the owner's approval.
+- **The lab LCP figures are local-server measurements;** production was not measured from here (egress blocked).
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the 231 KB hero WebP (lighter encode offered)
+  - the "various fillings" line above
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7700,7 +7768,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 159 (2026-10-05).**
+**Unchanged through Deploy 161 (2026-10-05).**
 
 ## Outstanding, unresolved by this document
 
