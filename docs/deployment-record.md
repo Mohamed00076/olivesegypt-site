@@ -6911,6 +6911,170 @@ first: 132, then 131.
 
 ---
 
+## Deploys 133 to 136 — Vacuum pouches removed, PDF identity as live text, and Arabic PDF fonts (PRs #251 to #254)
+
+**Previous recorded deploy:** `15e0b7e` (Deploy 132, PR #250)
+**Approvals:**
+- "merge it" (#251)
+- The owner's 2026-10-03 brief (Search Console query analysis, spec sheets, container capacity). The audit's report was answered with "do 1 and 2" (#252, #253), then the flagged Arabic PDF text with "fix this" (#254), then "merge all" (#252 to #254).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 133 | #251 | `e67ef40` | 2026-10-03 19:20:06 | 1 | +150 / −2 | Notes only |
+| 134 | #252 | `bedf2c9` | 2026-10-04 02:58:53 | 103 | +219 / −226 | Site change |
+| 135 | #253 | `accf007` | 2026-10-04 02:58:57 | 47 | +181 / −163 | Site change |
+| 136 | #254 | `c09f171` | 2026-10-04 02:59:02 | 27 | +278 / −87 | Site change |
+
+Files and lines are each merge against the `main` it landed on. The three
+site changes were stacked (#253 on #252, #254 on #253), because all three
+rebuild the same PDFs and binary files cannot be merged. They were merged in
+that order, four seconds apart, so production built the last of them.
+`npm test` passed on each branch and on `main` at `c09f171`. Whether each
+production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 133** recorded Deploys 130 to 132.
+
+### The brief's audit (reported before anything changed)
+
+- **Part A, Search Console query analysis: not done.** Search Console is not
+  reachable from this environment (no connection, and the egress policy
+  blocks Google). The owner was asked for the Performance export
+  (`Queries.csv`, `Pages.csv`). No title or meta description was changed.
+- **Part B, spec sheets: none missing.** All 20 product pages (10 English,
+  10 Arabic) already link to their own one-page sheet. All 22 sheet files are
+  real PDFs with selectable text, and none is the JS app shell. Two faults
+  were found and became Deploys 134 and 135.
+- **Part C, container loading: the data does not exist.** Nothing on the
+  site or in the registers gives cartons or units per 20ft or 40ft for any
+  product. Only the general minimum order (1 × 20ft, about 16–18 MT) and
+  units per carton (C-100) exist. Nothing was estimated; the owner was asked
+  for real figures.
+- **The brief's "do not" list needed no change.** There is no
+  MerchantReturnPolicy, no HACCP badge, no HS code in any title, and no
+  retort pouches.
+
+### What each site change did
+
+- **Deploy 134 — Vacuum pouches removed (#252).** The brief states vacuum
+  bags are not a confirmed packaging option, but the site offered them
+  (C-05, 2026-09-05). Removed from:
+  - all 20 product pages, /catalog and /catalog/print
+  - the homepage and /resources/faq (visible text and FAQPage JSON-LD)
+  - /company-profile, /resources/certifications and /resources/private-label
+  - /resources/packaging: its format card and meta descriptions
+  - the three /solutions pages and their generator: the food-service card
+  - the import and packaging articles, and `llms.txt`
+  - the gated guide sources and both export catalogue sources
+
+  "Or vacuum-sealed" also left the Natural Black Olives description,
+  including its Product JSON-LD. The 38 PDFs built from these sources were
+  rebuilt and diffed word by word; every change is the removal or its
+  reflow. The gated English packaging overview went from 2 pages to 1.
+  Nothing replaces vacuum pouches; PET stays jalapeño-only (C-100).
+- **Deploy 135 — PDF masthead as live text; titled spec sheets (#253).**
+  - **The masthead:** logo, name, address, email and phone were a
+    screenshot on page 1 of every PDF, so the company identity was not
+    selectable text in any of the 42 PDFs. It is drawn inside the page,
+    where the site's fonts load, so it is now live HTML in the same fonts
+    and layout (`mastheadHtml` in `scripts/guide-pdfs.js`).
+  - **The foot stays an image:** Chromium draws footer templates outside
+    the page, where the fonts do not load.
+  - **Spec sheet titles:** /catalog/print and its Arabic twin now set
+    `document.title` in the single-product view. The tab and each of the
+    20 sheets' PDF titles name the product, for example "Kalamata Olives —
+    Product Specification Sheet | Triple Company for Industrial
+    Development".
+- **Deploy 136 — Arabic PDF fonts (#254).** Found while checking #253:
+  - **No Arabic font in the font stacks.** None of the site's stacks has an
+    Arabic face, so nearly all Arabic text in the 21 Arabic PDFs printed in
+    the build machine's system font (DejaVu Sans).
+  - **The masthead's font embedded badly.** Its Noto Naskh Arabic is a
+    variable font, which Chromium embeds only as Type3, with each letter's
+    dots as separate, offset glyphs.
+  - **The result:** copied text came back as reversed fragments.
+
+  The fix maps Arabic characters and the word space onto static Amiri
+  Regular and Bold (SIL OFL 1.1, unmodified, `scripts/pdf-fonts`). The
+  deploy prunes that directory, so the site's own fonts are unchanged. The
+  faces copy each existing face's descriptors, because CSS only combines
+  faces by `unicode-range` when the descriptors match. `size-adjust: 115%`
+  keeps the visual size.
+
+  Amiri was chosen by measurement. Of seven Arabic families printed
+  through the same Chromium, it was the only one whose words came back
+  whole and in reading order. Words extracted whole, before → after:
+
+  | Reader | Before | After |
+  |---|---|---|
+  | pdf.js | 1–4% | 64–87% |
+  | PDFium | 19–32% | 70–90% |
+  | PyMuPDF | 64–82% | 76–95% |
+
+  The 21 English PDFs are unchanged.
+
+### Owner decisions
+
+- **Vacuum pouches removed**, and the spec-sheet text and title fixes
+  made ("do 1 and 2").
+- **The Arabic PDF font** fixed as proposed ("fix this"). Its look was
+  shown before and after.
+- **No Arabic wording was written.** Deploy 134 only deleted words. The
+  Arabic sheet title in Deploy 135 joins two strings already on the page.
+
+### Claim register
+
+151 claims:
+- **C-05** is `superseded` for vacuum pouches.
+- **C-151** records their removal.
+- **C-55** remains the only `needs-review` row.
+
+`docs/asset-rights-register.md` gains a row for the Amiri font files.
+
+### Testing method
+
+`npm test`: all checks, passing on each branch and on `main` at `c09f171`.
+Beyond the suite:
+- **Vacuum wording:** a repository-wide search finds no "vacuum", "pouch",
+  "retort" or Arabic equivalent outside `docs/`.
+- **Generators:** both regenerate their pages exactly.
+- **PDFs:** every rebuilt PDF was compared with its predecessor by text and
+  by 60-dpi pixels. Unchanged files were restored, and page counts were
+  checked.
+- **Mastheads:** old and new were compared side by side in four PDFs.
+- **Arabic copying:** measured with PyMuPDF, PDFium and pdf.js against
+  three source pages.
+- **Fonts actually rendered:** read from Chromium's DevTools protocol.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts with `git revert -m 1 <commit>`, newest first: 136,
+then 135, then 134. They are stacked, so an older one cannot be reverted
+alone without first reverting the newer ones, or rebuilding the PDFs after
+the revert.
+- **Deploy 134:** reverting brings vacuum pouches back site-wide.
+- **Deploy 133** is documentation only.
+
+### Known limitations shipped with Deploys 133 to 136
+
+- **Chrome's PDF viewer (PDFium)** returns the words of each Arabic line
+  right to left, though each word is now whole.
+- **Copied Arabic punctuation:** full stops, brackets and short-vowel marks
+  can land out of place.
+- **The placeholder label "صورة المنتج قيد التجهيز"** inside the four
+  illustration SVGs stays in the system font.
+- **The English web fonts** are still embedded in the PDFs as Type3.
+  English text copies correctly.
+- **Search Console analysis (Part A)** waits on the owner's export.
+- **Per-product container loading (Part C)** waits on real figures.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -6922,7 +7086,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 132 (2026-10-03).**
+**Unchanged through Deploy 136 (2026-10-04).**
 
 ## Outstanding, unresolved by this document
 
@@ -7130,7 +7294,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 132 (2026-10-03).** The owner will set the values later.
+    **Unchanged at Deploy 136 (2026-10-04).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
