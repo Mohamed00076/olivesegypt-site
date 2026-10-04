@@ -1,7 +1,7 @@
 <svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stuffed Green Olives photography pending">
   <rect width="900" height="900" fill="#3d5a2e"/>
   <g transform="translate(450,370)">
-    <!-- three green olives, one cut open to show the pimiento stuffing, on a pick -->
+    <!-- three green olives, one cut open to show the pepper stuffing, on a pick -->
     <line x1="-120" y1="20" x2="130" y2="-40" stroke="#c9a84c" stroke-width="6" stroke-linecap="round"/>
     <circle cx="-90" cy="14" r="42" fill="#5a7a4a"/>
     <circle cx="-90" cy="14" r="12" fill="#3d5a2e"/>

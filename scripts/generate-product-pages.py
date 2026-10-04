@@ -59,7 +59,7 @@ PRODUCTS = [
     dict(
         slug="manzanilla-green-olives", print_slug="manzanilla",
         name="Manzanilla Green Olives", origin="Egypt (Spanish variety)",
-        formats=["Whole", "Pitted", "Stuffed (Pimiento / Almond / Garlic)"],
+        formats=["Whole", "Pitted", "Stuffed (Pepper / Carrot)"],
         calibers=["140-360"],
         brine=dict(salt="5–7%", acidity="0.2–0.4% lactic", ph="3.7–4.1"),
         profile="The internationally recognized Spanish variety, grown and processed in Egypt. Consistent oval shape, mild nutty flavor.",
@@ -81,7 +81,7 @@ PRODUCTS = [
     dict(
         slug="pepper-stuffed-green-olives", print_slug="stuffed",
         name="Stuffed Green Olives", origin="Egypt",
-        formats=["Pimiento", "Almond", "Garlic", "Lemon"],
+        formats=["Pepper", "Carrot"],
         calibers=["140-360"],
         brine=dict(salt="5–7%", acidity="0.2–0.4% lactic", ph="3.7–4.2"),
         profile="Premium Manzanilla and Aggizi olives, pitted and stuffed with a choice of fillings. Machine-stuffed under hygienic, quality-controlled conditions at our partner facility.",
