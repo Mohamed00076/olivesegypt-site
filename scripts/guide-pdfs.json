@@ -2861,7 +2861,7 @@
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
     "inputs": {
-      "scripts/export-catalog-source-ar.html": "8253fe53b07c8ed2709ee59b8edbb6f0924d941a42d7ef43995b85fa77aa5ccc",
+      "scripts/export-catalog-source-ar.html": "4bfff7d4e892ba80e162616d97227a5d1ef7007488e445f23b8bb47e6380cfe4",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "50a06a2c87bcfe0d59b9276b2c8c3a649fcd07de30190154b5211c3b3260baf7",
       "assets/illus-natural-black-ar.svg": "328f7496e750cfd8f1406960ea5a114dc5f4175c667d4075e2a71d1805bf147c",
@@ -2959,7 +2959,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "1764f512dcf800a2214ac82eb6bcd64041a8a2f387f7aaa433443e946c23d942",
-    "pdf": "7623cbeae0372312593c3b40cb8996fda5e426b184fafb5efbc51ab742a6b3ab"
+    "pdf": "d8859e6c7e1eb027fe81a986d00b83cd86851eac2c7b8f44f31087d944f04d84"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/ar/export-documentation-checklist.html",
@@ -3620,7 +3620,7 @@
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
     "inputs": {
-      "scripts/export-catalog-source.html": "362916a06637c737faf2caa1f81137e9b0d5e58fd711f026c2f32e58bde66c84",
+      "scripts/export-catalog-source.html": "56914baa0bf7a11f5820620f81ee6503a4722a55372407ac648e11191f4f7ea1",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "8f24e41fe50e435d580dd5e8d858ca697b35e9ba53abd8d2e8c006a8d4f3ef3f",
       "assets/illus-natural-black.svg": "274f1a1d0485614cbd40b4d1f03664400b90b1ccac2a98cb0d3e7bd72d352175",
@@ -3718,7 +3718,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "576f0a65e1c67458d6f90b0952cde3a9600f3b4eef2fcbd8307b766144786e9b",
-    "pdf": "a7bce457f249b3117755716e277e0c27f5a700c74e6e2a2d3890565917a19496"
+    "pdf": "8cb7643444848a4b619108f452873aa4e3f83b7d0c2e75876bdee092533b60c5"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/en/export-documentation-checklist.html",
