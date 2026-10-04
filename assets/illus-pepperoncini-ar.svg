@@ -1,6 +1,6 @@
-<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="فلفل بيبرونشيني — صورة قيد التجهيز">
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="رسم توضيحي: فلفل بيبرونشيني">
   <rect width="900" height="900" fill="#3d5a2e"/>
-  <g transform="translate(450,370)">
+  <g transform="translate(450,450)">
     <!-- two crossed, curved pepperoncini peppers -->
     <g transform="rotate(-18)">
       <path d="M-95,40 C-60,-30 0,-95 90,-110 C105,-108 110,-95 100,-82 C40,-55 -10,10 -40,75 C-55,100 -85,90 -95,60 Z" fill="#5a7a4a"/>
@@ -13,5 +13,4 @@
       <path d="M-65,35 C-25,-20 25,-58 80,-75" fill="none" stroke="#3d5a2e" stroke-width="4" opacity="0.35"/>
     </g>
   </g>
-  <text x="450" y="610" text-anchor="middle" direction="rtl" font-family="'Noto Naskh Arabic', 'Amiri', 'Traditional Arabic', 'Geeza Pro', 'Arabic Typesetting', serif" font-size="40" fill="#f5f0e1">صورة المنتج قيد التجهيز</text>
 </svg>

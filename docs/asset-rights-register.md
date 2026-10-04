@@ -302,3 +302,43 @@ olives for now"); it was also only 520px wide.
 Four products now await real photography: Natural Black, Stuffed,
 Marinated Artichoke and Pepperoncini.
 
+
+## 2026-10-04 — Visual upgrade, Phase 2: homepage hero and illustration labels
+
+**Homepage hero.** The hero no longer shows a photograph (brief: "a light hero
+visual built from SVG and CSS ... No photograph"). In its place is an inline
+SVG drawn for this site: an olive branch in front of two upright bars, in the
+olive and gold of the Triple Company logo, which it is drawn after. Source:
+the company's own logo; made for this site; no external source; no people,
+facility or supplier shown. It is markup inside `index.html` and
+`ar/index.html`, not a file.
+
+Now referenced by no page, kept as files for rollback:
+
+- `assets/red-peppers-sliced.jpg` (+ `.webp`): the owner-chosen hero
+  photograph (2026-10-02, C-148). Rights unchanged (row above). Rollback:
+  restore the hero `<picture>` from `git show 465f909:index.html` (and
+  `ar/index.html`).
+- `assets/hero-green-olives-texture.webp`: the blurred hero background
+  texture. Rights unchanged (row above). Same rollback.
+
+**Illustration labels.** Every illustration (`assets/illus-*.svg`, both
+languages) and the generic `assets/photo-pending.svg` / `-ar.svg` drew the
+words "Product photography pending" / "صورة المنتج قيد التجهيز" into the
+image. That text is removed; the drawing is moved down to the centre of the
+canvas; nothing else in the artwork changes. Each image now describes itself
+as an illustration (e.g. "Illustration of natural black olives" /
+"رسم توضيحي: زيتون أسود طبيعي"), and so does every `alt` that shows one. The
+file names, including `photo-pending*.svg`, are kept so no reference changes;
+they are not shown to buyers.
+
+The export catalogue cover's caption, "Cover photography pending — real
+product photography to be added before final print." (and the Arabic), now
+reads "The illustrations in this catalogue are drawings, not product
+photographs." / "الرسوم التوضيحية في هذا الكتالوج رسومات وليست صورًا
+فوتوغرافية للمنتجات." The 14 PDFs that carry these images were rebuilt.
+
+Found while doing this, not changed: `illus-natural-black.svg` (and `-ar`) is
+the same drawing as `illus-oxidized-black.svg`, and its label read "Oxidized
+Black Olives". The label now says natural black olives; the drawing itself is
+still the oxidized-black one.

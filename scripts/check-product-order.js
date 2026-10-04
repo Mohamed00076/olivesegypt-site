@@ -214,7 +214,7 @@ for (const { key, dir } of require('./product-order').PRODUCTS) {
       problems.push(`${file}: inLanguage is ${JSON.stringify(p.inLanguage)}, expected ${JSON.stringify(locale)}`);
     }
     // The page's own product image: the first image inside <main>. A product
-    // still shown with its "photography pending" illustration (assets/illus-*)
+    // still shown with its illustration (assets/illus-*)
     // names no image in its structured data, so search engines are not
     // offered the illustration as the product (2026-10-03); a photographed
     // product must name a photograph.

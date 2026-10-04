@@ -76,7 +76,7 @@ PRODUCTS = [
         profile="Naturally ripened on the tree and processed without oxidation agents. Deep purple-black color, soft texture, mild flavor. No iron gluconate, no artificial coloring.",
         best_for=["Buyers wanting a naturally ripened black olive (not oxidized)", "Retail and food-service"],
         related=["oxidized-black-olives", "kalamata-olives", "aggizi-green-olives"],
-        image=dict(src='/assets/illus-natural-black.svg', alt='Natural Black Olives — photography pending', w='900', h='630', webp=None),
+        image=dict(src='/assets/illus-natural-black.svg', alt='Illustration of natural black olives', w='900', h='630', webp=None),
     ),
     dict(
         slug="pepper-stuffed-green-olives", print_slug="stuffed",
@@ -87,7 +87,7 @@ PRODUCTS = [
         profile="Premium Manzanilla and Aggizi olives, pitted and stuffed with a choice of fillings. Machine-stuffed under hygienic, quality-controlled conditions at our partner facility.",
         best_for=["European retail", "Food-service programs wanting a ready-to-serve stuffed olive"],
         related=["manzanilla-green-olives", "aggizi-green-olives", "toffahi-green-olives"],
-        image=dict(src='/assets/illus-stuffed.svg', alt='Stuffed Green Olives — photography pending', w='900', h='630', webp=None),
+        image=dict(src='/assets/illus-stuffed.svg', alt='Illustration of stuffed green olives', w='900', h='630', webp=None),
     ),
     dict(
         slug="oxidized-black-olives", print_slug="oxidized_black",
@@ -108,7 +108,7 @@ PRODUCTS = [
         profile="Tender artichoke hearts marinated in oil with Mediterranean herbs. A premium antipasto line that complements our olive range.",
         best_for=["Delis", "Retail antipasto programs", "Food service"],
         related=["pepperoncini-peppers", "sliced-jalapeno-peppers", "pepper-stuffed-green-olives"],
-        image=dict(src='/assets/illus-artichoke.svg', alt='Marinated Artichoke Hearts — photography pending', w='900', h='630', webp=None),
+        image=dict(src='/assets/illus-artichoke.svg', alt='Illustration of marinated artichoke hearts', w='900', h='630', webp=None),
     ),
     dict(
         slug="pepperoncini-peppers", print_slug="pepperoncini",
@@ -118,7 +118,7 @@ PRODUCTS = [
         profile="Mild, tangy golden-green peppers pickled in brine (Golden Greek style).",
         best_for=["European and North American retail", "Antipasto and sandwich programs"],
         related=["sliced-jalapeno-peppers", "marinated-artichoke-hearts", "natural-black-olives"],
-        image=dict(src='/assets/illus-pepperoncini.svg', alt='Pepperoncini Peppers — photography pending', w='900', h='630', webp=None),
+        image=dict(src='/assets/illus-pepperoncini.svg', alt='Illustration of pepperoncini peppers', w='900', h='630', webp=None),
     ),
     dict(
         slug="sliced-jalapeno-peppers", print_slug="jalapeno",
@@ -294,7 +294,7 @@ def image_block(im):
     """The product photo, as the shipped pages carry it.
 
     Five products have a real photograph with a WebP source; the rest carry an
-    illustration and the alt text says photography is pending. Both shapes are
+    illustration, described as one in its alt text. Both shapes are
     the page's own markup, read back out of it rather than invented here.
     """
     tag = ('<img src="%s" alt="%s" class="w-full h-auto object-cover" '
@@ -344,7 +344,7 @@ def render(p):
         best_for_html=best_for_html, related_html=related_html,
         image_block=image_block(p["image"]), image_src=p["image"]["src"],
         # Structured data names an image only when it is a photograph: a
-        # "photography pending" illustration is not offered to search engines
+        # illustration is not offered to search engines
         # as the product (2026-10-03).
         image_ld=('' if p["image"]["src"].startswith('/assets/illus-') else f'      "image": "https://olivesegypt.com{p["image"]["src"]}",\n'),
     )
