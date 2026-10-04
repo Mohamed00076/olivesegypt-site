@@ -88,7 +88,8 @@ const PDF_ARABIC_FONTS = { regular: 'scripts/pdf-fonts/Amiri-Regular.ttf', bold:
 // The word space is in the range too: left in the Latin face, it split every
 // Arabic line into one-word runs, which PDF readers then put back together
 // left to right, reversing the word order.
-const ARABIC_RANGE = 'U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFE';
+const ARABIC_LETTERS = 'U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFE';
+const ARABIC_RANGE = `U+0020, U+00A0, ${ARABIC_LETTERS}`;
 // Amiri draws small for its size beside the Latin faces and the system font
 // it replaces; this brings its letters back to about the same visual size.
 const ARABIC_SIZE_ADJUST = '115%';
@@ -98,7 +99,7 @@ const ARABIC_SIZE_ADJUST = '115%';
 // declare (Great Vibes, a script face never set on Arabic text, aside).
 // Weights up to 500 take Amiri Regular, 600 and above Amiri Bold.
 const ARABIC_PDF_SOURCES = ['assets/fonts/fonts.css', 'assets/index-Dw0yUE42.css'];
-function arabicPdfCss() {
+function arabicPdfCss(range) {
   const faces = new Map();
   for (const file of ARABIC_PDF_SOURCES) {
     const css = fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -114,10 +115,39 @@ function arabicPdfCss() {
   return [...faces.values()].map(({ family, style, weight }) => {
     const file = parseInt(weight, 10) >= 600 ? PDF_ARABIC_FONTS.bold : PDF_ARABIC_FONTS.regular;
     return `@font-face { font-family: '${family}'; src: url(/${file}) format('truetype'); font-style: ${style}; ` +
-      `font-weight: ${weight}; size-adjust: ${ARABIC_SIZE_ADJUST}; unicode-range: ${ARABIC_RANGE}; }`;
+      `font-weight: ${weight}; size-adjust: ${ARABIC_SIZE_ADJUST}; unicode-range: ${range}; }`;
   }).join('\n');
 }
-const ARABIC_PDF_CSS = arabicPdfCss();
+const ARABIC_PDF_CSS = arabicPdfCss(ARABIC_RANGE);
+// The English PDFs carry Arabic only in the masthead's address, "(ميدان
+// العروبة)": the same faces, without the word space, so English spacing is
+// untouched.
+const ARABIC_IN_ENGLISH_PDF_CSS = arabicPdfCss(ARABIC_LETTERS);
+
+/*
+ * The site's variable web fonts as static instances, for every PDF. Chromium
+ * embeds a variable font only as Type3, which some viewers draw less sharply
+ * and tools handle worse than TrueType; the same faces at the same weights,
+ * pinned (scripts/make-pdf-static-fonts.py), embed as TrueType. Each face in
+ * fonts.css that has an instance is declared again with identical
+ * descriptors and only its file swapped, so the PDFs look the same.
+ */
+const STATIC_PDF_FONTS = [];
+const STATIC_PDF_CSS = (() => {
+  const css = fs.readFileSync(path.join(ROOT, LETTERHEAD_FILES.fonts), 'utf8');
+  const out = [];
+  for (const [face, body] of css.matchAll(/@font-face\s*\{([^}]*)\}/g)) {
+    const src = (body.match(/url\(\/([^)]+)\)/) || [])[1];
+    const weight = ((body.match(/font-weight\s*:\s*([^;]+)/) || [])[1] || '').trim();
+    if (!src || !/^\d+$/.test(weight)) continue;
+    const stem = path.basename(src).replace(/\.[^.]+$/, '');
+    const file = `scripts/pdf-fonts/static/${stem}-${weight}.woff2`;
+    if (!fs.existsSync(path.join(ROOT, file))) continue;
+    STATIC_PDF_FONTS.push(file);
+    out.push(face.replace(/url\([^)]+\)\s*format\([^)]*\)/, `url(/${file}) format('woff2')`));
+  }
+  return out.join('\n');
+})();
 
 const LETTERHEAD_TEXT = {
   en: {
@@ -267,12 +297,12 @@ function renderFor(job) {
     // masthead as every other PDF (owner, 2026-10-02: one consistent header),
     // placed by the generator in place of the cover's own brand line.
     return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } },
-      css: job.locale === 'ar' ? ARABIC_PDF_CSS : '',
+      css: STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
       letterhead: letterheadSheet(job.locale), mastheadHtml: mastheadHtml(job.locale), masthead: 'catalogue-cover' };
   }
   return {
     pdf: LETTERHEAD_PDF,
-    css: (job.kind === 'guide' ? GUIDE_PDF_CSS : PAGE_PDF_CSS) + (job.locale === 'ar' ? ARABIC_PDF_CSS : ''),
+    css: (job.kind === 'guide' ? GUIDE_PDF_CSS : PAGE_PDF_CSS) + STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
     letterhead: letterheadSheet(job.locale),
     mastheadHtml: mastheadHtml(job.locale),
     masthead: 'first-page',
@@ -409,8 +439,8 @@ function fingerprint(job, root = ROOT) {
   // The letterhead is drawn with the logo and the site's fonts.
   const letterhead = renderFor(job).letterhead ? [LETTERHEAD_FILES.logo, LETTERHEAD_FILES.fonts,
     ...cssAssetsOf((read(LETTERHEAD_FILES.fonts) || '').toString('utf8'), LETTERHEAD_FILES.fonts)] : [];
-  const arabic = job.locale === 'ar' ? [PDF_ARABIC_FONTS.regular, PDF_ARABIC_FONTS.bold] : [];
-  const files = [...new Set([job.source, ...direct, ...viaCss, ...letterhead, ...arabic])];
+  const arabic = [PDF_ARABIC_FONTS.regular, PDF_ARABIC_FONTS.bold];
+  const files = [...new Set([job.source, ...direct, ...viaCss, ...letterhead, ...arabic, ...STATIC_PDF_FONTS])];
   const inputs = {};
   for (const f of files) {
     const buf = read(f);
