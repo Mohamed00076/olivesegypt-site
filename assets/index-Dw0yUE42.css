@@ -1010,6 +1010,11 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     --app-font-serif: "TC Arabic Sans", "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
     --app-font-mono: "TC Arabic Sans", "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
   }
+  /* Single-line text that hides its overflow (.truncate) clips anything
+     outside its line box. Noto Sans Arabic's marks reach a little above and
+     below a 1.25rem line, so Arabic truncated lines get two pixels of room
+     each side, taken back by the margins: the layout does not move. */
+  html[lang="ar"] .truncate { padding-block: 2px; margin-block: -2px; }
   /* No monospace web font (owner, 2026-10-04: drop Space Mono). The caliber
      chips and the pricing table's figures keep their column alignment with
      Plus Jakarta Sans' tabular figures instead of a third family. */
