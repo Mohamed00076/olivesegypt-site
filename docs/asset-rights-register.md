@@ -366,3 +366,13 @@ old drawing was: the product page, the homepage and catalogue cards, the print
 catalogue, Downloads, and 8 PDFs (both product catalogues, the natural-black
 and combined spec sheets, both export catalogues); their text is unchanged.
 Rollback: `git show fe92b3b:assets/illus-natural-black.svg` (and `-ar`).
+
+## 2026-10-04 — Red-peppers hero photograph restored
+
+At the owner's request ("restore it i am going to add it to products
+anyway"), `assets/red-peppers-sliced.jpg` (+ `.webp`) is back in the homepage
+hero (`/`, `/ar/`), with the same markup, alt text and rights as before Phase 2
+(row above; C-148): shown at md and wider, with phones served a 1x1 placeholder
+so they do not download it. The logo-motif hero drawing it replaced is removed
+from both pages. `assets/hero-green-olives-texture.webp` stays unused (not
+part of the request). Rollback: the hero box as it stood at `5aea6c8`.
