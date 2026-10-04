@@ -7325,6 +7325,165 @@ No change: 151 claims, and C-55 remains the only `needs-review` row.
 
 ---
 
+## Deploys 144 to 153 — Visual upgrade Steps 0 to 2, product naming, buyer-facing wording and a new illustration (PRs #262 to #271)
+
+**Previous recorded deploy:** `b7bb802` (Deploy 143, PR #261)
+**Approvals:**
+- "merge" (#262).
+- The visual-upgrade brief ("VISUAL UPGRADE WITH A STRICT SPEED BUDGET"), Step 0 and Step 1 first; then "Merge #263. Budget approved, with two changes" (a 350 KB homepage warning; all ten baseline pages at or under 2.5 s LCP) and four additions to Phase 1 scope.
+- "1 merge approved . 2 names are fine . 3 phase 2 approved" (#264, and Phase 2 work); then "go ahead with proposed names" (#265 work).
+- "this is confirmed correct" (the IOC figures, #266 work) and "fix this" (#268 work); then "merge all" (#265, #266, #267, #268).
+- Item-by-item answers ("let answer one by one", below); then "merge" (#269, #270, #271).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 144 | #262 | `fe490eb` | 2026-10-04 07:32:02 | 1 | +101 / −2 | Notes only |
+| 145 | #263 | `3e6ad6d` | 2026-10-04 09:01:53 | 34 | +161 / −114 | Content + check (Step 0) |
+| 146 | #264 | `465f909` | 2026-10-04 10:14:44 | 132 | +863 / −509 | Speed + design (Phase 1) |
+| 147 | #266 | `54b41ab` | 2026-10-04 20:11:09 | 4 | +5 / −5 | Content |
+| 148 | #265 | `8f63fcf` | 2026-10-04 20:12:15 | 17 | +30 / −30 | Content (naming) |
+| 149 | #267 | `62c49c7` | 2026-10-04 20:15:51 | 54 | +354 / −390 | Design + content (Phase 2) |
+| 150 | #268 | `fe92b3b` | 2026-10-04 20:18:48 | 2 | +56 / −42 | Accessibility (CSS) |
+| 151 | #269 | `ab88b1f` | 2026-10-04 20:41:10 | 4 | +7 / −7 | Content (privacy wording) |
+| 152 | #270 | `5f209af` | 2026-10-04 20:41:58 | 9 | +21 / −14 | Content |
+| 153 | #271 | `782330e` | 2026-10-04 20:44:20 | 12 | +95 / −56 | Illustration |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on every branch before its merge, and on `main` at `782330e`.
+#266 was merged before #265, so it takes the lower number. Netlify's
+deploy-preview checks (redirect rules, header rules) passed on the PRs;
+the production builds were not observed from here (egress to the site and to
+`*.netlify.app` is blocked in this environment).
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 144** recorded Deploys 142 and 143.
+
+### What the deploys did
+
+- **Deploy 145 — Step 0: stuffed-olive fillings and a guard (#263).**
+  Owner: only pepper and carrot fillings are confirmed, and no pepper variety
+  is named. The site offered pimiento, almond, garlic and lemon. Now "pepper or
+  carrot" / "بالفلفل أو الجزر" on every page, structured data, `llms.txt`, the
+  print and export catalogues and the product generator, both languages; 10
+  PDFs rebuilt. `check-packaging-claims` now also fails on vacuum-pouch
+  wording and on almond, garlic, lemon or pimiento as a filling, in English and
+  Arabic. Register: C-152 added.
+- **Deploy 146 — Phase 1: speed foundation (#264).**
+  - One Arabic web font (Noto Sans Arabic subset, 400–700, 16 KB) for text and
+    headings; Arabic pages no longer load Playfair Display; Space Mono dropped.
+    Arabic font load per page: 4–5 files / 117–133 KB down to 2 files / 44 KB.
+  - Header logo at display size (`assets/logo-header.png`, 52×64, 4.9 KB) on
+    111 pages instead of the 38 KB original.
+  - 800w WebP card photos; Arabic arrows corrected; shared components.
+  - `assets/industrial-olives-CAiQk-rL.png` removed after recording it.
+  - `scripts/check-performance-budget.js` in `npm test`, with the 350 KB
+    homepage warning.
+  - The PDF builder lays pages out for print first; otherwise Amiri Bold
+    could still be loading at print time (it blanked bold Arabic headings in a
+    test build). All 42 PDFs identical.
+  - All ten baseline pages at or under 2.5 s LCP in the local lab (max 2.25 s).
+- **Deploy 147 — IOC source line (#266).** The why-egyptian-olives pages (EN +
+  AR) no longer tell buyers the figures were "found via web search … in this
+  session … needs-review pending direct confirmation". The owner confirmed the
+  figures correct (again; first 2026-09-28). Deletion only. Register: C-128.
+- **Deploy 148 — "Stuffed Green Olives" everywhere (#265).** 15 places still
+  said "Pepper Stuffed Green Olives" (private-label list, two gated guides,
+  export catalogues), EN and AR. The URL
+  `/products/pepper-stuffed-green-olives` is unchanged. 6 PDFs rebuilt.
+  Register: C-152 note.
+- **Deploy 149 — Phase 2: homepage (#267).**
+  - Hero: the photo texture and the red-peppers photograph are replaced by an
+    inline SVG drawn from the logo (olive branch, two bars). The LCP element is
+    now hero text at every width (the headline at 1280; the intro paragraph
+    directly under it at 320–768). `/` LCP 2.34 → 2.01 s, `/ar/` 2.27 →
+    2.12 s; 20 KB and two requests fewer on each.
+  - Product cards in fixed 16:10 boxes; FAQ trimmed to 4 questions (the rest
+    stay on `/resources/faq`); packaging section as a compact strip, every size
+    carried over; the Select/Configure/Confirm block removed.
+  - "Photography pending" removed from every illustration, alt text and the
+    export catalogue cover; alt text now "Illustration of …" / "رسم توضيحي: …".
+    14 PDFs rebuilt.
+  - Accepted as written by "merge all": items A–G of the PR (hero photo
+    removed, 4-item FAQ, one "Private label available", 3-step block removed,
+    the Arabic alt, hero and cover wording).
+  - Register: C-148 note; asset register section for the hero drawing and the
+    two unused hero files kept for rollback.
+- **Deploy 150 — Market Brief card contrast (#268).** Pre-existing: the
+  homepage newsletter card is drawn as a gradient, so the dark-mode rule for
+  olive surfaces missed it; heading and intro were dark on lime (down to
+  1.1:1), and in light mode the gold eyebrow, intro and checklist were 2.25–
+  3.99:1. It now uses the deep olive and cream of the other dark bands in both
+  modes; every line 4.9:1 or more, EN and AR. CSS only; axe misses text on
+  gradients, so contrast was computed from the resolved colours.
+- **Deploy 151 — Privacy open items, plain wording (#269).** "PENDING" badges
+  read "TO BE CONFIRMED"; bracketed "[Pending confirmation …]" notes are
+  sentences; the geolocation note drops "not verified from here". No value
+  added. Register: C-51.
+- **Deploy 152 — Buyer-facing wording (#270).** The private-label search
+  description says "nine products" (it said ten; the page offers nine and its
+  body already said "Nine of our ten products") and "Kalamata is not offered
+  for private label." The export catalogue's AI-image note is removed (EN +
+  AR); the history stays in the asset register. Register: C-40.
+- **Deploy 153 — Natural Black Olives illustration (#271).** It was the same
+  drawing as the oxidized one. Redrawn in the same style: oval, matte,
+  plum-to-brown, a little wrinkled, on a leafy branch. 8 PDFs rebuilt, text
+  unchanged.
+
+### Owner decisions (2026-10-04, item by item)
+
+1. Phone hero LCP: leave as is.
+2. Natural black olive: draw a distinct one (Deploy 153).
+3. Privacy page: reword, keep as open (Deploy 151).
+4. Kalamata line: "not offered" (Deploy 152).
+5. Catalogue packaging note: first "shorten, neutral"; the proposed wording
+   ("shown as drawings") turned out untrue, since the catalogue shows a table,
+   so the owner chose removal (Deploy 152). Also approved: "nine products".
+6. Search Console follow-ups: the address clean-up only. **Not done:** see
+   limitations.
+
+### Found and fixed during these deploys
+
+- **Merging #265 into Phase 2:** the first conflict resolution took Phase 2's
+  whole export-catalogue source and dropped #265's four renames in it. Caught
+  before pushing; resolved hunk by hunk, PDFs rebuilt, re-verified.
+- **A register edit broke the CSV quoting of C-40** on the #270 branch;
+  `check-claim-register` failed, and the row was rewritten with the CSV module
+  before the PR.
+
+### Claim register
+
+152 claims (C-152 added in Deploy 145). Notes added to C-40, C-51, C-128,
+C-148 and C-152. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- Each content deploy reverts with `git revert -m 1 <commit>` from the table.
+- **Deploy 149:** to restore only the hero photograph, take the hero
+  `<picture>` from `git show 465f909:index.html` (and `ar/index.html`); the
+  files are kept. Reverting 149 also needs the PDFs rebuilt.
+- **Deploys 145, 148, 149, 152, 153** rebuilt PDFs: after a revert, run the
+  generator so `check-guide-pdfs` passes.
+- **Deploy 144** is documentation only.
+
+### Known limitations shipped with Deploys 144 to 153
+
+- **Address clean-up not done.** Egress to `olivesegypt.com` and
+  `*.netlify.app` is blocked here (403), so how Netlify answers `/about` vs
+  `/about/` could not be checked, and a blind trailing-slash redirect could
+  loop. Needs network access for this environment, or the owner's `curl -sI`
+  of both forms. `www.` is the GoDaddy DNS step (owner); the old `?lang=`
+  addresses need no change.
+- **Search Console row on `/privacy`** still says "Not currently enabled";
+  the owner uses Search Console, which adds nothing to the site. Owner's call.
+- **Search Console (28 days to 29 Sep):** 61 clicks, 577 impressions; 56 of
+  the clicks from Egypt and 52 on the homepage. The prices article: about 60
+  impressions, 0 clicks.
+- **Photographs** are still needed for four products and the packaging formats.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7336,7 +7495,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 143 (2026-10-04).**
+**Unchanged through Deploy 153 (2026-10-04).**
 
 ## Outstanding, unresolved by this document
 
