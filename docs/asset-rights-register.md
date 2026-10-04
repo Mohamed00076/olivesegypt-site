@@ -351,3 +351,18 @@ previously used "were found to be AI-generated and were removed". The owner
 approved removing the note (2026-10-04): the formats are listed in a table, no
 image is shown, and the history is recorded here (see "Removed: AI-generated
 images presented as product photography" above). Both catalogue PDFs rebuilt.
+## 2026-10-04 — Natural Black Olives: its own illustration
+
+`assets/illus-natural-black.svg` (and `-ar`) was the same drawing as
+`illus-oxidized-black.svg`: round, uniform, glossy jet-black olives. The owner
+asked for a distinct one (2026-10-04). Redrawn for this site in the same flat
+style, palette and canvas as the other illustrations: oval, matte olives in
+uneven plum-to-brown, a little wrinkled, hanging from a branch with leaves,
+since natural black olives ripen on the tree and are not uniform in colour.
+Made for this site; no external source; no AI generation. Its description is
+unchanged ("Illustration of natural black olives" / "رسم توضيحي: زيتون أسود
+طبيعي"). It is still an illustration, not a photograph, and is used where the
+old drawing was: the product page, the homepage and catalogue cards, the print
+catalogue, Downloads, and 8 PDFs (both product catalogues, the natural-black
+and combined spec sheets, both export catalogues); their text is unchanged.
+Rollback: `git show fe92b3b:assets/illus-natural-black.svg` (and `-ar`).
