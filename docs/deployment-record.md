@@ -7757,6 +7757,60 @@ passed on the branch and on `main` at `54ac144`.
 
 ---
 
+## Deploys 162 and 163 — Stuffed Green Olives: "pepper or carrot" everywhere (PRs #281, #280)
+
+**Previous recorded deploy:** `54ac144` (Deploy 161, PR #279)
+**Approvals:**
+- "make it only pepper and carrot" (#281 work), then "merge" (#281 and #280).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 162 | #281 | `49ef7e7` | 2026-10-05 02:53:58 | 5 | +9 / −9 | Content |
+| 163 | #280 | `9728e8f` | 2026-10-05 02:54:01 | 1 | +69 / −1 | Notes only |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch and on `main` at `9728e8f`. #281 was merged three
+seconds before #280, so it takes the lower number.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 163** recorded Deploys 160 and 161.
+
+### What the deploys did
+
+- **Deploy 162 — Filling wording (#281).** Raised in Phase 3b: three places still described the filling vaguely, against C-152 (pepper or carrot only).
+  - **English catalogue card:** "stuffed with various fillings".
+  - **English product page:** "stuffed with a choice of fillings", in the body, meta, Open Graph and Product JSON-LD; the generator is updated.
+  - **Arabic product page:** "ومحشو باختيارك من الحشوات", in the body and JSON-LD.
+  - All now say "stuffed with pepper or carrot" / "ومحشو بالفلفل أو الجزر", the phrase the Arabic catalogue already used.
+  - The URL and the PDFs are unchanged. `check-packaging-claims` already fails on any other filling.
+
+### Owner decisions
+
+- "make it only pepper and carrot".
+
+### Claim register
+
+152 claims. Note added to C-152. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 162:** `git revert -m 1 49ef7e7`.
+- **Deploy 163** is documentation only.
+
+### Known limitations shipped with Deploys 162 and 163
+
+- **Phase 4** (remaining pages and an Arabic pass) awaits the owner's "go".
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the 231 KB hero WebP (lighter encode offered)
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7768,7 +7822,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 161 (2026-10-05).**
+**Unchanged through Deploy 163 (2026-10-05).**
 
 ## Outstanding, unresolved by this document
 
