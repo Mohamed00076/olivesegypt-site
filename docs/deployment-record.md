@@ -7484,6 +7484,73 @@ C-148 and C-152. C-55 remains the only `needs-review` row.
 
 ---
 
+## Deploys 154 and 155 — Prices article title, and the pricing-page layout shift (PRs #272, #273)
+
+**Previous recorded deploy:** `782330e` (Deploy 153, PR #271)
+**Approvals:**
+- "merge ,,,do 10 and 9,,,," (#272; work on items 9 and 10, item 9 with the proposed wording).
+- "merge" (#273).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 154 | #272 | `0e0fea4` | 2026-10-04 20:55:01 | 1 | +160 / −1 | Notes only |
+| 155 | #273 | `5aea6c8` | 2026-10-04 21:02:39 | 8 | +28 / −28 | Content (title and search description) |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch and on `main` at `5aea6c8`.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 154** recorded Deploys 144 to 153.
+
+### What the deploys did
+
+- **Deploy 155 — Prices article title and search description (#273).**
+  Search Console (28 days to 29 Sep) showed the article, EN and AR together,
+  at about 60 impressions and 0 clicks; its title promised prices the article
+  does not publish (prices are quoted per order, C-74).
+  - Title: "Egyptian Olive Prices 2026: What Moves FOB Rates and How to Get a
+    Quote" / "أسعار الزيتون المصري 2026: ما الذي يحرّك أسعار FOB وكيف تحصل على
+    عرض سعر", in the page title, Open Graph, Twitter, JSON-LD headline, the
+    heading, and the article's card on `/media` and `/media/blog`.
+  - Search description (meta, Open Graph, Twitter, JSON-LD): opens "Egyptian
+    table-olive prices are quoted per order" / "تُسعَّر صادرات زيتون المائدة
+    المصري لكل طلب".
+  - The article body, its intro paragraph and the card summaries are
+    unchanged; no price or range is stated. The first pass also replaced the
+    visible intro and card summaries, which repeat the old description; they
+    were restored before the PR.
+  - The heading wraps to 4 lines at 360px, with no overflow.
+
+### Item 10: `/resources/pricing` layout shift (no change needed)
+
+The 0.122 lab reading (Deploy 142's audit) came from the web-font swap that
+Deploy 146 removed. Now: Lighthouse (mobile), 5 runs per language, CLS
+0.000. Forcing the worst case, fonts held back 0.8–2 s at 360/390/412px:
+at most 0.018 (EN) and 0.087 (AR, 360px), both under 0.1. Nothing deployed.
+
+### Claim register
+
+152 claims. Note added to C-74. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 155:** `git revert -m 1 5aea6c8`.
+- **Deploy 154** is documentation only.
+
+### Known limitations shipped with Deploys 154 and 155
+
+- **The new title's effect** shows in Search Console only after Google
+  recrawls; the owner's 3-month export is requested as the "before" for it and
+  for Phases 2 and 3.
+- **Unchanged from Deploys 144 to 153:** the trailing-slash clean-up (blocked
+  by this environment's network policy), the `www` DNS step (owner), the
+  Search Console row on `/privacy` (owner's call), and the product and
+  packaging photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7495,7 +7562,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 153 (2026-10-04).**
+**Unchanged through Deploy 155 (2026-10-04).**
 
 ## Outstanding, unresolved by this document
 
