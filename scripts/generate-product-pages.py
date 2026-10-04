@@ -268,9 +268,15 @@ def _photo_sources(src):
     return webp, jpg
 
 
-def product_image(im, sizes="(min-width: 1024px) 476px, calc(100vw - 2rem)"):
+def product_image(im, sizes="(min-width: 1024px) 476px, (min-width: 640px) calc(100vw - 2rem), 80vw"):
     """The product's own image, at the top of the page: loaded first, in a
-    fixed 3:2 box, with every size of the photograph that exists."""
+    fixed 3:2 box, with every size of the photograph that exists.
+
+    On a phone the slot is about 90vw; it is declared as 80vw so a typical
+    phone (412px at 1.75x) takes the 600w file rather than the 800w one. Measured
+    2026-10-04 on the jalapeño page, the 92 KB 800w file put its LCP at 2.56s
+    under Lighthouse's mobile throttling; the slightly softer 600w costs little
+    at that size."""
     src, alt, w, h = im["src"], im["alt"], im["w"], im["h"]
     attrs = 'alt="%s" width="%s" height="%s" fetchpriority="high" decoding="async"' % (alt, w, h)
     if src.endswith(".svg"):
