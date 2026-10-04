@@ -342,6 +342,10 @@ const countPages = (buf) => (Buffer.from(buf).toString('latin1').match(/\/Type\s
  * the generator so that changing it changes every PDF's fingerprint.
  */
 function prepareForPdf(site) {
+  // The title a PDF carries is the page's <title>. Pages printed from a
+  // print view say so ("(Print)", "(نسخة للطباعة)"), which is right for the
+  // web page and wrong for the document a buyer downloads.
+  document.title = document.title.replace(/\s*\((?:Print|نسخة للطباعة)\)/, '');
   // Images below the fold wait to be scrolled to (loading="lazy"), and a
   // page printed before they arrive has empty frames where the photos go --
   // two pages of the combined spec sheets did. Load them all now; the
