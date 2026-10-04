@@ -1,16 +1,28 @@
 <svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="رسم توضيحي: زيتون أسود طبيعي">
   <rect width="900" height="900" fill="#3d5a2e"/>
   <g transform="translate(450,450)">
-    <!-- cluster of dark, glossy oxidized olives -->
-    <circle cx="-70" cy="10" r="46" fill="#241f18"/>
-    <circle cx="20" cy="-40" r="52" fill="#2c261c"/>
-    <circle cx="85" cy="20" r="44" fill="#241f18"/>
-    <circle cx="-20" cy="55" r="40" fill="#332c1f"/>
-    <circle cx="60" cy="70" r="34" fill="#241f18"/>
-    <circle cx="-82" cy="0" r="12" fill="#c9a84c" opacity="0.55"/>
-    <circle cx="10" cy="-52" r="14" fill="#c9a84c" opacity="0.55"/>
-    <circle cx="95" cy="10" r="10" fill="#c9a84c" opacity="0.5"/>
-    <line x1="20" y1="-92" x2="20" y2="-125" stroke="#c9a84c" stroke-width="6" stroke-linecap="round"/>
-    <ellipse cx="45" cy="-130" rx="26" ry="11" fill="#5a7a4a" transform="rotate(20 45 -130)"/>
+    <!-- natural black olives, ripened on the tree: oval, matte, uneven plum-to-brown
+         colour and a little wrinkled, still hanging from the branch (the oxidized
+         drawing is round, uniform jet black and glossy) -->
+    <path d="M-170,-118 Q-10,-160 170,-120" stroke="#c9a84c" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-128" cy="-150" rx="42" ry="12" fill="#5a7a4a" transform="rotate(-24 -128 -150)"/>
+    <ellipse cx="128" cy="-156" rx="42" ry="12" fill="#5a7a4a" transform="rotate(20 128 -156)"/>
+    <ellipse cx="20" cy="-172" rx="36" ry="11" fill="#6c8d5a" transform="rotate(-6 20 -172)"/>
+    <line x1="-95" y1="-132" x2="-95" y2="-60" stroke="#c9a84c" stroke-width="4" stroke-linecap="round"/>
+    <line x1="-5" y1="-140" x2="-5" y2="-88" stroke="#c9a84c" stroke-width="4" stroke-linecap="round"/>
+    <line x1="90" y1="-131" x2="90" y2="-52" stroke="#c9a84c" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="-95" cy="-10" rx="42" ry="50" fill="#4a2a2f" transform="rotate(-8 -95 -10)"/>
+    <ellipse cx="-5" cy="-36" rx="46" ry="54" fill="#3a2230"/>
+    <ellipse cx="90" cy="-4" rx="40" ry="48" fill="#5b3a2e" transform="rotate(10 90 -4)"/>
+    <ellipse cx="-48" cy="72" rx="40" ry="46" fill="#2e1e26" transform="rotate(-6 -48 72)"/>
+    <ellipse cx="48" cy="76" rx="38" ry="45" fill="#6b4535" transform="rotate(8 48 76)"/>
+    <ellipse cx="-110" cy="-30" rx="9" ry="14" fill="#f5f0e1" opacity="0.16" transform="rotate(-8 -110 -30)"/>
+    <ellipse cx="-22" cy="-62" rx="10" ry="15" fill="#f5f0e1" opacity="0.16"/>
+    <ellipse cx="76" cy="-24" rx="8" ry="13" fill="#f5f0e1" opacity="0.16" transform="rotate(10 76 -24)"/>
+    <ellipse cx="-62" cy="52" rx="8" ry="12" fill="#f5f0e1" opacity="0.14"/>
+    <ellipse cx="36" cy="56" rx="8" ry="12" fill="#f5f0e1" opacity="0.16"/>
+    <path d="M-80,10 q12,10 6,26" stroke="#1f1418" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M14,-20 q10,14 2,30" stroke="#1f1418" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M60,88 q10,8 4,22" stroke="#2e1e26" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
   </g>
 </svg>
