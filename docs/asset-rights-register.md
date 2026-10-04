@@ -342,3 +342,12 @@ Found while doing this, not changed: `illus-natural-black.svg` (and `-ar`) is
 the same drawing as `illus-oxidized-black.svg`, and its label read "Oxidized
 Black Olives". The label now says natural black olives; the drawing itself is
 still the oxidized-black one.
+
+## 2026-10-04 — Export catalogue: AI-image note removed
+
+The export catalogue (EN and AR) carried, under its packaging-formats table, a
+note that packaging photography was "not yet available" and that the images
+previously used "were found to be AI-generated and were removed". The owner
+approved removing the note (2026-10-04): the formats are listed in a table, no
+image is shown, and the history is recorded here (see "Removed: AI-generated
+images presented as product photography" above). Both catalogue PDFs rebuilt.
