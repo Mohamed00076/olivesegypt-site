@@ -2767,7 +2767,7 @@
   "netlify/functions/_guides/ar/company-overview.pdf": {
     "source": "netlify/functions/_guides/ar/company-overview.html",
     "inputs": {
-      "netlify/functions/_guides/ar/company-overview.html": "525e1cd9835cb911598c471c6e1a2ad693fad8f9cc2e1b6a0c35ce62b562b1d0",
+      "netlify/functions/_guides/ar/company-overview.html": "de3bd0fa789c9fd26cd786d338624021ace5e9c1106bf3c0c162a1a94b120b4c",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/index-Dw0yUE42.css": "6887c21bc665a9d9870a21ea5a11f25a556c5d28527640f754c0c2e33bfe5512",
       "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
@@ -2856,12 +2856,12 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "a2da044d01eb0b2bdc46946d1ee6c011c4800b57d949d42c199bd7aa54a6d947"
+    "pdf": "bbd7b4f9c424942ce4351bc8560e5d72361014c3f860b9088d0cf3ce238cac68"
   },
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
     "inputs": {
-      "scripts/export-catalog-source-ar.html": "897219427e30a2d0f213a1452aa401101b1e8b3422c26b969be0cff72f1f87b8",
+      "scripts/export-catalog-source-ar.html": "f93bea7370bdd76b28fd181a996962c61ad11fc474979a5532938b6dcd20d37f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
@@ -2959,7 +2959,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "1764f512dcf800a2214ac82eb6bcd64041a8a2f387f7aaa433443e946c23d942",
-    "pdf": "e70df0d7270bec0ebd1835f81787a72c4532cdf8290b9edb6b61e08cd5657ffa"
+    "pdf": "788b39f9be7c4014f2ad1e4d1401bbd8c740be21610e37ae383535955e3c53ce"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/ar/export-documentation-checklist.html",
@@ -3340,7 +3340,7 @@
   "netlify/functions/_guides/ar/private-label-brochure.pdf": {
     "source": "netlify/functions/_guides/ar/private-label-brochure.html",
     "inputs": {
-      "netlify/functions/_guides/ar/private-label-brochure.html": "b768a771feb7e36d21cff6836824169eeff78c7d8ddc3bbef26ee37119c886a4",
+      "netlify/functions/_guides/ar/private-label-brochure.html": "dfc726d470cd07fe31c59a213ac606e264073dd88db0ea89e94ec106fe0dae56",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/index-Dw0yUE42.css": "6887c21bc665a9d9870a21ea5a11f25a556c5d28527640f754c0c2e33bfe5512",
       "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
@@ -3429,7 +3429,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "8a75de10d528ce0dfac463c245fe522b78da470227eef94a43ddd7c35fe3c59e"
+    "pdf": "b1d8c5c9b43d7a6f13358c0decd5765542f7b706d37eaf562529dd05e43f6910"
   },
   "netlify/functions/_guides/en/buyers-guide.pdf": {
     "source": "netlify/functions/_guides/en/buyers-guide.html",
@@ -3527,7 +3527,7 @@
   "netlify/functions/_guides/en/company-overview.pdf": {
     "source": "netlify/functions/_guides/en/company-overview.html",
     "inputs": {
-      "netlify/functions/_guides/en/company-overview.html": "f251f31acddd2cdd4344354b60ff1b84e705bf5124da49f21e63a330462bfd4f",
+      "netlify/functions/_guides/en/company-overview.html": "6c55f339a1dd960ebc0363819269300cda03c1a88e9ae52d85436bce5c2f25fe",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/index-Dw0yUE42.css": "6887c21bc665a9d9870a21ea5a11f25a556c5d28527640f754c0c2e33bfe5512",
       "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
@@ -3615,12 +3615,12 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "b9755859ca04862271b460719d83aae3e249909abfa1bd50acd2436703ebd219"
+    "pdf": "d7e9d89fb9a9bd6a5f47454c0b681a6c2d37b59d72b0fe83ad2d26c4b65fd724"
   },
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
     "inputs": {
-      "scripts/export-catalog-source.html": "f36ac1193c9491f748642678f3bf3238a3cfd535c7da2ed961e50a6e02fcfca5",
+      "scripts/export-catalog-source.html": "1d18c77d54c8f71403bcaeb57bc7f4ac79ae568214ed8043f0ada83e952a2d32",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "6819f6c950dc9f72520117216cad9aface2b4ad63a03eaa2dab4e67ff700d3c9",
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
@@ -3718,7 +3718,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "576f0a65e1c67458d6f90b0952cde3a9600f3b4eef2fcbd8307b766144786e9b",
-    "pdf": "65b2dee1403d81f06bcfc31eaf0c3048fbe67c189b97325993895d24fbd5a647"
+    "pdf": "d9eb2e2976524940fb7714a102b977ce5d675d9cdde46e7a6766ac6e20681cdc"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "netlify/functions/_guides/en/export-documentation-checklist.html",
@@ -4095,7 +4095,7 @@
   "netlify/functions/_guides/en/private-label-brochure.pdf": {
     "source": "netlify/functions/_guides/en/private-label-brochure.html",
     "inputs": {
-      "netlify/functions/_guides/en/private-label-brochure.html": "c6b7ee4e768301f6a9368734d443622199613c372380e4847a7c8c1d1ba1df02",
+      "netlify/functions/_guides/en/private-label-brochure.html": "930914460f995162dd0fcf2040dabdbad1481a4f873f7850268a5520d301f9fa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/index-Dw0yUE42.css": "6887c21bc665a9d9870a21ea5a11f25a556c5d28527640f754c0c2e33bfe5512",
       "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
@@ -4183,6 +4183,6 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "d2fcfa5475265391fe07cb0888c803c62338a80fb897c5baa4de6179b94f1149"
+    "pdf": "c0ebcb35e7be98aeb41bc4d28ff4159e1e7ff8f19442ef48a49aaea81c1415aa"
   }
 }
