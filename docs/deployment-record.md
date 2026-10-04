@@ -7551,6 +7551,73 @@ at most 0.018 (EN) and 0.087 (AR, 360px), both under 0.1. Nothing deployed.
 
 ---
 
+## Deploys 156 and 157 — Red-peppers hero photograph restored (PRs #275, #274)
+
+**Previous recorded deploy:** `5aea6c8` (Deploy 155, PR #273)
+**Approvals:**
+- "and why did you remove the red pepper pic in home screen ?" then "restore it i am going to add it to products anyway" (#275 work).
+- "merge" (#275 and #274).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 156 | #275 | `58cae30` | 2026-10-04 21:19:10 | 4 | +13 / −3 | Design (hero image) |
+| 157 | #274 | `6ed387b` | 2026-10-04 21:19:12 | 1 | +68 / −1 | Notes only |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch and on `main` at `6ed387b`. #275 was merged two seconds
+before #274, so it takes the lower number.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 157** recorded Deploys 154 and 155.
+
+### What the deploys did
+
+- **Deploy 156 — Red-peppers hero photograph restored (#275).**
+  Phase 2 (Deploy 149) had replaced it with a logo-motif SVG under the
+  brief's "No photograph" hero rule; it was listed for approval as item A of
+  #267 and went out with "merge all", but not asked about on its own. The owner
+  asked why, and asked for it back.
+  - The hero box on `/` and `/ar/` is back to its markup at `465f909`: the same
+    `<picture>` (WebP + JPEG, `fetchpriority="high"`, 1120×1120), alt text,
+    frame and overlay; md and wider only, phones get a 1×1 placeholder.
+  - The blurred green-olives background texture stays removed (not part of
+    the request).
+  - Lab: mobile LCP `/` 2.07 s, `/ar/` 2.06 s (phones do not load the photo);
+    desktop `/` 0.86 s (0.62 s with the SVG). From 768px up the photo is again
+    the LCP element.
+  - The SVG's CSS is left in place (a few hundred bytes), so PDF fingerprints
+    are untouched.
+  - Registers: C-148 (the claim applies again) and the asset register.
+
+### Owner decisions
+
+- Restore the photograph as before; the owner plans to add red peppers as a
+  product. That product needs the owner's own details (name, styles, caliber,
+  brine, packaging) before any page is made.
+
+### Claim register
+
+152 claims. Note added to C-148. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 156:** `git revert -m 1 58cae30` (the hero returns to the SVG).
+- **Deploy 157** is documentation only.
+
+### Known limitations shipped with Deploys 156 and 157
+
+- **The hero WebP is 231 KB,** above the brief's "hero around 150 KB" target
+  (tablet and desktop only). A lighter encode at the same size and look is
+  offered as a follow-up.
+- **Unchanged:** the trailing-slash clean-up (blocked by this environment's
+  network policy), the `www` DNS step (owner), the Search Console row on
+  `/privacy` (owner's call), the product and packaging photographs, and the
+  Phase 3 decisions.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7562,7 +7629,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 155 (2026-10-04).**
+**Unchanged through Deploy 157 (2026-10-04).**
 
 ## Outstanding, unresolved by this document
 
