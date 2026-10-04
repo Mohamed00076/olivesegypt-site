@@ -989,31 +989,100 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   }
   /* Arabic pages (owner, 2026-10-04). Neither family above has Arabic
      letters, so Arabic text fell through to whatever the visitor's device
-     had, and looked different on every phone and computer. The same pairing
-     as the English: a sans for text (Noto Sans Arabic) and a calligraphic
-     face for headings (Noto Naskh Arabic, the face of the company name),
-     both cut to standard Arabic by scripts/make-arabic-web-fonts.py.
-     Only Arabic pages name them, so English pages download neither. */
+     had, and looked different on every phone and computer. One Arabic face,
+     Noto Sans Arabic, sets Arabic text and headings alike (one font, fewer
+     files: owner, 2026-10-04), cut by scripts/make-arabic-web-fonts.py to
+     standard Arabic, the word space and weights 400-700, about 17 KB. It
+     leads both stacks and carries the space, so an Arabic line is one font
+     and Playfair Display is not downloaded for Arabic headings; Latin
+     letters and digits on these pages fall to Plus Jakarta Sans. English
+     pages never name it, so they download nothing extra. */
   @font-face {
     font-family: "TC Arabic Sans";
     src: url(/assets/fonts/arabic-sans.woff2) format("woff2");
     font-weight: 400 700;
     font-style: normal;
     font-display: optional;
-    unicode-range: U+060C, U+061B, U+061F, U+0621-063A, U+0640-0652, U+0660-066D, U+0670-0671, U+200C-200F;
-  }
-  @font-face {
-    font-family: "TC Arabic Naskh";
-    src: url(/assets/fonts/arabic-naskh.woff2) format("woff2");
-    font-weight: 400 700;
-    font-style: normal;
-    font-display: optional;
-    unicode-range: U+060C, U+061B, U+061F, U+0621-063A, U+0640-0652, U+0660-066D, U+0670-0671, U+200C-200F;
+    unicode-range: U+0020, U+00A0, U+060C, U+061B, U+061F, U+0621-063A, U+0640-0652, U+0660-066D, U+0670-0671, U+200C-200F;
   }
   html[lang="ar"] {
-    --app-font-sans: "Plus Jakarta Sans", "TC Arabic Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
-    --app-font-serif: "Playfair Display", "TC Arabic Naskh", "PD Fallback Times", serif;
+    --app-font-sans: "TC Arabic Sans", "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
+    --app-font-serif: "TC Arabic Sans", "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
+    --app-font-mono: "TC Arabic Sans", "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
   }
+  /* No monospace web font (owner, 2026-10-04: drop Space Mono). The caliber
+     chips and the pricing table's figures keep their column alignment with
+     Plus Jakarta Sans' tabular figures instead of a third family. */
+  :root {
+    --app-font-mono: "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
+  }
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Shared components (visual-upgrade brief, Phase 1, 2026-10-04). Defined
+     once here and reused by the redesigned pages of Phases 2-4, rather than
+     restyled page by page. Every colour comes from the theme tokens, so
+     dark mode follows; every side is a logical property (inline-start,
+     text-align: start), so Arabic pages mirror without extra rules. */
+  :root {
+    --tc-space-1: .25rem; --tc-space-2: .5rem; --tc-space-3: 1rem;
+    --tc-space-4: 1.5rem; --tc-space-5: 2.5rem; --tc-space-6: 4rem;
+    --tc-measure: 68ch;
+  }
+  .tc-measure { max-width: var(--tc-measure); }
+  .tc-section { padding-block: var(--tc-space-6); }
+  @media (max-width: 639px) { .tc-section { padding-block: var(--tc-space-5); } }
+  .tc-band-cream { background-color: hsl(var(--background)); }
+  .tc-band-white { background-color: hsl(var(--card)); }
+  .tc-card {
+    background-color: hsl(var(--card)); color: hsl(var(--card-foreground, var(--foreground)));
+    border: 1px solid hsl(var(--border)); border-radius: .75rem; padding: var(--tc-space-4);
+  }
+  .tc-chip {
+    display: inline-flex; align-items: center; gap: var(--tc-space-1);
+    border: 1px solid hsl(var(--border)); background-color: hsl(var(--muted));
+    color: hsl(var(--foreground)); border-radius: 9999px; padding: .125rem .625rem;
+    font-size: .75rem; font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums;
+  }
+  .tc-pill {
+    display: inline-flex; align-items: center; gap: .375rem; border: 1px solid hsl(var(--border));
+    border-radius: 9999px; padding: .125rem .625rem; font-size: .75rem; font-weight: 600; line-height: 1.5;
+    background-color: hsl(var(--muted)); color: hsl(var(--foreground));
+  }
+  .tc-pill::before { content: ""; width: .5rem; height: .5rem; border-radius: 9999px; background-color: currentColor; }
+  .tc-pill-available::before { background-color: hsl(var(--primary)); }
+  .tc-pill-request::before { background-color: hsl(var(--secondary)); }
+  .tc-pill-progress::before { background-color: hsl(var(--muted-foreground)); }
+  .tc-spec-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+  .tc-spec-table th, .tc-spec-table td {
+    padding: .625rem .75rem; border-bottom: 1px solid hsl(var(--border));
+    text-align: start; vertical-align: top;
+  }
+  .tc-spec-table th { color: hsl(var(--muted-foreground)); font-weight: 600; }
+  .tc-spec-table td { color: hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
+  @media (max-width: 639px) {
+    /* On a phone each row becomes a stacked card; data-label repeats the
+       column heading the hidden header row carried. */
+    .tc-spec-table thead { display: none; }
+    .tc-spec-table tr { display: block; padding-block: var(--tc-space-2); border-bottom: 1px solid hsl(var(--border)); }
+    .tc-spec-table td { display: flex; justify-content: space-between; gap: var(--tc-space-3); border: 0; padding: .25rem 0; }
+    .tc-spec-table td::before { content: attr(data-label); color: hsl(var(--muted-foreground)); font-weight: 600; }
+  }
+  .tc-timeline { list-style: none; margin: 0; padding: 0; counter-reset: tc-step; }
+  .tc-timeline > li {
+    position: relative; counter-increment: tc-step;
+    padding-inline-start: 3rem; padding-bottom: var(--tc-space-4);
+  }
+  .tc-timeline > li::before {
+    content: counter(tc-step); position: absolute; inset-inline-start: 0; top: 0;
+    width: 2rem; height: 2rem; border-radius: 9999px; display: grid; place-items: center;
+    background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 700; font-size: .875rem;
+  }
+  .tc-timeline > li::after {
+    content: ""; position: absolute; inset-inline-start: calc(1rem - 1px); top: 2.25rem; bottom: .25rem;
+    width: 2px; background-color: hsl(var(--border));
+  }
+  .tc-timeline > li:last-child::after { display: none; }
 }
 /* Each fallback has a regular face (100-500) and a bold face (600-900), each
    sized to that weight of the web font. With only a regular face, bold text

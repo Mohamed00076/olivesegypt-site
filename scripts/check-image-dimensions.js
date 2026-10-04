@@ -164,13 +164,17 @@ t(`the logo still declares its size outside the PDF sources (${logoTags} tag(s))
 // The generator writes 10 of the pages counted above. If it emits an image
 // without dimensions, or with stale ones, its next run disagrees with the
 // pages it produced last time -- which is how the logo divergence started.
+// Since 2026-10-04 page headers load assets/logo-header.png, the same artwork
+// at 52x64 (twice the 32px box), not the 38 KB original; the generator must
+// emit that file and declare its real size.
+const HEADER_LOGO = '/assets/logo-header.png';
 for (const gen of ['scripts/generate-product-pages.py']) {
   const src = fs.readFileSync(path.join(ROOT, gen), 'utf8');
-  const m = src.match(new RegExp(`<img[^>]*${LOGO.replace(/[/.]/g, '\\$&')}[^>]*>`));
-  t(`${gen} emits the logo`, m !== null);
+  const m = src.match(new RegExp(`<img[^>]*${HEADER_LOGO.replace(/[/.]/g, '\\$&')}[^>]*>`));
+  t(`${gen} emits the header logo`, m !== null);
   if (m) {
-    const real = intrinsic(LOGO);
-    t(`${gen} declares the logo's real dimensions`,
+    const real = intrinsic(HEADER_LOGO);
+    t(`${gen} declares the header logo's real dimensions`,
       real !== null && Number(attr(m[0], 'width')) === real.w && Number(attr(m[0], 'height')) === real.h,
       m[0].slice(0, 120));
   }
