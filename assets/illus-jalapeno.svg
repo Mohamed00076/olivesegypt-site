@@ -1,6 +1,6 @@
-<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sliced Jalapeño Peppers photography pending">
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of sliced jalapeño peppers">
   <rect width="900" height="900" fill="#3d5a2e"/>
-  <g transform="translate(450,370)">
+  <g transform="translate(450,450)">
     <!-- three overlapping jalapeño rings -->
     <g transform="translate(-90,-20) rotate(-8)">
       <circle r="78" fill="none" stroke="#5a7a4a" stroke-width="26"/>
@@ -23,6 +23,4 @@
       <circle cx="-25" cy="18" r="5" fill="#c9a84c"/>
     </g>
   </g>
-  <text x="450" y="580" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#f5f0e1" letter-spacing="0.5">Product photography</text>
-  <text x="450" y="625" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#f5f0e1" letter-spacing="0.5">pending</text>
 </svg>
