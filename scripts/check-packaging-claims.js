@@ -137,6 +137,41 @@ const homeTables = ['index.html', 'ar/index.html'].filter((f) => {
 });
 t('   and both homepage packaging tables list 2, 5, 10 and 20 kg buckets', homeTables.length === 0, homeTables.join(', '));
 
+// ---- no vacuum packing (owner, 2026-10-03 and 2026-10-04; C-151) ---------
+// Vacuum pouches / bags / vacuum-sealed packing are not a confirmed format.
+// They were on 30-odd pages, the guides and 38 PDFs until Deploy 134.
+const VACUUM = /\bvacuum[\s-]*(?:pouch|pouches|bag|bags|seal|sealed|packed|pack|packing)\b|\bretort\s*pouch|أكياس\s*(?:مفر\S*|التفريغ)|مفر[ّ]?غة\s*من\s*الهواء|معب[أا]\s*بالتفريغ/i;
+const vacuum = [];
+// ---- stuffed olives: pepper and carrot only (owner, 2026-10-04; C-152) ----
+// The site offered pimiento, almond, garlic and lemon fillings. Only pepper
+// and carrot are confirmed, and no pepper variety is named. A filling is
+// caught in a stuffing sentence ("stuffed with ... almond") or as a run of
+// filling chips ("Almond Garlic"). "almond shape" (Kalamata) and "marinated
+// with herbs, garlic and citrus" are not fillings and pass.
+const FILL_EN = /\b(?:stuffed|stuffing|filled)\b[^.;:]{0,80}?\b(pimientos?|almonds?|garlic|lemons?)\b/i;
+const CHIPS_EN = /\b(?:Pimiento|Almond|Garlic|Lemon)\s+(?:Almond|Garlic|Lemon)\b/;
+// (No \b here: in a JavaScript regex \b only sees ASCII letters, so it never
+// matches beside an Arabic one. Word edges are spelled out instead.)
+const AR_EDGE = '(?=$|[\\s،؛.)/(])';
+const FILL_AR = new RegExp(`(?:محشو|محشوة|محشوًا|المحشو|حشو)[^.؛:]{0,80}?(?:^|[\\s(،/])(?:ب?ال)?(?:لوز|ثوم|ليمون)${AR_EDGE}|(?:محشو|محشوة|محشوًا|المحشو)[^.؛:]{0,80}?(?:بالفلفل الأحمر|فلفل أحمر)`);
+const CHIPS_AR = new RegExp(`(?:^|\\s)(?:محشو )?(?:ب?ال)?(?:لوز|ثوم|ليمون)\\s+(?:محشو )?(?:ب?ال)?(?:لوز|ثوم|ليمون)${AR_EDGE}`);
+const fillings = [];
+for (const file of files) {
+  const rel = path.relative(ROOT, file);
+  if (/^scripts\/check-/.test(rel)) continue;
+  const text = flatten(fs.readFileSync(file, 'utf8'));
+  const v = text.match(VACUUM);
+  if (v) vacuum.push(`${rel}: "${v[0]}"`);
+  for (const re of [FILL_EN, CHIPS_EN, FILL_AR, CHIPS_AR]) {
+    const f = text.match(re);
+    if (f) fillings.push(`${rel}: "${f[0].slice(-70)}"`);
+  }
+}
+t('no page, guide, catalogue source or generator offers vacuum pouches or vacuum packing, in either language',
+  vacuum.length === 0, vacuum.length ? `${vacuum.length}\n      ${vacuum.slice(0, 5).join('\n      ')}` : '');
+t('stuffed olives name only pepper and carrot: no almond, garlic, lemon or pimiento filling, in either language',
+  fillings.length === 0, fillings.length ? `${fillings.length}\n      ${fillings.slice(0, 6).join('\n      ')}` : '');
+
 console.log(`\npackaging-claims OK -- ${surfaces} surface(s) mention a barrel, none of them wooden, and all ${sized} capacity figure(s) read 220 kg.`);
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);
