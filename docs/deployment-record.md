@@ -7226,6 +7226,105 @@ Each deploy reverts with `git revert -m 1 <commit>`, newest first.
 
 ---
 
+## Deploys 142 and 143 — Post-change audit and the HTML structure check (PRs #260, #261)
+
+**Previous recorded deploy:** `dba3f23` (Deploy 141, PR #259)
+**Approvals:**
+- "merge it" (#260)
+- "do 1 2 3": a full re-check after the Arabic font change, a search for more bugs like the Downloads one, and a test to prevent them. Then "merge" (#261).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 142 | #260 | `85c51c3` | 2026-10-04 06:40:20 | 1 | +153 / −2 | Notes only |
+| 143 | #261 | `b7bb802` | 2026-10-04 07:29:26 | 2 | +170 / −1 | Test only |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch and on `main` at `b7bb802`. Neither deploy changes a
+page.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 142** recorded Deploys 137 to 141.
+
+### Item 1: re-check after the Arabic font change (no change needed)
+
+- **Accessibility (axe, WCAG 2.1 AA):** 90 pages, light and dark: 0
+  violations.
+- **Phone layout** at 360/390/430px (270 loads):
+  - no horizontal scroll
+  - no `target-size` failures
+  - no text under 12px
+
+  The only elements past the edge are deliberate: the off-screen anti-spam
+  fields and the WhatsApp button's pulse ring.
+- **Clipped text** at 360/768/1280px: none on any page.
+  Screen-reader-only labels are clipped by design and were excluded.
+- **Lighthouse, all 90 pages (mobile, local server):**
+  - accessibility, best practices and SEO: 100 everywhere
+  - performance: English 75–90 (median 86), Arabic 75–83 (median 81)
+- **Two lab CLS readings just over 0.1,** both font-arrival timing. Left
+  as they are; reported to the owner:
+  - **`/resources/pricing`, 0.122.** Its intro paragraph is within 3px of a
+    line break at Lighthouse's 412px width. The metric-matched fallback
+    font is within 0.2% of Plus Jakarta Sans on that text, so the swap can
+    add a line. It is pre-existing: the page measured the same at Deploy
+    132 (0.122, then 0.018) and has not changed since.
+  - **`/ar/media`, 0.104 on 2 of 3 runs (0.025 on the third).** When the
+    Arabic fonts arrive in the first ~100ms, after the first layout and
+    before text paints, the header re-wraps once. When they arrive later,
+    the device font is kept. Not reproduced in five unthrottled or
+    throttled traces of my own.
+
+### What the deploys did
+
+- **Deploy 143 — `scripts/check-html-structure.js` (#261), in `npm test`.**
+  It parses all 126 tracked pages and fails on two things:
+  1. **Tags out of order:** a closing tag that matches nothing, one that
+     closes an element while elements opened inside it are still open, or
+     an element never closed.
+  2. **A grid item outside its grid's container:** an element matching a
+     grid's items that sits outside the grid's container, in the same
+     section. Right beside the grid is allowed, because /contact and
+     /sample put full-width fields after a two-column grid of short ones on
+     purpose.
+
+  Both rules run first against built-in examples that must pass and must
+  fail.
+  - **Against the pre-#259 Downloads pages:** it reports all 5 spilled cards
+    in each language.
+  - **Against current pages:** every page passes, so item 2's scan found no
+    other case.
+  - **The first version of rule 2** flagged the two forms and missed the
+    real bug's shape (the cards ended up beside the grid's container, not
+    beside the grid). Both were corrected before the push.
+
+### Owner decisions
+
+Items 1 to 3 as proposed ("do 1 2 3", "merge").
+
+### Claim register
+
+No change: 151 claims, and C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 143:** reverts with `git revert -m 1 b7bb802`, which removes only
+  the check.
+- **Deploy 142** is documentation only.
+
+### Known limitations shipped with Deploys 142 and 143
+
+- **The two CLS readings above** are unchanged.
+- **The new check reads source HTML.** A layout fault made by CSS alone
+  would not show in it.
+- **Waiting on the owner:**
+  - the Search Console export
+  - per-product container loading figures
+  - photographs, certificates and the other open items
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7237,7 +7336,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 141 (2026-10-04).**
+**Unchanged through Deploy 143 (2026-10-04).**
 
 ## Outstanding, unresolved by this document
 
@@ -7445,7 +7544,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 141 (2026-10-04).** The owner will set the values later.
+    **Unchanged at Deploy 143 (2026-10-04).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
