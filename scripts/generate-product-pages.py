@@ -293,8 +293,7 @@ def thumb(im):
     base = os.path.splitext(src)[0]
     w, h = int(im["w"]), int(im["h"])
     th = round(h * 320 / w)
-    return ('<picture style="display:contents"><source type="image/webp" srcset="%s-320.webp">'
-            '<img src="%s-600.jpg" alt="" width="320" height="%d" loading="lazy" decoding="async"/></picture>' % (base, base, th))
+    return '<img src="%s-320.webp" alt="" width="320" height="%d" loading="lazy" decoding="async"/>' % (base, th)
 
 
 def product_main(d):
