@@ -65,9 +65,11 @@ const SELF = 'scripts/check-script-integrity.js';
 // Each entry names the file that needs it, so an undeclared dependency
 // appearing anywhere else still fails.
 const TOOLING_ONLY = new Map([
-  ['playwright', 'scripts/generate-export-catalog-pdf.js'],
-  ['PIL', 'scripts/build-favicons.py'],
+  ['playwright', ['scripts/generate-export-catalog-pdf.js']],
+  ['PIL', ['scripts/build-favicons.py']],
+  ['fontTools', ['scripts/make-pdf-static-fonts.py']],
 ]);
+const toolingAllows = (top, rel) => (TOOLING_ONLY.get(top) || []).includes(rel);
 
 const BUILTIN = new Set([...builtinModules, ...builtinModules.map((m) => `node:${m}`)]);
 
@@ -127,8 +129,8 @@ for (const rel of jsFiles) {
     }
     const top = spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : spec.split('/')[0];
     if (BUILTIN.has(top) || declared.has(top)) continue;
-    if (TOOLING_ONLY.get(top) === rel) continue;
-    undeclared.push(`${rel} requires "${top}"${TOOLING_ONLY.has(top) ? ` (tooling-only, but allowed for ${TOOLING_ONLY.get(top)})` : ''}`);
+    if (toolingAllows(top, rel)) continue;
+    undeclared.push(`${rel} requires "${top}"${TOOLING_ONLY.has(top) ? ` (tooling-only, but allowed for ${TOOLING_ONLY.get(top).join(', ')})` : ''}`);
   }
 }
 t('every relative require() resolves to a file that exists', missingLocal.length === 0, show(missingLocal));
@@ -150,7 +152,7 @@ for (const rel of pyFiles) {
     if (stdlib.has(top)) continue;
     // a module kept in the repo beside the script (e.g. scripts/site_icons.py) is local, not third-party
     if (fs.existsSync(path.join(ROOT, path.dirname(rel), top + '.py'))) continue;
-    if (TOOLING_ONLY.get(top) === rel) continue;
+    if (toolingAllows(top, rel)) continue;
     pyUndeclared.push(`${rel} imports "${top}"`);
   }
 }
