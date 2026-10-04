@@ -7075,6 +7075,157 @@ the revert.
 
 ---
 
+## Deploys 137 to 141 — PDF titles and fonts, an Arabic site font, and the Downloads grid (PRs #255 to #259)
+
+**Previous recorded deploy:** `c09f171` (Deploy 136, PR #254)
+**Approvals:**
+- "do 1 2 3 4", then "merge all" (#255 to #258)
+- The owner's screenshot question about the Downloads cards ("why there are 3 pdfs … next to each other and the remaining are on top of each other?"), then "merge" (#259)
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 137 | #255 | `f518ce8` | 2026-10-04 04:04:55 | 1 | +166 / −2 | Notes only |
+| 138 | #256 | `e9c3ae6` | 2026-10-04 04:04:58 | 12 | +56 / −52 | Site change |
+| 139 | #257 | `b61d856` | 2026-10-04 04:05:03 | 100 | +2981 / −139 | Site change |
+| 140 | #258 | `32c50e1` | 2026-10-04 04:05:12 | 60 | +569 / −103 | Site change |
+| 141 | #259 | `dba3f23` | 2026-10-04 06:35:45 | 2 | +3 / −5 | Site change |
+
+Files and lines are each merge against the `main` it landed on.
+
+- **Stacking:** #256 to #258 were stacked (#257 on #256, #258 on #257)
+  because each rebuilds PDFs. They were merged in that order.
+- **Line counts:** #257's total is mostly the 52 font files it adds, which
+  git counts as lines.
+- **Checks:** `npm test` passed on each branch and on `main` at `dba3f23`.
+  Whether each production build succeeded is not visible from here.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 137** recorded Deploys 133 to 136.
+
+### What each site change did
+
+- **Deploy 138 — PDF titles (#256).**
+  - **The problem:** ten PDFs printed from print views carried "(Print)" /
+    "(نسخة للطباعة)" in their document title. A PDF viewer shows that title
+    in its tab, and search engines show it for the file.
+  - **The fix:** `prepareForPdf` removes the suffix before printing. The web
+    pages keep their own titles.
+  - **Checked:** the content of all ten is identical in text and pixels.
+- **Deploy 139 — PDF fonts embedded as TrueType (#257).**
+  - **The problem:** Chromium embeds a variable font only as Type3. The
+    site's three variable web fonts (Plus Jakarta Sans, Playfair Display,
+    Noto Naskh Arabic) went into all 42 PDFs that way.
+  - **The fix:** `scripts/make-pdf-static-fonts.py` pins each face to its
+    declared weight: 52 static copies in `scripts/pdf-fonts/static`, which
+    the deploy prunes. The PDF build declares the same faces against them.
+    - **Licence:** each copy is an OFL Modified Version, so each is renamed
+      "TC PDF Sans / Serif / Naskh", because Playfair Display reserves its
+      name.
+    - **Reproducible:** the script gives identical output on every run.
+  - **The result:**
+    - **Fonts:** no Type3 font is left in any PDF.
+    - **Unchanged:** page counts and titles.
+    - **Pixels:** the worst page differs in 0.35% of pixels at 100 dpi.
+  - **Bonus:** the English PDFs' one Arabic phrase, the street name in the
+    masthead address, now uses the Amiri faces from Deploy 136. Only Arabic
+    letters are mapped, so English spacing is untouched. It now copies out
+    as whole words.
+  - **A slip, fixed before merge:** the branch was first pushed with
+    `check-script-integrity` failing. The tests had passed before the new
+    script was committed, and that check covers committed files only.
+    `fontTools` is now allowlisted as tooling-only for the two font
+    scripts, and `TOOLING_ONLY` maps each package to a list of files.
+- **Deploy 140 — Arabic site font (#258).** This is a visible design
+  change, approved from before/after screenshots.
+  - **The problem:** neither of the site's families has Arabic letters, so
+    every Arabic page showed in the visitor's device font.
+  - **The fix:** Arabic pages (`html[lang="ar"]`, screen-only block) now
+    pair two fonts, as the English pages do:
+    - **text:** Noto Sans Arabic
+    - **headings:** Noto Naskh Arabic, the company name's face
+
+    English pages load neither font, and the 42 PDFs are identical.
+  - **Keeping it fast:** the first version cost Arabic pages 10–17
+    Lighthouse points, about 1.3 s of simulated LCP, and CLS above 0.1. It
+    was reworked into:
+    - **subsets:** both fonts cut to standard Arabic by
+      `scripts/make-arabic-web-fonts.py`, 253 KB → 51 KB
+    - **preload:** on the 49 Arabic pages
+    - **`font-display: optional`**
+  - **The result:**
+    - **First visit:** all 49 Arabic pages render in the new fonts.
+    - **Lighthouse, median of 3 mobile runs:** performance 4–5 points lower
+      on Arabic pages, simulated LCP +0.45–0.6 s.
+    - **Observed LCP and CLS:** unchanged or better.
+- **Deploy 141 — Downloads grid (#259).** Pre-existing bug since PR #27,
+  found by the owner.
+  - **The problem:** the guides grid on /downloads and /ar/downloads was
+    closed after its third card. The five guides added later rendered below
+    it as full-width blocks, 1278 px, wider than the content column.
+  - **The fix:** the two closing tags moved to after the eighth card. All
+    eight cards are now 313 px, three to a row.
+
+### Owner decisions
+
+- **Items 1 to 4** as proposed ("do 1 2 3 4", "merge all").
+- **The Arabic site font** was approved with its measured cost stated: a
+  consistent, branded Arabic font against 4–5 lab points on Arabic pages.
+- **The Downloads grid** fixed and merged ("merge").
+- **No Arabic wording was written** in these deploys.
+
+### Claim register
+
+No change: 151 claims, and C-55 remains the only `needs-review` row.
+
+`docs/asset-rights-register.md` gains rows for:
+- the 52 static PDF fonts
+- the two Arabic web-font subsets
+
+`assets/fonts/OFL.txt` now lists Noto Sans Arabic.
+
+### Testing method
+
+`npm test`: all checks, passing on each branch (with new files staged) and
+on `main` at `dba3f23`. Beyond the suite:
+- **PDFs:** every rebuilt PDF was compared by text, titles, page counts and
+  pixels; unchanged files were restored.
+- **Fonts actually rendered:** read from Chromium's DevTools protocol on
+  first visits to all 49 Arabic pages and loads of every English page.
+- **Speed:** Lighthouse before/after, three runs per page, on the current
+  site served from a separate checkout.
+- **Downloads:** card widths measured in the browser in both locales;
+  screenshots on desktop and phone.
+
+Nothing here was checked against the live site: this environment's egress
+policy blocks it.
+
+### Rollback
+
+Each deploy reverts with `git revert -m 1 <commit>`, newest first.
+- **Deploys 138 to 140** are stacked, so an older one is reverted after
+  the newer ones, or the PDFs are rebuilt after the revert.
+- **Deploy 140:** reverting brings the device font back on Arabic pages.
+- **Deploy 141** reverts on its own.
+- **Deploy 137** is documentation only.
+
+### Known limitations shipped with Deploys 137 to 141
+
+- **The Arabic web fonts** have no Persian or Urdu letters. Such a letter
+  would show in the device font.
+- **On a very slow first visit,** an Arabic page can still show the device
+  font (`font-display: optional`); later pages use the cached fonts.
+- **Lighthouse figures** were measured on a local server without
+  compression.
+- **The "←" arrow** in Arabic links has no glyph in either font, as before.
+- **Waiting on the owner:**
+  - the Search Console export
+  - per-product container loading figures
+  - photographs, certificates and the other open items
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7086,7 +7237,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 136 (2026-10-04).**
+**Unchanged through Deploy 141 (2026-10-04).**
 
 ## Outstanding, unresolved by this document
 
@@ -7294,7 +7445,7 @@ to 71.
     **Unchanged at Deploy 71 (2026-09-28).** The first system health audit
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
-    **Unchanged at Deploy 136 (2026-10-04).** The owner will set the values later.
+    **Unchanged at Deploy 141 (2026-10-04).** The owner will set the values later.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
