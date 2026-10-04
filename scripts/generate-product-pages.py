@@ -84,7 +84,7 @@ PRODUCTS = [
         formats=["Pepper", "Carrot"],
         calibers=["140-360"],
         brine=dict(salt="5–7%", acidity="0.2–0.4% lactic", ph="3.7–4.2"),
-        profile="Premium Manzanilla and Aggizi olives, pitted and stuffed with a choice of fillings. Machine-stuffed under hygienic, quality-controlled conditions at our partner facility.",
+        profile="Premium Manzanilla and Aggizi olives, pitted and stuffed with pepper or carrot. Machine-stuffed under hygienic, quality-controlled conditions at our partner facility.",
         best_for=["European retail", "Food-service programs wanting a ready-to-serve stuffed olive"],
         related=["manzanilla-green-olives", "aggizi-green-olives", "toffahi-green-olives"],
         image=dict(src='/assets/illus-stuffed.svg', alt='Illustration of stuffed green olives', w='900', h='630', webp=None),
