@@ -32,7 +32,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from site_icons import icon_html  # noqa: E402
+from site_icons import icon_html, ICONS, PACK_ICONS  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SITE = 'https://olivesegypt.com'
@@ -86,19 +86,46 @@ def block(h2, *paras, extra=''):
     return f'<div>\n  <h2 class="text-2xl font-serif font-bold text-foreground mb-4">{h2}</h2>\n  {ps}{extra}\n</div>'
 
 
+def _ico(paths):
+    """A small square line icon, the size the card tiles use (Phase 3b)."""
+    return ('<span class="tc-ico tc-ico-sq" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" '
+            'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" '
+            f'stroke-linejoin="round">{paths}</svg></span>')
+
+
 def facts(items):
+    """Key terms, each with a check icon (Phase 3b, 2026-10-04: the same facts
+    and words, set as a scannable strip)."""
     cells = ''.join(
-        '\n    <div class="rounded-lg border border-border bg-card p-4">'
+        '\n    <div class="tc-card tc-card-tight flex items-start gap-3">' + _ico(ICONS['circle-check']) + '<div>'
         f'<p class="text-xs uppercase tracking-wider text-secondary font-semibold mb-1">{k}</p>'
-        f'<p class="text-sm text-foreground">{v}</p></div>' for k, v in items)
+        f'<p class="text-sm text-foreground">{v}</p></div></div>' for k, v in items)
     return f'<div class="grid gap-3 sm:grid-cols-2">{cells}\n  </div>'
 
 
+# A format card whose title names a packaging format takes that format's icon,
+# the one the homepage strip and the packaging page use.
+PACK_WORDS = (('pack-jar', (r'\bglass jars?\b', 'برطمان')), ('pack-tin', (r'\btin cans?\b', 'علب صفيح')),
+              ('pack-bucket', (r'\bbuckets?\b', r'\bpail\b', 'دلو', 'دِلاء', 'دلاء', 'وعاء pet')),
+              ('pack-barrel', (r'\bbarrels?\b', 'برميل', 'براميل')))
+
+
+def _pack_for(title):
+    low = title.lower()
+    for name, words in PACK_WORDS:
+        if any(re.search(w, low) for w in words):
+            return name
+    return None
+
+
 def cards(items):
-    cells = ''.join(
-        '\n    <div class="rounded-lg border border-border bg-card p-4">'
-        f'<p class="text-sm"><strong class="text-foreground">{k}</strong></p>'
-        f'<p class="text-sm text-muted-foreground leading-relaxed mt-1">{v}</p></div>' for k, v in items)
+    cells = ''
+    for k, v in items:
+        pack = _pack_for(k)
+        head = (f'<div class="flex items-center gap-3 mb-2">{_ico(PACK_ICONS[pack])}<p class="text-sm"><strong class="text-foreground">{k}</strong></p></div>'
+                if pack else f'<p class="text-sm"><strong class="text-foreground">{k}</strong></p>')
+        cells += ('\n    <div class="tc-card tc-card-tight">' + head
+                  + f'<p class="text-sm text-muted-foreground leading-relaxed mt-1">{v}</p></div>')
     return f'<div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3">{cells}\n  </div>'
 
 
@@ -107,10 +134,11 @@ def note(text):
 
 
 def products(lang):
+    """The range, as chips that each open the product's page (Phase 3b)."""
     cells = ''.join(
-        f'<a href="{pre(lang)}/products/{slug}" class="rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground hover:border-primary/40 transition-colors">{ar if lang == "ar" else en}</a>'
+        f'<a href="{pre(lang)}/products/{slug}" class="tc-range-chip">{ar if lang == "ar" else en}</a>'
         for slug, en, ar in PRODUCTS)
-    return f'<div class="grid gap-3 sm:grid-cols-2">{cells}</div>'
+    return f'<div class="flex flex-wrap gap-2">{cells}</div>'
 
 
 def cta(h2, p, primary, secondary):

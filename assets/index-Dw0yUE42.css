@@ -1129,6 +1129,25 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   .tc-caliber-seg small { font-size: .75rem; font-weight: 500; }
   .tc-caliber-retail { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
   .tc-caliber-bulk { background-color: hsl(var(--secondary) / .25); color: hsl(var(--foreground)); }
+  /* Catalogue (Phase 3b, 2026-10-04): every card in a row is the same
+     height, with its buttons on the bottom line; the image box is the 16:10
+     .tc-media slot rather than a fixed height; origin sits under the name, so
+     a narrow card no longer squeezes the name beside it. The category filter
+     hides a card with an inline style, which still wins over display:flex.
+     The two catalogues build a card differently: in English .product-card
+     wraps one card element; in Arabic .product-card is the card. Both work. */
+  [data-catalog-grid] > .product-card { display: flex; flex-direction: column; }
+  [data-catalog-grid] > .product-card > div:only-child { flex: 1; display: flex; flex-direction: column; }
+  [data-catalog-grid] .product-card .p-6.pt-0 { flex: 1; display: flex; flex-direction: column; }
+  [data-catalog-grid] .product-card .p-6.pt-0 > :last-child { margin-top: auto; }
+  [data-catalog-grid] .p-6.pb-3 > .flex.items-start.justify-between { flex-direction: column; gap: .5rem; }
+  /* Solutions pages (Phase 3b): the range as chips, each a product page link. */
+  .tc-range-chip {
+    display: inline-flex; align-items: center; border: 1px solid hsl(var(--border)); border-radius: 9999px;
+    background-color: hsl(var(--card)); color: hsl(var(--foreground)); padding: .375rem .875rem;
+    font-size: .875rem; font-weight: 500; line-height: 1.4; transition: border-color .15s, color .15s;
+  }
+  .tc-range-chip:hover { border-color: hsl(var(--primary) / .45); color: hsl(var(--primary)); }
   .tc-timeline { list-style: none; margin: 0; padding: 0; counter-reset: tc-step; }
   .tc-timeline > li {
     position: relative; counter-increment: tc-step;
