@@ -987,6 +987,33 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     --app-font-sans: "Plus Jakarta Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
     --app-font-serif: "Playfair Display", "PD Fallback Times", serif;
   }
+  /* Arabic pages (owner, 2026-10-04). Neither family above has Arabic
+     letters, so Arabic text fell through to whatever the visitor's device
+     had, and looked different on every phone and computer. The same pairing
+     as the English: a sans for text (Noto Sans Arabic) and a calligraphic
+     face for headings (Noto Naskh Arabic, the face of the company name),
+     both cut to standard Arabic by scripts/make-arabic-web-fonts.py.
+     Only Arabic pages name them, so English pages download neither. */
+  @font-face {
+    font-family: "TC Arabic Sans";
+    src: url(/assets/fonts/arabic-sans.woff2) format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: optional;
+    unicode-range: U+060C, U+061B, U+061F, U+0621-063A, U+0640-0652, U+0660-066D, U+0670-0671, U+200C-200F;
+  }
+  @font-face {
+    font-family: "TC Arabic Naskh";
+    src: url(/assets/fonts/arabic-naskh.woff2) format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: optional;
+    unicode-range: U+060C, U+061B, U+061F, U+0621-063A, U+0640-0652, U+0660-066D, U+0670-0671, U+200C-200F;
+  }
+  html[lang="ar"] {
+    --app-font-sans: "Plus Jakarta Sans", "TC Arabic Sans", "PJS Fallback Arial", "PJS Fallback Roboto", sans-serif;
+    --app-font-serif: "Playfair Display", "TC Arabic Naskh", "PD Fallback Times", serif;
+  }
 }
 /* Each fallback has a regular face (100-500) and a bold face (600-900), each
    sized to that weight of the web font. With only a regular face, bold text
