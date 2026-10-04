@@ -40,8 +40,11 @@ def faces():
     css = open(CSS, encoding='utf-8').read()
     for body in re.findall(r'@font-face\s*\{([^}]*)\}', css):
         get = lambda prop: (re.search(prop + r'\s*:\s*([^;]+)', body) or [None, None])[1]
+        weight = get('font-weight').strip()
+        if not weight.isdigit():
+            continue  # a weight range: a face no PDF instance is made for
         yield (get('font-family').strip().strip('\'"'), (get('font-style') or 'normal').strip(),
-               int(get('font-weight').strip()), re.search(r'url\(/([^)]+)\)', body).group(1))
+               int(weight), re.search(r'url\(/([^)]+)\)', body).group(1))
 
 
 def static_path(src, weight):

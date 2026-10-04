@@ -2,9 +2,9 @@
   "ar/downloads/company-profile-ar.pdf": {
     "source": "ar/company-profile/index.html",
     "inputs": {
-      "ar/company-profile/index.html": "5fd2284bf02a71b5dcac6311f67e6a8404f6185da6b2d857ab85716d1387d424",
+      "ar/company-profile/index.html": "63c0dabe8f81751f9462c1e2e096776183d114d04e74e9ae84d602ac7ca14c4e",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -33,6 +33,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -88,19 +90,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "3f0d6c4f90f1b656c09713deedc3999c073e13df32da90f08b98fc05ce875bcc"
   },
   "ar/downloads/product-catalog-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -135,6 +137,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -190,19 +194,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "65e66f1392da017626bce863f055f3eb024b51634302fcd4886efc4a27f3143e"
   },
   "ar/downloads/spec-sheets/aggizi-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -237,6 +241,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -292,19 +298,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "8ab60f28765874fe0a7ed4dba3a2007ff0b46883993f371269735f8a2d469168"
   },
   "ar/downloads/spec-sheets/all-spec-sheets-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -339,6 +345,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -394,19 +402,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "e3852c791e624348669dd7cf59756832039917397d59bee4fe92c602982dee1f"
   },
   "ar/downloads/spec-sheets/kalamata-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -441,6 +449,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -496,19 +506,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "8b4bed2151325e876d2cc7288bb6e4eccc5e54995163e720da3fe727f41c051f"
   },
   "ar/downloads/spec-sheets/manzanilla-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -543,6 +553,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -598,19 +610,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "a08f55d6bbc8e31656166edcff2300d4dd7bf8e7106d45dc80c781684a21300d"
   },
   "ar/downloads/spec-sheets/marinated-artichoke-hearts-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -645,6 +657,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -700,19 +714,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "274cb05918bced7b89e6e9603ec02d30d59effebca3a959651df65861dfe8ea7"
   },
   "ar/downloads/spec-sheets/natural-black-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -747,6 +761,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -802,19 +818,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "8041270e0f7f7a8d3a8a74f395d5799feb24c6ba2881585467e0b4cca881798b"
   },
   "ar/downloads/spec-sheets/oxidized-black-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -849,6 +865,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -904,19 +922,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "059216a7990633f8f0edafa245e28ed0ca42dbf8fb0de2fccae0511a5f1a241c"
   },
   "ar/downloads/spec-sheets/pepper-stuffed-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -951,6 +969,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1006,19 +1026,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "6c227a85f498905ca623ac17e99cf9eb604365392eb1cc83f3bbe2b0bcf06387"
   },
   "ar/downloads/spec-sheets/pepperoncini-peppers-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1053,6 +1073,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1108,19 +1130,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "b864424c469c5437db33d0ea8417a90899de49de643ba20756e9a015a64e739e"
   },
   "ar/downloads/spec-sheets/sliced-jalapeno-peppers-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1155,6 +1177,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1210,19 +1234,19 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "1c639abef99956d8b09f2acce1744d698ee2d95f6d05e257f0d1c38b8b040e25"
   },
   "ar/downloads/spec-sheets/toffahi-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
     "inputs": {
-      "ar/catalog/print/index.html": "c0833f751263fff53fc38cd2713ca107497c2076535b8ae0aa7207b1c59e19f4",
+      "ar/catalog/print/index.html": "3b6a74febfceac1b26339fb15984bd0cba6507f6a9cb5b2785f0cc6bb3411194",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "2bf67c2f2d8e1a8564292766b190fd94342a92252d15ee187ad973a507df5fbf",
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1257,6 +1281,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1312,7 +1338,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "79141de5a2a0a16decb09dcf44f3dd23f0ce46968e3bdbae91e69c47acc33060",
+    "render": "1eeabd95ebd93d9e914397686e8d35dd25ad6550e4d9edd1a94d495bfc80e3e4",
     "pdf": "63a37470bfde79c51e18b81ccb54191ef4d8a7d12757595091c4120054cd56f3"
   },
   "downloads/company-profile-en.pdf": {
@@ -1320,7 +1346,7 @@
     "inputs": {
       "company-profile/index.html": "7b4a291a2fadcabbe096b5c222111278dcaa9bb78f77c1fe8c74dd95f44dfc2a",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -1348,6 +1374,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1403,7 +1431,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "cce6d20a59d4b5ed4f8ef65071678c5e6ef85f0384be9e7cf97d71a695293692"
   },
   "downloads/product-catalog-en.pdf": {
@@ -1415,7 +1443,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1449,6 +1477,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1504,7 +1534,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "97dc9c1925a66ab90ed76922823037230ab828ca7b6be426735da38c019da687"
   },
   "downloads/spec-sheets/aggizi-green-olives-en.pdf": {
@@ -1516,7 +1546,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1550,6 +1580,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1605,7 +1637,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "d564bde679ee2c376ca9234679113dd85635372822a93b2c973835874cc151b0"
   },
   "downloads/spec-sheets/all-spec-sheets-en.pdf": {
@@ -1617,7 +1649,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1651,6 +1683,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1706,7 +1740,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "f257ba32f93aa2995d6e81cd9b14439f7b544f717f5293f2cbc043327fbf2e88"
   },
   "downloads/spec-sheets/kalamata-olives-en.pdf": {
@@ -1718,7 +1752,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1752,6 +1786,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1807,7 +1843,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "8265f67bb34cbbbc3923f34040d3882960476856c06a10d93617578165efb8cb"
   },
   "downloads/spec-sheets/manzanilla-green-olives-en.pdf": {
@@ -1819,7 +1855,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1853,6 +1889,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1908,7 +1946,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "cf3e15cdf22e634124e6aaaceb2ae096221fadb274dfc55ae24ce7a6a337fbcf"
   },
   "downloads/spec-sheets/marinated-artichoke-hearts-en.pdf": {
@@ -1920,7 +1958,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -1954,6 +1992,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2009,7 +2049,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "7c8c88d296512f8bb522425923ea680492eaec550e9a7df452947e9114e7a971"
   },
   "downloads/spec-sheets/natural-black-olives-en.pdf": {
@@ -2021,7 +2061,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -2055,6 +2095,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2110,7 +2152,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "22731938b6521cf93b210ba5773f2c741111808d36c5d68d87cf0c6a2652569e"
   },
   "downloads/spec-sheets/oxidized-black-olives-en.pdf": {
@@ -2122,7 +2164,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -2156,6 +2198,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2211,7 +2255,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "cd7236b6ac9098de267171ec3796ef08173154bd5ff9c062bf62b48e42ccc257"
   },
   "downloads/spec-sheets/pepper-stuffed-green-olives-en.pdf": {
@@ -2223,7 +2267,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -2257,6 +2301,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2312,7 +2358,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "929318a0f65925af60b015e29cbb3e7ad91935a47927d74cd8c44c8b1a0ff8cd"
   },
   "downloads/spec-sheets/pepperoncini-peppers-en.pdf": {
@@ -2324,7 +2370,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -2358,6 +2404,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2413,7 +2461,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "30b574bca7f9548c7f10f355bd9235a49b874cff3d0c865cff46cccff49a752b"
   },
   "downloads/spec-sheets/sliced-jalapeno-peppers-en.pdf": {
@@ -2425,7 +2473,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -2459,6 +2507,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2514,7 +2564,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "c662732126545105f8e229e8d4d42d57a65d34a954a18657bbf276cc7c5a1e5b"
   },
   "downloads/spec-sheets/toffahi-green-olives-en.pdf": {
@@ -2526,7 +2576,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -2560,6 +2610,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2615,7 +2667,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "cfe8ade55ab0519cd67dd73709ba3c5b6edffa24aec8f6e3d44f8bd8674607b1",
+    "render": "5bf06ffe57b020f8feee54302b463a0c62f88ddcec99e0934cb6a23c2ee6b0ee",
     "pdf": "37012f1221da11c46d59433995ac53694884ae319d0b8462ce694148c049e84c"
   },
   "netlify/functions/_guides/ar/buyers-guide.pdf": {
@@ -2623,7 +2675,7 @@
     "inputs": {
       "netlify/functions/_guides/ar/buyers-guide.html": "51354bfaa1875f7f9a6cffa56b27a57aa7c6c656fc9bc51a13eca57167abedfa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -2652,6 +2704,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2707,7 +2761,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "20b32d19a5f460f606a0b3566fc452837b53deb9d704512ea8e20c6f7e121876",
+    "render": "da017b47b0e883a278a8d9c44f854ca667778e2108cf90fea3112a3a9731fba8",
     "pdf": "b970597666d7976e3e7d7fb96cd40156b41f8ec20385d4ba085c0914021c3e4a"
   },
   "netlify/functions/_guides/ar/company-overview.pdf": {
@@ -2715,7 +2769,7 @@
     "inputs": {
       "netlify/functions/_guides/ar/company-overview.html": "5bb68116a90755d9ead0b5871b8edd73626a4ad719a6270c1169949e22f1c0bc",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -2744,6 +2798,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2799,7 +2855,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "20b32d19a5f460f606a0b3566fc452837b53deb9d704512ea8e20c6f7e121876",
+    "render": "da017b47b0e883a278a8d9c44f854ca667778e2108cf90fea3112a3a9731fba8",
     "pdf": "a2da044d01eb0b2bdc46946d1ee6c011c4800b57d949d42c199bd7aa54a6d947"
   },
   "netlify/functions/_guides/ar/export-catalog.pdf": {
@@ -2811,7 +2867,7 @@
       "assets/illus-natural-black-ar.svg": "122ec4121cb7a38ea633aed524c69ee8e8bec19688e6b2b647b4a6af111b6854",
       "assets/illus-pepperoncini-ar.svg": "3262087456949053f837febe274c9f112f23c82d6c7931d84d34051d2976fed2",
       "assets/illus-stuffed-ar.svg": "206ed31542c5d16e2474a5fdbb6914f10d5a17c996490a8f3f80ee8bf06f58c2",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -2846,6 +2902,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2901,7 +2959,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "9b67db99111bf94bca95c087127ad625dc642800c3d7e59e3d5ac4f3a52c13b2",
+    "render": "b573d879c1ac227df0d632a44e1b7ec2e271be6b0fa8d45733787f657131533d",
     "pdf": "342e6b44fb11e275532ba761bd45551553e0e8479af6813732cc4c7a0c91de8e"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
@@ -2909,7 +2967,7 @@
     "inputs": {
       "netlify/functions/_guides/ar/export-documentation-checklist.html": "09a362b784c098b0e920d75bc7fb77f1e6e6942b18ef81635079eb7758b16a2e",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -2938,6 +2996,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2993,7 +3053,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "20b32d19a5f460f606a0b3566fc452837b53deb9d704512ea8e20c6f7e121876",
+    "render": "da017b47b0e883a278a8d9c44f854ca667778e2108cf90fea3112a3a9731fba8",
     "pdf": "1fac8d75130afcd12d96a6c6369e6701c7958040c724134116cc70271b99af71"
   },
   "netlify/functions/_guides/ar/origin-comparison-guide.pdf": {
@@ -3001,7 +3061,7 @@
     "inputs": {
       "netlify/functions/_guides/ar/origin-comparison-guide.html": "b7e2a4d4f40116a6d91672641d0a76f6b57673a58cebcacd8823a459e9ed5bf6",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -3030,6 +3090,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3085,7 +3147,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "20b32d19a5f460f606a0b3566fc452837b53deb9d704512ea8e20c6f7e121876",
+    "render": "da017b47b0e883a278a8d9c44f854ca667778e2108cf90fea3112a3a9731fba8",
     "pdf": "92a255511d4db9c2cdc8cbcbba335284a2bc776a077b4948ed0cb2c490d161fd"
   },
   "netlify/functions/_guides/ar/packaging-overview.pdf": {
@@ -3093,7 +3155,7 @@
     "inputs": {
       "netlify/functions/_guides/ar/packaging-overview.html": "3f40c95449ae89ca1b2aaf212469b55810537f4816b06061ed08f8416bd0ac33",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -3122,6 +3184,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3177,7 +3241,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "20b32d19a5f460f606a0b3566fc452837b53deb9d704512ea8e20c6f7e121876",
+    "render": "da017b47b0e883a278a8d9c44f854ca667778e2108cf90fea3112a3a9731fba8",
     "pdf": "c6ade1d29b559f00f1865ff986851055945ac56d0a0d39f61eb05c24db06021b"
   },
   "netlify/functions/_guides/ar/pricing-packaging-guide.pdf": {
@@ -3185,7 +3249,7 @@
     "inputs": {
       "netlify/functions/_guides/ar/pricing-packaging-guide.html": "bf37621c9c0eabff4fdf0085513d6fac5dd3cfb2b4e0af8c5f5ab248bf072295",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -3214,6 +3278,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3269,7 +3335,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "20b32d19a5f460f606a0b3566fc452837b53deb9d704512ea8e20c6f7e121876",
+    "render": "da017b47b0e883a278a8d9c44f854ca667778e2108cf90fea3112a3a9731fba8",
     "pdf": "7dddffe5785bc54cfb6c047648a5433f087f23d57cb6069c0bf34da0dde47cfb"
   },
   "netlify/functions/_guides/ar/private-label-brochure.pdf": {
@@ -3277,7 +3343,7 @@
     "inputs": {
       "netlify/functions/_guides/ar/private-label-brochure.html": "2417a0de94963729584515df690bf15a9e8deec84a38a8a6cb350da48fe941e8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/rtl.css": "1d301497f9c2742bc2217af6cd2bcf5ac91793bf496c3d3053ca3b281fef5e24",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
@@ -3306,6 +3372,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3361,7 +3429,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "20b32d19a5f460f606a0b3566fc452837b53deb9d704512ea8e20c6f7e121876",
+    "render": "da017b47b0e883a278a8d9c44f854ca667778e2108cf90fea3112a3a9731fba8",
     "pdf": "8a75de10d528ce0dfac463c245fe522b78da470227eef94a43ddd7c35fe3c59e"
   },
   "netlify/functions/_guides/en/buyers-guide.pdf": {
@@ -3369,7 +3437,7 @@
     "inputs": {
       "netlify/functions/_guides/en/buyers-guide.html": "973d285974bb8a27a9286ed292e9d63b527f253306f0f6dc123547f91cb076e4",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3397,6 +3465,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3452,7 +3522,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "d6c1cc6d2c6746879c89ee0d9ce87306e5284e9ea073166e2698def7d57c4587",
+    "render": "f6d10f1e186597ddf5a2102355e5121a0361abd77c1f7762763c1c877e9434bb",
     "pdf": "2407dde4fd73f5e71e3b5b43756cf36833593b2e9d91e0691d3293a9b2d55a61"
   },
   "netlify/functions/_guides/en/company-overview.pdf": {
@@ -3460,7 +3530,7 @@
     "inputs": {
       "netlify/functions/_guides/en/company-overview.html": "db8b465873ce5947074e27ada1e9b62be9941480de9cc61a7b9328b2f7813ad0",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3488,6 +3558,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3543,7 +3615,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "d6c1cc6d2c6746879c89ee0d9ce87306e5284e9ea073166e2698def7d57c4587",
+    "render": "f6d10f1e186597ddf5a2102355e5121a0361abd77c1f7762763c1c877e9434bb",
     "pdf": "b9755859ca04862271b460719d83aae3e249909abfa1bd50acd2436703ebd219"
   },
   "netlify/functions/_guides/en/export-catalog.pdf": {
@@ -3555,7 +3627,7 @@
       "assets/illus-natural-black.svg": "0f03e81e6b47d8241923ce59122530723b2a873ccf65b0ac232f4cde8b01bb91",
       "assets/illus-pepperoncini.svg": "dc9bb5bdcba2e92244e250f845e3caf4c0ba20bb05ba4761674d3b10b42dd024",
       "assets/illus-stuffed.svg": "803ea9820a6d3d1ae6040daa997c0f759af5d50f2a487c4c9afbef046ac81636",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/jalapeno-sliced.jpg": "5a221d71ac8f2b10765321374d5bcd10b649fa3f78ac6f1f98f190ee961a1b72",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/olive-aggizi-BuhWRZTd.jpg": "61fa74f1b9b9cacb23f0b29ffadda79cf7d5b6c2d8eb57874992c6aeab1c9ab0",
@@ -3590,6 +3662,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3645,7 +3719,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "9eea2583bf91154249fba8f3e2f1f3ce7f1ad2137dc021cde1f75da707953d3e",
+    "render": "2d706ed5ded6561cc2b83a10ef601158603de716fabbc8ab95e7da2c88429cad",
     "pdf": "1b1008b2cfde0d19d80c7a711134b237665707b03374bbe50472978c55aa2b6b"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
@@ -3653,7 +3727,7 @@
     "inputs": {
       "netlify/functions/_guides/en/export-documentation-checklist.html": "ff881717b185d0b7897e3ac7da821340dddfbf0f9e2abe2cf5db99aebe18e4db",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3681,6 +3755,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3736,7 +3812,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "d6c1cc6d2c6746879c89ee0d9ce87306e5284e9ea073166e2698def7d57c4587",
+    "render": "f6d10f1e186597ddf5a2102355e5121a0361abd77c1f7762763c1c877e9434bb",
     "pdf": "9ea5dbd7d15d8925e8b7dbfa2765d20e89aea99749025891879052683385fb16"
   },
   "netlify/functions/_guides/en/origin-comparison-guide.pdf": {
@@ -3744,7 +3820,7 @@
     "inputs": {
       "netlify/functions/_guides/en/origin-comparison-guide.html": "4d0d410d322786647e008550e3c280509bd89efa45918635f8eaa41a52514616",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3772,6 +3848,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3827,7 +3905,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "d6c1cc6d2c6746879c89ee0d9ce87306e5284e9ea073166e2698def7d57c4587",
+    "render": "f6d10f1e186597ddf5a2102355e5121a0361abd77c1f7762763c1c877e9434bb",
     "pdf": "ed3449c4c32519b733c433d920de8ff36a1d3e48f37f7887dc15d25e27eb50a6"
   },
   "netlify/functions/_guides/en/packaging-overview.pdf": {
@@ -3835,7 +3913,7 @@
     "inputs": {
       "netlify/functions/_guides/en/packaging-overview.html": "d86a71bebddb3e304bf531034fcc7560d2384131d65b53615cf0db259ab1607b",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3863,6 +3941,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3918,7 +3998,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "d6c1cc6d2c6746879c89ee0d9ce87306e5284e9ea073166e2698def7d57c4587",
+    "render": "f6d10f1e186597ddf5a2102355e5121a0361abd77c1f7762763c1c877e9434bb",
     "pdf": "2ef3aab07975b4eb35f337436321986f839288464c7687bd0929633a6d3f47dc"
   },
   "netlify/functions/_guides/en/pricing-packaging-guide.pdf": {
@@ -3926,7 +4006,7 @@
     "inputs": {
       "netlify/functions/_guides/en/pricing-packaging-guide.html": "8ba4de82fd4018be50b806af1b611f91af4039a0bf2ff03526bab652e8c4cbf9",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3954,6 +4034,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -4009,7 +4091,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "d6c1cc6d2c6746879c89ee0d9ce87306e5284e9ea073166e2698def7d57c4587",
+    "render": "f6d10f1e186597ddf5a2102355e5121a0361abd77c1f7762763c1c877e9434bb",
     "pdf": "ca6e7109f1b61b97bc25f4f9ce4679e37009c88a6233976819427c07b134ce43"
   },
   "netlify/functions/_guides/en/private-label-brochure.pdf": {
@@ -4017,7 +4099,7 @@
     "inputs": {
       "netlify/functions/_guides/en/private-label-brochure.html": "1be3555323c644f494aeb919c9c2000a6c906204bc9c226e5a7161a5534d9667",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "68c4691273afecb9ebb929c437769925d17bd59ce8a4fdcda55ef1edb5a68996",
+      "assets/index-Dw0yUE42.css": "02f3c520ce75641adfe5beec2d5b7129efaf95759e26d6ed883a179bdedc1f91",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -4045,6 +4127,8 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
+      "assets/fonts/arabic-naskh.woff2": "1f581d9bfb8c932a6a24beae122fb159dee1e3a7adbfd29d3618055b705abc89",
+      "assets/fonts/arabic-sans.woff2": "6745c4348cb863a5391ced92062dd64442154fc8b19fac802f603d17406b9ca3",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -4100,7 +4184,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "d6c1cc6d2c6746879c89ee0d9ce87306e5284e9ea073166e2698def7d57c4587",
+    "render": "f6d10f1e186597ddf5a2102355e5121a0361abd77c1f7762763c1c877e9434bb",
     "pdf": "d2fcfa5475265391fe07cb0888c803c62338a80fb897c5baa4de6179b94f1149"
   }
 }
