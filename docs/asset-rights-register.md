@@ -376,3 +376,13 @@ hero (`/`, `/ar/`), with the same markup, alt text and rights as before Phase 2
 so they do not download it. The logo-motif hero drawing it replaced is removed
 from both pages. `assets/hero-green-olives-texture.webp` stays unused (not
 part of the request). Rollback: the hero box as it stood at `5aea6c8`.
+
+## 2026-10-04 — Phase 3a: 320px product thumbnails
+
+`assets/<photo>-320.webp` for the six product photographs (Aggizi, Toffahi,
+Manzanilla, Oxidized Black, Sliced Jalapeño, Kalamata): resized copies of the
+same owner-confirmed JPEGs as their other sizes (rows above), written by
+`scripts/make-card-image-sizes.py` (320px wide, WebP quality 75, 2–22 KB). They
+show only in the related-product cards on the product pages; no new image,
+source or subject. Rights and rollback as for the originals; deleting the six
+files and reverting the pages removes them.

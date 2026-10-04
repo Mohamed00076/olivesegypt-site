@@ -142,8 +142,11 @@ const toNumber = (s) => {
   return Number(s.replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
 };
 // Counts that are not the size of the range: "nine of our ten products" (private
-// label), "seven of them olives", a page's own sub-list.
-const NOT_THE_RANGE = /\b(nine|seven|9|7) (of (our|the) ten|olive) |تسعة من (منتجاتنا|المنتجات) العشرة|سبعة منها/i;
+// label), "seven of them olives", a page's own sub-list. "The nine products
+// available" is the private-label offer as the packaging page and the
+// Downloads brochure card put it (2026-10-04: they said ten, the range, which
+// overstated it; C-40).
+const NOT_THE_RANGE = /\b(nine|seven|9|7) (of (our|the) ten|olive) |\bnine products available\b|تسعة من (منتجاتنا|المنتجات) العشرة|سبعة منها/i;
 for (const f of COUNT_FILES) {
   const html = read(f);
   if (html === null) continue;
