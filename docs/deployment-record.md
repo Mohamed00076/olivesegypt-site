@@ -7618,6 +7618,77 @@ before #274, so it takes the lower number.
 
 ---
 
+## Deploys 158 and 159 — Visual upgrade Phase 3a: product pages and packaging page (PRs #276, #277)
+
+**Previous recorded deploy:** `6ed387b` (Deploy 157, PR #274)
+**Approvals:**
+- "start phase 3 go with recommened" (image beside the specs, related thumbnails on, two PRs).
+- On the private-label count: "fix this".
+- "merge all" (#276 and #277, accepting items A and B of #277).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 158 | #276 | `e1fcd02` | 2026-10-05 02:08:47 | 1 | +68 / −1 | Notes only |
+| 159 | #277 | `62e3f41` | 2026-10-05 02:08:58 | 38 | +732 / −1143 | Design + speed + content (Phase 3a) |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch and on `main` at `62e3f41`.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 158** recorded Deploys 156 and 157.
+
+### What the deploys did
+
+- **Deploy 159 — Phase 3a (#277).**
+  - **All 20 product pages (EN + AR):**
+    - image beside the specifications on desktop, in a fixed 3:2 box (photo-ready)
+    - specifications as a label/value table
+    - brine tiles; "Best for" as a checklist
+    - related products as cards with thumbnails
+    - The generator (`scripts/generate-product-pages.py`) now holds the shared layout functions. The 11 hand-kept pages (Kalamata EN, all 10 AR) were converted once with them, and every word and figure was checked by script to carry over.
+  - **Product photo (pre-existing bug):** it was `loading="lazy"`, low priority, and every device fetched the 1200w WebP (up to 164 KB). It is now the priority image with every size that exists; phones take the 600w file (the phone slot is declared as 80vw). The jalapeño page measured 2.56 s with the 800w file, which led to that choice.
+  - **Thumbnails:** six new 320px WebPs (2–22 KB), from `scripts/make-card-image-sizes.py`; they are decorative (`alt=""`) and lazy.
+  - **Packaging page (EN + AR):**
+    - format cards with icons and size chips (item B, restating the descriptions' own sizes)
+    - the 4 kg pail note as a callout
+    - a caliber scale drawn from the paragraph's own ranges, with new labels (item A; the Arabic is mine)
+    - Every description is kept word for word.
+  - **Private-label count:** "the ten products available" became nine on `/resources/packaging` and the `/downloads` brochure card, EN and AR (the brochure already said "Nine of our ten products"). `check-product-order` now accepts that wording. Register: C-40.
+  - **Lab results (mobile, median of 3):**
+    - Every measured page is under 2.5 s LCP: product pages 2.00–2.41 s, packaging 1.81–1.89 s.
+    - CLS is 0.000.
+    - Transfer fell on the photo pages: jalapeño 297 → 217 KB EN, 278 → 184 KB AR.
+    - LCP rose slightly on the product pages, because the photo is now the priority image rather than painting after the text.
+  - **Checks:** axe found 0 violations over 180 loads; the mobile and clipped-text sweeps were clean; 48 screenshots were taken with no horizontal overflow.
+
+### Owner decisions
+
+- Phase 3 recommendations, the private-label count fix, and items A (caliber labels) and B (size chips), by "merge all".
+
+### Claim register
+
+152 claims. Note added to C-40. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 159:** `git revert -m 1 62e3f41`. The six `-320.webp` files are new and referenced nowhere else.
+- **Deploy 158** is documentation only.
+
+### Known limitations shipped with Deploys 158 and 159
+
+- **Phase 3b** (catalogue and solutions pages) is next, on its own PR.
+- **The lab LCP figures are local-server measurements.** Production (Netlify, CDN) was not measured from here; egress to the site is blocked.
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the 231 KB hero WebP (lighter encode offered)
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7629,7 +7700,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 157 (2026-10-04).**
+**Unchanged through Deploy 159 (2026-10-05).**
 
 ## Outstanding, unresolved by this document
 
