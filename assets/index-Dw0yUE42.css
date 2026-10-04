@@ -862,26 +862,37 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
      until there are photographs (2026-10-03). */
   .tc-ico-pack { width: 6rem; height: 6rem; border-radius: 0.75rem; }
   .tc-ico-pack svg { width: 3rem; height: 3rem; }
-  /* Homepage hero texture (2026-10-03, owner chose option B): the owner's own
-     green olives photograph (scripts/og-card-green-olives.jpg), blurred,
-     desaturated to 55% and shown at 16% behind the heading, fading out
-     before the hero photograph (mirrored on the Arabic page). It replaces
-     an olive-grove texture of unconfirmed ownership that, at 8% under a
-     cream fade, changed no pixel by more than 2/255. */
-  .tc-hero-texture {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background-size: cover;
-    background-position: center;
-    opacity: 0.16;
-    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 35%, transparent 62%);
-    mask-image: linear-gradient(90deg, #000 0%, #000 35%, transparent 62%);
+  /* The homepage packaging strip (Phase 2, 2026-10-04): the same drawn
+     format icons in the standard 3rem tile, squared, beside each format. */
+  .tc-ico-sq { border-radius: 0.75rem; flex-shrink: 0; }
+  /* Homepage hero (visual-upgrade brief, Phase 2, 2026-10-04): no
+     photograph. A soft wash in the theme's gold and olive, CSS only, and an
+     inline-SVG drawing of the logo's motif -- two upright bars, olive and
+     gold, crossed by an olive branch -- coloured from the theme tokens, so
+     it follows dark mode. Inline SVG is never a Largest Contentful Paint
+     candidate, so the headline stays the page's LCP element. It replaces
+     the red peppers photograph and the blurred green-olives texture. */
+  .tc-home-hero {
+    background-image:
+      radial-gradient(55% 60% at 88% 18%, hsl(var(--secondary) / .14), transparent 70%),
+      radial-gradient(45% 55% at 8% 92%, hsl(var(--primary) / .08), transparent 70%);
   }
-  html[dir="rtl"] .tc-hero-texture {
-    -webkit-mask-image: linear-gradient(270deg, #000 0%, #000 35%, transparent 62%);
-    mask-image: linear-gradient(270deg, #000 0%, #000 35%, transparent 62%);
+  html[dir="rtl"] .tc-home-hero {
+    background-image:
+      radial-gradient(55% 60% at 12% 18%, hsl(var(--secondary) / .14), transparent 70%),
+      radial-gradient(45% 55% at 92% 92%, hsl(var(--primary) / .08), transparent 70%);
   }
+  .tc-hero-art { width: 100%; height: 100%; display: block; }
+  .tc-hero-art .a-disc { fill: hsl(var(--secondary) / .14); }
+  .tc-hero-art .a-bar1 { fill: hsl(var(--primary)); }
+  .tc-hero-art .a-bar2 { fill: hsl(var(--secondary)); }
+  .tc-hero-art .a-stem { fill: none; stroke: hsl(var(--foreground) / .55); stroke-width: 6; stroke-linecap: round; }
+  .tc-hero-art .a-leaf { fill: hsl(var(--primary)); }
+  .tc-hero-art .a-leaf2 { fill: hsl(75 30% 52%); }
+  .tc-hero-art .a-olive { fill: hsl(75 35% 22%); }
+  .tc-hero-art .a-olive2 { fill: hsl(var(--secondary)); }
+  .tc-hero-art .a-shine { fill: hsl(0 0% 100% / .35); }
+  .dark .tc-hero-art .a-olive { fill: hsl(75 30% 38%); }
   /* Article info row on phones (category · read time · published date): the
      date takes its own line. On a 412px screen the row of the longest
      category ("Product Knowledge") fitted with the fallback font and wrapped
@@ -1049,6 +1060,11 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     --tc-measure: 68ch;
   }
   .tc-measure { max-width: var(--tc-measure); }
+  /* A product image slot with a fixed shape (16:10) instead of a fixed
+     height: every card crops the same at every width, and a photograph can
+     replace an illustration without the layout moving. */
+  .tc-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+  .tc-media > img, .tc-media > picture > img { width: 100%; height: 100%; object-fit: cover; }
   .tc-section { padding-block: var(--tc-space-6); }
   @media (max-width: 639px) { .tc-section { padding-block: var(--tc-space-5); } }
   .tc-band-cream { background-color: hsl(var(--background)); }
@@ -1057,6 +1073,7 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     background-color: hsl(var(--card)); color: hsl(var(--card-foreground, var(--foreground)));
     border: 1px solid hsl(var(--border)); border-radius: .75rem; padding: var(--tc-space-4);
   }
+  .tc-card-tight { padding: var(--tc-space-3); }
   .tc-chip {
     display: inline-flex; align-items: center; gap: var(--tc-space-1);
     border: 1px solid hsl(var(--border)); background-color: hsl(var(--muted));
