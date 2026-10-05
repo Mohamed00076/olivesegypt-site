@@ -145,8 +145,9 @@ const toNumber = (s) => {
 // label), "seven of them olives", a page's own sub-list. "The nine products
 // available" is the private-label offer as the packaging page and the
 // Downloads brochure card put it (2026-10-04: they said ten, the range, which
-// overstated it; C-40).
-const NOT_THE_RANGE = /\b(nine|seven|9|7) (of (our|the) ten|olive) |\bnine products available\b|تسعة من (منتجاتنا|المنتجات) العشرة|سبعة منها/i;
+// overstated it; C-40). The Resources hub's Private Label card, "nine products,
+// four packaging formats", is the same offer (2026-10-05).
+const NOT_THE_RANGE = /\b(nine|seven|9|7) (of (our|the) ten|olive) |\bnine products available\b|\bnine products, four packaging formats\b|تسعة منتجات، وأربع صيغ تغليف|تسعة من (منتجاتنا|المنتجات) العشرة|سبعة منها/i;
 for (const f of COUNT_FILES) {
   const html = read(f);
   if (html === null) continue;
