@@ -7811,6 +7811,77 @@ seconds before #280, so it takes the lower number.
 
 ---
 
+## Deploys 164 and 165 — Phase 4a: trust and resource pages (PRs #282, #283)
+
+**Previous recorded deploy:** `9728e8f` (Deploy 163, PR #280)
+**Approvals:**
+- "merge" (#282).
+- "go with recommendations" (Phase 4 plan: three PRs, article contents list on, certifications status pills on).
+- "fix the products count in resource hub privatelable" (#283, item A).
+- "merge phase 4a including fix" (#283).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 164 | #282 | `6e6cbad` | 2026-10-05 02:58:17 | 1 | +55 / −1 | Notes only |
+| 165 | #283 | `2128dda` | 2026-10-05 10:23:43 | 15 | +223 / −181 | Design (Phase 4a) + content |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch (935 passed, 0 failed).
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 164** recorded Deploys 162 and 163.
+
+### What the deploys did
+
+- **Deploy 165 — Phase 4a (#283).**
+  - **Quality & Documentation (EN + AR):**
+    - "Tier A/B/C" are status pills (green: published now; gold: confirmed for your order; grey: in progress)
+    - the five Tier A items are icon cards; Tier B is a checklist
+    - Tier C sits in a dashed box with hollow markers and no check marks, so nothing unsettled looks done
+    - the "does not own a processing facility" note has the info icon
+  - **Private Label (EN + AR):**
+    - buyer types and packaging formats are icon cards; the nine products are link chips
+    - the six order steps are a numbered timeline; the numbers stay real text (1–6, ١–٦)
+    - the commercial terms use the solutions pages' key-terms strip
+  - **Supply & Processing Network (EN + AR):** info callout; "Who does what" as two icon cards with checklists; the step timeline; the end-to-end chain coloured by who performs each step.
+  - **Pricing:** icons on the four price-driver cards.
+  - **Company Profile:** on screen only, the facts are ruled rows and the range is chips. The page is the source of the company-profile PDFs; all 42 PDFs rebuilt identical in text and pixels.
+  - **FAQ accordions (FAQ page and homepage):** the chevron turns when open (transform only, off under reduced motion).
+  - **Content (item A, owner-approved):** the Resources hub's Private Label card said "ten products" / "عشرة منتجات"; it now says "nine products" / "تسعة منتجات", the same correction as C-40. `check-product-order` accepts the wording.
+  - **Wording:** every word and figure on the 10 changed pages was compared by script; identical apart from item A.
+  - **Lab results (mobile, median of 3, main vs branch):** all 10 measured pages 1.82–1.96 s, each within noise of main; CLS 0.000; at most about 1 KB more per page, no added requests.
+  - **Checks:** axe found 0 violations over 180 loads; the mobile and clipped-text sweeps were clean; 48 screenshots were taken with no horizontal overflow.
+
+### Owner decisions
+
+- Phase 4 plan approved with the recommendations: 4a, 4b and 4c as separate PRs; an "On this page" list on the articles (4b); certifications status pills (done here).
+- Item A (Resources hub count) approved, then Phase 4a merged.
+
+### Claim register
+
+152 claims. Note added to C-40 (the hub count and its approval). C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 165:** `git revert -m 1 2128dda`. Item A alone: `git revert 3a11ce1`.
+- **Deploy 164** is documentation only.
+
+### Known limitations shipped with Deploys 164 and 165
+
+- **Phase 4b** (articles, media, company and contact pages) and **4c** (Arabic pass) follow on the owner's "go".
+- **Left as they were in 4a:** Export Markets, Why Egyptian Olives and the Resources hub cards, which already had icons and a working mobile layout.
+- **The lab LCP figures are local-server measurements;** production was not measured from here (egress blocked).
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the 231 KB hero WebP (lighter encode offered)
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7822,7 +7893,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 163 (2026-10-05).**
+**Unchanged through Deploy 165 (2026-10-05).**
 
 ## Outstanding, unresolved by this document
 
