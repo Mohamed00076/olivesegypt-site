@@ -1163,6 +1163,47 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
     width: 2px; background-color: hsl(var(--border));
   }
   .tc-timeline > li:last-child::after { display: none; }
+  /* Trust and resource pages (Phase 4a, 2026-10-05). A timeline whose step
+     number is real text (the Arabic pages keep their own digits) rather than
+     a CSS counter; the certifications tiers as status pills; the "In
+     progress" tier in a dashed box with a hollow marker, never a check; the
+     supply chain coloured by who performs each step. */
+  .tc-timeline-num > li::before { content: none; }
+  .tc-timeline-n {
+    position: absolute; inset-inline-start: 0; top: 0; width: 2rem; height: 2rem; border-radius: 9999px;
+    display: grid; place-items: center; line-height: 1;
+    background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 700; font-size: .875rem;
+  }
+  .tc-timeline-num > li > p { padding-top: .3rem; }
+  .tc-pill-available { background-color: hsl(var(--primary) / .1); border-color: hsl(var(--primary) / .3); }
+  .tc-pill-request { background-color: hsl(var(--secondary) / .16); border-color: hsl(var(--secondary) / .5); }
+  .dark .tc-pill-available { background-color: hsl(var(--primary) / .22); }
+  .tc-pending { border: 1px dashed hsl(var(--muted-foreground) / .45); border-radius: .75rem; padding: var(--tc-space-4); }
+  .tc-pending > li { display: flex; gap: .75rem; }
+  .tc-pending-dot {
+    flex-shrink: 0; width: .625rem; height: .625rem; margin-top: .45rem; border-radius: 9999px;
+    border: 2px solid hsl(var(--muted-foreground));
+  }
+  .tc-chain-us { border-top: 3px solid hsl(var(--primary)); }
+  .tc-chain-partner { border-top: 3px solid hsl(var(--secondary)); }
+  /* Company profile on screen: each fact a ruled row, the range as chips.
+     The page is also the source of the company-profile PDFs, which print
+     without these rules, so the PDFs do not change. */
+  .profile-section dl { row-gap: 0; }
+  .profile-section dl > div { border-bottom: 1px solid hsl(var(--border)); padding-block: .625rem; }
+  .profile-section dd { color: hsl(var(--foreground)); font-weight: 500; margin-top: .125rem; }
+  .profile-section ul.list-disc { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; }
+  .profile-section ul.list-disc > li {
+    border: 1px solid hsl(var(--border)); border-radius: 9999px; background-color: hsl(var(--card));
+    padding: .375rem .875rem; line-height: 1.4;
+  }
+  /* FAQ accordions (the FAQ page and the homepage): the chevron turns when
+     an answer is open, and the open item is outlined. */
+  .faq-item > summary::-webkit-details-marker { display: none; }
+  .faq-item > summary svg { transition: transform .2s ease; }
+  .faq-item[open] > summary svg { transform: rotate(180deg); }
+  .faq-item[open] { border-color: hsl(var(--primary) / .35); }
+  @media (prefers-reduced-motion: reduce) { .faq-item > summary svg { transition: none; } }
 }
 /* Each fallback has a regular face (100-500) and a bold face (600-900), each
    sized to that weight of the web font. With only a regular face, bold text
