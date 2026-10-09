@@ -158,6 +158,10 @@ PAGE_TMPL = """<!DOCTYPE html>
     <meta property="og:url" content="https://olivesegypt.com/products/{slug}" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://olivesegypt.com/opengraph.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{name} | Triple Company" />
+    <meta name="twitter:description" content="{name} from Egypt: {profile_short}" />
+    <meta name="twitter:image" content="https://olivesegypt.com/opengraph.jpg" />
     <script>
       (function () {{
         'use strict';
