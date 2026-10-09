@@ -7944,6 +7944,73 @@ passed on the branch (935 passed, 0 failed).
 
 ---
 
+## Deploys 168 and 169 — Phase 4c: Arabic right-to-left pass (PRs #287, #286)
+
+**Previous recorded deploy:** `ee8e98d` (Deploy 167, PR #285)
+**Approvals:**
+- "go" (Phase 4c, under the approved Phase 4 plan).
+- "lets change it to tons", then "metric ton" (item B: "طن متري").
+- "merge all" (#287 and #286).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 168 | #287 | `5607fd1` | 2026-10-09 10:47:22 | 31 | +200 / −83 | Design (Phase 4c) + content + check |
+| 169 | #286 | `60ffc22` | 2026-10-09 10:47:25 | 1 | +63 / −1 | Notes only |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch and on `main` at `60ffc22` (935 passed, 0 failed, and
+`rtl OK`). #287 was merged three seconds before #286, so it takes the lower
+number.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 169** recorded Deploys 166 and 167.
+
+### What the deploys did
+
+- **Deploy 168 — Phase 4c (#287).** All Arabic pages were checked: a markup scan, a rendered check in Chromium at 390px and 1280px, and a figure-by-figure comparison with each English twin.
+  - **Direction fixes (no wording change):**
+    - acidity figures on 9 Arabic product pages, the Arabic catalogue and its print version: only the figure is left-to-right, so the line reads "0.1–0.2% ستريك" (in the PDF the percent sign had come loose)
+    - How We Work's payment line made right-to-left
+    - the 7 Arabic articles' closing callout bar moved to the start side (`border-s-4`, added to `assets/rtl.css`)
+  - **Content (owner-approved):**
+    - **A.** Arabic Company Profile commercial terms, left in English, now in Arabic, using phrases the Arabic site already used: "حاوية واحدة 20 قدمًا (نحو 16–18 طنًا متريًا)", "FOB الإسكندرية · CIF · CFR", "دفعة مقدمة 30% بالتحويل البنكي · 70% مقابل صورة بوليصة الشحن", "الدولار الأمريكي أو اليورو".
+    - **B.** Arabic Why Egyptian Olives production table: "tonnes" became "طن متري" (owner: "metric ton").
+    - **C.** The same table gave Spain's year-over-year change as −28%; it is +28%, as the English page, C-128 and the source give.
+  - **New check:** `scripts/check-rtl.js`, in `npm test`. It covers lang/dir, no Arabic inside `dir="ltr"`, no Western-digit numbered headings, no physical-side accent bars, and no stray English outside the kept trade terms. It found 38 problems on main before this deploy and finds none after.
+  - **PDFs:** 4 Arabic PDFs changed as intended: the company profile, and the natural-black, oxidized-black and combined spec sheets. The other 38 were identical.
+  - **Lab results (mobile, median of 3):** the 6 measured Arabic pages are 1.86–2.23 s, each within noise of main; CLS 0.000.
+  - **Checks:** axe found 0 violations over 180 loads; the mobile and clipped-text sweeps were clean; 180 screenshots (every Arabic page × 390/1280 × light/dark) were taken with no horizontal overflow.
+
+### Owner decisions
+
+- Phase 4c approved, with A, B (as "طن متري") and C, then merged.
+
+### Claim register
+
+152 claims. Note added to C-128 (the Spain sign and the unit). C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 168:** `git revert -m 1 5607fd1`. C alone: `git revert 2f3bd83`.
+- **Deploy 169** is documentation only.
+
+### Known limitations shipped with Deploys 168 and 169
+
+- **The visual upgrade (Phases 1–4) is complete.**
+- **Number ranges inside Arabic sentences** (for example "6–8%") still display in the standard right-to-left way ("8%–6", read right to left). The spec tiles keep their ranges left-to-right. This was left as it was, by design.
+- **The English Why Egyptian Olives table still says "tonnes"** (metric). The owner was offered "metric tons" and has not asked for it.
+- **The lab LCP figures are local-server measurements;** production was not measured from here (egress blocked).
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the 231 KB hero WebP (lighter encode offered)
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7955,7 +8022,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 167 (2026-10-09).**
+**Unchanged through Deploy 169 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
