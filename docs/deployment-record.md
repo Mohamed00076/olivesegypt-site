@@ -8093,6 +8093,67 @@ branch was re-tested and re-measured before #291 was merged.
 
 ---
 
+## Deploys 174 and 175 — old ?lang=ar links land on the Arabic page (PRs #292, #293)
+
+**Previous recorded deploy:** `195c2be` (Deploy 173, PR #291)
+**Approvals:**
+- "merge" (#292).
+- "do 1" (#293, from the 3-month Search Console review of 2026-10-09).
+- "merge" (#293). The deploy preview could not be checked first: `*.netlify.app` times out on the owner's network (ERR_CONNECTION_TIMED_OUT) and is blocked from this environment, so it was checked on the live site instead.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 174 | #292 | `51794a4` | 2026-10-09 11:21:04 | 1 | +83 / −1 | Notes only |
+| 175 | #293 | `2676af3` | 2026-10-09 11:34:20 | 4 | +428 / −2 | Redirects + checks |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch (exit 0).
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 174** recorded Deploys 170 to 173.
+
+### What the deploys did
+
+- **Deploy 175 — `?lang=ar` redirects (#293).**
+  - **The problem:** the site's earlier versions switched language with `?lang=ar`, and Google still lists those addresses. Search Console, 20 July to 6 October, shows `/?lang=ar` with 3 clicks from 9 impressions. The static site ignored the parameter, so a visitor who chose Arabic got the English page.
+  - **The redirects:** `netlify.toml` now sends `<page>?lang=ar` to the page's Arabic twin with a 301, one rule per English page (47). They are generated from the route map by `scripts/check-lang-redirects.js --write`, between BEGIN/END marker lines.
+  - **Left out on purpose:**
+    - the 8 gated downloads
+    - `/unsubscribe` and `/catalog/print`, which read their own query string that the redirect would drop
+    - `?lang=fr`
+    - the Arabic pages
+  - **New check:** `scripts/check-lang-redirects.js`, in `npm test`. It fails when a page is added or removed until the block is regenerated, and when an earlier rule would claim the same address first.
+  - **`scripts/check-not-found.js`** now leaves out rules with a `query` condition. It had read them as redirecting the product pages away.
+  - **Netlify on the preview:** "127 redirect rules processed without errors" (80 before, plus 47).
+  - **Confirmed on the live site by the owner, 2026-10-09:** `/?lang=ar` and `/catalog?lang=ar` open the Arabic pages. The plain `/catalog` opened normally in English, as before.
+
+### Owner decisions
+
+- The `?lang=ar` redirects approved and merged; checked on the live site.
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 175:** `git revert -m 1 2676af3`.
+- **Deploy 174** is documentation only.
+
+### Known limitations shipped with Deploys 174 and 175
+
+- **Deploy previews (`*.netlify.app`) cannot be opened from the owner's network,** so preview checks need another connection (mobile data, VPN) or a live check after merge.
+- **The `www` and trailing-slash variants** in the Search Console report still wait on the GoDaddy step and on network access respectively.
+- **Re-export Search Console in early November** to compare the month after the visual upgrade.
+- **Unchanged:**
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the English "tonnes" (metric tons offered)
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8104,7 +8165,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 173 (2026-10-09).**
+**Unchanged through Deploy 175 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
