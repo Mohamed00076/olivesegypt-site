@@ -142,6 +142,11 @@ t('   and both homepage packaging tables list 2, 5, 10 and 20 kg buckets', homeT
 // They were on 30-odd pages, the guides and 38 PDFs until Deploy 134.
 const VACUUM = /\bvacuum[\s-]*(?:pouch|pouches|bag|bags|seal|sealed|packed|pack|packing)\b|\bretort\s*pouch|أكياس\s*(?:مفر\S*|التفريغ)|مفر[ّ]?غة\s*من\s*الهواء|معب[أا]\s*بالتفريغ/i;
 const vacuum = [];
+// The one sentence allowed to name vacuum packing is the plain denial in
+// llms.txt, which AI search reads (2026-10-09: Google's AI summary still
+// listed vacuum packaging). It is removed before matching, so any other
+// wording -- an offer, a hedge -- still fails.
+const VACUUM_DENIAL = 'Vacuum pouches, vacuum bags and vacuum-sealed packing are not offered.';
 // ---- stuffed olives: pepper and carrot only (owner, 2026-10-04; C-152) ----
 // The site offered pimiento, almond, garlic and lemon fillings. Only pepper
 // and carrot are confirmed, and no pepper variety is named. A filling is
@@ -160,7 +165,7 @@ for (const file of files) {
   const rel = path.relative(ROOT, file);
   if (/^scripts\/check-/.test(rel)) continue;
   const text = flatten(fs.readFileSync(file, 'utf8'));
-  const v = text.match(VACUUM);
+  const v = text.split(VACUUM_DENIAL).join(' ').match(VACUUM);
   if (v) vacuum.push(`${rel}: "${v[0]}"`);
   for (const re of [FILL_EN, CHIPS_EN, FILL_AR, CHIPS_AR]) {
     const f = text.match(re);

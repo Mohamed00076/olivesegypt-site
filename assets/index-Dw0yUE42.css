@@ -1270,6 +1270,23 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   }
   @media (min-width: 48rem) { .md\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
   @media (min-width: 64rem) { .lg\:items-start { align-items: flex-start; } }
+  /* The "Read Our Insights" tab (2026-10-09). On a screen with a mouse it
+     rests as a slim handle at the edge, its book icon showing, and slides
+     out to its full label on hover or keyboard focus. Fixed mid-height, it
+     sat over whatever crossed the middle of the screen: at 1280-1440px the
+     catalogue's "Download full catalogue (PDF)" button, in both languages.
+     Touch screens keep the full tab (no hover to reveal it); phones keep
+     their bottom placement. Tailwind v4 moves it with the translate
+     property through --tw-translate-x, so that is what changes here. */
+  @media (min-width: 640px) and (hover: hover) {
+    a[data-testid="floating-blog-link"] { --tw-translate-x: calc(100% - 3.25rem); transition: translate .25s ease; }
+    [dir="rtl"] a[data-testid="floating-blog-link"] { --tw-translate-x: calc(-100% + 3.25rem); }
+    a[data-testid="floating-blog-link"]:hover, a[data-testid="floating-blog-link"]:focus-visible { --tw-translate-x: 0; }
+    [dir="rtl"] a[data-testid="floating-blog-link"]:hover, [dir="rtl"] a[data-testid="floating-blog-link"]:focus-visible { --tw-translate-x: 0; }
+  }
+  @media (min-width: 640px) and (hover: hover) and (prefers-reduced-motion: reduce) {
+    a[data-testid="floating-blog-link"] { transition: none; }
+  }
 }
 /* Each fallback has a regular face (100-500) and a bold face (600-900), each
    sized to that weight of the web font. With only a regular face, bold text
