@@ -229,7 +229,7 @@ PAGES[''] = {
     'en': dict(
         crumb='Solutions',
         title=f'Solutions by Buyer Type | {ORG_SHORT}',
-        desc='Egyptian table olives by buyer type: importers and distributors, retail, food service, private label, OEM and co-packing, and buyers inside Egypt. The terms, packaging and products for each.',
+        desc='Egyptian table olives by buyer type: importers and distributors, retail, food service, private label, OEM and co-packing, and buyers inside Egypt.',
         keywords='Egyptian table olive supplier, olive supplier by buyer type, bulk olives importer, olive private label, olive OEM co-packing',
         main=lambda: hero('Solutions', 'Solutions for Every Kind of Olive Buyer',
                           'Choose the description closest to your business. Each page brings together the terms, packaging and products that matter to that kind of buyer, and links to the full detail elsewhere on this site.')
@@ -239,7 +239,7 @@ PAGES[''] = {
     'ar': dict(
         crumb='الحلول',
         title=f'الحلول حسب نوع المشتري | {ORG_AR_SHORT}',
-        desc='زيتون المائدة المصري حسب نوع المشتري: المستوردون والموزعون، والتجزئة، وخدمات الأغذية، والعلامة الخاصة، و OEM والتعبئة التعاقدية، والمشترون داخل مصر. الشروط والتغليف والمنتجات المناسبة لكل منهم.',
+        desc='زيتون المائدة المصري حسب نوع المشتري: المستوردون والموزعون، والتجزئة، وخدمات الأغذية، والعلامة الخاصة، و OEM والتعبئة التعاقدية، والمشترون داخل مصر.',
         keywords='مورد زيتون مائدة مصري, زيتون بالجملة للمستوردين, زيتون بالعلامة الخاصة, تعبئة تعاقدية للزيتون',
         main=lambda: hero('الحلول', 'حلول لكل نوع من مشتري الزيتون',
                           'اختر الوصف الأقرب إلى نشاطك. تجمع كل صفحة الشروط والتغليف والمنتجات التي تهم هذا النوع من المشترين، مع روابط إلى التفاصيل الكاملة في أقسام أخرى من الموقع.')
@@ -252,7 +252,7 @@ PAGES['importer-distributor'] = {
     'en': dict(
         crumb='Importers &amp; Distributors',
         title=f'Bulk Table Olives for Importers &amp; Distributors',
-        desc='Container terms for table olive importers and distributors: 1×20ft minimum (about 16–18 MT), FOB Alexandria, CIF or CFR, T/T or L/C payment, and a full export documentation pack.',
+        desc='Container terms for importers and distributors: 1×20ft minimum (about 16–18 MT), FOB Alexandria, CIF or CFR, T/T or L/C payment, and export documentation.',
         keywords='bulk table olive importer Egypt, olive container export terms, wholesale olive distributor Egypt, FOB olive exporter',
         main=lambda: hero('Solutions', 'For Importers and Distributors',
                           'Egyptian table olives by the container, for importers and wholesale distributors who resell or distribute in their own market.')
@@ -282,7 +282,7 @@ PAGES['importer-distributor'] = {
     'ar': dict(
         crumb='المستوردون والموزعون',
         title=f'زيتون مائدة بالجملة للمستوردين والموزعين | {ORG_AR_SHORT}',
-        desc='شروط الحاويات لمستوردي وموزعي زيتون المائدة: حد أدنى حاوية 20 قدمًا (نحو 16–18 طنًا متريًا)، و FOB الإسكندرية أو CIF أو CFR، والدفع بـ T/T أو L/C، وحزمة مستندات تصدير كاملة.',
+        desc='شروط الحاويات لمستوردي وموزعي زيتون المائدة: حد أدنى حاوية 20 قدمًا (نحو 16–18 طنًا)، و FOB الإسكندرية أو CIF أو CFR، والدفع بـ T/T أو L/C، وحزمة مستندات تصدير.',
         keywords='مستورد زيتون مائدة بالجملة مصر, شروط تصدير حاويات الزيتون, موزع زيتون بالجملة مصر, مصدر زيتون FOB',
         main=lambda: hero('الحلول', 'للمستوردين والموزعين',
                           'زيتون مائدة مصري بالحاوية، للمستوردين وموزعي الجملة الذين يعيدون البيع أو التوزيع في أسواقهم.')
@@ -364,7 +364,7 @@ PAGES['food-service'] = {
     'en': dict(
         crumb='Food Service',
         title=f'Bulk Olives for Restaurants, Caterers &amp; Repackers',
-        desc='Egyptian table olives for kitchens, caterers and repackers: food-grade buckets (2, 5, 10 and 20 kg), tin cans, a 4 kg PET pail for sliced jalapeños, and 220 kg barrels.',
+        desc='Egyptian olives for kitchens, caterers and repackers: food-grade buckets (2, 5, 10 and 20 kg), tin cans, a 4 kg PET pail for jalapeños, and 220 kg barrels.',
         keywords='bulk olives for restaurants, food-service olive supplier Egypt, olives for caterers and repackers',
         main=lambda: hero('Solutions', 'For Food-Service Buyers',
                           'Olives in practical, larger packs for kitchens, caterers and repackers — where volume and cost per kilogram matter more than shelf presentation.')
@@ -389,7 +389,7 @@ PAGES['food-service'] = {
     'ar': dict(
         crumb='خدمات الأغذية',
         title=f'زيتون بالجملة للمطاعم ومقدمي خدمات التموين وإعادة التعبئة',
-        desc='زيتون مائدة مصري للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة: دِلاء درجة غذائية (2 و5 و10 و20 كجم)، وعلب صفيح، ووعاء PET سعة 4 كجم للهالبينو المقطّع، وبراميل سعة 220 كجم.',
+        desc='زيتون مصري للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة: دِلاء درجة غذائية (2 و5 و10 و20 كجم)، وعلب صفيح، ووعاء PET 4 كجم للهالبينو، وبراميل سعة 220 كجم.',
         keywords='زيتون بالجملة للمطاعم, مورد زيتون لخدمات الأغذية مصر, زيتون لمقدمي التموين وإعادة التعبئة',
         main=lambda: hero('الحلول', 'لمشتري خدمات الأغذية',
                           'زيتون في عبوات عملية وأكبر حجمًا للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة — حيث يهم الحجم والتكلفة لكل كيلوجرام أكثر من العرض على الرف.')
@@ -417,7 +417,7 @@ PAGES['manufacturer'] = {
     'en': dict(
         crumb='Manufacturers &amp; OEM',
         title=f'OEM &amp; Co-Packing Olive Supply | {ORG_SHORT}',
-        desc='Co-packing and OEM supply of Egyptian table olives: custom brine formulation, specific caliber sorting, and private packaging and labeling, executed with our approved partner processing facility.',
+        desc='Co-packing and OEM supply of Egyptian olives: custom brine formulation, caliber sorting, private packaging and labeling, with our approved partner facility.',
         keywords='OEM olive co-packing Egypt, olive contract manufacturing, custom brine formulation olives, private label olive formulation',
         main=lambda: hero('Solutions', 'For Manufacturers and OEM Buyers',
                           'Co-packing and OEM supply for buyers who need Egyptian table olives to their own specification.')
@@ -470,7 +470,7 @@ PAGES['local-egypt'] = {
     'en': dict(
         crumb='Buyers in Egypt',
         title=f'Olive Supplier in Egypt — Local Barrel Orders from 10 Tons',
-        desc='Egyptian table olives for buyers inside Egypt, without export logistics: 220 kg barrel orders from 10 metric tons (about 45 barrels); jars, tins and buckets at the standard 16–18 MT minimum. Pricing confirmed during quotation.',
+        desc='Egyptian olives for buyers inside Egypt, without export logistics: 220 kg barrel orders from 10 metric tons; jars, tins and buckets at the 16–18 MT minimum.',
         keywords='olive supplier Egypt EGP pricing, local wholesale olives Cairo, olive barrel supplier Egypt',
         main=lambda: hero('Solutions', 'For Buyers in Egypt',
                           'Egyptian table olives for businesses buying inside Egypt rather than for export.')
@@ -492,7 +492,7 @@ PAGES['local-egypt'] = {
     'ar': dict(
         crumb='المشترون داخل مصر',
         title=f'مورد زيتون في مصر — طلبات براميل محلية من 10 أطنان',
-        desc='زيتون مائدة مصري للمشترين داخل مصر دون إجراءات تصدير: طلبات البراميل سعة 220 كجم من 10 أطنان مترية (نحو 45 برميلًا)؛ والبرطمانات والعلب والدِلاء بالحد الأدنى القياسي 16–18 طنًا متريًا. ويُؤكَّد التسعير أثناء عرض السعر.',
+        desc='زيتون مائدة مصري للمشترين داخل مصر دون إجراءات تصدير: طلبات البراميل سعة 220 كجم من 10 أطنان مترية؛ والبرطمانات والعلب والدِلاء بالحد الأدنى 16–18 طنًا متريًا.',
         keywords='مورد زيتون مصر بالجنيه المصري, زيتون بالجملة القاهرة, مورد براميل زيتون مصر',
         main=lambda: hero('الحلول', 'للمشترين داخل مصر',
                           'زيتون مائدة مصري للشركات التي تشتري داخل مصر وليس للتصدير.')
