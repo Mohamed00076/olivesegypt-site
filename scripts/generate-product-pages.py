@@ -145,7 +145,7 @@ PAGE_TMPL = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>{name} | Triple Company</title>
-    <meta name="description" content="{name} from Egypt: {profile_short} B2B specifications, packaging, and quotation for bulk and private-label buyers." />
+    <meta name="description" content="{description}" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <link rel="canonical" href="https://olivesegypt.com/products/{slug}" />
     <link rel="alternate" hreflang="en" href="https://olivesegypt.com/products/{slug}" />
@@ -258,6 +258,10 @@ CHECK_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" vie
              'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
              'class="h-4 w-4" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>')
 PHOTO_WIDTHS = (600, 800, 1200)
+
+
+
+DESC_TAIL = " B2B specifications, packaging, and quotation."
 
 
 def _photo_sources(src):
@@ -418,8 +422,15 @@ def render(p):
         footnote='<p class="text-xs text-muted-foreground mt-4">Exact packaging, brine specification, and pricing are confirmed during quotation for the selected format and order volume.</p>',
     ))
     profile_short = p["profile"].split(".")[0] + "."
+    # The search description ends "B2B specifications, packaging, and
+    # quotation." where that fits Google's ~160 characters, and stops after
+    # the profile sentence where it does not (2026-10-09).
+    description = f'{p["name"]} from Egypt: {profile_short}'
+    if len(description + DESC_TAIL) <= 160:
+        description += DESC_TAIL
     return PAGE_TMPL.format(
         name=p["name"], slug=slug, print_slug=p["print_slug"], profile=p["profile"], profile_short=profile_short,
+        description=description,
         main_block=main_block,
         # Structured data names an image only when it is a photograph: an
         # illustration is not offered to search engines as the product
