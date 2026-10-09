@@ -1204,6 +1204,29 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   .faq-item[open] > summary svg { transform: rotate(180deg); }
   .faq-item[open] { border-color: hsl(var(--primary) / .35); }
   @media (prefers-reduced-motion: reduce) { .faq-item > summary svg { transition: none; } }
+  /* Articles and the media lists (Phase 4b, 2026-10-09). The article column
+     is 42rem, about 70 characters a line, and its header column matches it.
+     "On this page" lists the article's own section headings, each a link to
+     its section (main [id] already lands it under the sticky header). The
+     blog and news lists are a grid of equal-height cards with the date and
+     "Read article" on the bottom line. */
+  .tc-article { max-width: 42rem; }
+  .tc-toc {
+    border: 1px solid hsl(var(--border)); border-radius: .75rem; background-color: hsl(var(--card));
+    padding: var(--tc-space-3) 1.25rem; margin-bottom: var(--tc-space-5);
+  }
+  .tc-toc-label {
+    font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: hsl(var(--muted-foreground)); margin-bottom: .5rem;
+  }
+  html[lang="ar"] .tc-toc-label { letter-spacing: 0; }
+  .tc-toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .375rem; font-size: .9375rem; line-height: 1.45; }
+  .tc-toc a { color: hsl(var(--foreground)); text-decoration: underline; text-decoration-color: hsl(var(--primary) / .3); text-underline-offset: 3px; }
+  .tc-toc a:hover { color: hsl(var(--primary)); text-decoration-color: currentColor; }
+  .dark .tc-toc a:hover { color: hsl(var(--secondary)); }
+  .tc-post-grid > article { display: flex; flex-direction: column; }
+  .tc-post-grid > article > a { flex: 1; }
+  .tc-post-grid > article > a > p { flex: 1; }
 }
 /* Each fallback has a regular face (100-500) and a bold face (600-900), each
    sized to that weight of the web font. With only a regular face, bold text
