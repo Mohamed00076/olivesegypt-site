@@ -8011,6 +8011,88 @@ number.
 
 ---
 
+## Deploys 170 to 173 — hero image sizes, figure-parity check, homepage layout shift (PRs #288, #289, #290, #291)
+
+**Previous recorded deploy:** `5607fd1` (Deploy 168, PR #287); `60ffc22` (Deploy 169, PR #286, notes)
+**Approvals:**
+- "merge" (#288).
+- "do 1 and 2" (#289, the lighter hero; #290, the figure check).
+- "fix it" (#291, the layout shift found while measuring #289).
+- "merge all" (#289, #290, #291).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 170 | #288 | `3740c93` | 2026-10-09 10:50:13 | 1 | +68 / −1 | Notes only |
+| 171 | #289 | `53c9896` | 2026-10-09 11:15:21 | 7 | +18 / −2 | Performance (images) |
+| 172 | #290 | `5a6ac95` | 2026-10-09 11:15:24 | 2 | +104 / −1 | Test only |
+| 173 | #291 | `195c2be` | 2026-10-09 11:18:24 | 3 | +54 / −43 | Performance (layout shift) |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on each branch and on `main` at `195c2be`. #291 conflicted with #289
+in `index.html` (one long line, changes not overlapping): #289 was merged
+first, then main was merged into #291's branch, keeping both changes. The
+branch was re-tested and re-measured before #291 was merged.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 170** recorded Deploys 168 and 169.
+
+### What the deploys did
+
+- **Deploy 171 — Hero image sizes (#289).**
+  - **The problem:** the homepage hero (tablet and desktop; phones skip it) was one 1120px WebP, 231 KB, for every screen, although its slot is at most 736 CSS pixels wide.
+  - **Now:** the `<source>` lists three sizes, from the same JPEG, resized and re-encoded only:
+    - 600w, 86 KB (quality 80)
+    - 800w, 107 KB (quality 76)
+    - 1120w, 150 KB (quality 72; the brief's hero budget)
+  - **Desktop Lighthouse (median of 5):**
+    - `/`: 373 → 233 KB, LCP 0.82 → 0.72 s
+    - `/ar/`: 353 → 213 KB, LCP 0.81 → 0.72 s
+  - **Records:** `make-card-image-sizes.py` writes the three sizes; the asset rights register has a row for them.
+- **Deploy 172 — `scripts/check-figure-parity.js` (#290).** The check, in `npm test`:
+  - **What it compares:** 57 English/Arabic pairs (pages, gated guides, the export catalogue).
+  - **Arabic extras:** the Arabic must not state a figure the English does not.
+  - **Missing figures:** every English figure must appear in the Arabic, except whole numbers up to 10 written as words and Contact's 24/7.
+  - **Signs:** percentages keep their sign.
+  - **Proof:** it passes on main, and against the site before Deploy 168 it fails on exactly the Spain −28% line.
+  - **No site change.**
+- **Deploy 173 — English homepage layout shift (#291).** Two hero elements moved when the web font arrived:
+  - **Intro paragraph:** 3 lines in the fallback font, 4 in Plus Jakarta Sans, from 768px up. It now keeps four lines' height from the start.
+  - **"Product Varieties" stat label:** wrapped by the fallback from 1280px. The labels now stay on one line there.
+  - **Result:** CLS at 768–1920px went from 0.006–0.031 to 0.000–0.002, re-measured after the merge with #289.
+  - **No visible change once fonts load.** The Arabic homepage never shifted.
+  - All 42 PDFs printed identically.
+
+### Owner decisions
+
+- All three approved and merged ("merge all").
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 173:** `git revert -m 1 195c2be`.
+- **Deploy 172:** `git revert -m 1 5a6ac95`.
+- **Deploy 171:** `git revert -m 1 53c9896`. Revert 173 first, or resolve the same `index.html` conflict.
+- **Deploy 170** is documentation only.
+
+### Known limitations shipped with Deploys 170 to 173
+
+- **`.tc-hero-lede` reserves four lines** for the English hero paragraph. If that sentence is shortened to three lines, the rule should be dropped (noted in the CSS).
+- **The lab figures are local-server measurements;** production was not measured from here (egress blocked).
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the English "tonnes" (metric tons offered)
+- **Done:** the hero WebP, previously listed here as "231 KB, lighter encode offered", is now at its budget.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8022,7 +8104,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 169 (2026-10-09).**
+**Unchanged through Deploy 173 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
