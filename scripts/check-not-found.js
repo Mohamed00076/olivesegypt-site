@@ -39,7 +39,11 @@ const rules = toml.split('[[redirects]]').slice(1).map((b) => ({
   to: (b.match(/to\s*=\s*"([^"]+)"/) || [])[1],
   status: (b.match(/status\s*=\s*(\d+)/) || [, '301'])[1],
   force: /force\s*=\s*true/.test(b),
-})).filter((r) => r.from);
+  query: /^\s*query\s*=/m.test(b),
+// A rule with a query condition (the ?lang=ar redirects, 2026-10-09) only
+// fires when that parameter is present; the plain addresses checked here
+// never carry one, so those rules do not apply to them.
+})).filter((r) => r.from && !r.query);
 
 t('there is no catch-all rule', !rules.some((r) => r.from === '/*'),
   'a /* rule turns every unknown address into a success -- the soft 404 this check exists to prevent');
