@@ -8302,6 +8302,69 @@ after them, so it takes the higher number.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+## Deploys 183 to 185 — X link previews, shorter search descriptions (PRs #301, #302, #303)
+
+**Previous recorded deploy:** `2b41dd1` (Deploy 182, PR #298)
+**Approvals:**
+- "merge" (#301).
+- "do 1 and 2" (draft the descriptions for approval; add the X tags).
+- "approve descriptions" (the 44 shortened texts).
+- "merge both" (#302, then #303).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 183 | #301 | `5efeafb` | 2026-10-09 20:27:02 | 1 | +73 / −1 | Notes only |
+| 184 | #302 | `c6dc7e9` | 2026-10-09 20:45:26 | 60 | +290 / −3 | Share metadata + check |
+| 185 | #303 | `dad28d7` | 2026-10-09 20:45:30 | 46 | +127 / −116 | Search metadata |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on each branch and on `main` after #303. #303 was built on #302 and
+merged straight after it.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 183** recorded Deploys 180 to 182.
+
+### What the deploys did
+
+- **Deploy 184 — link previews on X (#302).**
+  - **Before:** 56 indexed pages had Open Graph tags but no `twitter:` tags, so a link shared on X showed the small plain card. They were most of the Arabic site, the ten English product pages and the English company profile.
+  - **Now:** each page has `twitter:card` (`summary_large_image`), `twitter:title`, `twitter:description` and `twitter:image`, copied from its own `og:` tags. No new wording.
+  - **Generator:** the product generator writes the tags.
+  - **New check:** `scripts/check-share-tags.js` (in `npm test`) confirms all 90 indexed pages have both sets, with the same title, description and image.
+- **Deploy 185 — shorter search descriptions (#303), owner-approved.**
+  - **What changed:** 44 descriptions (31 English, 13 Arabic) are now 160 characters or fewer. Each is the old text with words removed and nothing added (checked by script).
+  - **Share text:** on the 31 pages where it matched the description, it was shortened the same way.
+  - **Words removed along the way:** "premium", "flexible", "actively"/بفاعلية, المعتمدة, and, from the health article's description, "heart-healthy", "science-backed" and "superfood".
+  - **Generators:** product descriptions end "B2B specifications, packaging, and quotation." where that fits, and otherwise end after the profile sentence; the solutions generator writes the approved texts.
+- **PDFs:** all 42 printed identically in both deploys.
+
+### Owner decisions
+
+- The X tags added; the 44 shortened descriptions approved and merged.
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 185:** `git revert -m 1 dad28d7` (revert this one first).
+- **Deploy 184:** `git revert -m 1 c6dc7e9`.
+- **Deploy 183** is documentation only.
+
+### Known limitations shipped with Deploys 183 to 185
+
+- **New descriptions in Google:** they appear as Google re-crawls each page, and Google may still write its own snippet for some searches.
+- **Health article body:** it still uses "heart-healthy" and "science-backed" wording that is not in the claim register. Flagged as needs-review; not changed.
+- **Unchanged from Deploys 180 to 182:**
+  - the site name and AI summary in Google (owner's Search Console, GoDaddy and feedback steps)
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+  - the English "tonnes"
+
+**Listed in the next entry:** the merge of this record (notes only).
+
 ---
 
 ## Companion repo (`umami-olivesegypt`)
@@ -8315,7 +8378,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 182 (2026-10-09).**
+**Unchanged through Deploy 185 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
