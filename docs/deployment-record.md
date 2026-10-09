@@ -8232,6 +8232,78 @@ passed on each branch.
 
 ---
 
+## Deploys 180 to 182 — AI-search summary, insights tab, shorter titles (PRs #299, #300, #298)
+
+**Previous recorded deploy:** `125d5a5` (Deploy 179, PR #297)
+**Approvals:**
+- "fix those issues" (the open items of Deploys 176–179).
+- "merge and approve titles" (#299 merged; the 25 short titles approved).
+- "merge" (#300).
+- "merge 298 and record deploy" (#298).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 180 | #299 | `a787e12` | 2026-10-09 20:19:52 | 4 | +76 / −47 | llms.txt + CSS + check |
+| 181 | #300 | `3b241ad` | 2026-10-09 20:23:36 | 27 | +70 / −70 | Search metadata |
+| 182 | #298 | `2b41dd1` | 2026-10-09 20:24:25 | 1 | +79 / −1 | Notes only |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on each branch. #298 was opened before #299 and #300 but merged
+after them, so it takes the higher number.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 182** recorded Deploys 176 to 179.
+
+### What the deploys did
+
+- **Deploy 180 — `llms.txt` and the insights tab (#299).**
+  - **`llms.txt`, the summary AI systems read.** Google's AI summary had named the company "Triple Company for Industrial Solutions" and listed vacuum packaging. No page or PDF says either.
+    - **What it now states, from registered facts:**
+      - the legal, short and Arabic names, and that olivesegypt.com is the domain, not the company's name
+      - packaging with sizes, and "Vacuum pouches, vacuum bags and vacuum-sealed packing are not offered." (C-151)
+      - private label on nine of the ten products
+      - the partner-facility model, which the company does not own
+      - FOB/CIF/CFR terms
+    - **Removed:** "French" and "Sharqia" (not registered).
+    - **`check-packaging-claims`** allows exactly that one denial sentence.
+  - **The "Read Our Insights" tab:** on screens with a mouse it rests as a 52px handle at the edge and slides out on hover or keyboard focus. At rest it no longer covers the catalogue's PDF button at 1280–1440px, in either language. Touch screens and phones are unchanged.
+  - **PDFs:** all 42 printed identically.
+- **Deploy 181 — shorter search titles (#300), owner-approved.**
+  - **What changed:** 25 titles, each the old one with words removed and nothing added (checked by the script that applied them). The on-page headings are unchanged.
+  - **Result:** titles over 60 characters went from 27 to 2, the print catalogue pages, which `robots.txt` keeps out of search.
+  - **Generator:** the solutions generator writes the same titles.
+
+### Owner decisions
+
+- The open items fixed where the site can; the 25 short titles approved and merged.
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 181:** `git revert -m 1 3b241ad`.
+- **Deploy 180:** `git revert -m 1 a787e12`.
+- **Deploy 182** is documentation only.
+
+### Known limitations shipped with Deploys 180 to 182
+
+- **The site name Google shows** (`olivesegypt.com` instead of the company name) and **its AI summary** cannot be set from the site. Every on-site signal is now in place. The owner's steps:
+  - URL Inspection → "Request indexing" for `/` and `/ar/` in Search Console
+  - the `www` step at GoDaddy
+  - the feedback button on the AI summary
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the English "tonnes"
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8243,7 +8315,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 179 (2026-10-09).**
+**Unchanged through Deploy 182 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
