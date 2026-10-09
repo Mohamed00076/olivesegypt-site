@@ -8302,6 +8302,8 @@ after them, so it takes the higher number.
 
 **Listed in the next entry:** the merge of this record (notes only).
 
+---
+
 ## Deploys 183 to 185 — X link previews, shorter search descriptions (PRs #301, #302, #303)
 
 **Previous recorded deploy:** `2b41dd1` (Deploy 182, PR #298)
