@@ -1227,6 +1227,17 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   .tc-post-grid > article { display: flex; flex-direction: column; }
   .tc-post-grid > article > a { flex: 1; }
   .tc-post-grid > article > a > p { flex: 1; }
+  /* Homepage hero (2026-10-09): from md up the English intro paragraph is
+     576px wide (max-w-xl) at text-lg, where Plus Jakarta Sans sets it in four
+     lines and its fallback in three, so it grew a line when the web font
+     arrived and pushed the buttons and stats down 28px (CLS 0.011-0.031 at
+     768px and wider). It keeps four lines' height from the start. If the
+     sentence is shortened to three lines, drop this rule. */
+  @media (min-width: 768px) { .tc-hero-lede { min-height: calc(4 * 1.625 * 1.125rem); } }
+  /* Its stat labels: from 1280px the fallback wrapped "Product Varieties"
+     onto a second line that the web font does not need, so the row shrank
+     16px when the font arrived. One line from the start, as it ends. */
+  @media (min-width: 1280px) { .tc-hero-stat { white-space: nowrap; } }
 }
 /* Each fallback has a regular face (100-500) and a bold face (600-900), each
    sized to that weight of the web font. With only a regular face, bold text
