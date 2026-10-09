@@ -8423,6 +8423,71 @@ passed on each branch.
 
 ---
 
+## Deploys 188 and U3 — record entry, analytics security update (PRs #306, umami #3)
+
+**Previous recorded deploys:** `e119ee1` (Deploy 187, PR #305); `6da67e4` (Deploy U2, umami #2)
+**Approvals:**
+- "merge" (#306).
+- "do it" (the analytics security update).
+- "fix this" (twice): the `biome lint` error, then its warnings and infos.
+- "merge" (umami #3).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 188 | #306 | `074f1fd` | 2026-10-09 20:59:28 | 1 | +55 / −1 | Notes only |
+| U3 | umami #3 | `b020a44` | 2026-10-10 02:42:17 | 23 | +138 / −129 | Dependencies + lint |
+
+Files and lines are each merge against the base it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 188** recorded Deploys 186 and 187.
+
+### What the deploys did
+
+- **Deploy U3 — analytics security update (`umami-olivesegypt` #3), in three commits.**
+  - **Dependencies.** `pnpm audit` on `master` found 20 advisories published since U2: 9 in production dependencies (2 critical, 2 high, 4 moderate, 1 low) and 11 in dev tooling.
+    - `next` 16.3.3 → 16.3.8: remote code execution in `next/og` ImageResponse; SSRF in image optimization; cache poisoning; information disclosure.
+    - `shell-quote` override → ^1.11.0: command injection.
+    - New scoped overrides: `source-map-js` ^1.2.2, `undici` ^8.10.2 (tests only), `postcss-selector-parser` ^7.1.6 (build only).
+    - `pnpm audit` afterwards reports no known vulnerabilities.
+  - **Lint error.** `src/app/not-found.tsx`'s anonymous component is now named `NotFound`. This was the one `biome lint` error, and it was already on `master`.
+  - **Lint warnings.** All 13 warnings and 11 infos are cleared, with no behaviour changes:
+    - `biome.json` migrated to the installed CLI version
+    - unused imports and variables removed
+    - `node:` imports and `import type`
+    - optional chains with the same conditions
+    - `Number.isNaN`, a template literal, and one fragment removed
+  - **Verified:** `pnpm test` 739/739, `tsc --noEmit`, `next build` (Next.js 16.3.8, 68/68 pages), and `biome lint` with 0 diagnostics.
+  - **Not changed:** `biome check` still reports formatting and import-order differences in about 100 upstream files. They were already on `master` and CI doesn't run that check; leaving them keeps future upstream merges simple.
+
+### Owner decisions
+
+- The analytics app is updated and its lint clean-up is merged with it. `biome check` formatting is left as upstream.
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy U3:** in `umami-olivesegypt`, `git revert -m 1 b020a44`. This restores Next.js 16.3.3 and the earlier overrides, and with them the advisories.
+- **Deploy 188** is documentation only.
+
+### Known limitations shipped with Deploys 188 and U3
+
+- **The U3 production build** is not visible from here. The owner's check: log in to the Umami dashboard and confirm that today's olivesegypt.com visits appear.
+- **Upkeep:** remove the U2 and U3 override pins once upstream Umami ships those versions.
+- **Unchanged from Deploys 186 and 187:**
+  - the health article wording (owner: later)
+  - the site name and AI summary in Google (owner's steps)
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8434,7 +8499,11 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 187 (2026-10-09).**
+**Changed 2026-10-10 (Deploy U3).** Next.js 16.3.8 and further scoped
+overrides, which clear every advisory then known; plus the first changes to
+Umami's own code: the not-found component named, and the `biome lint`
+warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
+**Unchanged since U3, through Deploy 188 (2026-10-10).**
 
 ## Outstanding, unresolved by this document
 
