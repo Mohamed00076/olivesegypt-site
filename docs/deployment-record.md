@@ -8154,6 +8154,84 @@ passed on the branch (exit 0).
 
 ---
 
+## Deploys 176 to 179 — missing styles, search titles, homepage titles (PRs #294, #295, #296, #297)
+
+**Previous recorded deploy:** `2676af3` (Deploy 175, PR #293)
+**Approvals:**
+- "merge" (#294).
+- "start with 1, since it's a quick fix, then do 2" (#295 and the proposals behind #296).
+- "merge and approve all" (#295 merged; proposals A–G approved).
+- "merge" (#296).
+- "yes change the title", "change arabic title too", then "merge" (#297).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 176 | #294 | `63b6bc4` | 2026-10-09 11:43:11 | 1 | +62 / −1 | Notes only |
+| 177 | #295 | `ebf5b19` | 2026-10-09 14:17:57 | 4 | +168 / −43 | Layout (CSS) + check |
+| 178 | #296 | `a328095` | 2026-10-09 18:08:36 | 97 | +316 / −312 | Search metadata |
+| 179 | #297 | `125d5a5` | 2026-10-09 20:07:54 | 2 | +5 / −5 | Search metadata |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on each branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 176** recorded Deploys 174 and 175.
+
+### What the deploys did
+
+- **Deploy 177 — missing styles (#295).**
+  - **The problem:** the stylesheet is a Tailwind bundle compiled once, so 25 classes written into pages later did nothing. Most visible:
+    - **homepage "How We Work":** 2 columns instead of a row of 5, with no connecting line and the button against the last step
+    - **business card, About and Media Inquiries:** no width limit
+    - **mobile menu, every page:** no indent for sub-items
+    - **Privacy:** no section spacing
+  - **The fix:** the classes are now defined with Tailwind v4 values, in the screen-only block, so all 42 PDFs printed identically.
+  - **New check:** `scripts/check-css-classes.js` in `npm test`. It found 23 undefined classes on main before this deploy, none after.
+  - **Checks:** axe found 0 violations over 180 loads; the mobile and clipped-text sweeps were clean.
+- **Deploy 178 — search titles and descriptions (#296), owner-approved A–G.**
+  - **A. The title suffix** became "| Triple Company" / "| الشركة الثلاثية" on 92 pages and in both generators; the PDF source pages kept theirs. Titles over 60 characters went from 61 to 27.
+  - **New homepage title and description** (EN, AR).
+  - **Catalogue title and description:** the description had named five varieties of the ten.
+  - **Private label titles** (EN, AR).
+  - **What it touched:** only `<title>`, `og:title`, `twitter:title` and the description tags. The full legal name stays in `og:site_name`, the structured data and the footer.
+- **Deploy 179 — homepage titles carry the company name (#297).**
+  - **Why:** Google showed the domain (`olivesegypt.com`) as the site name above results. The homepage title approved in Deploy 178 had dropped the company name, weakening that signal.
+  - **Now:** "Egyptian Table Olives Exporter | Triple Company" / "مُصدّر زيتون مائدة مصري | الشركة الثلاثية".
+  - **Owner's next steps:** request re-indexing of `/` and `/ar/` in Search Console, and the `www` step at GoDaddy.
+
+### Owner decisions
+
+- #295 merged; A–G approved and merged (#296).
+- The homepage titles changed to carry the company name, English and Arabic (#297).
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 179:** `git revert -m 1 125d5a5`.
+- **Deploy 178:** `git revert -m 1 a328095`.
+- **Deploy 177:** `git revert -m 1 ebf5b19`.
+- **Deploy 176** is documentation only.
+
+### Known limitations shipped with Deploys 176 to 179
+
+- **Google chooses the site name itself;** the switch from `olivesegypt.com` to the company name is likely within weeks, not guaranteed.
+- **The AI summary in Google results** named the company "Triple Company for Industrial Solutions" and listed vacuum packaging (not offered, C-151). It cannot be edited from the site; re-indexing and Google's feedback button are the routes.
+- **27 titles still exceed about 60 characters,** mostly article headlines; shortening them would be new wording for approval.
+- **The floating "Read Our Insights" tab** partly covers the catalogue's PDF button at about 1280–1440px until the page is scrolled (English before Deploy 177; Arabic too since it mirrors the English layout). A fix is offered.
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the English "tonnes"
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8165,7 +8243,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 175 (2026-10-09).**
+**Unchanged through Deploy 179 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
