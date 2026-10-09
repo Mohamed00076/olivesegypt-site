@@ -144,7 +144,7 @@ PAGE_TMPL = """<!DOCTYPE html>
     <script defer src="/assets/analytics.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>{name} | Triple Company for Industrial Development</title>
+    <title>{name} | Triple Company</title>
     <meta name="description" content="{name} from Egypt: {profile_short} B2B specifications, packaging, and quotation for bulk and private-label buyers." />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <link rel="canonical" href="https://olivesegypt.com/products/{slug}" />
@@ -153,7 +153,7 @@ PAGE_TMPL = """<!DOCTYPE html>
     <link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/products/{slug}" />
 
     <meta property="og:site_name" content="Triple Company for Industrial Development" />
-    <meta property="og:title" content="{name} | Triple Company for Industrial Development" />
+    <meta property="og:title" content="{name} | Triple Company" />
     <meta property="og:description" content="{name} from Egypt: {profile_short}" />
     <meta property="og:url" content="https://olivesegypt.com/products/{slug}" />
     <meta property="og:type" content="website" />
