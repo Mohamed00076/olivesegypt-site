@@ -8369,6 +8369,60 @@ merged straight after it.
 
 ---
 
+## Deploys 186 and 187 — "metric tons" on Why Egyptian Olives (PRs #304, #305)
+
+**Previous recorded deploy:** `dad28d7` (Deploy 185, PR #303)
+**Approvals:**
+- "3 and merge" (#304; the health-article wording left for later).
+- "do 4" and "merge" (#305; the three cells approved by the merge, as the PR stated).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 186 | #304 | `a2aa7bc` | 2026-10-09 20:51:01 | 1 | +66 / −1 | Notes only |
+| 187 | #305 | `e119ee1` | 2026-10-09 20:56:56 | 1 | +3 / −3 | Copy (unit) |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on each branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 186** recorded Deploys 183 to 185.
+
+### What the deploys did
+
+- **Deploy 187 — "tonnes" → "metric tons" (#305).**
+  - **What changed:** the three production figures in the table on `/resources/why-egyptian-olives` now read "854,000 metric tons", "215,000 metric tons" and "175,000 metric tons".
+  - **Why:** this matches the Arabic table (طن متري) and the rest of the English site.
+  - **Unchanged:** the figures themselves. No other English page used "tonnes".
+  - **PDFs:** all 42 printed identically.
+
+### Owner decisions
+
+- The health article's "heart-healthy" and "science-backed" wording is left for later (option 3).
+- The English unit is "metric tons".
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 187:** `git revert -m 1 e119ee1`.
+- **Deploy 186** is documentation only.
+
+### Known limitations shipped with Deploys 186 and 187
+
+- **Removed from this list:** the English "tonnes" (done).
+- **Unchanged from Deploys 183 to 185:**
+  - the health article wording (owner: later)
+  - the site name and AI summary in Google (owner's Search Console, GoDaddy and feedback steps)
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8380,7 +8434,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 185 (2026-10-09).**
+**Unchanged through Deploy 187 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
