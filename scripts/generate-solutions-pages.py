@@ -251,7 +251,7 @@ PAGES[''] = {
 PAGES['importer-distributor'] = {
     'en': dict(
         crumb='Importers &amp; Distributors',
-        title=f'Bulk Table Olives for Importers &amp; Distributors | {ORG_SHORT}',
+        title=f'Bulk Table Olives for Importers &amp; Distributors',
         desc='Container terms for table olive importers and distributors: 1×20ft minimum (about 16–18 MT), FOB Alexandria, CIF or CFR, T/T or L/C payment, and a full export documentation pack.',
         keywords='bulk table olive importer Egypt, olive container export terms, wholesale olive distributor Egypt, FOB olive exporter',
         main=lambda: hero('Solutions', 'For Importers and Distributors',
@@ -314,7 +314,7 @@ PAGES['importer-distributor'] = {
 PAGES['retail'] = {
     'en': dict(
         crumb='Retail',
-        title=f'Retail-Ready Egyptian Olives in Glass Jars &amp; Tins | {ORG_SHORT}',
+        title=f'Retail-Ready Egyptian Olives in Glass Jars &amp; Tins',
         desc='Retail-ready Egyptian table olives in glass jars (320–1050 ml) and tin cans (65mm to A12), available under your own label for supermarket and specialty shelves.',
         keywords='retail-ready olive supplier, olives for supermarket private label, glass jar olive supplier Egypt',
         main=lambda: hero('Solutions', 'For Retail Buyers',
@@ -337,7 +337,7 @@ PAGES['retail'] = {
               (contact('en', 'quote', 'retail'), 'Request a Quote'), sample('en'))),
     'ar': dict(
         crumb='التجزئة',
-        title=f'زيتون مصري جاهز للتجزئة في برطمانات زجاجية وعلب صفيح | {ORG_AR_SHORT}',
+        title=f'زيتون مصري جاهز للتجزئة في برطمانات زجاجية وعلب صفيح',
         desc='زيتون مائدة مصري جاهز للتجزئة في برطمانات زجاجية (320–1050 مل) وعلب صفيح (من 65 مم إلى A12)، ومتاح بعلامتك الخاصة لأرفف السوبر ماركت والمتاجر المتخصصة.',
         keywords='مورد زيتون جاهز للتجزئة, زيتون بالعلامة الخاصة للسوبر ماركت, مورد زيتون في برطمانات زجاجية مصر',
         main=lambda: hero('الحلول', 'لمشتري التجزئة',
@@ -363,7 +363,7 @@ PAGES['retail'] = {
 PAGES['food-service'] = {
     'en': dict(
         crumb='Food Service',
-        title=f'Bulk Olives for Restaurants, Caterers &amp; Repackers | {ORG_SHORT}',
+        title=f'Bulk Olives for Restaurants, Caterers &amp; Repackers',
         desc='Egyptian table olives for kitchens, caterers and repackers: food-grade buckets (2, 5, 10 and 20 kg), tin cans, a 4 kg PET pail for sliced jalapeños, and 220 kg barrels.',
         keywords='bulk olives for restaurants, food-service olive supplier Egypt, olives for caterers and repackers',
         main=lambda: hero('Solutions', 'For Food-Service Buyers',
@@ -388,7 +388,7 @@ PAGES['food-service'] = {
               (contact('en', 'quote', 'food-service'), 'Request a Quote'), sample('en'))),
     'ar': dict(
         crumb='خدمات الأغذية',
-        title=f'زيتون بالجملة للمطاعم ومقدمي خدمات التموين وإعادة التعبئة | {ORG_AR_SHORT}',
+        title=f'زيتون بالجملة للمطاعم ومقدمي خدمات التموين وإعادة التعبئة',
         desc='زيتون مائدة مصري للمطابخ ومقدمي خدمات التموين وشركات إعادة التعبئة: دِلاء درجة غذائية (2 و5 و10 و20 كجم)، وعلب صفيح، ووعاء PET سعة 4 كجم للهالبينو المقطّع، وبراميل سعة 220 كجم.',
         keywords='زيتون بالجملة للمطاعم, مورد زيتون لخدمات الأغذية مصر, زيتون لمقدمي التموين وإعادة التعبئة',
         main=lambda: hero('الحلول', 'لمشتري خدمات الأغذية',
@@ -469,7 +469,7 @@ PAGES['manufacturer'] = {
 PAGES['local-egypt'] = {
     'en': dict(
         crumb='Buyers in Egypt',
-        title=f'Olive Supplier in Egypt — Local Barrel Orders from 10 Tons | {ORG_SHORT}',
+        title=f'Olive Supplier in Egypt — Local Barrel Orders from 10 Tons',
         desc='Egyptian table olives for buyers inside Egypt, without export logistics: 220 kg barrel orders from 10 metric tons (about 45 barrels); jars, tins and buckets at the standard 16–18 MT minimum. Pricing confirmed during quotation.',
         keywords='olive supplier Egypt EGP pricing, local wholesale olives Cairo, olive barrel supplier Egypt',
         main=lambda: hero('Solutions', 'For Buyers in Egypt',
@@ -491,7 +491,7 @@ PAGES['local-egypt'] = {
               (contact('en', 'local_pricing', 'local-egypt'), 'Request Local Pricing'), sample('en'))),
     'ar': dict(
         crumb='المشترون داخل مصر',
-        title=f'مورد زيتون في مصر — طلبات براميل محلية من 10 أطنان | {ORG_AR_SHORT}',
+        title=f'مورد زيتون في مصر — طلبات براميل محلية من 10 أطنان',
         desc='زيتون مائدة مصري للمشترين داخل مصر دون إجراءات تصدير: طلبات البراميل سعة 220 كجم من 10 أطنان مترية (نحو 45 برميلًا)؛ والبرطمانات والعلب والدِلاء بالحد الأدنى القياسي 16–18 طنًا متريًا. ويُؤكَّد التسعير أثناء عرض السعر.',
         keywords='مورد زيتون مصر بالجنيه المصري, زيتون بالجملة القاهرة, مورد براميل زيتون مصر',
         main=lambda: hero('الحلول', 'للمشترين داخل مصر',
