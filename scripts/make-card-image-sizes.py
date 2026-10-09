@@ -41,3 +41,18 @@ for name in THUMBS:
     out = os.path.join(ROOT, 'assets', name + '-320.webp')
     im.resize((320, h), Image.LANCZOS).save(out, 'WEBP', quality=THUMB_QUALITY, method=6)
     print(f'assets/{name}-320.webp: 320x{h}, {os.path.getsize(out) // 1024} KB')
+
+# 2026-10-09: the homepage hero photograph (md and wider; phones skip it). Its
+# slot shows at most 736 CSS pixels (tablet) and 560 on desktop, but every
+# screen downloaded the one 1120px WebP, 231 KB. Now 600w and 800w for
+# standard-density screens, which show them nearly pixel for pixel, so they
+# keep a higher quality, and the 1120w for high-density screens re-encoded to
+# the brief's hero budget of about 150 KB. All three come from the same JPEG,
+# which is unchanged.
+HERO = 'red-peppers-sliced'
+HERO_SIZES = [(1120, 72, ''), (800, 76, '-800'), (600, 80, '-600')]
+src = Image.open(os.path.join(ROOT, 'assets', HERO + '.jpg')).convert('RGB')
+for w, q, suffix in HERO_SIZES:
+    out = os.path.join(ROOT, 'assets', HERO + suffix + '.webp')
+    (src if w == src.width else src.resize((w, w), Image.LANCZOS)).save(out, 'WEBP', quality=q, method=6)
+    print(f'assets/{HERO}{suffix}.webp: {w}x{w}, {os.path.getsize(out) // 1024} KB')
