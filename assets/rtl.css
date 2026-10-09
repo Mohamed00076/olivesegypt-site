@@ -14,3 +14,6 @@
   .sm\:pr-4 { padding-right: calc(var(--spacing) * 4); }
   .sm\:border-r { border-right-style: var(--tw-border-style); border-right-width: 1px; }
 }
+
+/* Phase 4c (2026-10-09): the article callout's accent bar on the start side. */
+.border-s-4 { border-inline-start-style: var(--tw-border-style); border-inline-start-width: 4px; }
