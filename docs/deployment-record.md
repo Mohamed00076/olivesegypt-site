@@ -7882,6 +7882,68 @@ passed on the branch (935 passed, 0 failed).
 
 ---
 
+## Deploys 166 and 167 — Phase 4b: articles and media pages (PRs #284, #285)
+
+**Previous recorded deploy:** `2128dda` (Deploy 165, PR #283)
+**Approvals:**
+- "merge the record deploy PR" (#284).
+- "go" (Phase 4b, under the approved Phase 4 plan, which included the articles' "On this page" list).
+- "fix it" (the Arabic heading numbers, #285).
+- "merge" (#285).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 166 | #284 | `be3e20e` | 2026-10-09 03:28:25 | 1 | +72 / −1 | Notes only |
+| 167 | #285 | `ee8e98d` | 2026-10-09 03:59:31 | 21 | +99 / −76 | Design (Phase 4b) + content |
+
+Files and lines are each merge against the `main` it landed on. `npm test`
+passed on the branch (935 passed, 0 failed).
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 166** recorded Deploys 164 and 165.
+
+### What the deploys did
+
+- **Deploy 167 — Phase 4b (#285).**
+  - **The 7 articles (EN + AR):**
+    - a 42rem reading column (about 70 characters a line, from about 90), with the title column matched to it
+    - an "On this page" / "في هذه الصفحة" list after the opening paragraph, linking to each section heading; each heading has a stable id, the same in both languages
+  - **Media hub (EN + AR):** news and blog are full-width card grids, replacing a one-card column beside a seven-card column.
+  - **Blog (EN + AR):** a grid of equal-height cards with the date and "Read article" on the bottom line.
+  - **Arabic heading numbers (owner: "fix it"):** two Arabic articles (*How to import*, *Choosing an exporter*) numbered their headings with Western digits, which right-to-left text shows as ".1". They now use ١. ٢. ٣., as the rest of the Arabic site does; ids unchanged.
+  - **Wording:** compared by script on all 18 changed pages. Nothing was removed; the only additions are the list label and the repeated headings, plus the digit change above.
+  - **Left as they were:** About, How We Work, Contact, Sample, Downloads, Media Inquiries, News and Privacy.
+  - **Lab results (mobile, median of 3, main vs branch):** the 9 measured pages are 1.87–1.97 s, each within noise of main; CLS 0.000; no added requests.
+  - **Checks:** all 42 PDFs rebuilt identical; axe found 0 violations over 180 loads; the mobile and clipped-text sweeps were clean; 48 screenshots were taken with no horizontal overflow.
+
+### Owner decisions
+
+- Phase 4b approved; the Arabic heading-number fix approved ("fix it"), then merged.
+
+### Claim register
+
+152 claims. No change. C-55 remains the only `needs-review` row.
+
+### Rollback
+
+- **Deploy 167:** `git revert -m 1 ee8e98d`. The Arabic digit fix alone: `git revert dfbd30d`.
+- **Deploy 166** is documentation only.
+
+### Known limitations shipped with Deploys 166 and 167
+
+- **Phase 4c** (Arabic pass and its automated check) follows on the owner's "go".
+- **The lab LCP figures are local-server measurements;** production was not measured from here (egress blocked).
+- **Unchanged:**
+  - the trailing-slash clean-up (blocked)
+  - the `www` DNS step (owner)
+  - the Search Console row on `/privacy` (owner's call)
+  - the product and packaging photographs
+  - the 231 KB hero WebP (lighter encode offered)
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -7893,7 +7955,7 @@ known advisory, using `pnpm.overrides`. Only `package.json` and
 `pnpm-lock.yaml` changed; Umami's own code did not. The fork is otherwise
 still at the upstream state as of the last sync. See the entry for Deploys 56
 to 71.
-**Unchanged through Deploy 165 (2026-10-05).**
+**Unchanged through Deploy 167 (2026-10-09).**
 
 ## Outstanding, unresolved by this document
 
