@@ -8845,6 +8845,83 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 200 to 202 — Browse cards, insights tab (PRs #318, #319, #320)
+
+**Previous recorded deploy:** `9503367` (Deploy 199, PR #317)
+**Approvals:**
+- "merge" (#318).
+- "do 1" (link to Pickled Vegetables from the homepage and catalogue).
+- "can you make it look better visually these two buttons browser this and browser that" (the links become cards).
+- "fix it" (the insights tab covering content, found while checking #319).
+- "merge" (#319 and #320).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 200 | #318 | `b37c2d4` | 2026-10-10 19:15:43 | 1 | +73 / −1 | Notes only |
+| 201 | #319 | `d3e6968` | 2026-10-11 02:04:09 | 6 | +61 / −40 | Homepage and catalogue (EN/AR), CSS |
+| 202 | #320 | `6ad068a` | 2026-10-11 02:06:39 | 3 | +55 / −42 | CSS, check |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on each branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 200** recorded Deploys 198 and 199.
+
+### What the deploys did
+
+- **Deploy 201 — Browse cards (#319).**
+  - **Where:** the homepage (under "View Full Catalog") and the catalogue (above the grid), in both languages.
+  - **What:** the "Browse the olives by type and form" text link is now one of two cards; the other links to Pickled Vegetables. Each card has:
+    - an icon (an olive, or a jar)
+    - the group's menu label as its title
+    - a browse line
+    - an arrow, mirrored in Arabic
+  - **Layout and style:** the cards sit side by side and stack on phones. A small `.tc-browse` style was added for screens only; motion is off under reduced motion.
+  - **New line:** "Browse the pickled vegetables and their forms" / "تصفّح الخضروات المخللة وأشكالها".
+  - **Measured locally:** LCP `/` 2.02 s, `/ar/` 1.93 s, `/catalog` 2.33 s; CLS 0. axe: 0 violations, light and dark. The PDFs reprint identically.
+- **Deploy 202 — Insights tab (#320).**
+  - **The problem:** the floating "Read Our Insights" tab, fixed mid-height at the side edge, covered content that runs close to the edge:
+    - the Arabic catalogue's PDF button at 768 px
+    - the homepage hero image at 1280 px
+    - on touch screens of any width, its full label
+  - **The fix:** below 1366 px, and on every touch screen, it is now the phone's round book icon above the WhatsApp bubble. Mouse-driven screens from 1366 px keep the slim side handle; every page leaves at least 59 px at the edge there, and the handle is 52 px.
+  - **Check:** `check-mobile-basics.js` holds both breakpoints.
+  - **Merge:** `main` (with #319) was merged into the branch before deploy. The PDF fingerprints were re-recorded with the build script, and the PDFs reprint identically.
+
+### Owner decisions
+
+- Pickled Vegetables is linked from the homepage and catalogue body, as a pair of cards with Table Olives.
+- The insights-tab overlap is fixed as above.
+
+### Claim register
+
+160 claims. No change.
+
+### Rollback
+
+- **Deploy 202:** `git revert -m 1 6ad068a`.
+- **Deploy 201:** `git revert -m 1 d3e6968`.
+- **Deploy 200** is documentation only.
+
+### Known limitations shipped with Deploys 200 to 202
+
+- **Owner review:**
+  - the new Arabic browse line
+  - a live look at the cards and the tab on a laptop or tablet
+  - whether the homepage hero image (sliced red peppers, beside "Egyptian Table Olives Exporter") should change. Red peppers are not among the seven products.
+- **Unchanged from Deploys 198 and 199:**
+  - Arabic review of the Pickled Vegetables page, the menu labels and the restructure copy
+  - the live checks (#308, #317)
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8860,7 +8937,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 199 (2026-10-10).**
+**Unchanged since U3, through Deploy 202 (2026-10-11).**
 
 ## Outstanding, unresolved by this document
 
