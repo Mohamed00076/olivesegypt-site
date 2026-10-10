@@ -8773,6 +8773,78 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 198 and 199 — Pickled Vegetables page (PRs #316, #317)
+
+**Previous recorded deploy:** `3009e58` (Deploy 197, PR #315)
+**Approvals:**
+- "record deploy" (#316).
+- "i want pickeled vegetables to have it own page like table olives what do you think ?"
+- "merge and build it with /pickled-vegetables" (merge #316, build the page).
+- "merge" (#317).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 198 | #316 | `abb4b06` | 2026-10-10 19:03:22 | 1 | +64 / −1 | Notes only |
+| 199 | #317 | `9503367` | 2026-10-10 19:11:34 | 97 | +456 / −173 | New page (EN/AR), navigation and footer (all pages), breadcrumbs, sitemap, redirects, check |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on the branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 198** recorded Deploys 196 and 197.
+
+### What the deploys did
+
+- **Deploy 199 — Pickled Vegetables page (#317).**
+  - **New pages:** `/pickled-vegetables` and `/ar/pickled-vegetables`, on the Table Olives page's layout (no new components, no new JS):
+    - intro
+    - three product cards with their forms and the first sentence of each approved profile
+    - a "Forms at a glance" table (calibers "Confirmed during quotation")
+    - a link to Table Olives
+    - Go deeper tiles, the minimum-order line (C-140), quote and sample buttons
+    - schema: BreadcrumbList and an ItemList of the three products
+  - **Linked from:**
+    - the Products menu's Pickled Vegetables item, which previously opened the filtered catalogue (desktop and phone)
+    - the footer Products column, on every page
+    - the breadcrumbs of the three vegetable pages (Home › Pickled Vegetables › product), from the generator for English and by hand for Arabic
+    - `sitemap.xml` (88 URLs), `llms.txt`, and the `?lang=ar` redirects
+  - **Check:** `check-nav-footer.js` expects `/pickled-vegetables` in the menu.
+  - **Measured locally:** LCP `/pickled-vegetables` 1.84 s, `/ar/pickled-vegetables` 1.86 s, artichoke page 1.99 s; CLS 0. axe: 0 violations, light and dark. The PDFs reprint identically.
+  - **Live check:** not possible from this session (egress to `olivesegypt.com` is blocked); left to the owner.
+
+### Owner decisions
+
+- Pickled Vegetables has its own page, at `/pickled-vegetables`.
+- The new page copy (title, description, intro, headings, link line) went out with the merge; the Arabic is awaiting the owner's review.
+
+### Claim register
+
+160 claims. No change: the page reuses approved product copy and C-140.
+
+### Rollback
+
+- **Deploy 199:** `git revert -m 1 9503367`.
+- **Deploy 198** is documentation only.
+
+### Known limitations shipped with Deploys 198 and 199
+
+- **Owner review:**
+  - the new Arabic on the Pickled Vegetables page
+  - the live check of `/pickled-vegetables`, its Arabic page, the menu item and a vegetable page's breadcrumb
+- **Unchanged from Deploys 196 and 197:**
+  - the Arabic menu labels
+  - the live checks (#308)
+  - Arabic review of the restructure copy
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8788,7 +8860,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 197 (2026-10-10).**
+**Unchanged since U3, through Deploy 199 (2026-10-10).**
 
 ## Outstanding, unresolved by this document
 
