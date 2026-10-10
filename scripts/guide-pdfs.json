@@ -2942,7 +2942,7 @@
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
     "inputs": {
-      "scripts/export-catalog-source.html": "f5e53ee7e1abc1e444ce2dab3f23dfbb4289719533e06e6b2dc11d691be335e4",
+      "scripts/export-catalog-source.html": "52e852a326bcda846b2f085c1663c365d23416af5a7209aa37b22ef9243c21b7",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "8f24e41fe50e435d580dd5e8d858ca697b35e9ba53abd8d2e8c006a8d4f3ef3f",
       "assets/illus-natural-black.svg": "274f1a1d0485614cbd40b4d1f03664400b90b1ccac2a98cb0d3e7bd72d352175",
