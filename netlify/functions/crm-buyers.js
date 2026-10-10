@@ -19,23 +19,25 @@ function connectionString() {
 
 // Controlled vocabularies -- kept in sync with the rest of the site.
 //
-// Kalamata was left out here when it was removed from the site on
-// 2026-09-01. It was reintroduced and approved field by field on 2026-09-05
-// (claims C-01 to C-09, position 2 per C-17) but this list was never updated,
-// so staff could not tag a Kalamata buyer at all. The one restriction still in
-// force is private label (C-40), which this list does not touch.
-// scripts/check-crm-products.js fails if this list and the site's products
-// drift apart again.
+// The products the website sells, in the site's order (scripts/products.js).
+// Since 2026-10-10 the range is by olive type, not cultivar, and Kalamata is
+// not supplied. scripts/check-crm-products.js fails if this list and the
+// site's products drift apart.
 const PRODUCTS = [
-  'aggizi-green-olives', 'toffahi-green-olives', 'kalamata-olives',
-  'manzanilla-green-olives', 'natural-black-olives', 'pepper-stuffed-green-olives',
+  'green-olives', 'stuffed-green-olives', 'natural-black-olives',
   'oxidized-black-olives', 'sliced-jalapeno-peppers', 'marinated-artichoke-hearts',
   'pepperoncini-peppers',
 ];
-// No longer sold (Hamed: withdrawn 2026-09-28, "not confirmed available").
-// A buyer already tagged keeps the tag through an edit; a new buyer cannot be
-// given it. assets/crm.js carries the same list for the pages.
-const WITHDRAWN_PRODUCTS = ['hamed-green-olives'];
+// No longer offered. A buyer already tagged keeps the tag through an edit; a
+// new buyer cannot be given it, and no record is rewritten. Hamed: withdrawn
+// 2026-09-28, "not confirmed available". The cultivar products and Kalamata:
+// retired 2026-10-10 when the range moved to olive types (the cultivar tags
+// now mean Green Olives; Kalamata is not supplied). assets/crm.js carries the
+// same list, with labels, for the pages.
+const WITHDRAWN_PRODUCTS = [
+  'hamed-green-olives', 'aggizi-green-olives', 'toffahi-green-olives',
+  'manzanilla-green-olives', 'pepper-stuffed-green-olives', 'kalamata-olives',
+];
 // Stages and regions live in _crm_lib.js, shared with the CSV import and the
 // website enquiry intake, so the three cannot disagree about what is valid.
 const REGIONS = new Set(REGION_LIST);
