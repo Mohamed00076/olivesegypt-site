@@ -40,7 +40,7 @@ const UTILITY = new Set([
 ]);
 
 const EXPECTED_NAV = {
-  en: ['/egyptian-table-olives', '/pickled-vegetables', '/catalog', '/solutions', '/resources/certifications', '/downloads', '/company-profile',
+  en: ['/egyptian-table-olives', '/pickled-vegetables', '/catalog', '/solutions', '/resources/certifications', '/downloads', '/company-profile', '/resources',
        '/resources/private-label',
        '/resources/packaging', '/resources/pricing', '/resources/faq',
        '/resources/why-egyptian-olives', '/resources/export-markets', '/how-we-work',
