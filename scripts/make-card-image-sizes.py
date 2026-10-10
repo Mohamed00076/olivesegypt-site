@@ -50,8 +50,12 @@ for name in THUMBS:
 # keep a higher quality, and the 1120w for high-density screens re-encoded to
 # the brief's hero budget of about 150 KB. All three come from the same JPEG,
 # which is unchanged.
-HERO = 'red-peppers-sliced'
-HERO_SIZES = [(1120, 72, ''), (800, 76, '-800'), (600, 80, '-600')]
+# 2026-10-11: the hero is now hero-green-olives.jpg, the centre 800x800 of the
+# owner's green olives photograph (scripts/og-card-green-olives.jpg, 1200x800),
+# cropped only. 800 is its largest true size, so there is no 1120w: enlarging
+# would invent no detail, only blur.
+HERO = 'hero-green-olives'
+HERO_SIZES = [(800, 76, ''), (600, 80, '-600')]
 src = Image.open(os.path.join(ROOT, 'assets', HERO + '.jpg')).convert('RGB')
 for w, q, suffix in HERO_SIZES:
     out = os.path.join(ROOT, 'assets', HERO + suffix + '.webp')
