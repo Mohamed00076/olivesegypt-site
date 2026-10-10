@@ -70,8 +70,13 @@ t('on phones, text set below 12px is raised to 12px (screen only, so PDFs keep t
   /\.text-\\\[10px\\\][^{]*\.text-\\\[11px\\\][^{]*\{\s*font-size: 0\.75rem/.test(phone));
 t('   and the foot-of-page links and product-page paths are padded to a 24px tap target',
   /footer #tc-consent-footer-link \{\s*padding-block: 4px/.test(phone) && /nav\[aria-label="مسار التصفح"\] a/.test(phone));
-t('on phones the insights tab is a round icon above the WhatsApp bubble',
-  /@media \(max-width: 639px\) \{\s*a\[data-testid="floating-blog-link"\] \{[^}]*border-radius: 9999px/.test(css));
+// 2026-10-10: tablets, laptops below 1366px and touch screens too; the side
+// handle, fixed mid-height, covered content that runs close to the edge there.
+t('on phones, tablets, laptops below 1366px and touch screens the insights tab is a round icon above the WhatsApp bubble',
+  /@media \(max-width: 1365px\), \(hover: none\) \{\s*a\[data-testid="floating-blog-link"\] \{[^}]*border-radius: 9999px/.test(css) &&
+  /@media \(max-width: 1365px\), \(hover: none\) \{\s*\[data-testid="floating-blog-link"\] \{\s*top: auto;/.test(css));
+t('   and only a mouse-driven screen from 1366px gets the slim side handle',
+  /@media \(min-width: 1366px\) and \(hover: hover\) \{\s*a\[data-testid="floating-blog-link"\] \{ --tw-translate-x/.test(css));
 t('the cookie control also sits in the footer, and the floating pill steps aside for it on phones',
   /function addFooterControl\(/.test(consent) && /#tc-consent-reopen\.tc-in-footer\{display:none;\}/.test(consent));
 
