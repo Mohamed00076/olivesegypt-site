@@ -107,8 +107,15 @@ for (const file of pages) {
   if (stray.size) say(`English left in the Arabic text: ${[...stray].slice(0, 8).join(', ')}`);
 }
 
+// A left-to-right run (a range like 3.7–4.2, a phone number) must not break
+// across lines: in right-to-left text its halves land at opposite ends of two
+// lines and read as "-3.7" or as a scrambled number (2026-10-11).
+if (!/span\[dir="ltr"\] \{ white-space: nowrap; \}/.test(fs.readFileSync(path.join(ROOT, 'assets/rtl.css'), 'utf8'))) {
+  problems.push('assets/rtl.css: span[dir="ltr"] is not white-space: nowrap, so a range or phone number can break across lines');
+}
+
 if (problems.length) {
   console.error(`rtl: ${problems.length} problem(s) on the Arabic pages:\n  ` + problems.join('\n  '));
   process.exit(1);
 }
-console.log(`rtl OK -- ${checked} Arabic pages are lang="ar" dir="rtl", hold no Arabic inside a left-to-right element, number no heading with a Western "N. ", draw no accent bar on a physical side, and leave no English word outside the kept trade terms.`);
+console.log(`rtl OK -- ${checked} Arabic pages are lang="ar" dir="rtl", hold no Arabic inside a left-to-right element, number no heading with a Western "N. ", draw no accent bar on a physical side, keep every left-to-right run on one line, and leave no English word outside the kept trade terms.`);
