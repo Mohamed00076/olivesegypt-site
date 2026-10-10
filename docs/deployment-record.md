@@ -8591,6 +8591,72 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 191 to 193 — homepage heading, no "premium" claims (PRs #309, #310, #311)
+
+**Previous recorded deploy:** `5a04870` (Deploy 190, PR #308)
+**Approvals:**
+- "merge" (#309).
+- "do 3", then "a" (homepage heading, option A).
+- "merge" (#310).
+- "do cleanup".
+- "merge" (#311).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 191 | #309 | `5d82942` | 2026-10-10 18:07:46 | 1 | +104 / −1 | Notes only |
+| 192 | #310 | `2517dec` | 2026-10-10 18:14:39 | 3 | +3 / −2 | Copy (homepage H1) |
+| 193 | #311 | `3af90d6` | 2026-10-10 18:18:52 | 26 | +65 / −53 | Copy removals, check, PDFs |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on each branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 191** recorded Deploys 189 and 190.
+
+### What the deploys did
+
+- **Deploy 192 — homepage heading (#310).**
+  - "Premium Table Olives Exporter" / "مُصدّر زيتون المائدة الفاخر" becomes "Egyptian Table Olives Exporter" / "مُصدّر زيتون المائدة المصري" (C-159).
+  - The new heading matches the homepage search titles.
+  - Measured locally: LCP 1.97 / 1.94 s, CLS 0.
+- **Deploy 193 — no "premium" claims about our products (#311).**
+  - **Removed** from the catalogue structured-data description and the artichoke description, in 15 places across both languages, from the pages, generator, print and export catalogues.
+  - **Kept** where "premium" names a market tier or price level: "premium retail", "the premium end", "command a premium", and delis as "محلات الأطعمة الفاخرة" (C-160).
+  - **Food Service:** still listed "cracked" as a format (both languages, generator). Removed.
+  - **New check:** `check-product-types.js` now fails on "cracked" in any format list. Proven on both pages; the Export Markets sentence about a market's taste for cracked olives passes.
+  - **PDFs:** 8 rebuilt (catalogues, combined and artichoke spec sheets, export catalogues); the other 28 are identical.
+
+### Owner decisions
+
+- Homepage heading: option A.
+- "Premium" clean-up: removed as a claim about our products, kept as a market term.
+
+### Claim register
+
+160 claims. New: C-159 and C-160. `needs-review`: C-55, C-157 and C-158.
+
+### Rollback
+
+- **Deploy 193:** `git revert -m 1 3af90d6`.
+- **Deploy 192:** `git revert -m 1 2517dec`.
+- **Deploy 191** is documentation only.
+
+### Known limitations shipped with Deploys 191 to 193
+
+- **Still open from Deploy 190:**
+  - the owner's live checks (the URL list in #308)
+  - review of the new Arabic, including the new heading
+  - sources for the green brine figures and the cultivar statements
+- **Unchanged:**
+  - the health article wording (owner: later)
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8606,7 +8672,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 190 (2026-10-10).**
+**Unchanged since U3, through Deploy 193 (2026-10-10).**
 
 ## Outstanding, unresolved by this document
 
