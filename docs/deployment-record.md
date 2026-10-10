@@ -8488,6 +8488,109 @@ Files and lines are each merge against the base it landed on.
 
 ---
 
+## Deploys 189 and 190 — catalog by olive type, Egyptian Table Olives hub (PRs #307, #308)
+
+**Previous recorded deploy:** `074f1fd` (Deploy 188, PR #306); `b020a44` (Deploy U3)
+**Approvals:**
+- "merge" (#307).
+- The catalog restructure brief (2026-10-10), Step 1 approved with "go with recommendations".
+- "merge" (#308; also approves its listed wording, the Arabic flagged for review).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 189 | #307 | `ea3a21e` | 2026-10-10 02:53:03 | 1 | +70 / −1 | Notes only |
+| 190 | #308 | `5a04870` | 2026-10-10 15:30:44 | 203 | +1,786 / −2,944 | Range restructure (content, redirects, PDFs, CRM lists, checks) |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on the branch and on `main` after #308.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 189** recorded Deploys 188 and U3.
+
+### What the deploys did
+
+- **Deploy 190 — the range by olive type (#308), one release.**
+  - **Seven products, from one data file** (`scripts/products.js`):
+    - the olives: Green, Stuffed Green, Natural Black, Oxidized Black
+    - the pickled vegetables: Sliced Jalapeño, Marinated Artichoke, Pepperoncini
+  - **The forms matrix** (C-155):
+    - green: whole, pitted, sliced
+    - stuffed green: pepper or carrot
+    - natural black: whole only (corrected on 17 surfaces)
+    - oxidized black: whole, pitted, sliced
+    - no black olive is stuffed
+    - "cracked" removed
+  - **New pages** (both languages):
+    - `/products/green-olives` (brine shown as the span of the earlier green figures, C-157)
+    - `/products/stuffed-green-olives`
+    - the hub `/egyptian-table-olives`, linked from the footer, the type pages' breadcrumbs and the catalogue
+  - **Retired, 301** (generated block, `check-retired-routes.js`):
+    - Aggizi, Toffahi, Manzanilla → Green Olives
+    - Pepper-Stuffed → Stuffed Green
+    - Kalamata → catalogue
+    - the same for spec sheets and the old print-catalogue ids
+    - Hamed stays 410
+  - **Kalamata removed everywhere** (C-153; C-09 reversed).
+  - **Cultivar names** remain only on the hub and Why Egyptian Olives, as general facts with the standing line (C-158).
+  - **Counts** say 7. Private label covers all seven (C-156).
+  - **Homepage:** six cards; the Organization description names the four types.
+  - **Forms:** the seven products plus "Other / not sure yet", with a cultivar hint.
+  - **CRM:**
+    - the intake maps old labels to Green Olives
+    - the old ids are legacy tags
+    - no record or analytics history changed
+  - **Images:** the Aggizi photo became `olive-green.*`; the cultivar and Kalamata images were deleted.
+  - **PDFs:** all 36 rebuilt; none contains a cultivar name or Kalamata.
+  - **Guards in `npm test`:** `check-product-types.js` and `check-retired-routes.js`, proven on 16 broken copies.
+  - **Measured locally:**
+    - Lighthouse mobile: LCP 1.85–2.29 s, CLS 0
+    - axe: 0 violations on every sitemap page, light and dark
+    - 60 screenshots, no overflow
+
+### Owner decisions
+
+- Step 1 recommendations accepted:
+  - green brine option A
+  - compact cultivar list
+  - Hamed kept at 410 and not listed
+  - Aggizi photo for Green Olives
+  - six homepage cards
+  - cultivar names only on the hub and Why Egyptian Olives
+  - names removed from the origin guide
+  - hub titles as proposed
+  - hub links in the footer, breadcrumbs and catalogue
+  - the cultivar keywords tag removed
+- Not decided: the homepage H1's "Premium" (flagged, unchanged).
+
+### Claim register
+
+158 claims:
+- **New:** C-153 to C-158.
+- **Changed:** C-09 reversed; C-01–C-08, C-17–C-19 and C-131 obsolete; C-40 closed.
+- **needs-review:** C-55, C-157 and C-158.
+
+### Rollback
+
+- **Deploy 190:** `git revert -m 1 5a04870`. This restores the ten-product range, PDFs and images; no CRM data was changed.
+- **Deploy 189** is documentation only.
+
+### Known limitations shipped with Deploys 189 and 190
+
+- **Owner's live checks:** the URL list in #308 (new pages, six redirects, Hamed 410, `docs/` unpublished). This environment cannot reach the site.
+- **Owner review:**
+  - the new Arabic wording
+  - sources for the green brine figures and the cultivar statements (`evidence-needed.md` items 4 and 5)
+- **Search Console:** the retired URLs will drop out as Google re-crawls the redirects. Nothing was submitted.
+- **Unchanged:**
+  - the health article wording (owner: later)
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8503,7 +8606,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 188 (2026-10-10).**
+**Unchanged since U3, through Deploy 190 (2026-10-10).**
 
 ## Outstanding, unresolved by this document
 
