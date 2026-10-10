@@ -23,22 +23,13 @@
  * Kalamata moves into the place Hamed held, after Toffahi. Ten products.
  */
 
-// slug used in ?product= and data-slug, then the page directory for each locale.
-const PRODUCTS = [
-  { key: 'aggizi',         dir: 'aggizi-green-olives' },
-  { key: 'toffahi',        dir: 'toffahi-green-olives' },
-  { key: 'kalamata',       dir: 'kalamata-olives' },
-  { key: 'manzanilla',     dir: 'manzanilla-green-olives' },
-  { key: 'black_natural',  dir: 'natural-black-olives' },
-  { key: 'stuffed',        dir: 'pepper-stuffed-green-olives' },
-  { key: 'oxidized_black', dir: 'oxidized-black-olives' },
-  { key: 'jalapeno',       dir: 'sliced-jalapeno-peppers' },
-  { key: 'artichoke',      dir: 'marinated-artichoke-hearts' },
-  { key: 'pepperoncini',   dir: 'pepperoncini-peppers' },
-];
+/*
+ * Owner decision, 2026-10-10: the range is restructured by olive type, not
+ * cultivar -- seven products. The list now lives in scripts/products.js; this
+ * file keeps its old exports for the scripts that read them.
+ */
+const { PRODUCTS, KEYS, DIRS, COUNT, WITHDRAWN } = require('./products');
 
-const KEYS = PRODUCTS.map((p) => p.key);
-const DIRS = PRODUCTS.map((p) => p.dir);
 const KEY_OF_DIR = Object.fromEntries(PRODUCTS.map((p) => [p.dir, p.key]));
 
 /** Sort any list of keys or directory names into canonical order. */
@@ -48,14 +39,4 @@ function rank(idLike) {
   return i === -1 ? Number.MAX_SAFE_INTEGER : i;
 }
 
-/*
- * Products no longer sold. Nothing public may name them, their old addresses
- * answer 410, and the CRM keeps them only as a tag on records that already
- * carry it (scripts/check-withdrawn-products.js, check-crm-products.js).
- */
-const WITHDRAWN = [
-  // Owner, 2026-09-28: "not confirmed available".
-  { key: 'hamed', dir: 'hamed-green-olives', names: ['Hamed', '\u062d\u0627\u0645\u062f'] },
-];
-
-module.exports = { PRODUCTS, KEYS, DIRS, KEY_OF_DIR, rank, COUNT: PRODUCTS.length, WITHDRAWN };
+module.exports = { PRODUCTS, KEYS, DIRS, KEY_OF_DIR, rank, COUNT, WITHDRAWN };

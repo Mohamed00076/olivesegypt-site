@@ -35,59 +35,37 @@ import sys
 
 PRODUCTS = [
     dict(
-        slug="aggizi-green-olives", print_slug="aggizi",
-        name="Aggizi Green Olives", origin="Nile Delta, Egypt",
-        formats=["Whole", "Pitted", "Cracked"],
+        slug="green-olives", print_slug="green",
+        name="Green Olives", origin="Egypt",
+        formats=["Whole", "Pitted", "Sliced"],
         calibers=["140-360"],
-        brine=dict(salt="6–8%", acidity="0.2–0.4% lactic", ph="3.8–4.2"),
-        profile="Egypt's signature export variety — firm texture, mild brine, bright green color. Grown in the Nile Delta.",
-        best_for=["Retail glass-jar programs", "Wholesale bulk supply", "Buyers wanting Egypt's benchmark green-olive variety"],
-        related=["toffahi-green-olives", "manzanilla-green-olives", "pepper-stuffed-green-olives"],
-        image=dict(src='/assets/olive-aggizi-BuhWRZTd.jpg', alt='Aggizi Green Olives', w='800', h='533', webp='/assets/olive-aggizi-BuhWRZTd.webp'),
+        brine=dict(salt="5–8%", acidity="0.2–0.5% lactic", ph="3.7–4.2"),
+        profile="Green table olives, supplied whole, pitted or sliced in brine. Our supply is by type; if you need a specific cultivar, we check availability for your request.",
+        best_for=["Retail glass-jar programs", "Wholesale bulk supply"],
+        related=["stuffed-green-olives", "oxidized-black-olives", "natural-black-olives"],
+        image=dict(src='/assets/olive-green.jpg', alt='Green Olives', w='800', h='533', webp='/assets/olive-green.webp'),
     ),
     dict(
-        slug="toffahi-green-olives", print_slug="toffahi",
-        name="Toffahi Green Olives", origin="Fayoum & Giza, Egypt",
-        formats=["Whole", "Pitted", "Stuffed"],
-        calibers=["140-360"],
-        brine=dict(salt="5–7%", acidity="0.3–0.5% lactic", ph="3.7–4.1"),
-        profile="A distinctive Egyptian variety from Fayoum — slightly sweeter, rounder shape, and a high flesh-to-pit ratio.",
-        best_for=["Premium glass-jar presentation", "Retail programs wanting a sweeter flavor profile", "Stuffed-olive production"],
-        related=["aggizi-green-olives", "manzanilla-green-olives", "kalamata-olives"],
-        image=dict(src='/assets/olive-toffahi-SpdiHPHF.jpg', alt='Toffahi Green Olives', w='1200', h='800', webp='/assets/olive-toffahi-SpdiHPHF.webp'),
-    ),
-    dict(
-        slug="manzanilla-green-olives", print_slug="manzanilla",
-        name="Manzanilla Green Olives", origin="Egypt (Spanish variety)",
-        formats=["Whole", "Pitted", "Stuffed (Pepper / Carrot)"],
-        calibers=["140-360"],
-        brine=dict(salt="5–7%", acidity="0.2–0.4% lactic", ph="3.7–4.1"),
-        profile="The internationally recognized Spanish variety, grown and processed in Egypt. Consistent oval shape, mild nutty flavor.",
-        best_for=["Stuffed-olive production", "Buyers who already source Manzanilla elsewhere and want an Egypt-origin alternative"],
-        related=["pepper-stuffed-green-olives", "aggizi-green-olives", "toffahi-green-olives"],
-        image=dict(src='/assets/olive-manzanilla-vwgGqjiA.jpg', alt='Manzanilla Green Olives', w='1200', h='797', webp='/assets/olive-manzanilla-vwgGqjiA.webp'),
-    ),
-    dict(
-        slug="natural-black-olives", print_slug="black_natural",
-        name="Natural Black Olives", origin="Nile Delta, Egypt",
-        formats=["Whole", "Sliced", "Pitted"],
-        calibers=["140-360"],
-        brine=dict(salt="4–6%", acidity="0.1–0.2% citric", ph="6.0–7.0"),
-        profile="Naturally ripened on the tree and processed without oxidation agents. Deep purple-black color, soft texture, mild flavor. No iron gluconate, no artificial coloring.",
-        best_for=["Buyers wanting a naturally ripened black olive (not oxidized)", "Retail and food-service"],
-        related=["oxidized-black-olives", "kalamata-olives", "aggizi-green-olives"],
-        image=dict(src='/assets/illus-natural-black.svg', alt='Illustration of natural black olives', w='900', h='630', webp=None),
-    ),
-    dict(
-        slug="pepper-stuffed-green-olives", print_slug="stuffed",
+        slug="stuffed-green-olives", print_slug="stuffed",
         name="Stuffed Green Olives", origin="Egypt",
         formats=["Pepper", "Carrot"],
         calibers=["140-360"],
         brine=dict(salt="5–7%", acidity="0.2–0.4% lactic", ph="3.7–4.2"),
-        profile="Premium Manzanilla and Aggizi olives, pitted and stuffed with pepper or carrot. Machine-stuffed under hygienic, quality-controlled conditions at our partner facility.",
+        profile="Green olives, pitted and stuffed with pepper or carrot. Machine-stuffed under hygienic, quality-controlled conditions at our partner facility.",
         best_for=["European retail", "Food-service programs wanting a ready-to-serve stuffed olive"],
-        related=["manzanilla-green-olives", "aggizi-green-olives", "toffahi-green-olives"],
+        related=["green-olives", "oxidized-black-olives", "sliced-jalapeno-peppers"],
         image=dict(src='/assets/illus-stuffed.svg', alt='Illustration of stuffed green olives', w='900', h='630', webp=None),
+    ),
+    dict(
+        slug="natural-black-olives", print_slug="black_natural",
+        name="Natural Black Olives", origin="Nile Delta, Egypt",
+        formats=["Whole"],
+        calibers=["140-360"],
+        brine=dict(salt="4–6%", acidity="0.1–0.2% citric", ph="6.0–7.0"),
+        profile="Naturally ripened on the tree and processed without oxidation agents. Deep purple-black color, soft texture, mild flavor. No iron gluconate, no artificial coloring.",
+        best_for=["Buyers wanting a naturally ripened black olive (not oxidized)", "Retail and food-service"],
+        related=["oxidized-black-olives", "green-olives", "marinated-artichoke-hearts"],
+        image=dict(src='/assets/illus-natural-black.svg', alt='Illustration of natural black olives', w='900', h='630', webp=None),
     ),
     dict(
         slug="oxidized-black-olives", print_slug="oxidized_black",
@@ -97,8 +75,18 @@ PRODUCTS = [
         brine=dict(salt="3–5%", acidity="0.1–0.2% citric", ph="5.5–6.5"),
         profile="California-style black olives darkened by controlled oxidation for a uniform jet-black color and smooth, mild flavor.",
         best_for=["Pizza toppings", "Food service", "Retail cans"],
-        related=["natural-black-olives", "kalamata-olives", "aggizi-green-olives"],
+        related=["natural-black-olives", "green-olives", "sliced-jalapeno-peppers"],
         image=dict(src='/assets/olive-oxidized-black.jpg', alt='Oxidized Black Olives', w='1200', h='800', webp='/assets/olive-oxidized-black.webp'),
+    ),
+    dict(
+        slug="sliced-jalapeno-peppers", print_slug="jalapeno",
+        name="Sliced Jalapeño Peppers", origin="Egypt",
+        formats=["Sliced Green Rings", "Sliced Red Rings", "Whole"], calibers=[],
+        brine=dict(salt="4–6%", acidity="0.6–0.8% acetic", ph="3.4–3.8"),
+        profile="Crisp jalapeño rings pickled for a bright, medium heat, in green or red. Packed in glass jars from 320ml to 1050ml, in 65mm, A9, A10 and A12 cans, and in a 4kg PET pail.",
+        best_for=["Nachos, pizza, and Tex-Mex food-service applications", "Retail"],
+        related=["pepperoncini-peppers", "marinated-artichoke-hearts", "oxidized-black-olives"],
+        image=dict(src='/assets/jalapeno-sliced.jpg', alt='Sliced Jalapeño Peppers', w='1200', h='800', webp='/assets/jalapeno-sliced.webp'),
     ),
     dict(
         slug="marinated-artichoke-hearts", print_slug="artichoke",
@@ -107,7 +95,7 @@ PRODUCTS = [
         brine=dict(salt="2–3%", acidity="0.4–0.6% citric", ph="3.8–4.2"),
         profile="Tender artichoke hearts marinated in oil with Mediterranean herbs. A premium antipasto line that complements our olive range.",
         best_for=["Delis", "Retail antipasto programs", "Food service"],
-        related=["pepperoncini-peppers", "sliced-jalapeno-peppers", "pepper-stuffed-green-olives"],
+        related=["pepperoncini-peppers", "sliced-jalapeno-peppers", "stuffed-green-olives"],
         image=dict(src='/assets/illus-artichoke.svg', alt='Illustration of marinated artichoke hearts', w='900', h='630', webp=None),
     ),
     dict(
@@ -120,17 +108,9 @@ PRODUCTS = [
         related=["sliced-jalapeno-peppers", "marinated-artichoke-hearts", "natural-black-olives"],
         image=dict(src='/assets/illus-pepperoncini.svg', alt='Illustration of pepperoncini peppers', w='900', h='630', webp=None),
     ),
-    dict(
-        slug="sliced-jalapeno-peppers", print_slug="jalapeno",
-        name="Sliced Jalapeño Peppers", origin="Egypt",
-        formats=["Sliced Green Rings", "Sliced Red Rings", "Whole"], calibers=[],
-        brine=dict(salt="4–6%", acidity="0.6–0.8% acetic", ph="3.4–3.8"),
-        profile="Crisp jalapeño rings pickled for a bright, medium heat, in green or red. Packed in glass jars from 320ml to 1050ml, in 65mm, A9, A10 and A12 cans, and in a 4kg PET pail.",
-        best_for=["Nachos, pizza, and Tex-Mex food-service applications", "Retail"],
-        related=["pepperoncini-peppers", "marinated-artichoke-hearts", "oxidized-black-olives"],
-        image=dict(src='/assets/jalapeno-sliced.jpg', alt='Sliced Jalapeño Peppers', w='1200', h='800', webp='/assets/jalapeno-sliced.webp'),
-    ),
 ]
+
+OLIVE_TYPES = ("green", "stuffed", "black_natural", "oxidized_black")
 
 NAME_TO_SLUG = {p["name"]: p["slug"] for p in PRODUCTS}
 
@@ -198,7 +178,7 @@ PAGE_TMPL = """<!DOCTYPE html>
       "@type": "BreadcrumbList",
       "itemListElement": [
         {{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://olivesegypt.com/" }},
-        {{ "@type": "ListItem", "position": 2, "name": "Catalog", "item": "https://olivesegypt.com/catalog" }},
+        {{ "@type": "ListItem", "position": 2, "name": "{crumb_name}", "item": "https://olivesegypt.com{crumb_href}" }},
         {{ "@type": "ListItem", "position": 3, "name": "{name}", "item": "https://olivesegypt.com/products/{slug}" }}
       ]
     }}
@@ -243,15 +223,16 @@ PAGE_TMPL = """<!DOCTYPE html>
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Phase 3a layout (2026-10-04), shared by every product page in both languages:
-# the ten English pages and the ten Arabic ones, nine of which this script
-# writes and eleven of which (Kalamata in English, all ten in Arabic) are kept
-# by hand. The hand-kept pages were converted once with these same functions
-# (every word and figure on each page checked to carry over), so all twenty
-# share one layout; edit those eleven by hand to match any change made here.
+# the seven English pages, which this script writes, and the seven Arabic ones,
+# which are kept by hand. The hand-kept pages were converted once with these
+# same functions (every word and figure on each page checked to carry over),
+# so all fourteen share one layout; edit the Arabic pages by hand to match any
+# change made here. (Ten products until 2026-10-10, when the range was
+# restructured by olive type.)
 LABELS = {
-    "en": dict(profile="Variety Profile", formats="Available Formats", calibers="Calibers (count / kg)",
+    "en": dict(profile="Product Profile", formats="Available Formats", calibers="Calibers (count / kg)",
                packaging="Packaging Options", brine="Brine Specification", best="Best For", related="Related Products"),
-    "ar": dict(profile="وصف الصنف", formats="الصيغ المتاحة", calibers="الأعيرة (عدد الحبات / كجم)",
+    "ar": dict(profile="وصف المنتج", formats="الصيغ المتاحة", calibers="الأعيرة (عدد الحبات / كجم)",
                packaging="خيارات التغليف", brine="مواصفات المحلول الملحي", best="الأنسب لـ", related="منتجات ذات صلة"),
 }
 CHECK_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" '
@@ -368,10 +349,9 @@ def product_main(d):
 
 
 # Products with a page this script does not generate, so a related link can
-# still name them. Kalamata's page is maintained by hand; it took Hamed's place
-# in these links when Hamed was withdrawn (owner, 2026-09-28: "not confirmed
-# available").
-OTHER_PAGES = {"kalamata-olives": "Kalamata Olives"}
+# still name them. None since 2026-10-10: every English product page is
+# generated here.
+OTHER_PAGES = {}
 
 
 def name_of(slug):
@@ -381,9 +361,9 @@ def name_of(slug):
     return OTHER_PAGES[slug]
 
 
-# Every product's picture, for the related-product thumbnails. Kalamata's page
-# is kept by hand, so its photograph is named here.
-OTHER_IMAGES = {"kalamata-olives": dict(src="/assets/olive-kalamata.jpg", alt="Kalamata Olives", w="671", h="310")}
+# Every product's picture, for the related-product thumbnails, for pages this
+# script does not generate. None since 2026-10-10.
+OTHER_IMAGES = {}
 
 
 def image_of(slug, lang="en"):
@@ -404,12 +384,18 @@ def render(p):
     else:
         calibers, caliber_text = [], "Confirmed during quotation"
     slug = p["slug"]
+    # The four olive types sit under the Egyptian Table Olives hub; the
+    # pickled vegetables under the catalogue (2026-10-10).
+    if p["print_slug"] in OLIVE_TYPES:
+        crumb_href, crumb_name = "/egyptian-table-olives", "Egyptian Table Olives"
+    else:
+        crumb_href, crumb_name = "/catalog", "Catalog"
     main_block = product_main(dict(
         lang="en",
         breadcrumb=('<nav aria-label="Breadcrumb" class="text-xs text-muted-foreground mb-4"><ol class="flex flex-wrap items-center gap-1">'
                     '<li><a href="/" class="hover:underline">Home</a></li><li aria-hidden="true">/</li>'
-                    '<li><a href="/catalog" class="hover:underline">Catalog</a></li><li aria-hidden="true">/</li>'
-                    '<li aria-current="page">%s</li></ol></nav>' % p["name"]),
+                    '<li><a href="%s" class="hover:underline">%s</a></li><li aria-hidden="true">/</li>'
+                    '<li aria-current="page">%s</li></ol></nav>' % (crumb_href, crumb_name, p["name"])),
         name=p["name"], origin_line="Origin: " + p["origin"], image=p["image"], profile=p["profile"],
         formats=p["formats"], calibers=calibers, caliber_text=caliber_text,
         packaging="Glass jars, tin cans, plastic buckets, or plastic barrels (brine), subject to product and order volume.",
@@ -430,7 +416,7 @@ def render(p):
         description += DESC_TAIL
     return PAGE_TMPL.format(
         name=p["name"], slug=slug, print_slug=p["print_slug"], profile=p["profile"], profile_short=profile_short,
-        description=description,
+        description=description, crumb_href=crumb_href, crumb_name=crumb_name,
         main_block=main_block,
         # Structured data names an image only when it is a photograph: an
         # illustration is not offered to search engines as the product
