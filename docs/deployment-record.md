@@ -8710,6 +8710,69 @@ Unchanged from Deploys 191 to 193:
 
 ---
 
+## Deploys 196 and 197 — Products menu dropdown, phone-menu alignment (PRs #314, #315)
+
+**Previous recorded deploy:** `cbd0ef0` (Deploy 195, PR #313)
+**Approvals:**
+- "merge" (#314).
+- "a" (Products menu dropdown, after the owner found the hub hard to reach).
+- "fix that and also why is olives by type first…" (alignment fix and menu order).
+- "merge" (#315).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 196 | #314 | `7d74fe2` | 2026-10-10 18:39:03 | 1 | +54 / −1 | Notes only |
+| 197 | #315 | `3009e58` | 2026-10-10 18:58:17 | 94 | +146 / −132 | Navigation (all pages), CSS, catalogue filter, check |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on the branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 196** recorded Deploys 194 and 195.
+
+### What the deploys did
+
+- **Deploy 197 — Products menu (#315).**
+  - **The dropdown:** on every page (90, both languages) and in the product generator, the top-menu Products item opens a dropdown, with the same group in the phone menu:
+    - All Products / كل المنتجات
+    - Table Olives / زيتون المائدة (the hub)
+    - Pickled Vegetables / خضروات مخللة
+  - **Order:** the owner's, overview first.
+  - **Catalogue filter:** `catalog-filter.js` opens the catalogue on `?category=specialty`. Only the existing group names are accepted.
+  - **Check:** `check-nav-footer.js` expects four dropdowns and the hub in the menu.
+  - **Phone-menu alignment:** a 44px tap-target rule written for the bottom button row also centred every group's sub-items. It is now scoped to the button row, so the sub-items align with their headings in both languages.
+  - **Measured locally:** LCP `/` 2.02 s, `/ar/` 1.97 s, `/catalog` 2.36 s; CLS 0. The PDFs reprint identically.
+
+### Owner decisions
+
+- Products became a dropdown (option A), which relaxes the restructure brief's "do not alter the header or navigation" for this item.
+- Menu order and labels as above.
+
+### Claim register
+
+160 claims. No change.
+
+### Rollback
+
+- **Deploy 197:** `git revert -m 1 3009e58`.
+- **Deploy 196** is documentation only.
+
+### Known limitations shipped with Deploys 196 and 197
+
+- **Owner review:** the new Arabic menu labels.
+- **Unchanged from Deploys 194 and 195:**
+  - the live checks (#308)
+  - Arabic review of the restructure copy
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8725,7 +8788,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 195 (2026-10-10).**
+**Unchanged since U3, through Deploy 197 (2026-10-10).**
 
 ## Outstanding, unresolved by this document
 
