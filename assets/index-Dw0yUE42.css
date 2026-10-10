@@ -72,7 +72,7 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
    a bottom-anchored element without ever needing to share space with it.
    Desktop (>=640px, this stylesheet's own breakpoint) keeps the original
    vertically-centered design untouched. */
-@media (max-width: 639px) {
+@media (max-width: 1365px), (hover: none) {
   [data-testid="floating-blog-link"] {
     top: auto;
     bottom: 88px;
@@ -632,7 +632,15 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
    stacked just above the WhatsApp bubble on the same edge; its link keeps
    its aria-label, so it still says where it goes. (The cookie pill moves
    into the footer on phones; see assets/consent.js.) Desktop is untouched. */
-@media (max-width: 639px) {
+/* Tablets and laptops (2026-10-10), both languages: below 1366px some
+   content runs to within 16px of the screen edge (the homepage hero image
+   at 1280px; the Arabic catalogue's "Download Full Catalog (PDF)" button at
+   768px), so the tab, fixed mid-height, covered whatever scrolled past it;
+   on a touch screen of any width it showed its full 200px label there.
+   These screens now get the phone's round icon at the bottom too. Screens
+   with a mouse from 1366px, where every page leaves at least 59px at the
+   edge, keep the 52px side handle. */
+@media (max-width: 1365px), (hover: none) {
   a[data-testid="floating-blog-link"] {
     width: auto !important;
     max-width: none !important;
@@ -1303,13 +1311,13 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
      Touch screens keep the full tab (no hover to reveal it); phones keep
      their bottom placement. Tailwind v4 moves it with the translate
      property through --tw-translate-x, so that is what changes here. */
-  @media (min-width: 640px) and (hover: hover) {
+  @media (min-width: 1366px) and (hover: hover) {
     a[data-testid="floating-blog-link"] { --tw-translate-x: calc(100% - 3.25rem); transition: translate .25s ease; }
     [dir="rtl"] a[data-testid="floating-blog-link"] { --tw-translate-x: calc(-100% + 3.25rem); }
     a[data-testid="floating-blog-link"]:hover, a[data-testid="floating-blog-link"]:focus-visible { --tw-translate-x: 0; }
     [dir="rtl"] a[data-testid="floating-blog-link"]:hover, [dir="rtl"] a[data-testid="floating-blog-link"]:focus-visible { --tw-translate-x: 0; }
   }
-  @media (min-width: 640px) and (hover: hover) and (prefers-reduced-motion: reduce) {
+  @media (min-width: 1366px) and (hover: hover) and (prefers-reduced-motion: reduce) {
     a[data-testid="floating-blog-link"] { transition: none; }
   }
 }
