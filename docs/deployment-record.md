@@ -8657,6 +8657,59 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 194 and 195 — homepage and llms.txt link to the hub (PRs #312, #313)
+
+**Previous recorded deploy:** `3af90d6` (Deploy 193, PR #311)
+**Approvals:**
+- "merge" (#312).
+- "do 1 and 2" (the hub links).
+- "merge" (#313).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 194 | #312 | `cd28b22` | 2026-10-10 18:20:47 | 1 | +67 / −1 | Notes only |
+| 195 | #313 | `cbd0ef0` | 2026-10-10 18:32:23 | 3 | +3 / −2 | Links |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on the branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 194** recorded Deploys 191 to 193.
+
+### What the deploys did
+
+- **Deploy 195 — links to the Egyptian Table Olives hub (#313).**
+  - **Homepage (both languages):** a link under "View Full Catalog (7 Products)", reusing the catalogue page's existing line: "Browse the olives by type and form" / "تصفّح الزيتون حسب النوع والشكل". No new copy.
+  - **`llms.txt`:** the hub's address in Links.
+
+### Owner decisions
+
+- Both optional hub links approved and merged.
+
+### Claim register
+
+160 claims. No change.
+
+### Rollback
+
+- **Deploy 195:** `git revert -m 1 cbd0ef0`.
+- **Deploy 194** is documentation only.
+
+### Known limitations shipped with Deploys 194 and 195
+
+Unchanged from Deploys 191 to 193:
+- the owner's live checks (#308)
+- review of the new Arabic
+- sources for C-157 and C-158
+- the health article wording
+- the site name and AI summary steps
+- the trailing-slash clean-up
+- the `/privacy` Search Console row
+- the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8672,7 +8725,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 193 (2026-10-10).**
+**Unchanged since U3, through Deploy 195 (2026-10-10).**
 
 ## Outstanding, unresolved by this document
 
