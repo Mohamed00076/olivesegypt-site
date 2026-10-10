@@ -84,7 +84,7 @@ for (const [f, contact, loc] of [['catalog/index.html', '/contact', 'en'], ['ar/
     const seg = html.slice(html.indexOf(`data-product="${slug}"`), (html.indexOf('data-product="', html.indexOf(`data-product="${slug}"`) + 20) + 1 || html.length) - 1);
     return !seg.includes(`href="${contact}"`) || !seg.includes(`href="${pre}/downloads/spec-sheets/${slug}-${loc}.pdf" download`);
   });
-  t(`${f}: all ${slugs.length} cards offer a quote and their own spec sheet`, slugs.length === 10 && missing.length === 0, missing.join(', '));
+  t(`${f}: all ${slugs.length} cards offer a quote and their own spec sheet`, slugs.length === require('./products').COUNT && missing.length === 0, missing.join(', '));
   t('   and no card shows a spec heading icon with nothing under it',
     !/lucide-flask-conical[^>]*>(?:(?!<\/svg>)[\s\S])*<\/svg><\/div><\/div>/.test(html));
 }

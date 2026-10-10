@@ -60,7 +60,9 @@ const compare = (label, list) => {
 compare('the server\'s list (crm-buyers.js)', server);
 compare('the pages\' list (assets/crm.js)', pages.map((p) => p[0]));
 
-t('Kalamata can be tagged, specifically', server.includes('kalamata-olives') && pages.some((p) => p[0] === 'kalamata-olives'));
+// Kalamata is not supplied (owner, 2026-10-10): it cannot be put on a new
+// buyer, and survives only as a legacy tag on records that already carry it.
+t('Kalamata cannot be tagged on a new buyer', !server.includes('kalamata-olives') && !pages.some((p) => p[0] === 'kalamata-olives'));
 
 const wrong = pages.filter(([dir, label]) => {
   if (!site.has(dir)) return false;
@@ -78,10 +80,13 @@ t('the server and the pages agree on which products are withdrawn',
   `server: ${serverWithdrawn.join(', ')}; pages: ${pagesWithdrawn.join(', ')}`);
 const stillSold = serverWithdrawn.filter((d) => site.has(d) || fs.existsSync(path.join(ROOT, 'products', d)));
 t('a withdrawn product has no page and is not in the site\'s product list', stillSold.length === 0, stillSold.join(', '));
-const { WITHDRAWN } = require('./product-order');
-t('the CRM\'s withdrawn list is the site\'s (scripts/product-order.js)',
-  JSON.stringify([...serverWithdrawn].sort()) === JSON.stringify(WITHDRAWN.map((w) => w.dir).sort()),
-  `CRM: ${serverWithdrawn.join(', ')}; site: ${WITHDRAWN.map((w) => w.dir).join(', ')}`);
+// Withdrawn (Hamed) and retired (the cultivar products and Kalamata,
+// 2026-10-10) ids are all kept as legacy tags.
+const { WITHDRAWN, RETIRED } = require('./products');
+const legacy = [...WITHDRAWN.map((w) => w.dir), ...RETIRED.map((r) => r.dir)].sort();
+t('the CRM\'s legacy list is the site\'s withdrawn and retired products (scripts/products.js)',
+  JSON.stringify([...serverWithdrawn].sort()) === JSON.stringify(legacy),
+  `CRM: ${serverWithdrawn.join(', ')}; site: ${legacy.join(', ')}`);
 
 t('the stale "Kalamata excluded" note is gone from the CRM',
   !/Kalamata excluded per Rule 12/.test(read('netlify/functions/crm-buyers.js')));

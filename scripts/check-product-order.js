@@ -255,21 +255,21 @@ for (const { key, dir } of require('./product-order').PRODUCTS) {
 }
 
 /*
- * The two export-catalogue PDFs are the one deliberate exception to the
- * canonical order, decided by the owner on 2026-09-05: they are grouped by
- * category (Green Olives / Black Olives & Stuffed / Pickled Vegetables)
- * rather than run in the site's priority order, and Kalamata leads the Black
- * Olives section rather than sitting second overall.
+ * The two export-catalogue PDFs are grouped by category (Green Olives /
+ * Black Olives / Pickled Vegetables) rather than run as one list -- the
+ * owner's decision of 2026-09-05, kept when the range moved to olive types
+ * on 2026-10-10. Kalamata, which led the black section (C-19), is not
+ * supplied; Stuffed Green Olives moved to the green section. The black
+ * section now leads with Natural Black, and the summary table lists Natural
+ * Black immediately before Oxidized Black.
  *
- * That is a decision, not drift -- so it is pinned here rather than left to
- * be "corrected" by a later pass that notices the two orders disagree. The
- * check is on the PDF *sources*: the built PDFs are regenerated from them,
- * and Arabic PDF text extraction transposes lam-alef pairs, which makes
+ * The check is on the PDF *sources*: the built PDFs are regenerated from
+ * them, and Arabic PDF text extraction transposes lam-alef pairs, which makes
  * reading the artefact an unreliable way to assert anything about wording.
  */
 const PDF_SOURCES = [
-  ['export-catalog-source.html', 'Black Olives &amp; Stuffed Varieties', 'Kalamata Olives', 'Natural Black Olives'],
-  ['export-catalog-source-ar.html', 'الزيتون الأسود والأصناف المحشوة', 'زيتون كالاماتا', 'زيتون أسود طبيعي'],
+  ['export-catalog-source.html', 'Black Olives', 'Natural Black Olives', 'Oxidized Black Olives'],
+  ['export-catalog-source-ar.html', 'الزيتون الأسود', 'زيتون أسود طبيعي', 'زيتون أسود مؤكسد'],
 ];
 for (const [file, sectionHeading, first, second] of PDF_SOURCES) {
   const html = read(path.join('scripts', file));
@@ -306,7 +306,7 @@ for (const [file, sectionHeading, first, second] of PDF_SOURCES) {
 if (problems.length === 0) {
   console.log(
     `product-order OK -- ${CHECKS.length} surfaces match the canonical ${COUNT}-product order, ` +
-    `both PDF sources keep Kalamata first in the black-olive section, and all ` +
+    `both PDF sources keep their category grouping, and all ` +
     `${COUNT} product pairs share a productID while keeping separate @ids.`
   );
   process.exit(0);

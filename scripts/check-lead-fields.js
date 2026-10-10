@@ -163,32 +163,22 @@ async function post(body) {
   }
 
   const { DIRS } = require('./product-order');
-  const OFFERED = DIRS.length - 1;
 
-  // ---- 5. the private-label page does not leak Kalamata -----------------
+  // ---- 5. the private-label page offers the whole range -----------------
   //
-  // The one product-level rule on this page, checked on the page itself
-  // rather than only in the facet module.
+  // Until 2026-10-10 private label covered every product except Kalamata
+  // (C-40). Kalamata is no longer supplied at all, so the offer is now the
+  // whole range: every product the site sells, each linked, and no retired
+  // product page. Derived from the product list, so a change to the range
+  // moves it.
   for (const file of ['resources/private-label/index.html', 'ar/resources/private-label/index.html']) {
     const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
     const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
     const links = [...main.matchAll(/href="\/(?:ar\/)?products\/([a-z-]+)"/g)].map((m) => m[1]);
-
-    // no link to it anywhere in the body -- not "not in the grid", which a
-    // link placed just outside the grid would slip past
-    t(`${file}: the page links to no Kalamata product page`,
-      !links.includes('kalamata-olives'), links.join(','));
-    // every product the site sells except Kalamata (C-40); derived rather
-    // than written down, so withdrawing a product (Hamed, 2026-09-28) moves it
-    t(`${file}: exactly ${OFFERED} products are offered`, links.length === OFFERED,
+    t(`${file}: exactly ${DIRS.length} products are offered`, links.length === DIRS.length,
       `${links.length}: ${links.join(',')}`);
-    const missing = DIRS.filter((d) => d !== 'kalamata-olives' && !links.includes(d));
-    t(`${file}: every product except Kalamata is offered`, missing.length === 0, missing.join(','));
-
-    // the page must still say why it is absent, rather than quietly omitting it
-    t(`${file}: says why Kalamata is not offered`,
-      /Kalamata is not on this list|\u0643\u0627\u0644\u0627\u0645\u0627\u062a\u0627 \u0644\u064a\u0633\u062a \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0642\u0627\u0626\u0645\u0629/.test(main),
-      'no explanation found');
+    const missing = DIRS.filter((d) => !links.includes(d));
+    t(`${file}: every product is offered`, missing.length === 0, missing.join(','));
   }
 
   // ---- 6. every lead form on the site actually has a handler ------------
