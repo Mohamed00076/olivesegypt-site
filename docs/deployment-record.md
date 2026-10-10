@@ -8922,6 +8922,94 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 203 to 206 — Green olives hero, Arabic line breaks, Resources menu (PRs #321 to #324)
+
+**Previous recorded deploy:** `6ad068a` (Deploy 202, PR #320)
+**Approvals:**
+- "merge do 1, 2 , and 3 ." (merge #321; build the three items offered under "what else").
+- "merge" (#322, #323, #324).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 203 | #321 | `b488b26` | 2026-10-11 02:10:30 | 1 | +78 / −1 | Notes only |
+| 204 | #322 | `e18a6de` | 2026-10-11 02:30:02 | 8 | +24 / −5 | Homepage hero (EN/AR), images, registers |
+| 205 | #323 | `ec49c5d` | 2026-10-11 02:30:07 | 3 | +34 / −18 | Arabic stylesheet, check |
+| 206 | #324 | `9fa5b5d` | 2026-10-11 02:31:56 | 96 | +149 / −96 | Navigation (all pages), new check |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on each branch, and on `main` after Deploy 206.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 203** recorded Deploys 200 to 202.
+
+### What the deploys did
+
+- **Deploy 204 — Homepage hero (#322).**
+  - **The change:** `/` and `/ar/` show the owner's green olives photograph (`assets/hero-green-olives.*`) in place of the sliced red peppers. The red peppers are not among the seven products, and the heading is "Egyptian Table Olives Exporter".
+  - **The photograph:** the centre 800×800 of the owner's 1200×800 original, cropped only. There is no larger size, so nothing is enlarged.
+  - **Alt text:** "Green olives" / "زيتون أخضر".
+  - **Unchanged:** phones still skip the image.
+  - **File size:** the largest hero file is 33 KB, against 150 KB before.
+  - **Red-pepper files:** kept, on no page, for rollback and for the red-pepper product the owner said they would add (2026-10-04).
+  - **Registers:** C-161 added; C-148 is now on no page; asset register row and note.
+  - **Measured locally:** LCP `/` 1.99 s, `/ar/` 1.92 s; CLS 0. axe: 0 violations, light and dark.
+- **Deploy 205 — Layout sweep (#323).**
+  - **The sweep:** all 88 sitemap pages at 768, 1024, 1280, 1366 and 1440 px.
+    - No sideways scroll, and nothing clipped.
+    - At least 16 px of margin everywhere, and at least 59 px from 1366 px, so the 52 px insights handle covers nothing.
+    - The overlap scan's hits were wrapped links or collapsed FAQ answers, except one.
+  - **The bug:** on Arabic pages, a left-to-right run could break across lines, with its halves at opposite ends of two lines:
+    - "3.7–4.2" read as "-3.7" on `/ar/resources/certifications` at 768 px.
+    - The phone number split in reverse order on 49 Arabic pages at 320 px.
+  - **The fix:** `span[dir="ltr"] { white-space: nowrap; }` in `assets/rtl.css`. No split remains at 320, 390 or 768 px, and no Arabic page scrolls sideways.
+  - **Check:** `check-rtl.js` holds the rule.
+- **Deploy 206 — Resources menu (#324).**
+  - **The problem:** a link count over every sitemap page found `/resources` and `/ar/resources` linked only from each other's language switch.
+  - **The fix:** the Resources menu (desktop and phone) now starts with "All Resources" / "كل الموارد", on 92 pages and in the product generator.
+  - **Checks:**
+    - New `scripts/check-inbound-links.js` (`npm test`) fails if any sitemap page has no link from another page; a language twin does not count.
+    - `check-nav-footer.js` expects `/resources`.
+  - **Merge:** `main` (with #322 and #323) was merged into the branch before deploy. The homepage conflict was resolved by taking `main` and re-applying the menu item, and the PDF fingerprints were re-recorded; the PDFs reprint identically.
+
+### Owner decisions
+
+- The homepage hero shows green olives (option 1).
+- The layout sweep (option 2) and the inbound-link check (option 3), with the fixes above.
+
+### Claim register
+
+161 claims: C-161 added (the green olives hero); C-148 now on no page.
+
+### Rollback
+
+- **Deploy 206:** `git revert -m 1 9fa5b5d`.
+- **Deploy 205:** `git revert -m 1 ec49c5d`.
+- **Deploy 204:** `git revert -m 1 e18a6de`. The red-pepper files are still in place.
+- **Deploy 203** is documentation only.
+
+### Known limitations shipped with Deploys 203 to 206
+
+- **Owner review:**
+  - the Arabic menu label "كل الموارد"
+  - live checks:
+    - the homepage hero in both languages
+    - Resources → All Resources
+    - the Arabic footer phone number on a phone
+  - optionally, a larger copy of the green olives photograph (the hero is 800 px, slightly soft on high-density screens)
+- **Unchanged from Deploys 200 to 202:**
+  - the Arabic browse line
+  - Arabic review of the Pickled Vegetables page, the menu labels and the restructure copy
+  - the live checks (#308, #317, #319, #320)
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -8937,7 +9025,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 202 (2026-10-11).**
+**Unchanged since U3, through Deploy 206 (2026-10-11).**
 
 ## Outstanding, unresolved by this document
 
