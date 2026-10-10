@@ -17,3 +17,12 @@
 
 /* Phase 4c (2026-10-09): the article callout's accent bar on the start side. */
 .border-s-4 { border-inline-start-style: var(--tw-border-style); border-inline-start-width: 4px; }
+
+/* 2026-10-11: a left-to-right run inside Arabic text (a range such as
+   3.7–4.2, a percentage, an email address) stays on one line. A browser may
+   break after the dash, and in a right-to-left paragraph the two halves then
+   sit at opposite ends of two lines ("-3.7" closing one line, "4.2" opening
+   the next), which reads as a negative number. Found on
+   /ar/resources/certifications at 768px. The longest such run on the site is
+   21 characters (an email address), which fits a phone line. */
+span[dir="ltr"] { white-space: nowrap; }
