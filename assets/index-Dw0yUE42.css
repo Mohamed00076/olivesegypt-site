@@ -160,7 +160,11 @@ a[data-testid="floating-blog-link"] .text-\[11px\]{font-size:.625rem!important;l
     display: flex;
     align-items: center;
   }
-  #mobile-menu-panel nav > div > a {
+  /* Only the button row (Facebook / language / Request a Quote) is centred.
+     The collapsible groups' items (div.flex-col) are also nav > div > a;
+     centring them too put every sub-item in the middle of the drawer while
+     its heading sat at the start (fixed 2026-10-10). */
+  #mobile-menu-panel nav > div:not(.flex-col) > a {
     justify-content: center;
   }
 }
