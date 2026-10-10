@@ -86,8 +86,8 @@ const { regionForCountry, TABLE } = require(path.join(FN, '_country_regions.js')
 
 {
   const UNMAPPED = {
-    'Multiple varieties / not sure yet': 'not a product',
-    'عدة أصناف / غير محدد بعد': 'not a product',
+    'Other / not sure yet': 'not a product',
+    'أخرى / غير محدد بعد': 'not a product',
   };
   const heading = (file) => {
     const m = read(file).match(/<h1[^>]*>([^<]*)/);
@@ -113,7 +113,7 @@ const { regionForCountry, TABLE } = require(path.join(FN, '_country_regions.js')
       for (const m of seg.matchAll(/<option(?![^>]*value="")[^>]*>([^<]*)/g)) offered.push([f, m[1].trim()]);
     }
   }
-  t('the forms\' product options were found', offered.length >= 40, `${offered.length} found`);
+  t('the forms\' product options were found', offered.length >= 32, `${offered.length} found`);
   const unknown = offered.filter(([, label]) => intake.productsFor(label).length === 0 && !UNMAPPED[label]);
   t('every product a form offers maps to a CRM product, or is knowingly unmapped',
     unknown.length === 0, unknown.map(([f, l]) => `${f}: "${l}"`).join('; '));
@@ -186,7 +186,9 @@ const buyerWrites = (calls) => calls.filter((c) => /INSERT INTO buyers|UPDATE bu
     const v = ins ? ins.values : [];
     t('   at Sample Requested, for a sample request', v.includes('Sample Requested'), JSON.stringify(v));
     t('   with their region worked out from the country', v.includes('Middle East'), JSON.stringify(v));
-    t('   with the product mapped to the CRM\'s own id', v.includes('["aggizi-green-olives"]'), JSON.stringify(v));
+    // 'Aggizi Green Olives' is a pre-2026-10-10 label (a cached form page):
+    // it files under the olive type it now belongs to.
+    t('   with the product mapped to the CRM\'s own id (a legacy label to its type)', v.includes('["green-olives"]'), JSON.stringify(v));
     t('   created by "website" and assigned to nobody', v.includes('website') && /VALUES \( \?, NULL,/.test(ins.text));
     t('   due tomorrow, as the form promises a reply within 24 hours', /CURRENT_DATE \+ 1/.test(ins.text));
     t('   with stage history, activity, audit and the link back -- in the same statement',

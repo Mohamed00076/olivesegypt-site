@@ -7,7 +7,7 @@ WebP of every product photograph for thumbnails.
 
 The cards offered a 600w and a 1200w WebP. A phone needs about 660-720
 device pixels for a full-width card, just over 600, so it took the 1200w
-file: 85 KB for Toffahi, 163 KB for the jalapeno photograph, to fill a crop
+file: 163 KB for the jalapeno photograph, to fill a crop
 176 pixels tall. This writes <name>-800.webp beside each, from the same JPEG
 the other sizes came from, and the pages list it between the two. Quality
 78: the cards show a 176px-tall crop, and the files stay under the 100 KB
@@ -18,14 +18,15 @@ import os
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-NAMES = ['olive-toffahi-SpdiHPHF', 'olive-manzanilla-vwgGqjiA', 'olive-oxidized-black', 'jalapeno-sliced']
+NAMES = ['olive-oxidized-black', 'jalapeno-sliced']
 QUALITY = 78
 # 2026-10-04 (Phase 3a): a 320px WebP of every product photograph, for the
 # related-product thumbnails on the product pages (about 150px wide, 300 device
 # pixels on a phone). The smallest size until then was 600w: 8-69 KB a file,
 # three to a page.
-THUMBS = ['olive-aggizi-BuhWRZTd', 'olive-toffahi-SpdiHPHF', 'olive-manzanilla-vwgGqjiA',
-          'olive-oxidized-black', 'jalapeno-sliced', 'olive-kalamata']
+# The green-olive card photograph is olive-green (the owned Aggizi photograph
+# under a neutral name, 2026-10-10); the cultivar and Kalamata files are gone.
+THUMBS = ['olive-green', 'olive-oxidized-black', 'jalapeno-sliced']
 THUMB_QUALITY = 75
 
 for name in NAMES:

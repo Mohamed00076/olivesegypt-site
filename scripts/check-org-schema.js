@@ -187,8 +187,9 @@ if (org) {
     }
   }
 
-  // Kalamata is on the site but deliberately absent from this description --
-  // the owner asked for that, and a later well-meaning edit would undo it.
+  // Kalamata is not supplied (owner, 2026-10-10) and was kept out of this
+  // description even while it was listed; check-product-types.js now keeps it
+  // off every page, and this stays as the description's own guard.
   if (/kalamata/i.test(org.description || '')) {
     problems.push('the description mentions Kalamata; the owner asked for it to stay out of this text');
   }

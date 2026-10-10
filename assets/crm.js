@@ -20,24 +20,28 @@
     'Africa', 'Middle East', 'Asia', 'EU', 'Europe (non-EU)',
     'North America', 'South America', 'Oceania', 'Unassigned',
   ];
-  // The products the website sells, in the site's order (scripts/product-order.js).
+  // The products the website sells, in the site's order (scripts/products.js).
   CRM.PRODUCTS = [
-    ['aggizi-green-olives', 'Aggizi Green Olives'],
-    ['toffahi-green-olives', 'Toffahi Green Olives'],
-    ['kalamata-olives', 'Kalamata Olives'],
-    ['manzanilla-green-olives', 'Manzanilla Green Olives'],
+    ['green-olives', 'Green Olives'],
+    ['stuffed-green-olives', 'Stuffed Green Olives'],
     ['natural-black-olives', 'Natural Black Olives'],
-    ['pepper-stuffed-green-olives', 'Stuffed Green Olives'],
     ['oxidized-black-olives', 'Oxidized Black Olives'],
     ['sliced-jalapeno-peppers', 'Sliced Jalapeño Peppers'],
     ['marinated-artichoke-hearts', 'Marinated Artichoke Hearts'],
     ['pepperoncini-peppers', 'Pepperoncini Peppers'],
   ];
-  // Products no longer sold. A buyer already tagged with one keeps the tag,
+  // Products no longer offered. A buyer already tagged with one keeps the tag,
   // shown with this label, but it cannot be chosen for a new buyer or put on
-  // a new document. Hamed: withdrawn 2026-09-28, "not confirmed available".
+  // a new document; no record is rewritten. Hamed: withdrawn 2026-09-28, "not
+  // confirmed available". The cultivar products and Kalamata: retired
+  // 2026-10-10, when the range moved to olive types.
   CRM.WITHDRAWN_PRODUCTS = [
     ['hamed-green-olives', 'Hamed Green Olives (withdrawn)'],
+    ['aggizi-green-olives', 'Aggizi Green Olives (legacy: now Green Olives)'],
+    ['toffahi-green-olives', 'Toffahi Green Olives (legacy: now Green Olives)'],
+    ['manzanilla-green-olives', 'Manzanilla Green Olives (legacy: now Green Olives)'],
+    ['pepper-stuffed-green-olives', 'Stuffed Green Olives (legacy id)'],
+    ['kalamata-olives', 'Kalamata Olives (not supplied)'],
   ];
 
   CRM.escapeHtml = function (s) {

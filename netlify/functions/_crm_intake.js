@@ -66,26 +66,33 @@ function planFor(requestType) {
  * The form's product dropdown sends its visible label, in English or Arabic.
  * Each label is the heading of the matching page under /products/, so this is
  * the site's own naming, not a guess -- scripts/check-enquiry-intake.js reads
- * those pages and fails if a label and its page stop agreeing. "Not sure yet"
- * maps to nothing; the original text is always kept in the activity entry
- * either way. (Kalamata maps like any other product: it is in the CRM's own
- * product list -- see scripts/check-crm-products.js.)
+ * those pages and fails if a label and its page stop agreeing. "Other / not
+ * sure yet" maps to nothing; the original text is always kept in the activity
+ * entry either way.
+ *
+ * LEGACY_LABELS: the dropdown before 2026-10-10, when the range moved from
+ * cultivars to olive types. A form page cached before that deploy still
+ * sends them, so each files under the type it now belongs to. Kalamata (not
+ * supplied) maps to no product; its text stays in the activity entry.
  */
 const PRODUCT_LABELS = {
-  'aggizi-green-olives': ['Aggizi Green Olives', 'زيتون عجيزي أخضر'],
-  'kalamata-olives': ['Kalamata Olives', 'زيتون كالاماتا'],
-  'toffahi-green-olives': ['Toffahi Green Olives', 'زيتون تفاحي أخضر'],
-  'manzanilla-green-olives': ['Manzanilla Green Olives', 'زيتون مانزانيلا أخضر'],
+  'green-olives': ['Green Olives', 'زيتون أخضر'],
+  'stuffed-green-olives': ['Stuffed Green Olives', 'زيتون أخضر محشو'],
   'natural-black-olives': ['Natural Black Olives', 'زيتون أسود طبيعي'],
-  'pepper-stuffed-green-olives': ['Stuffed Green Olives', 'زيتون أخضر محشو'],
   'oxidized-black-olives': ['Oxidized Black Olives', 'زيتون أسود مؤكسد'],
+  'sliced-jalapeno-peppers': ['Sliced Jalapeño Peppers', 'فلفل هالبينو مقطع'],
   'marinated-artichoke-hearts': ['Marinated Artichoke Hearts', 'قلوب أرضي شوكي متبّلة'],
   'pepperoncini-peppers': ['Pepperoncini Peppers', 'فلفل بيبرونشيني'],
-  'sliced-jalapeno-peppers': ['Sliced Jalapeño Peppers', 'فلفل هالبينو مقطع'],
+};
+const LEGACY_LABELS = {
+  'green-olives': ['Aggizi Green Olives', 'زيتون عجيزي أخضر', 'Toffahi Green Olives', 'زيتون تفاحي أخضر',
+    'Manzanilla Green Olives', 'زيتون مانزانيلا أخضر'],
 };
 const PRODUCT_BY_LABEL = new Map();
-for (const [slug, labels] of Object.entries(PRODUCT_LABELS)) {
-  for (const label of labels) PRODUCT_BY_LABEL.set(label.trim(), slug);
+for (const map of [PRODUCT_LABELS, LEGACY_LABELS]) {
+  for (const [slug, labels] of Object.entries(map)) {
+    for (const label of labels) PRODUCT_BY_LABEL.set(label.trim(), slug);
+  }
 }
 
 function productsFor(label) {
@@ -228,5 +235,5 @@ async function addEnquiryToPipeline(sql, inquiryId, e) {
 }
 
 module.exports = {
-  addEnquiryToPipeline, planFor, forwardMove, productsFor, PRODUCT_LABELS, PLAN, ACTOR,
+  addEnquiryToPipeline, planFor, forwardMove, productsFor, PRODUCT_LABELS, LEGACY_LABELS, PLAN, ACTOR,
 };

@@ -67,7 +67,7 @@ const MUST_BE_ABSENT = [
 // only checked for absence.
 const MUST_SURVIVE = [
   'index.html', 'ar/index.html', 'catalog/index.html', 'contact/index.html',
-  'products/aggizi-green-olives/index.html', 'resources/faq/index.html',
+  'products/green-olives/index.html', 'resources/faq/index.html',
   'assets/index-Dw0yUE42.css', 'assets/logo-BJ1TOn9V.png',
   'robots.txt', 'sitemap.xml', 'site.webmanifest', 'favicon.ico',
   'netlify/functions/auth-login.js', 'package.json',

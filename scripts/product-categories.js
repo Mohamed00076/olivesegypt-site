@@ -25,18 +25,8 @@
  * "black", Oxidized Black "specialty" -- and nothing showed it, because no
  * script had ever been bound to those buttons.
  */
-const CATEGORY = {
-  aggizi: 'green',
-  kalamata: 'black',
-  toffahi: 'green',
-  manzanilla: 'green',
-  black_natural: 'black',
-  stuffed: 'green',          // pitted Manzanilla and Aggizi, stuffed
-  oxidized_black: 'black',
-  jalapeno: 'specialty',
-  artichoke: 'specialty',
-  pepperoncini: 'specialty',
-};
+// Since 2026-10-10 each product's category is in scripts/products.js.
+const CATEGORY = Object.fromEntries(require('./products').PRODUCTS.map((p) => [p.key, p.category]));
 
 // The badge wording each category is allowed to display, per locale. Arabic
 // uses a finer vocabulary than English (a stuffed olive and a pickle get
