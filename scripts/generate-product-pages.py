@@ -93,7 +93,7 @@ PRODUCTS = [
         name="Marinated Artichoke Hearts", origin="Egypt",
         formats=["Quarters", "Hearts", "Grilled"], calibers=[],
         brine=dict(salt="2–3%", acidity="0.4–0.6% citric", ph="3.8–4.2"),
-        profile="Tender artichoke hearts marinated in oil with Mediterranean herbs. A premium antipasto line that complements our olive range.",
+        profile="Tender artichoke hearts marinated in oil with Mediterranean herbs. An antipasto line that complements our olive range.",
         best_for=["Delis", "Retail antipasto programs", "Food service"],
         related=["pepperoncini-peppers", "sliced-jalapeno-peppers", "stuffed-green-olives"],
         image=dict(src='/assets/illus-artichoke.svg', alt='Illustration of marinated artichoke hearts', w='900', h='630', webp=None),

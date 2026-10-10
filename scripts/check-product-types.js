@@ -26,7 +26,8 @@
  *      the owner to review; nothing is waved through.
  *   3. a type page states a form its type is not supplied in: pitted or
  *      sliced natural black olives, stuffed with any black olive, or format
- *      chips that differ from the forms matrix.
+ *      chips that differ from the forms matrix; and any page lists "cracked"
+ *      as a format.
  *   4. a page states a product count other than the one in products.js
  *      (the old "10 varieties", "ten products", "nine of our ten").
  *
@@ -141,6 +142,16 @@ for (const f of published.filter((x) => x.endsWith('.html'))) {
   for (const sentence of t.split(/(?<=[.!?؟])\s+|\n+/)) {
     if (STUFFED_BLACK.test(sentence) && !NEG.test(sentence)) say(`${f}: offers a stuffed black olive: "${sentence.trim().replace(/\s+/g, ' ')}"`);
   }
+}
+
+// "Cracked" is not a form we supply (C-155): no format list may name it.
+// A sentence about a market's taste for cracked olives is not a format list,
+// so this looks only for "cracked" next to another form.
+const CRACKED_FORM = /\b(?:whole|pitted|sliced|stuffed),? (?:and |or )?cracked\b|\bcracked,? (?:and |or )?(?:whole|pitted|sliced|stuffed)\b|(?:كامل|منزوع|مقطع)\S*،? و?مكسّر|مكسّر\S*،? و?(?:كامل|منزوع|مقطع)/iu;
+for (const f of published.filter((x) => /\.(html|txt)$/.test(x))) {
+  const t = visible(fs.readFileSync(path.join(ROOT, f), 'utf8')) + ' ' + META(fs.readFileSync(path.join(ROOT, f), 'utf8'));
+  const m = t.match(CRACKED_FORM);
+  if (m) say(`${f}: lists "cracked" as a format ("${m[0]}"), which the forms matrix does not include`);
 }
 
 // ---- 4. product counts -----------------------------------------------------
