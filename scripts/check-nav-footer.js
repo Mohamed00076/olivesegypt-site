@@ -40,7 +40,7 @@ const UTILITY = new Set([
 ]);
 
 const EXPECTED_NAV = {
-  en: ['/egyptian-table-olives', '/catalog', '/solutions', '/resources/certifications', '/downloads', '/company-profile',
+  en: ['/egyptian-table-olives', '/pickled-vegetables', '/catalog', '/solutions', '/resources/certifications', '/downloads', '/company-profile',
        '/resources/private-label',
        '/resources/packaging', '/resources/pricing', '/resources/faq',
        '/resources/why-egyptian-olives', '/resources/export-markets', '/how-we-work',
@@ -134,8 +134,8 @@ for (const route of routes()) {
 
   // dropdown wiring
   const triggers = [...header.matchAll(/aria-controls="(nav-[a-z]+)"/g)].map((m) => m[1]);
-  // Four since 2026-10-10: Products became a dropdown (Olives by Type, All
-  // Products, Pickled Vegetables) so buyers can find the hub from any page.
+  // Four since 2026-10-10: Products became a dropdown (All Products, Table
+  // Olives, Pickled Vegetables -- the last two their own pages) so buyers can find the hub from any page.
   if (triggers.length !== 4) {
     problems.push(`${route}: expected 4 nav dropdowns, found ${triggers.length}`);
   }

@@ -1063,6 +1063,13 @@
   query = {lang = "ar"}
 
 [[redirects]]
+  from = "/pickled-vegetables"
+  to = "/ar/pickled-vegetables"
+  status = 301
+  force = true
+  query = {lang = "ar"}
+
+[[redirects]]
   from = "/privacy"
   to = "/ar/privacy"
   status = 301
