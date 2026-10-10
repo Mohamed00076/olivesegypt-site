@@ -1093,6 +1093,27 @@ main [id] { scroll-margin-top: calc(4rem + 1px); }
   .tc-pill-available::before { background-color: hsl(var(--primary)); }
   .tc-pill-request::before { background-color: hsl(var(--secondary)); }
   .tc-pill-progress::before { background-color: hsl(var(--muted-foreground)); }
+  /* Two browse cards (Table Olives, Pickled Vegetables) under the catalogue button. */
+  .tc-browse { display: grid; gap: .75rem; max-width: 54rem; text-align: start; }
+  @media (min-width: 640px) { .tc-browse { grid-template-columns: 1fr 1fr; } }
+  .tc-browse > a {
+    display: flex; align-items: center; gap: .875rem; min-height: 44px; padding: .875rem 1rem;
+    border: 1px solid hsl(var(--border)); border-radius: .75rem; background-color: hsl(var(--card));
+    color: hsl(var(--foreground)); text-decoration: none; transition: border-color .15s, box-shadow .15s;
+  }
+  .tc-browse > a:hover { border-color: hsl(var(--primary) / .5); box-shadow: 0 6px 16px -10px hsl(var(--foreground) / .35); }
+  .tc-browse-ico {
+    flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px;
+    background-color: hsl(var(--muted)); color: hsl(var(--primary));
+  }
+  .tc-browse-ico svg { width: 1.375rem; height: 1.375rem; }
+  .tc-browse-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .125rem; }
+  .tc-browse-title { font-weight: 700; font-size: 1rem; line-height: 1.35; }
+  .tc-browse-sub { font-size: .8125rem; line-height: 1.45; color: hsl(var(--muted-foreground)); }
+  .tc-browse-arrow { flex: none; width: 1.125rem; height: 1.125rem; color: hsl(var(--primary)); transition: transform .15s; }
+  .tc-browse > a:hover .tc-browse-arrow { transform: translateX(3px); }
+  [dir="rtl"] .tc-browse > a:hover .tc-browse-arrow { transform: translateX(-3px); }
+  @media (prefers-reduced-motion: reduce) { .tc-browse > a, .tc-browse-arrow { transition: none; } }
   .tc-spec-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
   .tc-spec-table th, .tc-spec-table td {
     padding: .625rem .75rem; border-bottom: 1px solid hsl(var(--border));
