@@ -43,13 +43,12 @@ ORG_AR = 'الشركة الثلاثية للتنمية الصناعية'
 ORG_SHORT = 'Triple Company'
 ORG_AR_SHORT = 'الشركة الثلاثية'
 
+# The range, in the site's order (scripts/products.js): olive types since
+# 2026-10-10, then the pickled vegetables.
 PRODUCTS = [
-    ('aggizi-green-olives', 'Aggizi Green Olives', 'زيتون عجيزي أخضر'),
-    ('toffahi-green-olives', 'Toffahi Green Olives', 'زيتون تفاحي أخضر'),
-    ('kalamata-olives', 'Kalamata Olives', 'زيتون كالاماتا'),
-    ('manzanilla-green-olives', 'Manzanilla Green Olives', 'زيتون مانزانيلا أخضر'),
+    ('green-olives', 'Green Olives', 'زيتون أخضر'),
+    ('stuffed-green-olives', 'Stuffed Green Olives', 'زيتون أخضر محشو'),
     ('natural-black-olives', 'Natural Black Olives', 'زيتون أسود طبيعي'),
-    ('pepper-stuffed-green-olives', 'Stuffed Green Olives', 'زيتون أخضر محشو'),
     ('oxidized-black-olives', 'Oxidized Black Olives', 'زيتون أسود مؤكسد'),
     ('sliced-jalapeno-peppers', 'Sliced Jalapeño Peppers', 'فلفل هالبينو مقطع'),
     ('marinated-artichoke-hearts', 'Marinated Artichoke Hearts', 'قلوب أرضي شوكي متبّلة'),
@@ -275,7 +274,7 @@ PAGES['importer-distributor'] = {
                   'We are actively building buyer relationships in Africa, the Middle East and Asia. As a newly established export company, we are direct about where things stand: we have not yet completed an export shipment, so these are markets we are engaging, not markets we already serve. More on ' + a('/resources/export-markets', 'Export Markets') + '.'),
             block('Who does what',
                   'Processing and brining are completed through our approved partner processing facility in the 10th of Ramadan Industrial Zone. ' + ORG + ' manages sourcing, product specification, buyer communication, export coordination and documentation. The full arrangement is on ' + a('/resources/supply-network', 'Supply &amp; Processing Network') + '.'),
-            block('The range', 'Ten products. Calibers, brine specification and formats are on each product&rsquo;s own page and in the ' + a('/catalog', 'catalogue') + '.', extra=products('en')),
+            block('The range', 'Seven products. Calibers, brine specification and formats are on each product&rsquo;s own page and in the ' + a('/catalog', 'catalogue') + '.', extra=products('en')),
         )
         + cta('Tell us your market and volume', 'We&#x27;ll come back with a tailored offer and confirm the terms for your order.',
               (contact('en', 'quote', 'importer-distributor'), 'Request a Quote'), sample('en'))),
@@ -305,7 +304,7 @@ PAGES['importer-distributor'] = {
                   'نبني علاقات مع المشترين بفاعلية في أفريقيا والشرق الأوسط وآسيا. وبصفتنا شركة تصدير حديثة التأسيس، نحن صريحون بشأن الوضع الحالي: لم نُتمّ بعد أي شحنة تصدير، فهذه أسواق نتواصل معها، وليست أسواقًا نخدمها حاليًا. المزيد على صفحة ' + a('/ar/resources/export-markets', 'أسواق التصدير') + '.'),
             block('من يقوم بماذا',
                   'تُنجَز المعالجة والتخليل عبر منشأة المعالجة الشريكة المعتمدة في منطقة العاشر من رمضان الصناعية. وتتولى ' + ORG_AR + ' التوريد وتحديد مواصفات المنتج والتواصل مع المشترين وتنسيق التصدير والمستندات. والترتيب كاملًا على صفحة ' + a('/ar/resources/supply-network', 'شبكة التوريد والمعالجة') + '.'),
-            block('التشكيلة', 'عشرة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج وفي ' + a('/ar/catalog', 'الكتالوج') + '.', extra=products('ar')),
+            block('التشكيلة', 'سبعة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج وفي ' + a('/ar/catalog', 'الكتالوج') + '.', extra=products('ar')),
         )
         + cta('أخبرنا بسوقك وحجم طلبك', 'سنرسل لك عرضًا مخصصًا ونؤكد الشروط لطلبك.',
               (contact('ar', 'quote', 'importer-distributor'), 'اطلب عرض سعر'), sample('ar'))),
@@ -328,8 +327,8 @@ PAGES['retail'] = {
             block('Choosing a caliber for the shelf',
                   'Caliber is the count of olives per kilogram, so a lower number means larger olives. Premium retail jars typically use 101/110 to 181/200. The calibers available for each variety are on its product page and in the ' + a('/catalog', 'catalogue') + '.'),
             block('Your own label',
-                  'Private label is available on nine of our ten products, in glass, tin, bucket and barrel formats. We handle printing, filling and export documentation, and can help with label design on request &mdash; we are not a design agency. Products, limits and the brief form are on ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
-            block('The range', 'Ten products. Calibers, brine specification and formats are on each product&rsquo;s own page.', extra=products('en')),
+                  'Private label is available on all seven of our products, in glass, tin, bucket and barrel formats. We handle printing, filling and export documentation, and can help with label design on request &mdash; we are not a design agency. Products, limits and the brief form are on ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
+            block('The range', 'Seven products. Calibers, brine specification and formats are on each product&rsquo;s own page.', extra=products('en')),
             block('Order terms',
                   'Retail orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor', 'Importers &amp; Distributors') + '.'),
         )
@@ -351,8 +350,8 @@ PAGES['retail'] = {
             block('اختيار العيار للرف',
                   'العيار هو عدد حبات الزيتون لكل كيلوجرام، فالرقم الأقل يعني حبات أكبر. تستخدم برطمانات التجزئة الفاخرة عادة الأعيرة من 101/110 إلى 181/200. والأعيرة المتاحة لكل صنف على صفحة المنتج وفي ' + a('/ar/catalog', 'الكتالوج') + '.'),
             block('علامتك الخاصة',
-                  'العلامة الخاصة متاحة على تسعة من منتجاتنا العشرة، بصيغ الزجاج والصفيح والدلو والبرميل. نتولى الطباعة والتعبئة ومستندات التصدير، ويمكننا المساعدة في تصميم الملصق عند الطلب &mdash; ولسنا وكالة تصميم. المنتجات والحدود ونموذج الموجز على صفحة ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
-            block('التشكيلة', 'عشرة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
+                  'العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الزجاج والصفيح والدلو والبرميل. نتولى الطباعة والتعبئة ومستندات التصدير، ويمكننا المساعدة في تصميم الملصق عند الطلب &mdash; ولسنا وكالة تصميم. المنتجات والحدود ونموذج الموجز على صفحة ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
+            block('التشكيلة', 'سبعة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
             block('شروط الطلب',
                   'تتبع طلبات التجزئة شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor', 'المستوردون والموزعون') + '.'),
         )
@@ -378,9 +377,9 @@ PAGES['food-service'] = {
             ]) + note('Sizes and carton counts for every format are on ' + a('/resources/packaging#plastic-buckets', 'Packaging &amp; Sizing') + '.')),
             block('Calibers and cuts for the kitchen',
                   'Food-service and bulk repacking often use calibers of 201/230 and above, at a lower cost per kilogram than premium retail sizes. Whole, pitted, cracked, sliced and stuffed formats are available, depending on the product. What each variety offers is on its product page and in the ' + a('/catalog', 'catalogue') + '.'),
-            block('The range', 'Ten products, including sliced jalape&ntilde;os, pepperoncini and marinated artichoke hearts alongside the olives.', extra=products('en')),
+            block('The range', 'Seven products, including sliced jalape&ntilde;os, pepperoncini and marinated artichoke hearts alongside the olives.', extra=products('en')),
             block('Your own brand',
-                  'Supplying under your own food-service brand? Private label is available on nine of our ten products, in bucket, tin, barrel and glass formats &mdash; see ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
+                  'Supplying under your own food-service brand? Private label is available on all seven of our products, in bucket, tin, barrel and glass formats &mdash; see ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
             block('Order terms',
                   'Food-service orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor', 'Importers &amp; Distributors') + '. Buying inside Egypt? See ' + a('/solutions/local-egypt', 'Buyers in Egypt') + '.'),
         )
@@ -403,9 +402,9 @@ PAGES['food-service'] = {
             ]) + note('الأحجام وأعداد الكرتونة لكل صيغة على صفحة ' + a('/ar/resources/packaging#plastic-buckets', 'التغليف والأحجام') + '.')),
             block('الأعيرة والتقطيعات للمطبخ',
                   'تستخدم خدمات الأغذية وإعادة التعبئة بالجملة غالبًا الأعيرة 201/230 وما فوق، بتكلفة أقل لكل كيلوجرام من أحجام التجزئة الفاخرة. وتتوفر صيغ كاملة، ومنزوعة النواة، ومكسّرة، ومقطعة، ومحشوة، حسب المنتج. وما يقدمه كل صنف على صفحة المنتج وفي ' + a('/ar/catalog', 'الكتالوج') + '.'),
-            block('التشكيلة', 'عشرة منتجات، منها الهالبينو المقطّع والبيبرونشيني وقلوب الأرضي شوكي المتبّلة إلى جانب الزيتون.', extra=products('ar')),
+            block('التشكيلة', 'سبعة منتجات، منها الهالبينو المقطّع والبيبرونشيني وقلوب الأرضي شوكي المتبّلة إلى جانب الزيتون.', extra=products('ar')),
             block('علامتك الخاصة',
-                  'توريد بعلامتك الخاصة لخدمات الأغذية؟ العلامة الخاصة متاحة على تسعة من منتجاتنا العشرة، بصيغ الدلو والصفيح والبرميل والزجاج &mdash; انظر ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
+                  'توريد بعلامتك الخاصة لخدمات الأغذية؟ العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الدلو والصفيح والبرميل والزجاج &mdash; انظر ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
             block('شروط الطلب',
                   'تتبع طلبات خدمات الأغذية شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor', 'المستوردون والموزعون') + '. تشتري داخل مصر؟ انظر ' + a('/ar/solutions/local-egypt', 'المشترون داخل مصر') + '.'),
         )
@@ -435,7 +434,7 @@ PAGES['manufacturer'] = {
                   'Send us your requirements &mdash; the product, the brine, the caliber, the packaging and labeling, and the volume. We will confirm what is feasible, the specification, and a quotation. A sample of the varieties you are considering can come first; see ' + a('/how-we-work', 'How We Work') + ' for the steps. Which products are offered for private label is on ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
             block('Order terms',
                   'OEM orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor', 'Importers &amp; Distributors') + '.'),
-            block('The range', 'Ten products, with calibers, brine specification and formats on each product&rsquo;s own page.', extra=products('en')),
+            block('The range', 'Seven products, with calibers, brine specification and formats on each product&rsquo;s own page.', extra=products('en')),
         )
         + cta('Send us your specification', 'Formulation, sort, packaging and volume — we&#x27;ll confirm feasibility and quote.',
               (contact('en', 'quote', 'manufacturer'), 'Request a Quote'), sample('en'))),
@@ -460,7 +459,7 @@ PAGES['manufacturer'] = {
                   'أرسل لنا متطلباتك &mdash; المنتج، والمحلول الملحي، والعيار، والتغليف والملصقات، والكمية. وسنؤكد ما يمكن تنفيذه، والمواصفات، وعرض السعر. ويمكن أن تسبق ذلك عينة من الأصناف التي تدرسها؛ والخطوات على صفحة ' + a('/ar/how-we-work', 'كيف نعمل') + '. والمنتجات المتاحة للعلامة الخاصة على صفحة ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
             block('شروط الطلب',
                   'تتبع طلبات OEM شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor', 'المستوردون والموزعون') + '.'),
-            block('التشكيلة', 'عشرة منتجات، والأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
+            block('التشكيلة', 'سبعة منتجات، والأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
         )
         + cta('أرسل لنا مواصفاتك', 'التركيبة والفرز والتغليف والكمية — وسنؤكد إمكانية التنفيذ ونرسل عرض السعر.',
               (contact('ar', 'quote', 'manufacturer'), 'اطلب عرض سعر'), sample('ar'))),

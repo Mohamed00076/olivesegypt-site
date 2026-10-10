@@ -307,11 +307,6 @@
         var params = new URLSearchParams(window.location.search);
         var slug = params.get('product');
         if (!slug) return;
-        // Retired ids (2026-10-10, range by olive type): the green cultivars
-        // show the Green Olives sheet; Kalamata, no longer supplied, matches
-        // nothing and so shows the whole catalogue.
-        var RETIRED = { aggizi: 'green', toffahi: 'green', manzanilla: 'green' };
-        if (RETIRED[slug]) slug = RETIRED[slug];
         var cards = document.querySelectorAll('#products .spec-card');
         var found = false;
         var match = null;
