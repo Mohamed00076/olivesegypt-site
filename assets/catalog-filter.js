@@ -66,6 +66,14 @@
     });
   }
 
+  // ?category=<filter> opens the catalogue on that group -- the Products
+  // menu links to /catalog?category=specialty for Pickled Vegetables
+  // (2026-10-10). Anything else is ignored.
+  try {
+    var wanted = new URLSearchParams(window.location.search).get('category');
+    if (wanted && categoryBtns.some(function (b) { return b.getAttribute('data-filter') === wanted; })) category = wanted;
+  } catch (e) { /* old browser: show everything */ }
+
   categoryBtns.forEach(function (b) {
     b.addEventListener('click', function () {
       category = b.getAttribute('data-filter') || 'all';
