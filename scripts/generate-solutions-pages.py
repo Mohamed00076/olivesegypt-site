@@ -562,8 +562,23 @@ def build(slug, lang, p):
     assert s.count(f'href="{shell_twin}" hreflang=') == 2, (slug, lang)
     s = s.replace(f'href="{shell_twin}" hreflang=', f'href="{twin}" hreflang=')
 
+    # The same trail, visible above the eyebrow, as on the product pages (2026-10-11).
+    lis = []
+    for k, (n, u) in enumerate(crumbs):
+        n = html.escape(n, quote=False)
+        if k == len(crumbs) - 1:
+            lis.append(f'<li aria-current="page">{n}</li>')
+        else:
+            lis.append(f'<li><a href="{u.replace(SITE, "")}" class="hover:underline">{n}</a></li><li aria-hidden="true">/</li>')
+    trail = (f'<nav aria-label="{"مسار التصفح" if lang == "ar" else "Breadcrumb"}" class="text-xs text-muted-foreground mb-4">'
+             '<ol class="flex flex-wrap items-center gap-1">' + ''.join(lis) + '</ol></nav>')
+    eyebrow = '<p class="text-xs font-semibold uppercase tracking-widest text-primary mb-3">'
+    main = p['main']()
+    assert main.count(eyebrow) >= 1, (slug, lang)
+    main = main.replace(eyebrow, trail + eyebrow, 1)
+
     i, j = s.index('<main class="flex-1">'), s.index('</main>') + len('</main>')
-    s = s[:i] + '<main class="flex-1">' + p['main']() + '</main>' + s[j:]
+    s = s[:i] + '<main class="flex-1">' + main + '</main>' + s[j:]
     head = s[:s.index('<body')]
     assert SHELL_ROUTE not in head, (slug, lang, 'the shell page\'s address was left in the head')
     return s
