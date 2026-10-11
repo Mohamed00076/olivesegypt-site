@@ -211,8 +211,10 @@ for (const { key, dir } of require('./product-order').PRODUCTS) {
     if (p['@id'] !== `${base}#product`) {
       problems.push(`${file}: @id is ${JSON.stringify(p['@id'])}, expected "${base}#product"`);
     }
-    if (p.url !== base) {
-      problems.push(`${file}: url is ${JSON.stringify(p.url)}, expected "${base}"`);
+    // The page's address ends in "/": Netlify serves /x/ and 301s /x to it.
+    // The @id above is an identifier, not an address, and keeps its old form.
+    if (p.url !== `${base}/`) {
+      problems.push(`${file}: url is ${JSON.stringify(p.url)}, expected "${base}/"`);
     }
     if (p.inLanguage !== locale) {
       problems.push(`${file}: inLanguage is ${JSON.stringify(p.inLanguage)}, expected ${JSON.stringify(locale)}`);

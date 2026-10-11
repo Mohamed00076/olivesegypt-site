@@ -61,8 +61,8 @@ for (const p of present) {
   if (!title || seen.title.has(title)) headProblems.push(`${p.route}: title missing or shared`);
   if (!desc || seen.desc.has(desc)) headProblems.push(`${p.route}: description missing or shared`);
   seen.title.add(title); seen.desc.add(desc);
-  if (canon !== SITE + p.route) headProblems.push(`${p.route}: canonical is ${canon}`);
-  if (!p.html.includes(`hreflang="${p.loc === 'ar' ? 'en' : 'ar'}" href="${SITE}${twin}"`)) headProblems.push(`${p.route}: no hreflang to ${twin}`);
+  if (canon !== SITE + p.route + '/') headProblems.push(`${p.route}: canonical is ${canon}`);
+  if (!p.html.includes(`hreflang="${p.loc === 'ar' ? 'en' : 'ar'}" href="${SITE}${twin}/"`)) headProblems.push(`${p.route}: no hreflang to ${twin}`);
   if (!p.html.includes(`href="${twin}" hreflang=`)) headProblems.push(`${p.route}: the language switch does not lead to ${twin}`);
   if (!/"@type": "BreadcrumbList"/.test(p.html)) headProblems.push(`${p.route}: no breadcrumb`);
   if (/export-markets/.test(p.html.slice(0, p.html.indexOf('<body')))) headProblems.push(`${p.route}: the shell page's address is left in the head`);
@@ -139,7 +139,7 @@ t('each hub links all five buyer pages, and private label to /resources/private-
   hubProblems.length === 0, hubProblems.join('; '));
 
 const sitemap = read('sitemap.xml') || '';
-const notInSitemap = pages.filter((p) => !sitemap.includes(`<loc>${SITE}${p.route}</loc>`)).map((p) => p.route);
+const notInSitemap = pages.filter((p) => !sitemap.includes(`<loc>${SITE}${p.route}/</loc>`)).map((p) => p.route);
 t('all twelve are in the sitemap', notInSitemap.length === 0, notInSitemap.join(', '));
 
 console.log(`\n${pass} passed, ${fail} failed`);
