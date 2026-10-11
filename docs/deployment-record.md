@@ -9242,6 +9242,82 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 216 and 217 — Google Analytics behind the Analytics consent (PRs #334, #335)
+
+**Previous recorded deploy:** `f2d4886` (Deploy 215, PR #333)
+**Approvals:**
+- "all of them in reccommed sec#" (the open list, in order).
+- "okay" (#335; the click was blocked from this session, so the owner merged it).
+- "done merged" (#335).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 216 | #334 | `d769e79` | 2026-10-11 04:20:55 | 1 | +102 / −1 | Notes only |
+| 217 | #335 | `61b4c12` | 2026-10-12 02:20:33 | 7 | +130 / −15 | Consent script, CSP, privacy pages (EN/AR), data-flow inventory |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on the #335 branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 216** recorded Deploys 211 to 215.
+
+### What the deploys did
+
+- **Deploy 217 — Google Analytics, consent-gated (#335).**
+  - **Property:** GA4 `G-2GS8BNCXXQ` (account "Triple Company", stream "Olives Egypt website"), alongside Umami.
+  - **Loading:** `assets/consent.js` injects `gtag.js` only after a visitor accepts Analytics, under the same single choice as Umami. No static tag on any page.
+  - **Withdrawal:** turning Analytics off sets the `ga-disable-` flag and expires the `_ga` / `_ga_<id>` cookies.
+  - **Everyone is asked again:** `POLICY_VERSION` is 2026-10-11, because no earlier "Accept" covered cookies or Google.
+  - **Banner, preferences and `/privacy`, `/ar/privacy`:** name Google Analytics, its cookies, what it sends, and Google as a third party.
+  - **CSP:** allows `www.googletagmanager.com` and the `*.google-analytics.com` / `*.analytics.google.com` hit endpoints; `check-csp-allows.js` holds it to that.
+
+### Checked live (2026-10-12, owner's Chrome)
+
+- The production CSP header carries the three Google hosts; `assets/consent.js` with the new ID was served about 30 s after the merge.
+- Before any choice: no request to a Google host.
+- The banner shows again with the new wording.
+- After "Accept All": `gtag/js?id=G-2GS8BNCXXQ` loads (200) and a `page_view` is sent on `/` and `/about/`.
+- GA4 Realtime: 1 active user, views of the homepage and About. The Measurement ID shown in Analytics is `G-2GS8BNCXXQ`.
+- No CSP violations in the console.
+- **Note:** in the owner's Chrome each hit to `www.google-analytics.com/g/collect` answered 503, yet the views appear in Realtime; the same endpoint answers 204 from the command line, so this looks local to that browser (an extension or tracking protection). One extra `page_view` for `/diag` was sent from the command line during this check.
+
+### Owner decisions
+
+- Google Analytics in addition to Umami, accepting cookies and sending visit data to Google.
+- Every visitor is asked for consent again (the version bump).
+
+### Claim register
+
+No change.
+
+### Rollback
+
+- **Deploy 217:** `git revert -m 1 61b4c12`. Visitors who accepted keep the `_ga` cookies until they expire or withdraw.
+- **Deploy 216** is documentation only.
+
+### Known limitations shipped with Deploys 216 and 217
+
+- **Owner review:** the new privacy paragraphs, English and Arabic.
+- **Open:** the GA4 data-retention setting, transfer of the data to Google outside Egypt, and the legal basis, alongside the existing counsel questions. `/privacy` still makes no compliance claim.
+- **GA4 enhanced measurement** (scrolls, outbound clicks, downloads, form interactions) is on by default in the property. No form field values are sent.
+- **Unchanged from Deploys 211 to 215:**
+  - the Arabic wording listed there, and the live checks there
+  - the Arabic "Table olives" section and packaging tile
+  - the four Arabic descriptions
+  - Search Console: resubmit `sitemap.xml`; second batch of indexing requests; remove the three failing sitemap entries (`/ar/sitemap.xml`, `/ar/`, `/`)
+  - the Arabic menu label "كل الموارد" and the browse line
+  - Arabic review of the Pickled Vegetables page, the menu labels and the restructure copy
+  - a larger green olives photograph (optional)
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up (now measured: `/x` answers 301 to `/x/`, which answers 200; the fix is in a separate PR)
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
