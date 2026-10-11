@@ -93,6 +93,15 @@
 # neither, so browsers blocked Umami even for consenting visitors; nothing
 # noticed until the system health audit (run 1). Listing the host lets the
 # browser load it when consent.js asks -- it does not load it by itself.
+#
+# www.googletagmanager.com (script-src, connect-src, img-src) and
+# *.google-analytics.com / *.analytics.google.com (connect-src, img-src):
+# Google Analytics (added 2026-10-11, owner instruction). assets/consent.js
+# injects gtag.js from googletagmanager.com only after a visitor accepts
+# Analytics; gtag.js then sends its hits to google-analytics.com and, in some
+# regions, analytics.google.com (regional hosts such as
+# region1.google-analytics.com, hence the wildcards). As with Umami, listing
+# the hosts only lets the browser load them when consent.js asks.
 # scripts/check-csp-allows.js holds every third-party host to this policy.
 [[headers]]
   for = "/*"
@@ -101,7 +110,7 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net https://umami-olivesegypt.netlify.app; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://www.facebook.com https://connect.facebook.net https://umami-olivesegypt.netlify.app; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.facebook.com https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 # A0 discovery flagged this and it was never actually done: JSON API
 # responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to

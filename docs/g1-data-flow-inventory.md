@@ -95,6 +95,21 @@ to collect from the browser, not an audited guarantee of what the
 self-hosted Umami instance stores or for how long. That instance's own
 retention configuration is a `[TODO: confirm]` for whoever administers it.
 
+
+## 5a. Google Analytics (GA4, added 2026-10-11 on the owner's instruction; loaded only after Analytics consent)
+
+`assets/consent.js` injects `gtag.js` for property `G-2GS8BNCXXQ` under the same single Analytics choice as Umami. Unlike everything else in this inventory, the destination is a third party (Google), and it sets cookies.
+
+| Field | Source | Destination | Purpose | Consent category | Retention | May contain personal data |
+|---|---|---|---|---|---|---|
+| `_ga`, `_ga_<id>` cookies (client and session identifiers) | Set by gtag.js in the browser | Browser; sent to Google with each hit | Recognising visits from the same browser | analytics | Up to 2 years in the browser; removed by consent.js on withdrawal | Yes (online identifier) |
+| Page URL, title, referrer | Browser | Google Analytics | Traffic analytics | analytics | `[TODO: confirm — the GA4 property's data-retention setting, not verifiable from this codebase]` | Low risk |
+| Browser, OS, device, screen size, language | Browser | Google Analytics | Traffic analytics | analytics | `[TODO: confirm]` | Low risk, part of device fingerprint surface |
+| Approximate location (IP-derived) | Google, from the request IP | Google Analytics | Traffic analytics | analytics | `[TODO: confirm]` | Yes (location) |
+| Enhanced-measurement events (scrolls, outbound clicks, file downloads, form interactions) | gtag.js, automatic | Google Analytics | Engagement analytics | analytics | `[TODO: confirm]` | Low risk; no form field values are sent |
+
+**Notes:** this codebase sends Google no custom events and no form contents; `TC.trackEvent` still goes to Umami only. Open for counsel alongside the other G0 questions: the transfer of this data to Google outside Egypt, and the legal basis for it.
+
 ## 6. Consent record (new, built for G2 — `netlify/functions/consent.js` → Postgres `consent_log` table)
 
 | Field | Source | Destination | Purpose | Consent category | Retention | May contain personal data |
