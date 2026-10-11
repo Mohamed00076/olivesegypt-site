@@ -525,8 +525,8 @@ def shell(lang):
 def build(slug, lang, p):
     s = shell(lang)
     route = '/solutions' + (f'/{slug}' if slug else '')
-    url = SITE + pre(lang) + route
-    en_url, ar_url = SITE + route, SITE + '/ar' + route
+    url = SITE + pre(lang) + route + '/'
+    en_url, ar_url = SITE + route + '/', SITE + '/ar' + route + '/'
 
     def sub(pattern, repl, optional=False):
         nonlocal s
@@ -550,7 +550,7 @@ def build(slug, lang, p):
     home = 'الرئيسية' if lang == 'ar' else 'Home'
     hub = 'الحلول' if lang == 'ar' else 'Solutions'
     crumbs = [(home, SITE + ('/ar/' if lang == 'ar' else '/'))]
-    crumbs += [(hub, SITE + pre(lang) + '/solutions'), (html.unescape(p['crumb']), url)] if slug else [(hub, url)]
+    crumbs += [(hub, SITE + pre(lang) + '/solutions/'), (html.unescape(p['crumb']), url)] if slug else [(hub, url)]
     ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': u} for i, (n, u) in enumerate(crumbs)]}
     sub(r'<script type="application/ld\+json">\s*\{\s*"@context": "https://schema.org",\s*"@type": "BreadcrumbList"[\s\S]*?</script>',
@@ -563,13 +563,16 @@ def build(slug, lang, p):
     s = s.replace(f'href="{shell_twin}" hreflang=', f'href="{twin}" hreflang=')
 
     # The same trail, visible above the eyebrow, as on the product pages (2026-10-11).
+    # Absolute addresses end in "/" (Netlify serves /x/ and 301s /x to it); the
+    # visible trail keeps the site's usual relative form, /x.
+    rel = lambda u: u.replace(SITE, '') if u in (SITE + '/', SITE + '/ar/') else u.replace(SITE, '').rstrip('/')
     lis = []
     for k, (n, u) in enumerate(crumbs):
         n = html.escape(n, quote=False)
         if k == len(crumbs) - 1:
             lis.append(f'<li aria-current="page">{n}</li>')
         else:
-            lis.append(f'<li><a href="{u.replace(SITE, "")}" class="hover:underline">{n}</a></li><li aria-hidden="true">/</li>')
+            lis.append(f'<li><a href="{rel(u)}" class="hover:underline">{n}</a></li><li aria-hidden="true">/</li>')
     trail = (f'<nav aria-label="{"مسار التصفح" if lang == "ar" else "Breadcrumb"}" class="text-xs text-muted-foreground mb-4">'
              '<ol class="flex flex-wrap items-center gap-1">' + ''.join(lis) + '</ol></nav>')
     eyebrow = '<p class="text-xs font-semibold uppercase tracking-widest text-primary mb-3">'

@@ -127,15 +127,15 @@ PAGE_TMPL = """<!DOCTYPE html>
     <title>{name} | Triple Company</title>
     <meta name="description" content="{description}" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <link rel="canonical" href="https://olivesegypt.com/products/{slug}" />
-    <link rel="alternate" hreflang="en" href="https://olivesegypt.com/products/{slug}" />
-    <link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/products/{slug}" />
-    <link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/products/{slug}" />
+    <link rel="canonical" href="https://olivesegypt.com/products/{slug}/" />
+    <link rel="alternate" hreflang="en" href="https://olivesegypt.com/products/{slug}/" />
+    <link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/products/{slug}/" />
+    <link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/products/{slug}/" />
 
     <meta property="og:site_name" content="Triple Company for Industrial Development" />
     <meta property="og:title" content="{name} | Triple Company" />
     <meta property="og:description" content="{name} from Egypt: {profile_short}" />
-    <meta property="og:url" content="https://olivesegypt.com/products/{slug}" />
+    <meta property="og:url" content="https://olivesegypt.com/products/{slug}/" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://olivesegypt.com/opengraph.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -178,8 +178,8 @@ PAGE_TMPL = """<!DOCTYPE html>
       "@type": "BreadcrumbList",
       "itemListElement": [
         {{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://olivesegypt.com/" }},
-        {{ "@type": "ListItem", "position": 2, "name": "{crumb_name}", "item": "https://olivesegypt.com{crumb_href}" }},
-        {{ "@type": "ListItem", "position": 3, "name": "{name}", "item": "https://olivesegypt.com/products/{slug}" }}
+        {{ "@type": "ListItem", "position": 2, "name": "{crumb_name}", "item": "https://olivesegypt.com{crumb_href}/" }},
+        {{ "@type": "ListItem", "position": 3, "name": "{name}", "item": "https://olivesegypt.com/products/{slug}/" }}
       ]
     }}
     </script>
@@ -192,7 +192,7 @@ PAGE_TMPL = """<!DOCTYPE html>
       "name": "{name}",
       "description": "{profile}",
       "inLanguage": "en",
-      "url": "https://olivesegypt.com/products/{slug}",
+      "url": "https://olivesegypt.com/products/{slug}/",
 {image_ld}      "countryOfOrigin": "Egypt"
     }}
     </script>
