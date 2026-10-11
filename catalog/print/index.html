@@ -94,7 +94,7 @@
     <main class="container max-w-3xl mx-auto px-4 py-10">
       <p class="text-xs text-muted-foreground mb-2 no-print"><a href="/catalog" class="hover:underline">Catalog</a> / Print</p>
       <h1 class="text-3xl font-serif font-bold text-foreground mb-1">Product Specifications</h1>
-      <p id="doc-subtitle" class="text-muted-foreground mb-1">Revised 2026-10-10</p>
+      <p id="doc-subtitle" class="text-muted-foreground mb-1">Revised 2026-10-11</p>
       <p id="doc-meta" class="text-xs text-muted-foreground mb-6">7 products &middot; Prepared for export worldwide &middot; Full documentation on request</p>
       <div class="h-px bg-gradient-to-r from-primary/50 via-border to-transparent mb-8"></div>
 
@@ -212,12 +212,12 @@
           <div>
             <span class="spec-badge spec-badge-specialty">Pickled Pepper</span>
             <h2 class="text-xl font-serif font-bold text-foreground">Sliced Jalape&ntilde;o Peppers</h2>
-            <p class="text-sm text-muted-foreground mt-2">Crisp green jalape&ntilde;o rings pickled for a bright, medium heat. Available as sliced rings or whole. A high-demand food-service line for nachos, pizza, and Tex-Mex applications.</p>
+            <p class="text-sm text-muted-foreground mt-2">Crisp jalape&ntilde;o rings pickled for a bright, medium heat, in green or red. A high-demand food-service line for nachos, pizza, and Tex-Mex applications.</p>
             <div class="spec-full">
               <div class="spec-full-grid">
                 <div>
                   <h3 class="spec-full-label">Available Formats</h3>
-                  <div class="chip-row"><span class="chip-format">Sliced Rings</span><span class="chip-format">Whole</span></div>
+                  <div class="chip-row"><span class="chip-format">Sliced Green Rings</span><span class="chip-format">Sliced Red Rings</span><span class="chip-format">Whole</span></div>
                 </div>
                 <div>
                   <h3 class="spec-full-label">Calibers (count / kg)</h3>
@@ -335,7 +335,7 @@
         if (!found) cards.forEach(function (card) { card.hidden = false; });
         if (found) {
           document.querySelector('main h1').textContent = 'Product Specification Sheet';
-          document.getElementById('doc-subtitle').textContent = 'Revised 2026-10-10';
+          document.getElementById('doc-subtitle').textContent = 'Revised 2026-10-11';
           var meta = document.getElementById('doc-meta');
           if (meta) meta.hidden = true;
           // The tab, and the title a PDF printed from this view carries, name the product.
