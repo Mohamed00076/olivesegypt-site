@@ -9074,6 +9074,73 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 209 and 210 — Pickled Vegetables page matches Table Olives (PRs #327, #328)
+
+**Previous recorded deploy:** `184e01a` (Deploy 208, PR #326)
+**Approvals:**
+- "merge" (#327).
+- "why does what we supply cards in product look diffrent in table olives than in vegtables".
+- "check the whole pages not just those two sections".
+- "fix this" (the packaging tile).
+- "merge" (#328).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 209 | #327 | `9a38e81` | 2026-10-11 03:28:52 | 1 | +65 / −1 | Notes only |
+| 210 | #328 | `90780a9` | 2026-10-11 03:42:11 | 3 | +4 / −4 | Pickled Vegetables page (EN/AR), sitemap dates |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on the branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 209** recorded Deploys 207 and 208.
+
+### What the deploys did
+
+- **Deploy 210 — Pickled Vegetables laid out like Table Olives (#328).** Compared in full, side by side, at 1280 and 390 px. On `/pickled-vegetables` and `/ar/pickled-vegetables`:
+  1. **Product cards:** two per row (`sm:grid-cols-2`), as on Table Olives, in place of three. At three columns the same card component was a third narrower, so names and chips wrapped.
+  2. **Forms table:** the "Calibers" column is removed. Every row said "Confirmed during quotation", and the olives' table has no such column; calibers stay on the product pages.
+  3. **Link to the olives:** "Looking for olives? See Table Olives." becomes a "Table olives" / "زيتون المائدة" section that mirrors the hub's "Pickled vegetables" section. It links the four olive types, the hub and the catalogue.
+  4. **Packaging tile (Go deeper):** on this page only, the tile describes the formats — jars, cans, buckets, barrels, and the 4 kg PET pail for sliced jalapeño — instead of "How Egyptian table olives are packaged… and how caliber sizing works". The facts are already published on `/resources/packaging` (C-100, C-151).
+  - **Kept different on purpose:**
+    - the olives' ✓/– forms grid (the olive types share forms; the vegetables do not)
+    - "Cultivars" on Table Olives only (restructure brief)
+    - "What we supply, by type"
+
+### Owner decisions
+
+- The two product-group pages share one layout, as above.
+- The packaging tile on the vegetables page is reworded.
+
+### Claim register
+
+161 claims. No change: the new sentences repeat approved product names and published packaging facts.
+
+### Rollback
+
+- **Deploy 210:** `git revert -m 1 90780a9`.
+- **Deploy 209** is documentation only.
+
+### Known limitations shipped with Deploys 209 and 210
+
+- **Owner review:** the Arabic "Table olives" section and the packaging tile.
+- **Unchanged from Deploys 207 and 208:**
+  - the four Arabic descriptions
+  - Search Console: resubmit `sitemap.xml`; request indexing in two batches (reminder 2026-10-11 10:00 +0300)
+  - the Arabic menu label "كل الموارد" and the browse line
+  - Arabic review of the Pickled Vegetables page, the menu labels and the restructure copy
+  - the live checks (#308, #317, #319, #320, #322, #323, #324, #328)
+  - a larger green olives photograph (optional)
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9089,7 +9156,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 208 (2026-10-11).**
+**Unchanged since U3, through Deploy 210 (2026-10-11).**
 
 ## Outstanding, unresolved by this document
 
