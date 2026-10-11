@@ -9141,6 +9141,107 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 211 to 215 — Sister-page consistency: product facts, catalogue, homepage, breadcrumbs (PRs #329 to #333)
+
+**Previous recorded deploy:** `90780a9` (Deploy 210, PR #328)
+**Approvals:**
+- "merge" (#329).
+- "do it" (side-by-side check of sister pages).
+- "merge" (#330), with: "yes nile delta is right for both do all 1 to 5".
+- "merge" (#331, #332, #333).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 211 | #329 | `e2fe625` | 2026-10-11 03:44:57 | 1 | +68 / −1 | Notes only |
+| 212 | #330 | `7f66f94` | 2026-10-11 03:59:55 | 26 | +56 / −56 | Product facts (homepage, catalogue, print, 18 PDFs) |
+| 213 | #331 | `d655f78` | 2026-10-11 04:14:54 | 3 | +10 / −9 | Catalogue (EN/AR), claim register |
+| 214 | #332 | `9e57540` | 2026-10-11 04:14:59 | 2 | +2 / −2 | Homepage (EN/AR) |
+| 215 | #333 | `f2d4886` | 2026-10-11 04:16:05 | 71 | +146 / −135 | Breadcrumbs (68 pages), Solutions generator |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on each branch, and on `main` after Deploy 215.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 211** recorded Deploys 209 and 210.
+
+### What the deploys did
+
+- **Deploy 212 — Product facts match the product pages (#330).**
+  - **The sweep:** sister pages compared side by side:
+    - 7 product pages
+    - 5 Solutions pages
+    - 8 Resources pages
+    - 7 articles
+    - catalogue, homepage and print catalogue, English against Arabic
+  - **Facts compared:** every product fact (forms, calibers, brine, origin, description) on every page it appears on.
+  - **Jalapeño forms:** "Sliced Green Rings, Sliced Red Rings, Whole" (from "Sliced Rings, Whole") on the catalogue, print catalogue, spec sheets and homepage, in both languages.
+  - **Jalapeño description:** the product page's "…in green or red" (from "Crisp green jalapeño rings…"), including the structured data.
+  - **Artichoke:** the homepage adds "Grilled".
+  - **English homepage:** labels forms "Format:" (from "Caliber:").
+  - **PDFs:** 18 rebuilt (spec sheets and both product catalogues), revised 2026-10-11, with page counts unchanged. The print version drops a sentence that repeated the format chips, so the jalapeño sheet stays on one page.
+- **Deploy 213 — Catalogue parity (#331).**
+  - **Origin:** Natural and Oxidized Black Olives say "Nile Delta, Egypt" in both languages (owner-confirmed; C-162).
+  - **Descriptions:** both catalogues use each product page's description. Six English-only marketing lines are removed (listed in #331).
+  - **Arabic cards:** rebuilt on the English layout, at the English width. The stuffed tags are "فلفل / جزر".
+  - **Headings:** product names are headings (`h2`) in both languages.
+- **Deploy 214 — Homepage, seven products (#332).**
+  - **Pepperoncini added**, built like the other cards.
+  - **Order:** the vegetables follow the site-wide order.
+  - **Layout:** four to a row on wide screens (olives first row, vegetables second).
+- **Deploy 215 — Visible breadcrumbs (#333).**
+  - **Where:** 68 pages that carried breadcrumb structured data now show it, built from that data:
+    - Solutions (in the generator)
+    - Resources and Media
+    - articles
+    - catalogue, Downloads, company profile
+    - quote and sample
+  - **Articles:** the trail replaces "Back to Media Center".
+  - **Company profile:** the trail replaces the plain-text trail, and is hidden in print (its PDF is unchanged).
+  - **Merge:** `main` (with #331 and #332) was merged into the branch first. The English catalogue conflict was resolved by taking `main` and re-inserting the trail.
+  - **Measured locally:** axe 0 violations, light and dark, on five sample pages; every PDF reprints identically.
+
+### Owner decisions
+
+- Nile Delta, Egypt is the origin of both black olive types (C-162).
+- The catalogue uses the product pages' descriptions in both languages.
+- The homepage shows all seven products.
+- Visible breadcrumbs on every page that has breadcrumb data.
+
+### Claim register
+
+162 claims: C-162 added (black-olive origin).
+
+### Rollback
+
+- **Deploy 215:** `git revert -m 1 f2d4886`.
+- **Deploy 214:** `git revert -m 1 9e57540`.
+- **Deploy 213:** `git revert -m 1 d655f78`.
+- **Deploy 212:** `git revert -m 1 7f66f94`.
+- **Deploy 211** is documentation only.
+
+### Known limitations shipped with Deploys 211 to 215
+
+- **Owner review:**
+  - Arabic: "حلقات خضراء وحمراء مقطعة وكامل", "أرباع وقلوب كاملة ومشوية", "الصيغة: كامل وذهبي يوناني"
+  - live checks: the catalogue in both languages, the homepage's seven products, breadcrumbs on an article and a Resources page
+- **Unchanged from Deploys 209 and 210:**
+  - the Arabic "Table olives" section and packaging tile
+  - the four Arabic descriptions
+  - Search Console: resubmit `sitemap.xml`; second batch of indexing requests (reminder 2026-10-11 10:00 +0300)
+  - the Arabic menu label "كل الموارد" and the browse line
+  - Arabic review of the Pickled Vegetables page, the menu labels and the restructure copy
+  - earlier live checks
+  - a larger green olives photograph (optional)
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9156,7 +9257,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 210 (2026-10-11).**
+**Unchanged since U3, through Deploy 215 (2026-10-11).**
 
 ## Outstanding, unresolved by this document
 
