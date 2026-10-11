@@ -11,6 +11,12 @@
  * before deciding whether to inject it again -- so withdrawing consent
  * takes effect from the very next page view, not just in the UI.
  *
+ * Google Analytics (added 2026-10-11, owner instruction) is loaded by the
+ * same rule and the same single Analytics choice: gtag.js is injected only
+ * after consent, never by a static tag. Unlike Umami it sets cookies (_ga,
+ * _ga_<id>) and sends data to Google, so withdrawal also has to switch it
+ * off and remove those cookies -- see disableGoogleAnalytics below.
+ *
  * This file injects its own banner/panel DOM and styles -- no HTML needs
  * to be added to individual pages, so the same file works unmodified
  * across the whole site.
@@ -36,11 +42,18 @@
   // only consent given under the text that says so; this bump is how that is
   // enforced, with no further code. The earlier privacy change (button
   // presses, 2026-09-17) did not bump it.
-  var POLICY_VERSION = '2026-09-27';
+  //
+  // 2026-10-11: bumped again because Analytics consent now also loads Google
+  // Analytics, which sets cookies and sends visit data to Google -- neither
+  // was true of any consent given before today, so nobody's earlier "Accept"
+  // is carried over to it.
+  var POLICY_VERSION = '2026-10-11';
   var CONSENT_VERSION = '1.0';
   var STORAGE_KEY = 'tc-consent';
   var UMAMI_SRC = 'https://umami-olivesegypt.netlify.app/script.js';
   var UMAMI_WEBSITE_ID = '88799e3f-ddb2-4eb2-b162-878676480474';
+  var GA_SRC = 'https://www.googletagmanager.com/gtag/js';
+  var GA_MEASUREMENT_ID = 'G-2GS8BNCXXQ';
 
   function readStoredConsent() {
     try {
@@ -80,6 +93,46 @@
     document.head.appendChild(s);
   }
 
+  function loadGoogleAnalyticsIfConsented() {
+    if (!TC.consent.analytics) return;
+    if (document.querySelector('script[data-tc-ga]')) return; // already injected this page load
+    window['ga-disable-' + GA_MEASUREMENT_ID] = false;
+    window.dataLayer = window.dataLayer || [];
+    // gtag.js reads the queued `arguments` objects themselves, so this must
+    // stay a plain function pushing `arguments` -- not an array or a spread.
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_MEASUREMENT_ID);
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = GA_SRC + '?id=' + GA_MEASUREMENT_ID;
+    s.setAttribute('data-tc-ga', '1');
+    document.head.appendChild(s);
+  }
+
+  // Withdrawal. Not loading gtag.js on the next page is not enough for Google
+  // Analytics the way it is for Umami: a copy already running on this page
+  // would keep sending, and the _ga cookies it set would sit in the browser
+  // for up to two years. So: tell any running copy to stop, and expire the
+  // cookies on every domain scope gtag.js may have written them to.
+  function disableGoogleAnalytics() {
+    window['ga-disable-' + GA_MEASUREMENT_ID] = true;
+    try {
+      var host = window.location.hostname;
+      var bare = host.replace(/^www\./, '');
+      var scopes = ['', '; domain=' + host, '; domain=.' + host, '; domain=' + bare, '; domain=.' + bare];
+      var names = document.cookie.split(';').map(function (c) { return c.split('=')[0].trim(); })
+        .filter(function (n) { return n === '_ga' || n.indexOf('_ga_') === 0; });
+      names.forEach(function (n) {
+        scopes.forEach(function (scope) {
+          document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + scope;
+        });
+      });
+    } catch (e) {
+      // Cookie access can be blocked; the disable flag above still applies.
+    }
+  }
+
   function logConsentServerSide(mechanism, analytics) {
     try {
       fetch('/api/consent', {
@@ -103,11 +156,15 @@
     logConsentServerSide(mechanism, analytics);
     if (analytics) {
       loadUmamiIfConsented();
+      loadGoogleAnalyticsIfConsented();
+    } else {
+      disableGoogleAnalytics();
     }
     // Withdrawal: if analytics is false, we simply never inject Umami on
     // this or any future page load again (each full page load re-checks
     // storage from scratch) -- there is no client-side routing on this
-    // static site, so there is nothing further to "un-fire".
+    // static site, so there is nothing further to "un-fire". Google
+    // Analytics needs the extra step above.
   }
 
   // ---- UI ----------------------------------------------------------
@@ -182,7 +239,7 @@
   var STRINGS = {
     en: {
       bannerLabel: 'Cookie consent',
-      body: 'We use analytics, only with your consent, to understand site traffic. Strictly necessary functions (like this form) always work regardless of your choice. See our ',
+      body: 'We use analytics (our own Umami, and Google Analytics, which sets cookies), only with your consent, to understand site traffic. Strictly necessary functions (like this form) always work regardless of your choice. See our ',
       privacy: 'Privacy page',
       privacyHref: '/privacy',
       reject: 'Reject Non-Essential',
@@ -196,13 +253,13 @@
       necessaryDesc: 'Required for the site to function (forms, navigation). Always on.',
       necessaryAria: 'Strictly Necessary (always on)',
       analytics: 'Analytics',
-      analyticsDesc: 'Helps us understand site traffic. Off unless you turn it on.',
+      analyticsDesc: 'Helps us understand site traffic, using our own Umami and Google Analytics. Google Analytics sets cookies and sends visit data to Google. Off unless you turn it on.',
       cancel: 'Cancel',
       save: 'Save Preferences'
     },
     ar: {
       bannerLabel: 'الموافقة على الكوكيز',
-      body: 'نستخدم أدوات تحليلات، بموافقتك وحدها، لفهم حركة الزيارات على الموقع. أما الوظائف الضرورية تمامًا (مثل هذا النموذج) فتعمل دائمًا مهما كان اختيارك. اطّلع على ',
+      body: 'نستخدم أدوات تحليلات (أداة Umami الخاصة بنا، وGoogle Analytics التي تضع ملفات تعريف ارتباط)، بموافقتك وحدها، لفهم حركة الزيارات على الموقع. أما الوظائف الضرورية تمامًا (مثل هذا النموذج) فتعمل دائمًا مهما كان اختيارك. اطّلع على ',
       privacy: 'صفحة الخصوصية',
       privacyHref: '/ar/privacy',
       reject: 'رفض غير الضروري',
@@ -216,7 +273,7 @@
       necessaryDesc: 'لازم لعمل الموقع (النماذج والتنقل). مفعّل دائمًا.',
       necessaryAria: 'ضروري تمامًا (مفعّل دائمًا)',
       analytics: 'التحليلات',
-      analyticsDesc: 'تساعدنا على فهم حركة الزيارات. معطّل ما لم تفعّله أنت.',
+      analyticsDesc: 'تساعدنا على فهم حركة الزيارات، باستخدام أداة Umami الخاصة بنا وGoogle Analytics. تضع Google Analytics ملفات تعريف ارتباط وترسل بيانات الزيارة إلى Google. معطّل ما لم تفعّله أنت.',
       cancel: 'إلغاء',
       save: 'حفظ التفضيلات'
     }
@@ -453,6 +510,7 @@
     if (stored) {
       TC.setConsent(stored.analytics === true);
       loadUmamiIfConsented();
+      loadGoogleAnalyticsIfConsented();
       showReopenControl();
     } else {
       TC.setConsent(false); // unknown behaves as denied until a choice is made

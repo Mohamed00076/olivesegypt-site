@@ -36,6 +36,7 @@ const t = (name, cond, extra) => {
 // Each host client code names, the directives its use needs, and why.
 const HOSTS = {
   'umami-olivesegypt.netlify.app': { needs: ['script-src', 'connect-src'], why: 'Umami tracker (consent.js, after analytics consent) and its /api/send beacon' },
+  'www.googletagmanager.com': { needs: ['script-src', 'connect-src', 'img-src'], why: 'Google Analytics gtag.js (consent.js, after analytics consent)' },
   'connect.facebook.net': { needs: ['script-src'], why: 'Facebook SDK for the homepage Follow widget, loaded on click' },
   'www.facebook.com': { needs: ['frame-src'], why: 'the Facebook page plugin iframe, on click' },
 };
@@ -72,6 +73,32 @@ for (const [host, { needs, why }] of Object.entries(HOSTS)) {
 }
 t('the Umami host is really used by consent.js (else its CSP entry should go)',
   /UMAMI_SRC = 'https:\/\/umami-olivesegypt\.netlify\.app\/script\.js'/.test(read('assets/consent.js')));
+
+// gtag.js is fetched from googletagmanager.com but reports to hosts consent.js
+// never names (google-analytics.com, regional subdomains, analytics.google.com),
+// so the loop above cannot see them. Without these the tag loads and every hit
+// is refused -- the same silent failure Umami had.
+{
+  const consent = read('assets/consent.js');
+  const usesGa = /GA_SRC = 'https:\/\/www\.googletagmanager\.com\/gtag\/js'/.test(consent);
+  if (usesGa) {
+    for (const d of ['connect-src', 'img-src']) {
+      t(`Google Analytics can send its hits (${d} allows *.google-analytics.com)`,
+        (directives[d] || []).includes('https://*.google-analytics.com'));
+    }
+    t('   including the regional analytics.google.com endpoints',
+      (directives['connect-src'] || []).includes('https://*.analytics.google.com'));
+    t('Google Analytics is loaded only behind the consent gate',
+      /function loadGoogleAnalyticsIfConsented\(\) \{\s*if \(!TC\.consent\.analytics\) return;/.test(consent)
+        && !tracked.filter((x) => x.endsWith('.html')).some((f) => /googletagmanager\.com/.test(read(f))),
+      'gtag.js must be injected by consent.js after consent, never by a static tag in a page');
+    t('   and withdrawing consent switches it off and removes its cookies',
+      /else \{\s*disableGoogleAnalytics\(\);/.test(consent) && /window\['ga-disable-' \+ GA_MEASUREMENT_ID\] = true;/.test(consent));
+  } else {
+    t('no Google Analytics hosts are left in the CSP once consent.js stops loading it',
+      !/google-analytics\.com|googletagmanager\.com/.test(csp));
+  }
+}
 
 const ok = fail === 0;
 console.log(`\ncsp-allows ${ok ? 'OK' : 'FAILED'} -- every third-party host client code uses is allowed for what it is used for.`);

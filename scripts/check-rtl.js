@@ -59,6 +59,8 @@ const KEEP = new Set([
   'incoterm', 'incoterms', 'umami', 'netlify', 'neon', 'postgres', 'meta', 'search', 'console', 'vcard',
   'ripe', 'ncc', 'afrinic', 'arin', 'apnic', 'lacnic', 'whatsapp', 'facebook', 'linkedin', 'instagram',
   'google', 'olivesegypt.com', 'sales',
+  // Google Analytics, a service name, and its cookie names _ga / _ga_<id>.
+  'analytics', 'ga',
 ]);
 
 const AR = /[؀-ۿ]/;
