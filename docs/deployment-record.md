@@ -9010,6 +9010,70 @@ Files and lines are each merge against the `main` it landed on. `npm test` passe
 
 ---
 
+## Deploys 207 and 208 — Arabic search descriptions (PRs #325, #326)
+
+**Previous recorded deploy:** `9fa5b5d` (Deploy 206, PR #324)
+**Approvals:**
+- "merge" (#325).
+- "do it" (expand the four short Arabic descriptions).
+- "merge" (#326).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 207 | #325 | `72093f0` | 2026-10-11 02:34:15 | 1 | +89 / −1 | Notes only |
+| 208 | #326 | `184e01a` | 2026-10-11 03:13:15 | 5 | +17 / −17 | Arabic meta descriptions (4 pages), sitemap dates |
+
+Files and lines are each merge against the `main` it landed on. `npm test` passed on the branch.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 207** recorded Deploys 203 to 206.
+
+### What the deploys did
+
+- **Deploy 208 — Arabic descriptions (#326).**
+  - **Where:** `/ar/privacy`, `/ar/media/news`, `/ar/media/blog` and `/ar/media/inquiries`. Each description is used in the meta description, the Open Graph and X descriptions, and the structured data.
+  - **What:** each now says what its English description says.
+    - **Privacy:** adds the company, the forms and analytics, and retention status.
+    - **News and Blog:** "زيتون المائدة" (table olives) in place of "الزيتون".
+    - **Media Inquiries:** reads more naturally; the meaning is unchanged.
+  - **Not changed:** the page text.
+  - **Found by:** a title and description scan of all 88 pages. It found no duplicates, every page has an h1, and these four Arabic descriptions were the only short ones.
+
+### Owner decisions
+
+- The four Arabic descriptions mirror the English ones.
+
+### Claim register
+
+161 claims. No change: no line says more than its English description.
+
+### Rollback
+
+- **Deploy 208:** `git revert -m 1 184e01a`.
+- **Deploy 207** is documentation only.
+
+### Known limitations shipped with Deploys 207 and 208
+
+- **Owner review:** the four new Arabic descriptions.
+- **Owner, Search Console:**
+  - resubmit `sitemap.xml`
+  - request indexing, in two batches (a reminder is set for 2026-10-11 10:00 +0300)
+- **Unchanged from Deploys 203 to 206:**
+  - the Arabic menu label "كل الموارد" and the browse line
+  - Arabic review of the Pickled Vegetables page, the menu labels and the restructure copy
+  - the live checks (#308, #317, #319, #320, #322, #323, #324)
+  - a larger green olives photograph (optional)
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the trailing-slash clean-up
+  - the `/privacy` Search Console row
+  - the photographs
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9025,7 +9089,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 206 (2026-10-11).**
+**Unchanged since U3, through Deploy 208 (2026-10-11).**
 
 ## Outstanding, unresolved by this document
 
