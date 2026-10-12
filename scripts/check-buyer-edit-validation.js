@@ -43,6 +43,8 @@ const sql = (strings, ...vals) => {
   if (/SELECT current_stage(, deleted_at)? FROM buyers/i.test(q)) return Promise.resolve([{ current_stage: 'Lead', deleted_at: null }]);
   return Promise.resolve([]);
 };
+// neon 1.x: a direct call is sql.query(text, params); the fake answers it as before.
+sql.query = (text, params) => sql(text, params);
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 require.cache[neonId].filename = neonId;

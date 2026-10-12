@@ -263,7 +263,7 @@ async function handleUpdate(event, sql, id, actor) {
   setClauses.push(`updated_at = now()`);
   values.push(id);
 
-  await sql(`UPDATE buyers SET ${setClauses.join(', ')} WHERE id = $${i}`, values);
+  await sql.query(`UPDATE buyers SET ${setClauses.join(', ')} WHERE id = $${i}`, values);
 
   if (updates.current_stage && updates.current_stage !== previousStage) {
     await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by) VALUES (${id}, ${previousStage}, ${updates.current_stage}, ${actor})`;
@@ -349,7 +349,7 @@ async function handleErase(event, sql, id, actor) {
   const enquiriesCte = hasInquiries
     ? 'q AS (DELETE FROM inquiries WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),'
     : 'q AS (SELECT 1 WHERE false),';
-  const rows = await sql(
+  const rows = await sql.query(
     `WITH b AS (DELETE FROM buyers WHERE id = $1 RETURNING id),
      a AS (DELETE FROM buyer_activity_log WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),
      h AS (DELETE FROM buyer_stage_history WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),

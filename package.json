@@ -65,7 +65,7 @@
     "check:identity-strings": "node scripts/check-identity-strings.js"
   },
   "dependencies": {
-    "@neondatabase/serverless": "0.10.4",
+    "@neondatabase/serverless": "^1.2.0",
     "google-auth-library": "^11.2.0",
     "isbot": "^5.2.2",
     "maxmind": "^5.0.7",

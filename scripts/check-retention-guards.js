@@ -71,6 +71,8 @@ function fakeSql(first, ...rest) {
   statements.push({ text: t, params: rest });
   return Promise.resolve(respond(t));
 }
+// neon 1.x: a direct call is sql.query(text, params); the fake answers it as before.
+fakeSql.query = (text, params) => fakeSql(text, params);
 
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);

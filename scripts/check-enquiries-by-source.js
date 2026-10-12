@@ -47,6 +47,8 @@ const sql = (strings, ...vals) => {
   ]);
   return Promise.resolve([]);
 };
+// neon 1.x: a direct call is sql.query(text, params); the fake answers it as before.
+sql.query = (text, params) => sql(text, params);
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
