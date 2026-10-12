@@ -9413,7 +9413,7 @@ Files and lines are each merge against the `main` it landed on.
   - GA4 data retention
   - `www` on the owner's own network (DNS cache)
   - delete the leftover `claude/www-diagnose` branch (a branch-only diagnostic workflow; GitHub refused deletion from the session)
-- **Not done:** relative links still use the `/x` form, one 301 each. That is left for a separate change.
+- **Not done:** relative links still use the `/x` form, one 301 each. That is left for a separate change. **Done in Deploy 231.**
 - **Unchanged from Deploys 216 and 217:**
   - the Arabic wording listed there
   - the privacy-page Google Analytics paragraphs, for the owner's and counsel's review
@@ -9541,6 +9541,91 @@ Umami had been recording no visits from olivesegypt.com, for two separate reason
 
 ---
 
+## Deploys 230 and 231 — Internal links carry the trailing slash (PRs #349, #350)
+
+**Previous recorded deploy:** `df81439` (Deploy 229, PR #348); Umami `c1c4303` (Deploy U4)
+**Approvals:**
+- "merge" (#349).
+- "do 1" (the link change), then "merge" (#350).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 230 | #349 | `453e95c` | 2026-10-12 12:05:05 | 1 | +120 / −1 | Notes only |
+| 231 | #350 | `1818530` | 2026-10-12 12:24:12 | 127 | +565 / −554 | Internal links, generators, checks |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 230** recorded Deploys 223 to 229 and U4.
+
+### What the deploys did
+
+- **Deploy 231 — Internal links carry the trailing slash (#350).** This closes the item left open since Deploy 218 ("relative links still use the `/x` form, one 301 each").
+  - **Before:** since Deploy 218 every page lives at `/x/`, and `/x` answers a 301 to it. The site's own links still named `/x`, so every click between pages took a redirect first.
+  - **Links:** 6,656 `href` values across 109 HTML files now name `/x/`. That covers menus, footers, buttons, breadcrumbs and in-text links, in both languages.
+  - **Code:** the same change was made where links are produced by code:
+    - the product-page and Solutions-page generators
+    - `consent.js` (privacy link)
+    - `guide.js`
+    - `site-nav.js` (phone quote button)
+    - the CRM's Letterhead links
+  - **Left as they were:**
+    - the `/` and `/ar/` roots
+    - the gated guides, rewritten to a function from both forms
+    - any address an unconditional Netlify rule names
+    - the `?lang=ar` redirect sources (`locale-routes.js` `href()`)
+    - the `from=` value the Solutions buttons send, so enquiry sources keep their names
+  - **Checks:**
+    - `check-locale-links` now requires the slash form (new `linkHref`).
+    - The checks that matched exact link text follow: nav-footer, unsubscribe, inquiry-forms, mobile-basics, buyer-path-cards, lead-fields, floating-actions, not-found and solutions.
+    - Both generators reproduce their pages byte for byte.
+    - The 36 guide PDFs rebuild identical, so only their fingerprints change.
+    - Sitemap dates are unchanged, because the content is unchanged.
+  - **Side effect:** the site's own event log records the target of a Downloads click, which is now `/downloads/` where it was `/downloads`. Google Analytics and Umami are unaffected.
+  - **Not done:** the deploy preview was not checked before merge, at the owner's choice. The live check after the merge stands in for it.
+
+### Verified on the live site (GitHub Actions, 2026-10-12)
+
+- **Run after #350** (run 38229660778): **17 of 17 OK**, including "The live site is the latest commit on main — 1818530".
+- **Spot check from the session:** each of the following answers 200 directly, with no redirect:
+  - `/contact/`, `/catalog/`, `/ar/catalog/`
+  - `/products/green-olives/`, `/solutions/retail/`, `/resources/faq/`
+
+  The live homepage links to `/contact/`.
+
+### Claim register
+
+162 claims. No change.
+
+### Rollback
+
+- **Deploy 231:** `git revert -m 1 1818530`. Links return to the `/x` form, with one 301 each.
+- **Deploy 230** is documentation only.
+
+### Known limitations shipped with Deploys 230 and 231
+
+- **Owner:**
+  - Umami sign-in, using the steps in Deploys 223 to 229, then a check that a consenting visit appears in Realtime
+  - the CRM's Admin → Analytics report
+  - in GA4: `generate_lead` as a key event, data retention, the Search Console link
+  - Dependabot alerts (both repos)
+  - Search Console: resubmit `sitemap.xml`; remove `/ar/sitemap.xml`, `/ar/` and `/`; "Validate fix" on the two duplicate reports
+  - delete the `claude/www-diagnose` branch
+  - review of the Arabic privacy sentence
+- **Unchanged from Deploys 223 to 229:**
+  - the Arabic wording listed there
+  - the privacy-page Google Analytics paragraphs, for counsel
+  - photographs and certificates
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the `/privacy` Search Console row
+  - counsel: C-55, the privacy values, Google Analytics
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9559,7 +9644,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 229 (2026-10-12).**
+**Unchanged since U4, through Deploy 231 (2026-10-12).**
 
 ## Outstanding, unresolved by this document
 
