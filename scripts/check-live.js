@@ -25,6 +25,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const tls = require('tls');
 
 const BASE = (process.env.LIVE_BASE || 'https://olivesegypt.com').replace(/\/$/, '');
 const ROOT = path.join(__dirname, '..');
@@ -33,6 +34,19 @@ const ok = (name, detail = '') => results.push(['OK', name, detail]);
 const fail = (name, detail = '') => results.push(['FAIL', name, detail]);
 const pending = (name, detail = '') => results.push(['PENDING', name, detail]);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// The certificate a visitor's browser is shown for a host: its expiry date.
+function certExpiry(host) {
+  return new Promise((resolve, reject) => {
+    const sock = tls.connect({ host, port: 443, servername: host, timeout: 15000 }, () => {
+      const cert = sock.getPeerCertificate();
+      sock.end();
+      resolve(new Date(cert.valid_to));
+    });
+    sock.on('timeout', () => { sock.destroy(); reject(new Error('timed out')); });
+    sock.on('error', reject);
+  });
+}
 
 async function get(url, opts = {}) {
   const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': 'olivesegypt-live-check' }, ...opts });
@@ -165,6 +179,31 @@ async function main() {
       else if (/edge-access/.test(r.body) || r.status === 401) fail('Umami tracker is reachable', `HTTP ${r.status}: the Umami site is behind Netlify's login protection, so no visit is recorded. Netlify → umami site → Site configuration → Access & security → Visitor access → no protection`);
       else fail('Umami tracker is reachable', `HTTP ${r.status} ${r.headers.get('content-type') || ''}`);
     } catch (e) { fail('Umami tracker is reachable', e.message); }
+  }
+
+  // HTTPS certificates. Netlify renews them by itself; a renewal that fails
+  // (a DNS record changed at GoDaddy, a domain removed in Netlify) shows
+  // only when browsers start refusing the site. Warn two weeks ahead.
+  const hosts = BASE === 'https://olivesegypt.com' ? ['olivesegypt.com', 'www.olivesegypt.com'] : [new URL(BASE).host];
+  for (const host of hosts) {
+    try {
+      const until = await certExpiry(host);
+      const days = Math.floor((until - Date.now()) / 86400000);
+      const when = until.toISOString().slice(0, 10);
+      if (days >= 14) ok(`HTTPS certificate for ${host} is current`, `valid to ${when}, ${days} days`);
+      else fail(`HTTPS certificate for ${host} is current`, `expires ${when}, in ${days} days: Netlify has not renewed it (Netlify → Domain management → HTTPS → Renew certificate)`);
+    } catch (e) { fail(`HTTPS certificate for ${host} is current`, e.message); }
+  }
+
+  // Umami itself, not only its tracker file: the address visits are sent to
+  // and the heartbeat Umami answers when its app and database are up.
+  if (umamiSrc) {
+    const umami = new URL(umamiSrc).origin;
+    try {
+      const r = await get(umami + '/api/heartbeat');
+      if (r.status === 200 && /"ok"\s*:\s*true/.test(r.body)) ok('Umami is up', new URL(umami).host);
+      else fail('Umami is up', `heartbeat answered HTTP ${r.status}: visits are not being recorded (Netlify → umami site → Deploys and Logs)`);
+    } catch (e) { fail('Umami is up', e.message); }
   }
 
   // Report.
