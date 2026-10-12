@@ -290,7 +290,21 @@ const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize:
  * letterhead sheet (null for the export catalogue). The generator captures the
  * sheet and adds the templates; the sheet's HTML is part of the fingerprint.
  */
+// The redesigned downloads (scripts/build-pdf-sources.js): fixed A4 pages
+// that carry their own masthead and foot as live text, so nothing is drawn
+// around them. Tagged for screen readers, with bookmarks from the headings.
+// 'TC Arabic Inline' is Amiri over its whole range, the word space included,
+// for the one Arabic phrase in the English masthead: with the space in a
+// Latin face it extracted as one-word runs in reverse order.
+const SHEET_PDF = { format: 'A4', printBackground: true, preferCSSPageSize: true,
+  margin: { top: 0, bottom: 0, left: 0, right: 0 }, tagged: true, outline: true };
+const SHEET_INLINE_ARABIC = `@font-face { font-family: 'TC Arabic Inline'; src: url(/${PDF_ARABIC_FONTS.regular}) format('truetype'); }`;
+
 function renderFor(job) {
+  if (job.kind === 'sheet') {
+    return { pdf: SHEET_PDF, css: STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS) + SHEET_INLINE_ARABIC,
+      letterhead: null, mastheadHtml: null, masthead: 'none' };
+  }
   if (job.kind === 'catalog') {
     // The catalogue lays out its own A4 pages, edge to edge, with its own
     // footers (styled like the letterhead's foot). Its cover carries the same
@@ -312,6 +326,9 @@ function renderFor(job) {
 // Scripts that would show a consent banner or count a visit if they ran while
 // rendering. The generator refuses them.
 const BLOCKED_SCRIPTS = /\/assets\/(consent|analytics|locale-switch)\.js(\?|$)/;
+
+// The spec sheets moved to the new design so far (build-pdf-sources.js).
+const { SPEC_SHEETS: REDESIGNED_SHEETS } = require('./build-pdf-sources');
 
 const JOBS = ['en', 'ar'].flatMap((locale) => [
   ...GUIDE_SLUGS.map((slug) => ({
@@ -340,7 +357,13 @@ const JOBS = ['en', 'ar'].flatMap((locale) => [
   },
   // One specification sheet per product: the same page's single-product view
   // (?product=<key>). Public. ONLY=spec-sheets builds all twenty.
-  ...PRODUCTS.map(({ key, dir }) => ({
+  ...PRODUCTS.map(({ key, dir }) => (REDESIGNED_SHEETS.includes(key) ? {
+    // Redesigned (owner's PDF brief, 2026-10-12): its own A4 source, read
+    // from the same catalogue by scripts/build-pdf-sources.js.
+    locale, slug: `spec-${dir}`, group: 'spec-sheets', kind: 'sheet', public: true,
+    source: `scripts/pdf-sources/spec-sheets/${dir}-${locale}.html`,
+    out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/${dir}-${locale}.pdf`,
+  } : {
     locale, slug: `spec-${dir}`, group: 'spec-sheets', kind: 'print', public: true,
     source: locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html',
     query: `?product=${key}`,

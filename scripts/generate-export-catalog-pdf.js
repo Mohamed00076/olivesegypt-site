@@ -128,7 +128,21 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     // its page does not get clipped -- it spills a few lines onto a page of
     // their own, which is how both catalogues came to be 10 pages against a
     // designed 9 (and a Downloads page promising 9). Refuse to write that.
-    const designed = job.kind === 'catalog' ? await page.locator('.pdf-page').count() : null;
+    const designed = job.kind === 'catalog' || job.kind === 'sheet' ? await page.locator('.pdf-page').count() : null;
+
+    // A fixed page hides what does not fit, so a sheet that outgrows its page
+    // prints one page as designed with its last lines cut off or under the
+    // foot (the Arabic Phase A proof did). Refuse to write that.
+    if (job.kind === 'sheet') {
+      const crowded = await page.evaluate(() => [...document.querySelectorAll('.pdf-page')].map((pg, i) => {
+        const foot = pg.querySelector('.foot');
+        if (!foot) return null;
+        const limit = foot.getBoundingClientRect().top - 2;
+        const over = [...pg.children].filter((el) => el !== foot && el.getBoundingClientRect().bottom > limit);
+        return over.length ? `page ${i + 1}: ${over.map((el) => el.className || el.tagName).join(', ')}` : null;
+      }).filter(Boolean));
+      if (crowded.length) throw new Error(`${job.source}: content reaches the foot (${crowded.join('; ')}). Tighten it and run this again. Nothing was written for it.`);
+    }
 
     const outPath = path.join(ROOT, job.out);
     const pdf = await page.pdf(pdfOptions);
