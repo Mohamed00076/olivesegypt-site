@@ -9318,6 +9318,116 @@ No change.
 
 ---
 
+## Deploys 218 to 222 — Trailing-slash addresses, live site check (PRs #337, #338, #336, #339, #340)
+
+**Previous recorded deploy:** `61b4c12` (Deploy 217, PR #335)
+**Approvals:**
+- #337 merged by the owner (from another computer and session), 2026-10-12.
+- "keep both for now, merge" (#338, #336; Google Analytics kept alongside Umami).
+- "i want you to check and drive all of these" / "drive this" (the live check).
+- "merge" (#339).
+- "drive all this" (the deploy marker, Dependabot).
+- "merge" (#340).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 218 | #337 | `f024c2a` | 2026-10-12 02:57:54 | 102 | +1016 / −1011 | Addresses (98 pages, sitemap, `llms.txt`), generators, checks |
+| 219 | #338 | `7e97c98` | 2026-10-12 03:25:36 | 1 | +20 / −20 | PDF fingerprints |
+| 220 | #336 | `30ed226` | 2026-10-12 03:25:41 | 1 | +76 / −0 | Notes only |
+| 221 | #339 | `1653426` | 2026-10-12 03:32:17 | 4 | +185 / −0 | Live site check (GitHub Actions), publish pruning |
+| 222 | #340 | `0e4a213` | 2026-10-12 03:46:38 | 6 | +77 / −18 | Deploy marker, Dependabot, Actions v5 |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 220** recorded Deploys 216 and 217.
+
+### What the deploys did
+
+- **Deploy 218 — Trailing-slash addresses (#337).** Made from another session, which checked the live site: `/x` answers 301 to `/x/`.
+  - **Now `/x/` form:** canonical, hreflang, `og:url`, structured-data URLs, sitemap `<loc>` and `llms.txt`. That is 1,026 URLs on 98 pages.
+  - **Generators** emit the same form. Relative links are unchanged; each costs a visitor one 301.
+  - **Why:** this is the "trailing-slash clean-up" carried as blocked since Deploy 144, behind Search Console's "Page with redirect" and "Alternative page with proper canonical tag" rows.
+  - **Testing:** #337 was tested on Windows, where nine checks fail on `main` too, and `check-generator-parity` was not run.
+- **Deploy 219 — PDF fingerprints (#338).** Found when the full suite was run on Linux after #337: `guide-pdfs` failed because #337 changed the `<head>` of the sources of 36 PDFs. All 36 were rebuilt and are identical in text and pixels, so only `scripts/guide-pdfs.json` changed. Also checked:
+  - the whole suite, generator parity included, passes
+  - all 88 sitemap addresses end in `/`, each equals its page's canonical, and every hreflang alternate is a sitemap address
+- **Deploy 221 — Live site check (#339).** Building sessions cannot reach olivesegypt.com, so `scripts/check-live.js` runs on GitHub Actions (`.github/workflows/live-check.yml`): after every merge to `main`, daily at 08:17 Cairo time, and on demand. It is read-only and submits no form. It checks:
+  - every sitemap page: 200 and self-canonical
+  - `/x` → 301 `/x/`
+  - http → https
+  - `www` → apex
+  - CSP (allowing Google Analytics), HSTS, `nosniff` and `Referrer-Policy`
+  - no `gtag.js` before consent
+  - `/docs/`, `/scripts/` and `/.github/` answer 404
+  - a retired cultivar address redirects
+  - an unknown address answers 404
+
+  `.github` is added to `scripts/prune-publish.js` and to `check-publish-exclusions.js`.
+- **Deploy 222 — Deploy marker, Dependabot, Actions v5 (#340).**
+  - **Deploy marker:** the build writes `/deployed-commit.txt` from Netlify's `COMMIT_REF` (`scripts/write-deploy-marker.js`). The live check waits for the merged commit, and fails if the live site is behind `main`; before this, a failed Netlify deploy went unnoticed.
+  - **Dependabot:** `.github/dependabot.yml` proposes version updates, weekly for npm (grouped minor and patch) and monthly for GitHub Actions.
+  - **Actions:** `checkout` and `setup-node` move to v5, with Node 22.
+
+### Verified on the live site (GitHub Actions, 2026-10-12)
+
+- **First run** (run 38188388646, after #339): 16 of 16 OK.
+- **Run after #340** (run 38189310374): 16 of 16 OK. It compared by sitemap because no marker existed yet.
+- **Manual run** (run 38189358107): 16 of 16 OK, including **"The live site is the latest commit on main — 0e4a213"**.
+- **`www.olivesegypt.com`:** GoDaddy CNAME `www` → `stirring-manatee-ca2643.netlify.app` (done by the owner from another computer).
+  - It is seen by the authoritative servers and by four public resolvers.
+  - The certificate covers both names, valid to 2026-11-30.
+  - `https://www` 301s to the apex. The owner's own network still showed it failing at the time, which is a cached negative DNS answer on their side.
+
+  The `www` DNS step, carried since Deploy 4, is **done**.
+- **Trailing slash:** done and verified, with all 86 slash-less addresses answering one 301.
+
+### Owner decisions
+
+- Google Analytics is kept alongside Umami for now. Data retention is to be set in GA4, and GA goes on the counsel list with C-55.
+- Live checks run on GitHub's servers.
+- Dependabot version updates are on. Security alerts await the owner's switch in Settings → Code security (both repos).
+
+### Outstanding items
+
+- **Item 10 (enquiry emails):** the owner reports the Resend and Netlify settings done (2026-10-12). It **closes on the owner's confirmation** that one test enquiry reached every `NOTIFY_EMAIL` inbox from an `@olivesegypt.com` sender. Neither GitHub's check nor this session can submit a form.
+
+### Claim register
+
+162 claims. No change.
+
+### Rollback
+
+- **Deploy 222:** `git revert -m 1 0e4a213`.
+- **Deploy 221:** `git revert -m 1 1653426`, or disable the workflow in the Actions tab.
+- **Deploy 219:** `git revert -m 1 7e97c98`.
+- **Deploy 218:** `git revert -m 1 f024c2a`, together with Deploy 219.
+- **Deploy 220** is documentation only.
+
+### Known limitations shipped with Deploys 218 to 222
+
+- **Owner:**
+  - test enquiry (item 10)
+  - Dependabot alerts (both repos)
+  - Search Console: resubmit `sitemap.xml`; remove `/ar/sitemap.xml`, `/ar/` and `/`; "Validate fix" on the two duplicate reports
+  - GA4 data retention
+  - `www` on the owner's own network (DNS cache)
+  - delete the leftover `claude/www-diagnose` branch (a branch-only diagnostic workflow; GitHub refused deletion from the session)
+- **Not done:** relative links still use the `/x` form, one 301 each. That is left for a separate change.
+- **Unchanged from Deploys 216 and 217:**
+  - the Arabic wording listed there
+  - the privacy-page Google Analytics paragraphs, for the owner's and counsel's review
+  - photographs and certificates
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the `/privacy` Search Console row
+  - counsel: C-55, the privacy values, Google Analytics
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9333,7 +9443,7 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 215 (2026-10-11).**
+**Unchanged since U3, through Deploy 222 (2026-10-12).**
 
 ## Outstanding, unresolved by this document
 
