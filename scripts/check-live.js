@@ -181,6 +181,42 @@ async function main() {
     } catch (e) { fail('Umami tracker is reachable', e.message); }
   }
 
+  // Private data stays private. Every API route in netlify.toml is either
+  // probed here -- a GET with no session and with a forged one, at its /api
+  // address and at the /.netlify/functions address that skips the redirect
+  // rules, each of which must be refused -- or listed below as not probed,
+  // with the reason. Only GETs are sent: nothing is written, deleted or
+  // logged into. A route added to netlify.toml and to neither list fails.
+  const PROTECTED = ['/api/inquiries', '/api/leads', '/api/consent', '/api/analytics',
+    '/api/analytics-report', '/api/analytics-settings', '/api/analytics-privacy', '/api/crm/auth/me',
+    '/api/crm/buyers', '/api/crm/activity', '/api/crm/dashboard', '/api/crm/csv', '/api/crm/data-quality',
+    '/api/crm/documents', '/api/kpi-definitions', '/api/kpi-values', '/api/kpi-dashboard'];
+  const NOT_PROBED = {
+    '/api/auth/me': 'answers {"authenticated":false} to anyone not signed in, by design',
+    '/api/unsubscribe': 'public by design; its admin list (?list=1) is probed below',
+    '/api/analytics-collect': 'receives consented visits; POST only',
+    '/api/auth/login': 'sign-in; POST only', '/api/auth/logout': 'POST only',
+    '/api/crm/auth/login': 'sign-in; POST only', '/api/crm/auth/logout': 'POST only',
+    '/api/crm/auth/forgot': 'POST only', '/api/crm/auth/reset': 'POST only',
+  };
+  const toml = fs.readFileSync(path.join(ROOT, 'netlify.toml'), 'utf8');
+  const routes = [...toml.matchAll(/from = "(\/api\/[^"]+)"\s*\n\s*to = "(\/\.netlify\/functions\/[^"]+)"/g)].map((m) => ({ api: m[1], fn: m[2] }));
+  const unlisted = routes.filter((r) => !PROTECTED.includes(r.api) && !NOT_PROBED[r.api]).map((r) => r.api);
+  if (unlisted.length) fail('Every API route is checked for private data', `not in check-live.js: ${unlisted.join(', ')}`);
+  const probes = [];
+  for (const r of routes.filter((x) => PROTECTED.includes(x.api))) {
+    const q = r.api === '/api/leads' ? ['', '?export=market_report'] : [''];
+    for (const s of q) probes.push(r.api + s, r.fn + s);
+  }
+  probes.push('/api/unsubscribe?list=1', (routes.find((r) => r.api === '/api/unsubscribe') || { fn: '/api/unsubscribe' }).fn + '?list=1');
+  const FORGED = 'tc_session=eyJhbGciOiJub25lIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.; tc_crm_session=forged.forged.forged';
+  const open = (await pool(probes.flatMap((p) => [[p, ''], [p, FORGED]]), 6, async ([p, cookie]) => {
+    try { const r = await get(BASE + p, cookie ? { headers: { 'user-agent': 'olivesegypt-live-check', cookie } } : {}); return [401, 403].includes(r.status) ? null : `${p} (${cookie ? 'forged session' : 'no session'}) → HTTP ${r.status}`; }
+    catch (e) { return `${p} → ${e.message}`; }
+  })).filter(Boolean);
+  if (open.length) fail('Private data refuses visitors who are not signed in', open.slice(0, 8).join('; '));
+  else ok('Private data refuses visitors who are not signed in', `${probes.length} addresses, each with no session and a forged one`);
+
   // HTTPS certificates. Netlify renews them by itself; a renewal that fails
   // (a DNS record changed at GoDaddy, a domain removed in Netlify) shows
   // only when browsers start refusing the site. Warn two weeks ahead.
