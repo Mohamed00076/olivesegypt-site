@@ -54,6 +54,7 @@ const PRUNER = 'scripts/prune-publish.js';
 // Must be gone from the artifact. Spot checks inside the pruned directories,
 // not just the directories themselves.
 const MUST_BE_ABSENT = [
+  '.github', '.github/workflows/live-check.yml',
   'docs', 'docs/security-audit-2026-09.md', 'docs/app-access-inventory.md',
   'docs/g0-counsel-questions.md', 'docs/g1-data-flow-inventory.md',
   'docs/claim-and-evidence-register.csv', 'docs/deployment-record.md',

@@ -67,6 +67,7 @@ const ROOT = path.join(__dirname, '..');
 // the company's domain. Directories first; scripts/ last, because this file
 // lives in it.
 const PRUNE = [
+  '.github',
   'docs',
   'contrast-audit.md',
   'mobile-nav-overlap-audit.md',

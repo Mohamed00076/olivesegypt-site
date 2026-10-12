@@ -1,0 +1,31 @@
+# The live site, checked from GitHub's servers (scripts/check-live.js).
+# Runs after every merge to main (waiting until that merge is live on
+# Netlify), once a day, and on demand from the Actions tab. It only reads the
+# public site; it needs no secrets.
+name: Live site check
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 5 * * *'   # 08:17 Cairo
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-check
+  cancel-in-progress: true
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check olivesegypt.com
+        run: node scripts/check-live.js ${{ github.event_name == 'push' && '--wait' || '' }}
