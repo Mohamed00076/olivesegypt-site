@@ -193,6 +193,7 @@
       }).then(function (result) {
         if (submitBtn) submitBtn.disabled = false;
         if (result.ok && result.data && result.data.ok) {
+          if (window.TC && TC.trackLead) TC.trackLead(gated ? 'guide_download' : 'lead_form', segment);
           // A form may state its own confirmation: 'we have your brief' is
           // right for the private-label brief and wrong for a subscription.
           showStatus('success', form.getAttribute('data-success-message')

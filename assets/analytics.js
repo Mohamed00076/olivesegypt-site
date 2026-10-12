@@ -73,6 +73,27 @@
     }
   };
 
+  // Google Analytics: one "generate_lead" event per CONFIRMED enquiry
+  // (2026-10-12, owner: "add enquiry tracking"). It is GA's recommended event
+  // name for a lead, so it can be marked a key event in GA and used by Google
+  // Ads later. Same rule as everything above: only with analytics consent,
+  // and only after the server answered ok -- callers fire it from their
+  // success branch. It carries the form and the kind of request, never a
+  // name, email, phone number, company or message; GA records the page and
+  // traffic source itself. gtag exists only once consent.js has loaded GA.
+  TC.trackLead = function (form, leadType) {
+    if (!TC.consent.analytics) return;
+    if (typeof window.gtag !== 'function') return;
+    try {
+      window.gtag('event', 'generate_lead', {
+        form_name: String(form || '').slice(0, 40),
+        lead_type: String(leadType || '').slice(0, 60)
+      });
+    } catch (e) {
+      // Analytics must never break the page.
+    }
+  };
+
   // Sitewide click delegation for events that don't need form-specific
   // context: WhatsApp links, mailto links, and spec/catalog downloads.
   // Wrapped defensively -- these events are best-effort UX telemetry,

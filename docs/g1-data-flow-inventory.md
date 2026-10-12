@@ -107,8 +107,9 @@ retention configuration is a `[TODO: confirm]` for whoever administers it.
 | Browser, OS, device, screen size, language | Browser | Google Analytics | Traffic analytics | analytics | `[TODO: confirm]` | Low risk, part of device fingerprint surface |
 | Approximate location (IP-derived) | Google, from the request IP | Google Analytics | Traffic analytics | analytics | `[TODO: confirm]` | Yes (location) |
 | Enhanced-measurement events (scrolls, outbound clicks, file downloads, form interactions) | gtag.js, automatic | Google Analytics | Engagement analytics | analytics | `[TODO: confirm]` | Low risk; no form field values are sent |
+| `generate_lead` event: `form_name` (contact, sample, guide_download, lead_form) and `lead_type` (e.g. "Quote Request", a guide's segment) | `TC.trackLead` in `assets/analytics.js`, called from the success branch of `assets/inquiry-form.js` and `assets/gated-download.js` (added 2026-10-12) | Google Analytics | Counting enquiries as a key event; which pages and sources lead to them | analytics | `[TODO: confirm]` | No: no name, email, phone, company or message; held by `check-csp-allows.js` |
 
-**Notes:** this codebase sends Google no custom events and no form contents; `TC.trackEvent` still goes to Umami only. Open for counsel alongside the other G0 questions: the transfer of this data to Google outside Egypt, and the legal basis for it.
+**Notes:** the one custom event this codebase sends Google is `generate_lead` (above), after a confirmed submission; no form contents. `TC.trackEvent` still goes to Umami only. Open for counsel alongside the other G0 questions: the transfer of this data to Google outside Egypt, and the legal basis for it.
 
 ## 6. Consent record (new, built for G2 — `netlify/functions/consent.js` → Postgres `consent_log` table)
 

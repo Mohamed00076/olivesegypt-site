@@ -94,6 +94,17 @@ t('the Umami host is really used by consent.js (else its CSP entry should go)',
       'gtag.js must be injected by consent.js after consent, never by a static tag in a page');
     t('   and withdrawing consent switches it off and removes its cookies',
       /else \{\s*disableGoogleAnalytics\(\);/.test(consent) && /window\['ga-disable-' \+ GA_MEASUREMENT_ID\] = true;/.test(consent));
+    // The enquiry event (2026-10-12): consent-gated, success-only, no personal data.
+    const an = read('assets/analytics.js');
+    const lead = (an.match(/TC\.trackLead = function[\s\S]*?\n  \};/) || [''])[0];
+    t('   the "generate_lead" event is sent only with analytics consent and only once GA is loaded',
+      /if \(!TC\.consent\.analytics\) return;/.test(lead) && /typeof window\.gtag !== 'function'\) return;/.test(lead) && /'generate_lead'/.test(lead));
+    t('   and it carries only the form and the kind of request, no personal data',
+      lead !== '' && !/email|name\s*:|phone|company|message|source_page/i.test(lead.replace(/form_name/g, '')));
+    for (const [file, ok] of [['assets/inquiry-form.js', 'result.ok && result.data && result.data.ok'], ['assets/gated-download.js', 'result.ok && result.data && result.data.ok']]) {
+      const src = read(file); const i = src.indexOf(ok), j = src.indexOf('TC.trackLead('), k = src.indexOf('} else {', i);
+      t(`   ${file} sends it only after the server confirmed the enquiry`, i > -1 && j > i && (k === -1 || j < k));
+    }
   } else {
     t('no Google Analytics hosts are left in the CSP once consent.js stops loading it',
       !/google-analytics\.com|googletagmanager\.com/.test(csp));

@@ -151,6 +151,7 @@
           if (window.TC && TC.logEvent) {
             TC.logEvent(prefix + '_form_submit', { source_page: payload.source_page });
           }
+          if (window.TC && TC.trackLead) TC.trackLead(prefix, payload.request_type);
           form.reset();
           showStatus('success', successText);
           if (window.TC && TC.trackEvent) {
