@@ -317,6 +317,7 @@
     var el = tab();
     if (!el) return;
     el.style.top = '';
+    el.style.bottom = '';
     el.style.transform = '';
     el.style.visibility = '';
     if (!bannerHeight) return;
@@ -330,6 +331,15 @@
     // it for.
     if (window.innerWidth < 640) {
       el.style.visibility = 'hidden';
+      return;
+    }
+
+    // Below 1366px, and on touch screens, the tab is a round icon held 92px
+    // from the bottom, just above the WhatsApp bubble (the stylesheet, since
+    // 2026-10-10). The bubble rises by the banner's height, so the icon rises
+    // with it; lifting it to clear the banner instead put it on the bubble.
+    if (window.matchMedia && window.matchMedia('(max-width: 1365px), (hover: none)').matches) {
+      el.style.bottom = (92 + bannerHeight) + 'px';
       return;
     }
 
