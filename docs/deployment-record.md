@@ -9780,6 +9780,68 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 236 and 237 — Live security check; private data checked daily (PRs #355, #356)
+
+**Previous recorded deploy:** `d8bc27c` (Deploy 235, PR #354)
+**Approvals:**
+- "merge" (#355).
+- "do 1" (the live security check, read-only), then "add it" and "merge" (#356).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 236 | #355 | `bfad891` | 2026-10-12 13:05:59 | 1 | +65 / −1 | Notes only |
+| 237 | #356 | `7773516` | 2026-10-12 13:13:05 | 1 | +36 / −0 | Live check: private data |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 236** recorded Deploys 234 and 235.
+
+### Live security check (2026-10-12, read-only)
+
+The first check of the admin and CRM areas against the live site rather than a local copy.
+- **Requests sent:** GETs only. No sign-in was attempted and no record was touched.
+- **19 data addresses**, each tried with no session, with a forged admin/CRM session, and at both `/api/...` and `/.netlify/functions/...`. Every one answered 401.
+  - The routes: enquiries, leads and the market-report export, consent records, the unsubscribe admin list, the CRM (session, buyers, activity, dashboard, CSV, data quality, documents), analytics (data, report, settings, privacy) and the KPIs.
+- **A 20th address, `/api/auth/me`, answered 200, by design:** it answers `{"authenticated":false,"user":null}`.
+- **Gated guides:** with no token or a forged one, they answer 403.
+- **`/crm/`, `/crm/buyers/`, `/crm/login/` and `/admin/analytics/`:** these load as data-free shells, with `noindex` both in the page and in `X-Robots-Tag`.
+- **CORS:** no `Access-Control-Allow-Origin` header on any route.
+- **Not tested live, on purpose:**
+  - **Writes and deletes.** The code was read instead: `deleteSubmission` requires a CRM session and `confirmed=1`.
+  - **The scheduled functions** (`analytics-retention`, `geo-refresh`, `search-console-import`). Calling one could start real work.
+
+### What the deploys did
+
+- **Deploy 237 — Private data checked every day (#356).**
+  - **The check:** `check-live.js` now sends the same read-only probes on every run: 38 addresses (19 routes × the `/api` and direct function forms), each with no session and with a forged one, and each must answer 401 or 403.
+  - **Coverage guard:** every `/api` route in `netlify.toml` must be either probed or listed as not probed with its reason. A new route on neither list fails the run.
+  - **Shown to fail when it should:**
+    - treating the public `/api/auth/me` as private fails the run
+    - a route missing from both lists is named
+  - **Before merge:** a workflow run on the branch (38234748082) passed the new check.
+
+### Verified on the live site (GitHub Actions, 2026-10-12)
+
+- **Run after #356** (run 38234926345): success, with "Private data refuses visitors who are not signed in — 38 addresses" OK.
+
+### Claim register
+
+162 claims. No change.
+
+### Rollback
+
+- **Deploy 237:** `git revert -m 1 7773516`.
+- **Deploy 236** is documentation only.
+
+### Known limitations shipped with Deploys 236 and 237
+
+- **Unchanged from Deploys 234 and 235.**
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9798,7 +9860,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 235 (2026-10-12).**
+**Unchanged since U4, through Deploy 237 (2026-10-12).**
 
 ## Outstanding, unresolved by this document
 
