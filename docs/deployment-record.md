@@ -9428,6 +9428,119 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 223 to 229 and U4 — Dependency updates, database driver 1.2, enquiries in Google Analytics, Umami collecting (PRs #345, #343, #341, #342, #346, #347, #348; Umami #4)
+
+**Previous recorded deploy:** `0e4a213` (Deploy 222, PR #340)
+**Approvals:**
+- "merge and fix the database update" (#345, and Dependabot #343, #341, #342). Dependabot #344 (database driver 1.2) was closed unmerged: it would have broken 21 database calls, and #346 replaces it.
+- "do whats recommended" (#346).
+- "merge drive the rest" (#347).
+- "merge" (#348).
+- "merge" (Umami #4).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 223 | #345 | `743a776` | 2026-10-12 03:51:37 | 1 | +111 / −1 | Notes only |
+| 224 | #343 | `5553470` | 2026-10-12 03:51:43 | 2 | +5 / −5 | `google-auth-library` 11.2.0 |
+| 225 | #341 | `995432d` | 2026-10-12 03:51:50 | 1 | +1 / −1 | `actions/setup-node` v7 |
+| 226 | #342 | `7568815` | 2026-10-12 03:55:18 | 1 | +1 / −1 | `actions/checkout` v7 |
+| 227 | #346 | `b2f4230` | 2026-10-12 03:58:52 | 14 | +77 / −152 | Database driver 1.2, Node 22 on Netlify |
+| 228 | #347 | `79603fb` | 2026-10-12 11:21:51 | 8 | +40 / −5 | Enquiry event in Google Analytics, privacy sentence |
+| 229 | #348 | `df81439` | 2026-10-12 11:50:23 | 1 | +17 / −0 | Live check: Umami tracker |
+| U4 | Umami #4 | `c1c4303` | 2026-10-12 12:00:08 | 3 | +22 / −0 | Umami tracker built on Netlify |
+
+Files and lines are each merge against the `main` (or, for U4, `master`) it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 223** recorded Deploys 218 to 222.
+
+### What the deploys did
+
+- **Deploys 224 to 226 — Dependabot.** These are the first proposals from the Dependabot set-up in Deploy 222.
+  - **224:** `google-auth-library` 11.0.2 → 11.2.0. It is used only by `_gsc_lib.js` for Search Console access.
+  - **225 and 226:** the GitHub Actions `setup-node` and `checkout` move to v7. Every live check since runs on them.
+- **Deploy 227 — Database driver 1.2 (#346, replacing Dependabot #344).** Version 1.x of `@neondatabase/serverless` refuses the old call form `sql(text, params)`; tagged templates are unchanged.
+  - **The 21 direct calls** become `sql.query(text, params)`: 16 in `analytics-report.js`, 2 in `crm-buyers.js`, 1 in `_crm_lib.js`, 2 in `analytics-retention.js`.
+  - **Tests:** the six test doubles gain `.query`. `check-neon-call-shapes` is rewritten for 1.x, and it was confirmed to catch one call put back to the old form.
+  - **Node 22** is pinned for Netlify builds in `netlify.toml`.
+- **Deploy 228 — Enquiries counted in Google Analytics (#347).** `TC.trackLead` in `assets/analytics.js` sends one `generate_lead` event, with `form_name` and `lead_type` only.
+  - **When:** only after a confirmed send, from the success branches of `inquiry-form.js` and `gated-download.js`.
+  - **Conditions:** only with Analytics consent, and only when Google Analytics has loaded.
+  - **Not sent:** no name, email, company or message.
+  - **Privacy pages:** each gains one sentence (EN and AR) saying so. The data-flow inventory §5a follows. **The Arabic sentence is for the owner's review.**
+  - **Check:** `check-csp-allows` guards the three conditions. It was browser-tested with stubs: no event without consent, and none on a failed send.
+- **Deploy 229 — Live check: the Umami tracker (#348).** `check-live.js` fetches the `UMAMI_SRC` that `consent.js` loads, and fails unless it answers 200 JavaScript. It names Netlify's login protection when that is the cause.
+- **Deploy U4 — Umami tracker built on Netlify (Umami #4).** See "Umami" below.
+
+### Umami (2026-10-12)
+
+Umami had been recording no visits from olivesegypt.com, for two separate reasons:
+
+1. **Netlify's team-login protection** covered the whole Umami site. Every address, the tracker included, answered 401 with a redirect to Netlify's login, so a visitor's browser could not load the tracker. The first live check run after #348 (run 38226061215) failed on exactly this, with the other 16 checks OK. **The owner removed the protection** (Visitor access: no protection).
+   - **Risk:** low. Umami's own login still guards every dashboard and setting.
+   - **Now public:** only the login page, `/api/heartbeat` and the collection endpoint `/api/send`. Every Umami installation needs these public.
+   - **Headers:** Umami serves CSP, HSTS (preload) and `nosniff`.
+2. **The tracker was never built.** `/script.js` and `/recorder.js` answered 404 on production and on every deploy preview checked.
+   - **Cause:** both files are gitignored and produced only by `pnpm build`, and the build command set in Netlify's UI skips that step. The rest of `public/` was served.
+   - **Fix (U4):** a local build plugin, `netlify/plugins/build-tracker`. It runs both rollup builds before the UI build command, which stays as it is, and fails the deploy if either file is missing.
+   - **Verified:** on deploy-preview-4, then on production after the merge. `/script.js` (4,735 bytes) and `/recorder.js` answer 200 `application/javascript`, the tracker posts to `/api/send`, and `/login` and `/api/heartbeat` answer 200.
+
+**Not yet confirmed:** a consenting visit appearing in Umami → Realtime. The owner cannot sign in to Umami ("incorrect username or password"), and the session is not permitted to test credentials or make a password. The owner's steps:
+- Try the `UMAMI_USERNAME` / `UMAMI_PASSWORD` values held in the site's Netlify environment.
+- Failing that, reset the password in Neon's SQL Editor with `pgcrypto`, then update `UMAMI_PASSWORD` in the site's Netlify environment.
+
+**Consequence for the CRM:** Admin → Analytics reads Umami with those same values, so it shows nothing until they work.
+
+### Verified on the live site (GitHub Actions, 2026-10-12)
+
+- **After #346:** run 38190089880 — all OK.
+- **After #347:** run 38223115816 — all OK.
+- **After #348:** run 38226061215 — 16 OK, 1 FAIL ("Umami tracker is reachable": HTTP 401, Netlify login protection), as described above.
+- **Manual run after U4:** run 38227273236 — **17 of 17 OK**, including "Umami tracker is reachable — umami-olivesegypt.netlify.app" and "The live site is the latest commit on main — df81439".
+- **The run after #343 was cancelled.** Run 38189634554 was superseded by the run for #341 a few seconds later.
+
+### Owner confirmations
+
+- **Item 10 (enquiry emails) is closed.** The owner sent test enquiries and reports "emails arrived" (2026-10-12), then deleted the four test enquiries from the CRM themselves. No real buyer record was touched.
+
+### Claim register
+
+162 claims. No change. The privacy sentence describes this site's own processing; it is not a product or company claim.
+
+### Rollback
+
+- **Deploy 229:** `git revert -m 1 df81439`.
+- **Deploy 228:** `git revert -m 1 79603fb`.
+- **Deploy 227:** `git revert -m 1 b2f4230`. This also takes the driver back to 0.10.4.
+- **Deploys 224 to 226:** revert each merge (`5553470`, `995432d`, `7568815`).
+- **Deploy U4:** `git revert -m 1 c1c4303` in `umami-olivesegypt`. Umami returns to serving no tracker.
+- **Deploy 223** is documentation only.
+
+### Known limitations shipped with Deploys 223 to 229 and U4
+
+- **Owner:**
+  - Umami sign-in, then a check that a consenting visit appears in Realtime
+  - the CRM's Admin → Analytics report (depends on the Umami values)
+  - in GA4: mark `generate_lead` as a key event, set data retention, link Search Console
+  - Dependabot alerts (both repos)
+  - Search Console: resubmit `sitemap.xml`; remove `/ar/sitemap.xml`, `/ar/` and `/`; "Validate fix" on the two duplicate reports
+  - delete the leftover `claude/www-diagnose` branch
+  - review of the Arabic privacy sentence
+- **Unchanged from Deploys 218 to 222:**
+  - relative links in the `/x` form
+  - the Arabic wording listed there
+  - the privacy-page Google Analytics paragraphs, for counsel
+  - photographs and certificates
+  - sources for C-157 and C-158
+  - the health article wording
+  - the site name and AI summary steps
+  - the `/privacy` Search Console row
+  - counsel: C-55, the privacy values, Google Analytics
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9443,7 +9556,10 @@ to 71.
 overrides, which clear every advisory then known; plus the first changes to
 Umami's own code: the not-found component named, and the `biome lint`
 warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3.
-**Unchanged since U3, through Deploy 222 (2026-10-12).**
+**Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
+tracker (`/script.js`) and recorder, which no deploy had served before.
+Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
+**Unchanged since U4, through Deploy 229 (2026-10-12).**
 
 ## Outstanding, unresolved by this document
 
@@ -9652,6 +9768,9 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
     raised it again (C4). The three values are still unset, and nothing in
     Deploys 56 to 71 could set them.
     **Unchanged at Deploy 143 (2026-10-04).** The owner will set the values later.
+    **Closed 2026-10-12 (Deploy 229).** The owner set the Resend and Netlify
+    values, sent test enquiries, and reports "emails arrived". The four test
+    enquiries were then deleted by the owner.
 11. **Three owner decisions opened by Deploys 35 and 36** (opened 2026-09-26).
     None is a code task, and all three are live now.
     - **C-112 — the privacy notice.** A consenting visitor's enquiry is now
