@@ -75,6 +75,13 @@ t('   and the foot-of-page links and product-page paths are padded to a 24px tap
 t('on phones, tablets, laptops below 1366px and touch screens the insights tab is a round icon above the WhatsApp bubble',
   /@media \(max-width: 1365px\), \(hover: none\) \{\s*a\[data-testid="floating-blog-link"\] \{[^}]*border-radius: 9999px/.test(css) &&
   /@media \(max-width: 1365px\), \(hover: none\) \{\s*\[data-testid="floating-blog-link"\] \{\s*top: auto;/.test(css));
+// 2026-10-12: while the cookie banner was up, consent.js lifted the round
+// icon to just clear the banner -- where it had also lifted the WhatsApp
+// bubble, which then hid it (15 of 24 sizes tested). It now rises with the
+// bubble, by the banner's height, under the same media query as the CSS.
+t('   and the cookie banner lifts it with the bubble, not onto it',
+  /matchMedia\('\(max-width: 1365px\), \(hover: none\)'\)\.matches\)\s*\{\s*el\.style\.bottom = \(92 \+ bannerHeight\) \+ 'px';/.test(consent) &&
+  /a\[data-testid="floating-blog-link"\] \{[^}]*bottom: 92px;/.test(css));
 t('   and only a mouse-driven screen from 1366px gets the slim side handle',
   /@media \(min-width: 1366px\) and \(hover: hover\) \{\s*a\[data-testid="floating-blog-link"\] \{ --tw-translate-x/.test(css));
 t('the cookie control also sits in the footer, and the floating pill steps aside for it on phones',
