@@ -1,0 +1,31 @@
+# One-off diagnosis of www.olivesegypt.com (owner reports it not loading).
+# Runs only on pushes to this branch; the branch is not merged.
+name: www diagnosis
+on:
+  push:
+    branches: [claude/www-diagnose]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: DNS, certificate and HTTP for www and apex
+        run: |
+          sudo apt-get install -y -qq dnsutils >/dev/null 2>&1 || true
+          echo "== authoritative name servers"; dig +short NS olivesegypt.com
+          for ns in $(dig +short NS olivesegypt.com); do
+            echo "== @$ns  www"; dig +noall +answer www.olivesegypt.com @$ns
+            echo "== @$ns  apex A"; dig +noall +answer A olivesegypt.com @$ns
+          done
+          for r in 8.8.8.8 1.1.1.1 9.9.9.9 208.67.222.222; do
+            echo "== resolver $r  www"; dig +noall +answer +comments www.olivesegypt.com @$r | grep -E 'status:|IN' 
+          done
+          echo "== www AAAA"; dig +short AAAA www.olivesegypt.com @8.8.8.8
+          echo "== certificate served for www"
+          echo | openssl s_client -connect www.olivesegypt.com:443 -servername www.olivesegypt.com 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName || echo "TLS FAILED"
+          echo "== https://www"; curl -sS -o /dev/null -D - -m 20 https://www.olivesegypt.com/ | head -8 || true
+          echo "== http://www"; curl -sS -o /dev/null -D - -m 20 http://www.olivesegypt.com/ | head -6 || true
+          echo "== https://www/about/"; curl -sS -o /dev/null -w '%{http_code} -> %{redirect_url}\n' -m 20 https://www.olivesegypt.com/about/ || true
+          echo "== follow to the end"; curl -sSL -o /dev/null -w 'final %{http_code} %{url_effective}\n' -m 30 https://www.olivesegypt.com/ || true
