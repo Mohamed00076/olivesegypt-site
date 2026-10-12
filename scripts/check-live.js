@@ -150,6 +150,23 @@ async function main() {
   const nf = await get(BASE + '/this-page-does-not-exist/', { method: 'HEAD' });
   if (nf.status === 404) ok('Unknown address answers 404'); else fail('Unknown address answers 404', `HTTP ${nf.status}`);
 
+  // Umami: the tracker that consent.js loads after Accept must be reachable by
+  // a visitor. On 2026-10-12 the Umami site was found behind Netlify's
+  // team-login protection: every address, script.js included, answered 401
+  // with a redirect to app.netlify.com/edge-access, so no visit reached Umami
+  // and nothing on the site said so.
+  const umamiSrc = (fs.readFileSync(path.join(ROOT, 'assets/consent.js'), 'utf8').match(/UMAMI_SRC = '([^']+)'/) || [])[1];
+  if (!umamiSrc) fail('Umami tracker is reachable', 'UMAMI_SRC not found in assets/consent.js');
+  else {
+    try {
+      const r = await get(umamiSrc);
+      const js = /javascript/.test(r.headers.get('content-type') || '') && !/edge-access/.test(r.body);
+      if (r.status === 200 && js) ok('Umami tracker is reachable', new URL(umamiSrc).host);
+      else if (/edge-access/.test(r.body) || r.status === 401) fail('Umami tracker is reachable', `HTTP ${r.status}: the Umami site is behind Netlify's login protection, so no visit is recorded. Netlify → umami site → Site configuration → Access & security → Visitor access → no protection`);
+      else fail('Umami tracker is reachable', `HTTP ${r.status} ${r.headers.get('content-type') || ''}`);
+    } catch (e) { fail('Umami tracker is reachable', e.message); }
+  }
+
   // Report.
   const icon = { OK: '✅', FAIL: '❌', PENDING: '⏳' };
   const lines = results.map(([lvl, name, d]) => `${icon[lvl]} **${lvl}** ${name}${d ? ` — ${d}` : ''}`);
