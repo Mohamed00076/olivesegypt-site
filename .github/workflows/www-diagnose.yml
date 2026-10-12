@@ -29,3 +29,14 @@ jobs:
           echo "== http://www"; curl -sS -o /dev/null -D - -m 20 http://www.olivesegypt.com/ | head -6 || true
           echo "== https://www/about/"; curl -sS -o /dev/null -w '%{http_code} -> %{redirect_url}\n' -m 20 https://www.olivesegypt.com/about/ || true
           echo "== follow to the end"; curl -sSL -o /dev/null -w 'final %{http_code} %{url_effective}\n' -m 30 https://www.olivesegypt.com/ || true
+      - name: Each address www resolves to, http and https, as a phone
+        run: |
+          UA='Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36'
+          for ip in $(dig +short A www.olivesegypt.com @8.8.8.8 | grep -E '^[0-9.]+$'); do
+            echo "== $ip https"; curl -sS -o /dev/null -A "$UA" -w '%{http_code} -> %{redirect_url}  tls=%{ssl_verify_result}\n' -m 20 --resolve www.olivesegypt.com:443:$ip https://www.olivesegypt.com/ || echo FAILED
+            echo "== $ip http";  curl -sS -o /dev/null -A "$UA" -w '%{http_code} -> %{redirect_url}\n' -m 20 --resolve www.olivesegypt.com:80:$ip http://www.olivesegypt.com/ || echo FAILED
+            echo "== $ip cert"; echo | openssl s_client -connect $ip:443 -servername www.olivesegypt.com 2>/dev/null | openssl x509 -noout -subject -dates -ext subjectAltName || echo "TLS FAILED"
+          done
+          echo "== IPv6 reachable from runner?"; curl -6 -sS -o /dev/null -w '%{http_code}\n' -m 10 https://www.olivesegypt.com/ || echo "no IPv6 on runner"
+          echo "== www headers (HSTS etc.)"; curl -sS -D - -o /dev/null -A "$UA" -m 20 https://www.olivesegypt.com/ | head -15
+          echo "== apex as a phone, follow"; curl -sSL -o /dev/null -A "$UA" -w 'final %{http_code} %{url_effective}\n' -m 30 http://www.olivesegypt.com/
