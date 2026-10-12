@@ -9626,6 +9626,96 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 232 and 233 — Live audit; the cookie banner no longer hides the insights icon (PRs #351, #352)
+
+**Previous recorded deploy:** `1818530` (Deploy 231, PR #350)
+**Approvals:**
+- "merge" (#351).
+- "do 1 and 2" (live audit and outside links, read-only), then "fix the bug" and "merge" (#352).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 232 | #351 | `bcb0117` | 2026-10-12 12:27:01 | 1 | +87 / −2 | Notes only |
+| 233 | #352 | `e5a434e` | 2026-10-12 12:51:11 | 2 | +17 / −0 | Cookie banner and insights icon |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 232** recorded Deploys 230 and 231.
+
+### Live audit (2026-10-12, read-only)
+
+The first audit run against the live site from a session, now that the session can reach olivesegypt.com.
+
+- **Crawl** (Node, every sitemap page): 88 of 88 pages answer 200, with a median of 81 ms and the slowest at 628 ms. All 88 are compressed.
+  - **Referenced files:** all 183 same-site files they reference (images, PDFs, scripts, fonts, spec sheets) answer 200, and none redirects.
+  - **Page details:** titles, descriptions, a single H1, `lang`/`dir`, hreflang reciprocity, Open Graph images, no mixed content, and JSON-LD that parses on every page.
+- **Lighthouse, mobile, 12 key pages:**
+  - performance 91–99
+  - accessibility, best practices and SEO 100 each
+  - LCP 1.6–2.3 s
+  - CLS 0–0.005
+- **axe** (WCAG 2.1 AA, plus 2.2 AA), 88 pages in light and dark mode: no WCAG 2.1 violation. The 2.2 target-size rule found the bug fixed in Deploy 233.
+- **Method:** the session's Chromium does not trust the session proxy's certificate, and certificate checks were not disabled. Lighthouse and axe therefore ran through a local relay that fetched the live pages with Node and recompressed them as Netlify does. The figures include one extra local hop. Google PageSpeed Insights had used up its keyless daily quota.
+- **Noted, not changed:**
+  - Every file is served `max-age=0, must-revalidate`. Revalidation is cheap, and `index-Dw0yUE42.css` is edited in place despite its hashed name, so a long cache would serve stale styles.
+  - `/ar/media/news/` has a 68-character description, just under 70.
+  - The 14 Product nodes carry no `offers`, `review` or `aggregateRating`, so they are not eligible for product rich results. The pages still index normally, and adding any of these needs claims the owner can stand behind.
+- **Outside links:**
+  - The claim register cites evidence as text, not URLs, so there is nothing there to check.
+  - The WhatsApp link (91 pages) resolves to +20 100 604 5961.
+  - Facebook answers automated requests with 400, so the link is **for the owner to click once**.
+  - The GA and Umami scripts load.
+
+### What the deploys did
+
+- **Deploy 233 — Cookie banner no longer hides the insights icon (#352).** The bug predates this deploy.
+  - **Bug:** below 1366px and on touch screens, the insights tab is a round icon 92px from the bottom, above the WhatsApp bubble (Deploy of 2026-10-10). While the cookie banner was up, `consent.js` lifted the bubble by the banner's height but moved the icon to just clear the banner — the same spot — so the bubble covered it for every first-time visitor at those sizes.
+  - **Fix:** `positionTab` now raises the icon by the banner's height under the same media query as the CSS. Phones (under 640px) still hide it while the banner is up, and wide mouse screens keep the side handle.
+  - **Test:** 3 pages × 8 sizes, before and after accepting cookies. Without the fix 15 of 24 cases failed; with it, 0. `check-mobile-basics` guards the rule.
+  - **Commit note:** the PR's first commit carried only the check, because `consent.js` had been left unstaged. A second commit added it before the merge, and the merged change contains both.
+
+### Verified on the live site (GitHub Actions, 2026-10-12)
+
+- **Run after #352** (run 38232560168): success.
+- **Live file:** the live `consent.js` contains the new rule.
+
+### `www.olivesegypt.com` (owner report, 2026-10-12)
+
+The owner reports that `www` still does not work for them. From this session it does:
+- Google and Cloudflare DNS both answer CNAME `stirring-manatee-ca2643.netlify.app` (NS `ns65`/`ns66.domaincontrol.com`).
+- `https://www.olivesegypt.com/` and `/catalog/` answer 301 to the apex, and the target loads with 200.
+- The daily live check has passed "www redirects to olivesegypt.com" on every run since Deploy 222.
+
+What remains is on the owner's device or network: a cached failed lookup, or the ISP's resolver. Diagnosis was asked of the owner.
+
+### Claim register
+
+162 claims. No change.
+
+### Rollback
+
+- **Deploy 233:** `git revert -m 1 e5a434e`.
+- **Deploy 232** is documentation only.
+
+### Known limitations shipped with Deploys 232 and 233
+
+- **Owner:**
+  - `www` on their own device or network (see above)
+  - a click on the Facebook link
+  - Umami sign-in, then a check that a consenting visit appears in Realtime
+  - the CRM Admin → Analytics report
+  - in GA4: `generate_lead` as a key event, data retention, the Search Console link
+  - Dependabot alerts (both repos)
+  - Search Console: resubmit `sitemap.xml`; remove `/ar/sitemap.xml`, `/ar/` and `/`; "Validate fix" on the two duplicate reports
+  - delete the `claude/www-diagnose` branch
+  - review of the Arabic privacy sentence
+- **Unchanged from Deploys 230 and 231:** the remaining items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9644,7 +9734,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 231 (2026-10-12).**
+**Unchanged since U4, through Deploy 233 (2026-10-12).**
 
 ## Outstanding, unresolved by this document
 
