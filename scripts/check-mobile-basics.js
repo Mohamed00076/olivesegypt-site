@@ -81,7 +81,7 @@ t('the cookie control also sits in the footer, and the floating pill steps aside
   /function addFooterControl\(/.test(consent) && /#tc-consent-reopen\.tc-in-footer\{display:none;\}/.test(consent));
 
 // Both catalogues: every card offers a quote and its own language's spec sheet.
-for (const [f, contact, loc] of [['catalog/index.html', '/contact', 'en'], ['ar/catalog/index.html', '/ar/contact', 'ar']]) {
+for (const [f, contact, loc] of [['catalog/index.html', '/contact/', 'en'], ['ar/catalog/index.html', '/ar/contact/', 'ar']]) {
   const html = read(f);
   const slugs = [...html.matchAll(/data-product="([a-z-]+)"/g)].map((m) => m[1]);
   const pre = loc === 'ar' ? '/ar' : '';
@@ -100,7 +100,7 @@ const lactic = pages.filter((f) => f.startsWith('ar/') && /\b(lactic|acetic|citr
 t('no Arabic page leaves an acid name ("lactic", "acetic", "citric") in English', lactic.length === 0, lactic.join(', '));
 
 const faq = (f, href) => { const h = read(f); return h.slice(h.indexOf('<main'), h.indexOf('</main>')).includes(`href="${href}"`); };
-t('both homepages link to their FAQ page from the FAQ section', faq('index.html', '/resources/faq') && faq('ar/index.html', '/ar/resources/faq'));
+t('both homepages link to their FAQ page from the FAQ section', faq('index.html', '/resources/faq/') && faq('ar/index.html', '/ar/resources/faq/'));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

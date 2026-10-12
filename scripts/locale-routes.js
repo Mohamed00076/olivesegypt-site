@@ -137,6 +137,17 @@ function pageFile(route, root = ROOT) {
   return path.join(root, route === '/' ? '' : route.slice(1), 'index.html');
 }
 
+/**
+ * How a link to a route is written in a page. Every page answers at /x/ and
+ * 301s /x to it (Deploy 218), so links carry the slash and cost no redirect.
+ * href() above stays slash-less: it names the ?lang=ar redirect sources.
+ * The gated guides (FUNCTION_ROUTES) are rewritten to a function from both
+ * forms, so they keep the slash-less form they have always had.
+ */
+function linkHref(route) {
+  return route === '/' || FUNCTION_ROUTES.includes(route) ? href(route) : route + '/';
+}
+
 /** Normalise an href back to a route for comparison: strips query, hash, trailing slash. */
 function routeOf(hrefValue) {
   const p = String(hrefValue).split('?')[0].split('#')[0];
@@ -158,5 +169,5 @@ function buildMap(root = ROOT) {
 
 module.exports = {
   ROOT, SKIP_DIRS, AR_PREFIX, FUNCTION_ROUTES, isHtmlRoute, guideExt,
-  listRoutes, isArabic, toArabic, toEnglish, href, routeOf, pageFile, buildMap,
+  listRoutes, isArabic, toArabic, toEnglish, href, linkHref, routeOf, pageFile, buildMap,
 };

@@ -71,8 +71,8 @@ for (const [loc, list] of Object.entries(sets)) {
   t(`${where}: every card leads to a page that exists, and to a section it has`, broken.length === 0, broken.join('; '));
 
   const pre = loc === 'ar' ? '/ar' : '';
-  const want = ['/solutions/importer-distributor', '/solutions/retail', '/solutions/food-service',
-    '/resources/private-label', '/solutions/manufacturer', '/solutions/local-egypt'].map((r) => pre + r);
+  const want = ['/solutions/importer-distributor/', '/solutions/retail/', '/solutions/food-service/',
+    '/resources/private-label/', '/solutions/manufacturer/', '/solutions/local-egypt/'].map((r) => pre + r);
   const wrong = list.map((c, i) => [c, want[i]]).filter(([c, w]) => c.href !== w);
   t(`${where}: each card leads to its own Solutions page, and Private-Label to the private-label page`,
     wrong.length === 0, wrong.map(([c, w]) => `${c.title}: ${c.href}, expected ${w}`).join('; '));

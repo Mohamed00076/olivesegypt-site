@@ -139,7 +139,7 @@ def note(text):
 def products(lang):
     """The range, as chips that each open the product's page (Phase 3b)."""
     cells = ''.join(
-        f'<a href="{pre(lang)}/products/{slug}" class="tc-range-chip">{ar if lang == "ar" else en}</a>'
+        f'<a href="{pre(lang)}/products/{slug}/" class="tc-range-chip">{ar if lang == "ar" else en}</a>'
         for slug, en, ar in PRODUCTS)
     return f'<div class="flex flex-wrap gap-2">{cells}</div>'
 
@@ -157,11 +157,11 @@ def cta(h2, p, primary, secondary):
 def contact(lang, intent, slug):
     """The shared enquiry form, with the intent badge and the page it came from."""
     path = f'{pre(lang)}/solutions' + (f'/{slug}' if slug else '')
-    return f'{pre(lang)}/contact?intent={intent}&amp;from={path}'
+    return f'{pre(lang)}/contact/?intent={intent}&amp;from={path}'
 
 
 def sample(lang):
-    return (f'{pre(lang)}/sample', 'اطلب عينة' if lang == 'ar' else 'Request a Sample')
+    return (f'{pre(lang)}/sample/', 'اطلب عينة' if lang == 'ar' else 'Request a Sample')
 
 
 # ---- owner-confirmed copy (Solutions brief, 2026-09-29) -- do not paraphrase --
@@ -214,7 +214,7 @@ HUB_CARDS = [
 def hub_grid(lang):
     cells = ''
     for icon, slug, en_t, ar_t, en_d, ar_d in HUB_CARDS:
-        href = f'{pre(lang)}/solutions/{slug}' if slug else f'{pre(lang)}/resources/private-label'
+        href = f'{pre(lang)}/solutions/{slug}/' if slug else f'{pre(lang)}/resources/private-label/'
         t, d = (ar_t, ar_d) if lang == 'ar' else (en_t, en_d)
         cells += (f'<a href="{href}" class="group rounded-2xl border border-border bg-card p-6 text-center hover:border-primary/40 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">'
                   f'<div class="text-3xl mb-3">{icon_html(icon)}</div><h2 class="font-serif font-bold text-base text-foreground mb-1.5 group-hover:text-primary transition-colors">{t}</h2>'
@@ -264,17 +264,17 @@ PAGES['importer-distributor'] = {
                 ('Currency', 'USD or EUR'),
                 ('Samples', 'A representative 1&ndash;5 kg assortment, on request'),
                 ('Documentation', 'A full export documentation pack with every container (below)'),
-            ]) + note('Terms shown are current and indicative; exact terms are confirmed during quotation for the specific product and order. The six steps from enquiry to shipment are on ' + a('/how-we-work', 'How We Work') + '.')),
+            ]) + note('Terms shown are current and indicative; exact terms are confirmed during quotation for the specific product and order. The six steps from enquiry to shipment are on ' + a('/how-we-work/', 'How We Work') + '.')),
             block('Export documentation with every container',
                   'Every order is prepared with standard export documentation &mdash; commercial invoice, packing list, certificate of origin, phytosanitary or health certificate, and bill of lading. Additional documents your destination market requires are confirmed during quotation.',
-                  'Import duty and tariff treatment, including the correct HS classification for table olives in your market, vary by country and can change. Please confirm them with your own customs broker. Where our documentation stands today is set out on ' + a('/resources/certifications', 'Quality &amp; Documentation') + '.'),
+                  'Import duty and tariff treatment, including the correct HS classification for table olives in your market, vary by country and can change. Please confirm them with your own customs broker. Where our documentation stands today is set out on ' + a('/resources/certifications/', 'Quality &amp; Documentation') + '.'),
             block('Packaging for bulk and onward distribution',
-                  'For the lowest cost per kilogram on large volumes, olives ship in 220 kg plastic barrels. Food-grade buckets, tin cans and glass jars are also available, so a distributor can take retail-ready or food-service packs as well as bulk. Sizes and carton counts are on ' + a('/resources/packaging', 'Packaging &amp; Sizing') + '; caliber grading is explained there too.'),
+                  'For the lowest cost per kilogram on large volumes, olives ship in 220 kg plastic barrels. Food-grade buckets, tin cans and glass jars are also available, so a distributor can take retail-ready or food-service packs as well as bulk. Sizes and carton counts are on ' + a('/resources/packaging/', 'Packaging &amp; Sizing') + '; caliber grading is explained there too.'),
             block('Markets we are engaging',
-                  'We are actively building buyer relationships in Africa, the Middle East and Asia. As a newly established export company, we are direct about where things stand: we have not yet completed an export shipment, so these are markets we are engaging, not markets we already serve. More on ' + a('/resources/export-markets', 'Export Markets') + '.'),
+                  'We are actively building buyer relationships in Africa, the Middle East and Asia. As a newly established export company, we are direct about where things stand: we have not yet completed an export shipment, so these are markets we are engaging, not markets we already serve. More on ' + a('/resources/export-markets/', 'Export Markets') + '.'),
             block('Who does what',
-                  'Processing and brining are completed through our approved partner processing facility in the 10th of Ramadan Industrial Zone. ' + ORG + ' manages sourcing, product specification, buyer communication, export coordination and documentation. The full arrangement is on ' + a('/resources/supply-network', 'Supply &amp; Processing Network') + '.'),
-            block('The range', 'Seven products. Calibers, brine specification and formats are on each product&rsquo;s own page and in the ' + a('/catalog', 'catalogue') + '.', extra=products('en')),
+                  'Processing and brining are completed through our approved partner processing facility in the 10th of Ramadan Industrial Zone. ' + ORG + ' manages sourcing, product specification, buyer communication, export coordination and documentation. The full arrangement is on ' + a('/resources/supply-network/', 'Supply &amp; Processing Network') + '.'),
+            block('The range', 'Seven products. Calibers, brine specification and formats are on each product&rsquo;s own page and in the ' + a('/catalog/', 'catalogue') + '.', extra=products('en')),
         )
         + cta('Tell us your market and volume', 'We&#x27;ll come back with a tailored offer and confirm the terms for your order.',
               (contact('en', 'quote', 'importer-distributor'), 'Request a Quote'), sample('en'))),
@@ -294,17 +294,17 @@ PAGES['importer-distributor'] = {
                 ('العملة', 'الدولار أو اليورو'),
                 ('العينات', 'تشكيلة 1&ndash;5 كجم متاحة عند الطلب'),
                 ('المستندات', 'حزمة مستندات تصدير كاملة مع كل حاوية (أدناه)'),
-            ]) + note('الشروط الموضحة حالية واسترشادية؛ تُؤكَّد الشروط الدقيقة أثناء عرض السعر للمنتج والطلب المحدد. والخطوات الست من الاستفسار إلى الشحن على صفحة ' + a('/ar/how-we-work', 'كيف نعمل') + '.')),
+            ]) + note('الشروط الموضحة حالية واسترشادية؛ تُؤكَّد الشروط الدقيقة أثناء عرض السعر للمنتج والطلب المحدد. والخطوات الست من الاستفسار إلى الشحن على صفحة ' + a('/ar/how-we-work/', 'كيف نعمل') + '.')),
             block('مستندات التصدير مع كل حاوية',
                   'يُعَدّ كل طلب بمستندات تصدير قياسية &mdash; فاتورة تجارية، وقائمة تعبئة، وشهادة منشأ، وشهادة صحية أو نباتية، وبوليصة شحن. وتُؤكَّد المستندات الإضافية التي يتطلبها سوق وجهتك أثناء عرض السعر.',
-                  'تختلف الرسوم الجمركية ومعاملة التعرفة، بما في ذلك التصنيف الجمركي HS الصحيح لزيتون المائدة في سوقك، من بلد لآخر وقد تتغير. يُرجى تأكيدها مع مخلّصك الجمركي. ووضع مستنداتنا اليوم موضّح على صفحة ' + a('/ar/resources/certifications', 'الشهادات ومستندات الجودة') + '.'),
+                  'تختلف الرسوم الجمركية ومعاملة التعرفة، بما في ذلك التصنيف الجمركي HS الصحيح لزيتون المائدة في سوقك، من بلد لآخر وقد تتغير. يُرجى تأكيدها مع مخلّصك الجمركي. ووضع مستنداتنا اليوم موضّح على صفحة ' + a('/ar/resources/certifications/', 'الشهادات ومستندات الجودة') + '.'),
             block('التغليف للجملة وإعادة التوزيع',
-                  'لأقل تكلفة لكل كيلوجرام في الأحجام الكبيرة، يُشحن الزيتون في براميل بلاستيكية سعة 220 كجم. وتتوفر أيضًا دِلاء درجة غذائية، وعلب صفيح، وبرطمانات زجاجية، فيمكن للموزع أن يأخذ عبوات جاهزة للتجزئة أو لخدمات الأغذية إلى جانب الجملة. الأحجام وأعداد الكرتونة على صفحة ' + a('/ar/resources/packaging', 'التغليف والأحجام') + '، ومعها شرح تصنيف الأعيرة.'),
+                  'لأقل تكلفة لكل كيلوجرام في الأحجام الكبيرة، يُشحن الزيتون في براميل بلاستيكية سعة 220 كجم. وتتوفر أيضًا دِلاء درجة غذائية، وعلب صفيح، وبرطمانات زجاجية، فيمكن للموزع أن يأخذ عبوات جاهزة للتجزئة أو لخدمات الأغذية إلى جانب الجملة. الأحجام وأعداد الكرتونة على صفحة ' + a('/ar/resources/packaging/', 'التغليف والأحجام') + '، ومعها شرح تصنيف الأعيرة.'),
             block('الأسواق التي نتواصل معها',
-                  'نبني علاقات مع المشترين بفاعلية في أفريقيا والشرق الأوسط وآسيا. وبصفتنا شركة تصدير حديثة التأسيس، نحن صريحون بشأن الوضع الحالي: لم نُتمّ بعد أي شحنة تصدير، فهذه أسواق نتواصل معها، وليست أسواقًا نخدمها حاليًا. المزيد على صفحة ' + a('/ar/resources/export-markets', 'أسواق التصدير') + '.'),
+                  'نبني علاقات مع المشترين بفاعلية في أفريقيا والشرق الأوسط وآسيا. وبصفتنا شركة تصدير حديثة التأسيس، نحن صريحون بشأن الوضع الحالي: لم نُتمّ بعد أي شحنة تصدير، فهذه أسواق نتواصل معها، وليست أسواقًا نخدمها حاليًا. المزيد على صفحة ' + a('/ar/resources/export-markets/', 'أسواق التصدير') + '.'),
             block('من يقوم بماذا',
-                  'تُنجَز المعالجة والتخليل عبر منشأة المعالجة الشريكة المعتمدة في منطقة العاشر من رمضان الصناعية. وتتولى ' + ORG_AR + ' التوريد وتحديد مواصفات المنتج والتواصل مع المشترين وتنسيق التصدير والمستندات. والترتيب كاملًا على صفحة ' + a('/ar/resources/supply-network', 'شبكة التوريد والمعالجة') + '.'),
-            block('التشكيلة', 'سبعة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج وفي ' + a('/ar/catalog', 'الكتالوج') + '.', extra=products('ar')),
+                  'تُنجَز المعالجة والتخليل عبر منشأة المعالجة الشريكة المعتمدة في منطقة العاشر من رمضان الصناعية. وتتولى ' + ORG_AR + ' التوريد وتحديد مواصفات المنتج والتواصل مع المشترين وتنسيق التصدير والمستندات. والترتيب كاملًا على صفحة ' + a('/ar/resources/supply-network/', 'شبكة التوريد والمعالجة') + '.'),
+            block('التشكيلة', 'سبعة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج وفي ' + a('/ar/catalog/', 'الكتالوج') + '.', extra=products('ar')),
         )
         + cta('أخبرنا بسوقك وحجم طلبك', 'سنرسل لك عرضًا مخصصًا ونؤكد الشروط لطلبك.',
               (contact('ar', 'quote', 'importer-distributor'), 'اطلب عرض سعر'), sample('ar'))),
@@ -323,14 +323,14 @@ PAGES['retail'] = {
             block('Retail formats', extra=cards([
                 ('Glass jars', '320, 370, 467, 720 and 1050 ml &mdash; 12 jars per carton up to 720 ml, 6 at 1050 ml. Premium retail and deli presentation; shows the product and supports branded and private-label labels.'),
                 ('Tin cans', '65mm, A9, A10 and A12 &mdash; 12 per carton for 65mm, 6 for A9 and A10, 4 for A12. Shelf-stable and durable, and suited to warm-climate markets.'),
-            ]) + note('These are the jar and can sizes we currently quote. All formats, including buckets and barrels, are on ' + a('/resources/packaging#glass-jars', 'Packaging &amp; Sizing') + '.')),
+            ]) + note('These are the jar and can sizes we currently quote. All formats, including buckets and barrels, are on ' + a('/resources/packaging/#glass-jars', 'Packaging &amp; Sizing') + '.')),
             block('Choosing a caliber for the shelf',
-                  'Caliber is the count of olives per kilogram, so a lower number means larger olives. Premium retail jars typically use 101/110 to 181/200. The calibers available for each variety are on its product page and in the ' + a('/catalog', 'catalogue') + '.'),
+                  'Caliber is the count of olives per kilogram, so a lower number means larger olives. Premium retail jars typically use 101/110 to 181/200. The calibers available for each variety are on its product page and in the ' + a('/catalog/', 'catalogue') + '.'),
             block('Your own label',
-                  'Private label is available on all seven of our products, in glass, tin, bucket and barrel formats. We handle printing, filling and export documentation, and can help with label design on request &mdash; we are not a design agency. Products, limits and the brief form are on ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
+                  'Private label is available on all seven of our products, in glass, tin, bucket and barrel formats. We handle printing, filling and export documentation, and can help with label design on request &mdash; we are not a design agency. Products, limits and the brief form are on ' + a('/resources/private-label/', 'Private Label &amp; OEM') + '.'),
             block('The range', 'Seven products. Calibers, brine specification and formats are on each product&rsquo;s own page.', extra=products('en')),
             block('Order terms',
-                  'Retail orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor', 'Importers &amp; Distributors') + '.'),
+                  'Retail orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '.'),
         )
         + cta('Planning a retail range?', 'Tell us your formats, sizes and market — we&#x27;ll confirm options and send an offer.',
               (contact('en', 'quote', 'retail'), 'Request a Quote'), sample('en'))),
@@ -346,14 +346,14 @@ PAGES['retail'] = {
             block('صيغ التجزئة', extra=cards([
                 ('برطمانات زجاجية', '320 و 370 و 467 و 720 و 1050 مل &mdash; 12 برطمانًا في الكرتونة حتى حجم 720 مل، و 6 لحجم 1050 مل. عرض فاخر للتجزئة ومحلات الأطعمة الجاهزة؛ تُبرز المنتج وتدعم ملصقات العلامة التجارية والعلامة الخاصة.'),
                 ('علب صفيح', '65 مم و A9 و A10 و A12 &mdash; 12 علبة في الكرتونة لمقاس 65 مم، و 6 لمقاسي A9 و A10، و 4 لمقاس A12. ثابتة ومتينة على الرف، ومناسبة لأسواق المناخات الحارة.'),
-            ]) + note('هذه مقاسات البرطمانات والعلب التي نعرضها حاليًا. وجميع الصيغ، بما فيها الدِلاء والبراميل، على صفحة ' + a('/ar/resources/packaging#glass-jars', 'التغليف والأحجام') + '.')),
+            ]) + note('هذه مقاسات البرطمانات والعلب التي نعرضها حاليًا. وجميع الصيغ، بما فيها الدِلاء والبراميل، على صفحة ' + a('/ar/resources/packaging/#glass-jars', 'التغليف والأحجام') + '.')),
             block('اختيار العيار للرف',
-                  'العيار هو عدد حبات الزيتون لكل كيلوجرام، فالرقم الأقل يعني حبات أكبر. تستخدم برطمانات التجزئة الفاخرة عادة الأعيرة من 101/110 إلى 181/200. والأعيرة المتاحة لكل صنف على صفحة المنتج وفي ' + a('/ar/catalog', 'الكتالوج') + '.'),
+                  'العيار هو عدد حبات الزيتون لكل كيلوجرام، فالرقم الأقل يعني حبات أكبر. تستخدم برطمانات التجزئة الفاخرة عادة الأعيرة من 101/110 إلى 181/200. والأعيرة المتاحة لكل صنف على صفحة المنتج وفي ' + a('/ar/catalog/', 'الكتالوج') + '.'),
             block('علامتك الخاصة',
-                  'العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الزجاج والصفيح والدلو والبرميل. نتولى الطباعة والتعبئة ومستندات التصدير، ويمكننا المساعدة في تصميم الملصق عند الطلب &mdash; ولسنا وكالة تصميم. المنتجات والحدود ونموذج الموجز على صفحة ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
+                  'العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الزجاج والصفيح والدلو والبرميل. نتولى الطباعة والتعبئة ومستندات التصدير، ويمكننا المساعدة في تصميم الملصق عند الطلب &mdash; ولسنا وكالة تصميم. المنتجات والحدود ونموذج الموجز على صفحة ' + a('/ar/resources/private-label/', 'العلامة الخاصة و OEM') + '.'),
             block('التشكيلة', 'سبعة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
             block('شروط الطلب',
-                  'تتبع طلبات التجزئة شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor', 'المستوردون والموزعون') + '.'),
+                  'تتبع طلبات التجزئة شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '.'),
         )
         + cta('تخطط لتشكيلة تجزئة؟', 'أخبرنا بالصيغ والأحجام والسوق — وسنؤكد الخيارات ونرسل عرضًا.',
               (contact('ar', 'quote', 'retail'), 'اطلب عرض سعر'), sample('ar'))),
@@ -374,14 +374,14 @@ PAGES['food-service'] = {
                 ('Tin cans', 'Shelf-stable and durable, and suited to food service: 65mm, A9, A10 and A12.'),
                 ('Plastic barrels', '220 kg barrels for the lowest cost per kilogram on large volumes &mdash; the usual choice for repacking.'),
                 ('4 kg PET pail', 'For sliced jalape&ntilde;o peppers, 4 per carton.'),
-            ]) + note('Sizes and carton counts for every format are on ' + a('/resources/packaging#plastic-buckets', 'Packaging &amp; Sizing') + '.')),
+            ]) + note('Sizes and carton counts for every format are on ' + a('/resources/packaging/#plastic-buckets', 'Packaging &amp; Sizing') + '.')),
             block('Calibers and cuts for the kitchen',
-                  'Food-service and bulk repacking often use calibers of 201/230 and above, at a lower cost per kilogram than premium retail sizes. Whole, pitted, sliced and stuffed formats are available, depending on the product. What each variety offers is on its product page and in the ' + a('/catalog', 'catalogue') + '.'),
+                  'Food-service and bulk repacking often use calibers of 201/230 and above, at a lower cost per kilogram than premium retail sizes. Whole, pitted, sliced and stuffed formats are available, depending on the product. What each variety offers is on its product page and in the ' + a('/catalog/', 'catalogue') + '.'),
             block('The range', 'Seven products, including sliced jalape&ntilde;os, pepperoncini and marinated artichoke hearts alongside the olives.', extra=products('en')),
             block('Your own brand',
-                  'Supplying under your own food-service brand? Private label is available on all seven of our products, in bucket, tin, barrel and glass formats &mdash; see ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
+                  'Supplying under your own food-service brand? Private label is available on all seven of our products, in bucket, tin, barrel and glass formats &mdash; see ' + a('/resources/private-label/', 'Private Label &amp; OEM') + '.'),
             block('Order terms',
-                  'Food-service orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor', 'Importers &amp; Distributors') + '. Buying inside Egypt? See ' + a('/solutions/local-egypt', 'Buyers in Egypt') + '.'),
+                  'Food-service orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '. Buying inside Egypt? See ' + a('/solutions/local-egypt/', 'Buyers in Egypt') + '.'),
         )
         + cta('Tell us what your kitchens use', 'Pack sizes, cuts and volumes — we&#x27;ll confirm what fits and send an offer.',
               (contact('en', 'quote', 'food-service'), 'Request a Quote'), sample('en'))),
@@ -399,14 +399,14 @@ PAGES['food-service'] = {
                 ('علب صفيح', 'ثابتة ومتينة، ومناسبة لخدمات الأغذية: 65 مم و A9 و A10 و A12.'),
                 ('براميل بلاستيكية', 'براميل سعة 220 كجم لأقل تكلفة لكل كيلوجرام في الأحجام الكبيرة &mdash; الخيار المعتاد لإعادة التعبئة.'),
                 ('وعاء PET سعة 4 كجم', 'للفلفل الهالبينو المقطّع، 4 في الكرتونة.'),
-            ]) + note('الأحجام وأعداد الكرتونة لكل صيغة على صفحة ' + a('/ar/resources/packaging#plastic-buckets', 'التغليف والأحجام') + '.')),
+            ]) + note('الأحجام وأعداد الكرتونة لكل صيغة على صفحة ' + a('/ar/resources/packaging/#plastic-buckets', 'التغليف والأحجام') + '.')),
             block('الأعيرة والتقطيعات للمطبخ',
-                  'تستخدم خدمات الأغذية وإعادة التعبئة بالجملة غالبًا الأعيرة 201/230 وما فوق، بتكلفة أقل لكل كيلوجرام من أحجام التجزئة الفاخرة. وتتوفر صيغ كاملة، ومنزوعة النواة، ومقطعة، ومحشوة، حسب المنتج. وما يقدمه كل صنف على صفحة المنتج وفي ' + a('/ar/catalog', 'الكتالوج') + '.'),
+                  'تستخدم خدمات الأغذية وإعادة التعبئة بالجملة غالبًا الأعيرة 201/230 وما فوق، بتكلفة أقل لكل كيلوجرام من أحجام التجزئة الفاخرة. وتتوفر صيغ كاملة، ومنزوعة النواة، ومقطعة، ومحشوة، حسب المنتج. وما يقدمه كل صنف على صفحة المنتج وفي ' + a('/ar/catalog/', 'الكتالوج') + '.'),
             block('التشكيلة', 'سبعة منتجات، منها الهالبينو المقطّع والبيبرونشيني وقلوب الأرضي شوكي المتبّلة إلى جانب الزيتون.', extra=products('ar')),
             block('علامتك الخاصة',
-                  'توريد بعلامتك الخاصة لخدمات الأغذية؟ العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الدلو والصفيح والبرميل والزجاج &mdash; انظر ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
+                  'توريد بعلامتك الخاصة لخدمات الأغذية؟ العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الدلو والصفيح والبرميل والزجاج &mdash; انظر ' + a('/ar/resources/private-label/', 'العلامة الخاصة و OEM') + '.'),
             block('شروط الطلب',
-                  'تتبع طلبات خدمات الأغذية شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor', 'المستوردون والموزعون') + '. تشتري داخل مصر؟ انظر ' + a('/ar/solutions/local-egypt', 'المشترون داخل مصر') + '.'),
+                  'تتبع طلبات خدمات الأغذية شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '. تشتري داخل مصر؟ انظر ' + a('/ar/solutions/local-egypt/', 'المشترون داخل مصر') + '.'),
         )
         + cta('أخبرنا بما تستخدمه مطابخك', 'أحجام العبوات والتقطيعات والكميات — وسنؤكد ما يناسبك ونرسل عرضًا.',
               (contact('ar', 'quote', 'food-service'), 'اطلب عرض سعر'), sample('ar'))),
@@ -425,15 +425,15 @@ PAGES['manufacturer'] = {
             block('Co-packing and OEM supply', MFR_EN),
             block('What we work on with you', extra=cards([
                 ('Custom brine formulation', 'The brine your product needs, worked out with you. The specification is confirmed during quotation.'),
-                ('Specific caliber sorting', 'Olives sorted to the caliber range you specify &mdash; the count per kilogram. How caliber works is on ' + a('/resources/packaging', 'Packaging &amp; Sizing') + '.'),
+                ('Specific caliber sorting', 'Olives sorted to the caliber range you specify &mdash; the count per kilogram. How caliber works is on ' + a('/resources/packaging/', 'Packaging &amp; Sizing') + '.'),
                 ('Private packaging and labeling', 'Packing and labeling to your requirements, across glass, tin, bucket and barrel formats, with label design help on request.'),
             ])),
             block('Who does what',
-                  'Our team takes an active technical role: formulation, sorting and packaging and labeling decisions are worked out by us, with you. The physical processing, brining and packing are carried out at our approved partner processing facility in the 10th of Ramadan Industrial Zone. We do not own or operate a processing factory, and we do not present the partner facility as ours &mdash; the arrangement is set out on ' + a('/resources/supply-network', 'Supply &amp; Processing Network') + '.'),
+                  'Our team takes an active technical role: formulation, sorting and packaging and labeling decisions are worked out by us, with you. The physical processing, brining and packing are carried out at our approved partner processing facility in the 10th of Ramadan Industrial Zone. We do not own or operate a processing factory, and we do not present the partner facility as ours &mdash; the arrangement is set out on ' + a('/resources/supply-network/', 'Supply &amp; Processing Network') + '.'),
             block('How to start',
-                  'Send us your requirements &mdash; the product, the brine, the caliber, the packaging and labeling, and the volume. We will confirm what is feasible, the specification, and a quotation. A sample of the varieties you are considering can come first; see ' + a('/how-we-work', 'How We Work') + ' for the steps. Which products are offered for private label is on ' + a('/resources/private-label', 'Private Label &amp; OEM') + '.'),
+                  'Send us your requirements &mdash; the product, the brine, the caliber, the packaging and labeling, and the volume. We will confirm what is feasible, the specification, and a quotation. A sample of the varieties you are considering can come first; see ' + a('/how-we-work/', 'How We Work') + ' for the steps. Which products are offered for private label is on ' + a('/resources/private-label/', 'Private Label &amp; OEM') + '.'),
             block('Order terms',
-                  'OEM orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor', 'Importers &amp; Distributors') + '.'),
+                  'OEM orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '.'),
             block('The range', 'Seven products, with calibers, brine specification and formats on each product&rsquo;s own page.', extra=products('en')),
         )
         + cta('Send us your specification', 'Formulation, sort, packaging and volume — we&#x27;ll confirm feasibility and quote.',
@@ -450,15 +450,15 @@ PAGES['manufacturer'] = {
             block('التعبئة التعاقدية وتوريد OEM', MFR_AR),
             block('ما نعمل عليه معك', extra=cards([
                 ('تركيب المحلول الملحي المخصص', 'المحلول الملحي الذي يحتاجه منتجك، نحدده معك. وتُؤكَّد المواصفة أثناء عرض السعر.'),
-                ('فرز الأعيرة المحددة', 'زيتون مفروز بنطاق العيار الذي تحدده &mdash; عدد الحبات لكل كيلوجرام. وشرح الأعيرة على صفحة ' + a('/ar/resources/packaging', 'التغليف والأحجام') + '.'),
+                ('فرز الأعيرة المحددة', 'زيتون مفروز بنطاق العيار الذي تحدده &mdash; عدد الحبات لكل كيلوجرام. وشرح الأعيرة على صفحة ' + a('/ar/resources/packaging/', 'التغليف والأحجام') + '.'),
                 ('التغليف ووضع الملصقات الخاصة', 'تعبئة ووضع ملصقات بحسب متطلباتك، بصيغ الزجاج والصفيح والدلو والبرميل، مع إمكانية المساعدة في تصميم الملصق عند الطلب.'),
             ])),
             block('من يقوم بماذا',
-                  'يؤدي فريقنا دورًا فنيًا فعليًا: قرارات التركيب والفرز والتغليف ووضع الملصقات نعمل عليها نحن، معك. أما المعالجة والتخليل والتعبئة فعليًا فتُنفَّذ في منشأة المعالجة الشريكة المعتمدة في منطقة العاشر من رمضان الصناعية. نحن لا نمتلك مصنع معالجة ولا نُشغّله، ولا نقدّم المنشأة الشريكة على أنها ملكنا &mdash; والترتيب موضّح على صفحة ' + a('/ar/resources/supply-network', 'شبكة التوريد والمعالجة') + '.'),
+                  'يؤدي فريقنا دورًا فنيًا فعليًا: قرارات التركيب والفرز والتغليف ووضع الملصقات نعمل عليها نحن، معك. أما المعالجة والتخليل والتعبئة فعليًا فتُنفَّذ في منشأة المعالجة الشريكة المعتمدة في منطقة العاشر من رمضان الصناعية. نحن لا نمتلك مصنع معالجة ولا نُشغّله، ولا نقدّم المنشأة الشريكة على أنها ملكنا &mdash; والترتيب موضّح على صفحة ' + a('/ar/resources/supply-network/', 'شبكة التوريد والمعالجة') + '.'),
             block('كيف تبدأ',
-                  'أرسل لنا متطلباتك &mdash; المنتج، والمحلول الملحي، والعيار، والتغليف والملصقات، والكمية. وسنؤكد ما يمكن تنفيذه، والمواصفات، وعرض السعر. ويمكن أن تسبق ذلك عينة من الأصناف التي تدرسها؛ والخطوات على صفحة ' + a('/ar/how-we-work', 'كيف نعمل') + '. والمنتجات المتاحة للعلامة الخاصة على صفحة ' + a('/ar/resources/private-label', 'العلامة الخاصة و OEM') + '.'),
+                  'أرسل لنا متطلباتك &mdash; المنتج، والمحلول الملحي، والعيار، والتغليف والملصقات، والكمية. وسنؤكد ما يمكن تنفيذه، والمواصفات، وعرض السعر. ويمكن أن تسبق ذلك عينة من الأصناف التي تدرسها؛ والخطوات على صفحة ' + a('/ar/how-we-work/', 'كيف نعمل') + '. والمنتجات المتاحة للعلامة الخاصة على صفحة ' + a('/ar/resources/private-label/', 'العلامة الخاصة و OEM') + '.'),
             block('شروط الطلب',
-                  'تتبع طلبات OEM شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor', 'المستوردون والموزعون') + '.'),
+                  'تتبع طلبات OEM شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '.'),
             block('التشكيلة', 'سبعة منتجات، والأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
         )
         + cta('أرسل لنا مواصفاتك', 'التركيبة والفرز والتغليف والكمية — وسنؤكد إمكانية التنفيذ ونرسل عرض السعر.',
@@ -483,7 +483,7 @@ PAGES['local-egypt'] = {
                 ('Delivery within Egypt', 'Arranged and confirmed during quotation'),
             ])),
             block('Packaging and products',
-                  'Barrels, buckets, tins and jars are described on ' + a('/resources/packaging#plastic-barrels', 'Packaging &amp; Sizing') + ', and every product is in the ' + a('/catalog', 'catalogue') + '. Buying for food service or retail? The ' + a('/solutions/food-service', 'food-service') + ' and ' + a('/solutions/retail', 'retail') + ' pages cover those formats in more detail.',
+                  'Barrels, buckets, tins and jars are described on ' + a('/resources/packaging/#plastic-barrels', 'Packaging &amp; Sizing') + ', and every product is in the ' + a('/catalog/', 'catalogue') + '. Buying for food service or retail? The ' + a('/solutions/food-service/', 'food-service') + ' and ' + a('/solutions/retail/', 'retail') + ' pages cover those formats in more detail.',
                   extra=products('en')),
         )
         + cta('Request local pricing', 'Tell us the product, format and quantity — we&#x27;ll confirm pricing and delivery within Egypt.',
@@ -505,7 +505,7 @@ PAGES['local-egypt'] = {
                 ('التسليم داخل مصر', 'يُرتَّب ويُؤكَّد أثناء عرض السعر'),
             ])),
             block('التغليف والمنتجات',
-                  'البراميل والدِلاء والعلب والبرطمانات موضّحة على صفحة ' + a('/ar/resources/packaging#plastic-barrels', 'التغليف والأحجام') + '، وكل المنتجات في ' + a('/ar/catalog', 'الكتالوج') + '. تشتري لخدمات الأغذية أو للتجزئة؟ صفحتا ' + a('/ar/solutions/food-service', 'خدمات الأغذية') + ' و' + a('/ar/solutions/retail', 'التجزئة') + ' تتناولان هذه الصيغ بتفصيل أكبر.',
+                  'البراميل والدِلاء والعلب والبرطمانات موضّحة على صفحة ' + a('/ar/resources/packaging/#plastic-barrels', 'التغليف والأحجام') + '، وكل المنتجات في ' + a('/ar/catalog/', 'الكتالوج') + '. تشتري لخدمات الأغذية أو للتجزئة؟ صفحتا ' + a('/ar/solutions/food-service/', 'خدمات الأغذية') + ' و' + a('/ar/solutions/retail/', 'التجزئة') + ' تتناولان هذه الصيغ بتفصيل أكبر.',
                   extra=products('ar')),
         )
         + cta('اطلب أسعار السوق المحلي', 'أخبرنا بالمنتج والصيغة والكمية — وسنؤكد التسعير والتسليم داخل مصر.',
@@ -557,15 +557,15 @@ def build(slug, lang, p):
         '<script type="application/ld+json">\n' + json.dumps(ld, ensure_ascii=False, indent=2) + '\n</script>')
 
     # The language switch (header and phone menu) points at this page's twin.
-    shell_twin = SHELL_ROUTE if lang == 'ar' else '/ar' + SHELL_ROUTE
-    twin = route if lang == 'ar' else '/ar' + route
+    shell_twin = (SHELL_ROUTE if lang == 'ar' else '/ar' + SHELL_ROUTE) + '/'
+    twin = (route if lang == 'ar' else '/ar' + route) + '/'
     assert s.count(f'href="{shell_twin}" hreflang=') == 2, (slug, lang)
     s = s.replace(f'href="{shell_twin}" hreflang=', f'href="{twin}" hreflang=')
 
     # The same trail, visible above the eyebrow, as on the product pages (2026-10-11).
-    # Absolute addresses end in "/" (Netlify serves /x/ and 301s /x to it); the
-    # visible trail keeps the site's usual relative form, /x.
-    rel = lambda u: u.replace(SITE, '') if u in (SITE + '/', SITE + '/ar/') else u.replace(SITE, '').rstrip('/')
+    # Every address ends in "/" (Netlify serves /x/ and 301s /x to it), the
+    # trail's links included.
+    rel = lambda u: u.replace(SITE, '')
     lis = []
     for k, (n, u) in enumerate(crumbs):
         n = html.escape(n, quote=False)

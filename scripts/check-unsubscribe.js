@@ -101,9 +101,9 @@ const parse = (res) => JSON.parse(res.body);
   // in its own locale. A label promising something with no link is the exact
   // defect this work exists to close.
   const LABEL_PAGES = [
-    ['index.html', '/unsubscribe', '/privacy'],
-    ['downloads/index.html', '/unsubscribe', '/privacy'],
-    ['ar/downloads/index.html', '/ar/unsubscribe', '/ar/privacy'],
+    ['index.html', '/unsubscribe/', '/privacy/'],
+    ['downloads/index.html', '/unsubscribe/', '/privacy/'],
+    ['ar/downloads/index.html', '/ar/unsubscribe/', '/ar/privacy/'],
   ];
   for (const [file, unsubHref, privacyHref] of LABEL_PAGES) {
     const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -129,10 +129,10 @@ const parse = (res) => JSON.parse(res.body);
   const footers = ['index.html', 'catalog/index.html', 'contact/index.html'];
   for (const f of footers) {
     const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
-    t(`${f} footer links to /unsubscribe`, html.includes('href="/unsubscribe"'));
+    t(`${f} footer links to /unsubscribe`, html.includes('href="/unsubscribe/"'));
   }
   const arHtml = fs.readFileSync(path.join(ROOT, 'ar/index.html'), 'utf8');
-  t('ar/index.html footer links to /ar/unsubscribe', arHtml.includes('href="/ar/unsubscribe"'));
+  t('ar/index.html footer links to /ar/unsubscribe', arHtml.includes('href="/ar/unsubscribe/"'));
   t('   and not to the English one', !/href="\/unsubscribe"/.test(arHtml));
 
   // ---- 2. recording an opt-out -------------------------------------------

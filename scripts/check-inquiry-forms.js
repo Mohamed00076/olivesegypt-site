@@ -147,7 +147,7 @@ for (const file of ['contact/index.html', 'ar/contact/index.html']) {
     problems.push(`assets/consent.js carries only ${arabic} Arabic characters; the Arabic strings are missing`);
   }
   // both privacy destinations must exist, or one locale is sent to the other's page
-  for (const href of ["'/privacy'", "'/ar/privacy'"]) {
+  for (const href of ["'/privacy/'", "'/ar/privacy/'"]) {
     if (!consent.includes(href)) {
       problems.push(`assets/consent.js has no ${href} privacy link, so one locale points at the other's page`);
     }

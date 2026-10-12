@@ -64,7 +64,7 @@ t('   it says what happened, in English and Arabic', /<h1[^>]*>Page not found<\/
 // 2026-09-28, for it to match the English.
 const arBlock = (page.match(/<div lang="ar" dir="rtl"[\s\S]*?<\/a><\/div><\/div>/) || [''])[0];
 const enBlock = arBlock ? page.slice(page.indexOf('<main'), page.indexOf(arBlock)) : page;
-const waysOn = (html, pre) => ['', 'catalog', 'contact'].map((r) => `${pre}/${r}`)
+const waysOn = (html, pre) => ['', 'catalog/', 'contact/'].map((r) => `${pre}/${r}`)
   .filter((href) => !html.includes(`href="${href}"`));
 const enMissing = waysOn(enBlock, ''), arMissing = waysOn(arBlock, '/ar');
 t('   and offers the homepage, catalogue and contact in each language, in that language',

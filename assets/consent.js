@@ -241,7 +241,7 @@
       bannerLabel: 'Cookie consent',
       body: 'We use analytics (our own Umami, and Google Analytics, which sets cookies), only with your consent, to understand site traffic. Strictly necessary functions (like this form) always work regardless of your choice. See our ',
       privacy: 'Privacy page',
-      privacyHref: '/privacy',
+      privacyHref: '/privacy/',
       reject: 'Reject Non-Essential',
       manage: 'Manage Preferences',
       accept: 'Accept All',
@@ -261,7 +261,7 @@
       bannerLabel: 'الموافقة على الكوكيز',
       body: 'نستخدم أدوات تحليلات (أداة Umami الخاصة بنا، وGoogle Analytics التي تضع ملفات تعريف ارتباط)، بموافقتك وحدها، لفهم حركة الزيارات على الموقع. أما الوظائف الضرورية تمامًا (مثل هذا النموذج) فتعمل دائمًا مهما كان اختيارك. اطّلع على ',
       privacy: 'صفحة الخصوصية',
-      privacyHref: '/ar/privacy',
+      privacyHref: '/ar/privacy/',
       reject: 'رفض غير الضروري',
       manage: 'إدارة التفضيلات',
       accept: 'قبول الكل',
@@ -408,7 +408,7 @@
   // (the printable sheets, the business card) keep the pill at every width.
   function addFooterControl() {
     if (document.getElementById('tc-consent-footer-link')) return true;
-    var privacy = document.querySelector('footer a[href="/privacy"], footer a[href="/ar/privacy"]');
+    var privacy = document.querySelector('footer a[href="/privacy/"], footer a[href="/ar/privacy/"]');
     if (!privacy || !privacy.parentNode) return false;
     var btn = document.createElement('button');
     btn.id = 'tc-consent-footer-link';
