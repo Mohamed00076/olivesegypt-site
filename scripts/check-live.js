@@ -44,14 +44,31 @@ const localSitemap = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
 const urls = [...localSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace('https://olivesegypt.com', BASE));
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
 
-async function waitForDeploy() {
-  const deadline = Date.now() + 15 * 60 * 1000;
+async function liveCommit() {
+  try { const r = await get(BASE + '/deployed-commit.txt', { cache: 'no-store' }); return r.status === 200 ? r.body.trim() : null; }
+  catch (e) { return null; }
+}
+
+// The commit to expect: GITHUB_SHA is the merge being checked (push) or the
+// tip of main (schedule, manual run). Without it, fall back to the sitemap.
+async function checkDeployed(wait) {
+  const want = process.env.GITHUB_SHA;
+  const deadline = Date.now() + (wait ? 15 * 60 * 1000 : 0);
   for (;;) {
-    try {
-      const r = await get(BASE + '/sitemap.xml');
-      if (r.status === 200 && norm(r.body) === norm(localSitemap)) return ok('Latest merge is live', 'live sitemap.xml matches this checkout');
-    } catch (e) { /* retry */ }
-    if (Date.now() > deadline) return fail('Latest merge is live', 'live sitemap.xml still differs from this checkout after 15 minutes');
+    const have = await liveCommit();
+    if (want && have && have === want) return ok('The live site is the latest commit on main', have.slice(0, 7));
+    if (want && have === null) break; // no marker yet (deploys before this one): use the sitemap
+    if (Date.now() >= deadline) {
+      if (!want) break;
+      return fail('The live site is the latest commit on main', `live ${String(have).slice(0, 7)}, main ${want.slice(0, 7)}: the latest deploy failed or has not run (Netlify → Deploys)`);
+    }
+    await sleep(30000);
+  }
+  for (;;) {
+    let same = false;
+    try { const r = await get(BASE + '/sitemap.xml'); same = r.status === 200 && norm(r.body) === norm(localSitemap); } catch (e) { /* retry */ }
+    if (same) return ok('Live sitemap matches main', 'no deploy marker yet, so compared by sitemap');
+    if (Date.now() >= deadline) return fail('Live sitemap matches main', 'the live sitemap differs from main: the latest merge may not have deployed');
     await sleep(30000);
   }
 }
@@ -63,13 +80,7 @@ async function pool(items, n, fn) {
 }
 
 async function main() {
-  if (process.argv.includes('--wait')) await waitForDeploy();
-  else {
-    const r = await get(BASE + '/sitemap.xml');
-    if (r.status !== 200) fail('sitemap.xml', `HTTP ${r.status}`);
-    else if (norm(r.body) === norm(localSitemap)) ok('Live sitemap matches main');
-    else fail('Live sitemap matches main', 'the live sitemap differs from main: the latest merge may not have deployed');
-  }
+  await checkDeployed(process.argv.includes('--wait'));
 
   // Every sitemap page: 200 at its own address, canonical pointing at itself.
   const pages = await pool(urls, 6, async (u) => {

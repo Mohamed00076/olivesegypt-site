@@ -8,7 +8,8 @@
   # the deploy artifact -- docs/, scripts/, the root audit files and this
   # file itself. publish = "." has no exclude list, so absence is the only
   # way to make them genuinely unfetchable. See scripts/prune-publish.js.
-  command = "node scripts/build-geo.js && node scripts/prune-publish.js"
+  # write-deploy-marker.js publishes /deployed-commit.txt for the live check.
+  command = "node scripts/build-geo.js && node scripts/write-deploy-marker.js && node scripts/prune-publish.js"
 
 # Persists geo/ (the downloaded GeoLite2-Country database) between
 # builds. Before this, scripts/build-geo.js re-downloaded and
