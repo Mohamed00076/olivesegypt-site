@@ -1,0 +1,23 @@
+# Dependabot version updates (owner, 2026-10-12: "drive all this").
+# Proposes a pull request when a newer version exists; nothing merges by
+# itself. Security alerts and security-fix PRs are switched on separately, in
+# the repository's Settings -> Code security.
+version: 2
+updates:
+  # The packages the Netlify functions use (package.json).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Africa/Cairo
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+  # The actions the live site check runs on.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

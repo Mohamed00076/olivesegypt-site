@@ -9,3 +9,6 @@ node_modules
 
 # Python bytecode, from scripts/build-favicons.py
 __pycache__/
+
+# Written at build time by scripts/write-deploy-marker.js
+/deployed-commit.txt
