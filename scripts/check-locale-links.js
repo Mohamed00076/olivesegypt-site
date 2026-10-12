@@ -18,7 +18,7 @@
  *                     nor a real file.
  *   3. LOCALE-MISMATCH an English page links into /ar/ outside its switcher, or
  *                     an Arabic page's JSON-LD carries an English page URL.
- *   4. TRAILING-SLASH an href disagrees with the site convention (no trailing
+ *   4. TRAILING-SLASH an href disagrees with the site convention (a trailing
  *                     slash, except the '/' and '/ar/' locale roots).
  *   5. LINK-PARITY    an English route has no Arabic counterpart on disk, or
  *                     vice versa.
@@ -114,8 +114,8 @@ for (const route of map.routes) {
 
     // 4. TRAILING-SLASH
     const pathOnly = link.href.split('?')[0].split('#')[0];
-    if (map.set.has(target) && pathOnly !== M.href(target)) {
-      add('TRAILING-SLASH', route, `${where} should be written "${M.href(target)}"`);
+    if (map.set.has(target) && pathOnly !== M.linkHref(target)) {
+      add('TRAILING-SLASH', route, `${where} should be written "${M.linkHref(target)}"`);
     }
 
     if (arabicPage) {

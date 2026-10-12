@@ -124,7 +124,7 @@ for (const route of routes()) {
   }
   for (const [name, chunk] of [['desktop nav', desktopNav], ['mobile drawer', drawer]]) {
     if (!chunk) continue;
-    const hrefs = [...chunk.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+    const hrefs = [...chunk.matchAll(/href="([^"]+)"/g)].map((m) => m[1].replace(/(.)\/(?=$|[?#])/, "$1"));
     // the CTA and the switcher live outside the desktop <nav>; check the rest
     const want = EXPECTED_NAV[lang].filter(
       (rt) => name === 'mobile drawer' || rt !== (lang === 'ar' ? '/ar/contact' : '/contact'));

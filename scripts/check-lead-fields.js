@@ -174,7 +174,7 @@ async function post(body) {
   for (const file of ['resources/private-label/index.html', 'ar/resources/private-label/index.html']) {
     const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
     const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
-    const links = [...main.matchAll(/href="\/(?:ar\/)?products\/([a-z-]+)"/g)].map((m) => m[1]);
+    const links = [...main.matchAll(/href="\/(?:ar\/)?products\/([a-z-]+)\/"/g)].map((m) => m[1]);
     t(`${file}: exactly ${DIRS.length} products are offered`, links.length === DIRS.length,
       `${links.length}: ${links.join(',')}`);
     const missing = DIRS.filter((d) => !links.includes(d));

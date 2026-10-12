@@ -82,7 +82,7 @@ for (const file of walk(ROOT)) {
   if (!html.includes(TAB)) noTab.push(rel);
 
   // the Arabic pages must point at the Arabic blog, not the English one
-  if (rel.startsWith('ar/') && html.includes(TAB) && !html.includes('href="/ar/media#blog"')) {
+  if (rel.startsWith('ar/') && html.includes(TAB) && !html.includes('href="/ar/media/#blog"')) {
     noTab.push(rel + ' (points at the English blog)');
   }
 }
@@ -158,7 +158,7 @@ for (const gen of ['scripts/generate-product-pages.py']) {
   t('   it is added only beside the bubble, and not on the contact page',
     /if \(!document\.querySelector\('\.fixed\.bottom-6\.right-6'\)\) return;/.test(nav) && /contact\(\\\/\|\\\/index\\\.html\)\?\$/.test(nav));
   t('   it opens the quote form in the page\'s own language',
-    /\(ar \? '\/ar' : ''\) \+ '\/contact\?intent=quote'/.test(nav) && nav.includes("'اطلب عرض سعر'") && nav.includes("'Request a Quote'"));
+    /\(ar \? '\/ar' : ''\) \+ '\/contact\/\?intent=quote'/.test(nav) && nav.includes("'اطلب عرض سعر'") && nav.includes("'Request a Quote'"));
   t('   its corner follows the reading direction, opposite the bubble',
     /inset-inline-start:/.test(rule) && !/(^|[;{\s])(left|right):/.test(rule), rule.slice(0, 120));
   t('   the footer makes room for it, it is a gold gradient with dark text (4.7:1 at its darkest), and it is never printed',
@@ -168,7 +168,7 @@ for (const gen of ['scripts/generate-product-pages.py']) {
   t('   it is a phone-only button: hidden from 768px, where the header shows its own quote button',
     /@media \(min-width: 768px\) \{ #tc-quote-fab \{ display: none !important; \} \}/.test(css) &&
     /@media \(max-width: 767\.98px\) \{ \.tc-has-quote-fab footer \{ padding-bottom:/.test(css) &&
-    /class="hidden md:flex items-center gap-2"><a href="\/contact"/.test(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')));
+    /class="hidden md:flex items-center gap-2"><a href="\/contact\/"/.test(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')));
   t('   on phones it shrinks to its icon while scrolling down, keeping its link and its aria-label',
     /matchMedia\('\(max-width: 1023\.98px\)'\)/.test(nav) && /a\.setAttribute\('aria-label', label\)/.test(nav) &&
     /#tc-quote-fab\.tc-quote-fab--compact \.tc-quote-fab-label \{ max-width: 0; opacity: 0; \}/.test(css));

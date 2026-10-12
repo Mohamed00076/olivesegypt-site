@@ -131,7 +131,7 @@
     ['/crm/inquiries/', 'Enquiries'],
     ['/crm/buyers/', 'Buyers'],
     ['/crm/documents/', 'Documents'],
-    ['/letterhead', 'Letterhead'],
+    ['/letterhead/', 'Letterhead'],
     // Arabic letterhead, on the owner's instruction 2026-09-25: "yes it
     // belong it to navigation i need arabic letterhead sometimes".
     //
@@ -142,7 +142,7 @@
     // pretending the rule was not there: a letterhead addressed to an Arabic
     // correspondent is a different sheet to reach for, not a different view
     // of the same one, which is a fair reading.
-    ['/ar/letterhead', 'Letterhead (AR)'],
+    ['/ar/letterhead/', 'Letterhead (AR)'],
   ];
 
   CRM.renderNav = function (active) {

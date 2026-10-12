@@ -40,7 +40,7 @@ const TEXT = {
     heading: 'This guide opens after you request it',
     body: 'Request the guide on the downloads page and it will open straight away. Links expire after a while, so an older one may simply have timed out.',
     cta: 'Go to Downloads & Documents',
-    href: '/downloads',
+    href: '/downloads/',
     unavailable: 'This guide is temporarily unavailable. Please email sales@olivesegypt.com and we will send it to you directly.',
   },
   ar: {
@@ -49,7 +49,7 @@ const TEXT = {
     heading: 'يُفتح هذا الدليل بعد طلبه',
     body: 'اطلب الدليل من صفحة التنزيلات وسيُفتح مباشرة. تنتهي صلاحية الروابط بعد فترة، لذا قد يكون الرابط القديم قد انتهت مدته فحسب.',
     cta: 'الانتقال إلى التنزيلات والوثائق',
-    href: '/ar/downloads',
+    href: '/ar/downloads/',
     unavailable: 'هذا الدليل غير متاح مؤقتًا. يرجى مراسلتنا على sales@olivesegypt.com وسنرسله إليك مباشرة.',
   },
 };

@@ -63,7 +63,7 @@ for (const p of present) {
   seen.title.add(title); seen.desc.add(desc);
   if (canon !== SITE + p.route + '/') headProblems.push(`${p.route}: canonical is ${canon}`);
   if (!p.html.includes(`hreflang="${p.loc === 'ar' ? 'en' : 'ar'}" href="${SITE}${twin}/"`)) headProblems.push(`${p.route}: no hreflang to ${twin}`);
-  if (!p.html.includes(`href="${twin}" hreflang=`)) headProblems.push(`${p.route}: the language switch does not lead to ${twin}`);
+  if (!p.html.includes(`href="${twin}/" hreflang=`)) headProblems.push(`${p.route}: the language switch does not lead to ${twin}`);
   if (!/"@type": "BreadcrumbList"/.test(p.html)) headProblems.push(`${p.route}: no breadcrumb`);
   if (/export-markets/.test(p.html.slice(0, p.html.indexOf('<body')))) headProblems.push(`${p.route}: the shell page's address is left in the head`);
 }
@@ -115,7 +115,7 @@ const ctaProblems = [];
 for (const p of present) {
   const main = (p.html.match(/<main[\s\S]*<\/main>/) || [''])[0];
   const pre = p.loc === 'ar' ? '/ar' : '';
-  const own = new RegExp(`href="${pre}/contact\\?intent=(quote|local_pricing)&amp;from=${p.route.replace(/\//g, '\\/')}"`);
+  const own = new RegExp(`href="${pre}/contact/\\?intent=(quote|local_pricing)&amp;from=${p.route.replace(/\//g, '\\/')}"`);
   if (!own.test(main)) ctaProblems.push(p.route);
   for (const m of main.matchAll(/href="([^"]*\/contact[^"]*)"/g)) {
     if (!m[1].includes(`from=${p.route}`)) ctaProblems.push(`${p.route} → ${m[1]}`);
@@ -131,7 +131,7 @@ for (const loc of ['en', 'ar']) {
   const hub = present.find((p) => p.loc === loc && p.slug === '');
   const main = hub ? (hub.html.match(/<main[\s\S]*<\/main>/) || [''])[0] : '';
   for (const r of [...SLUGS.filter(Boolean).map((s) => `${pre}/solutions/${s}`), `${pre}/resources/private-label`]) {
-    if (!main.includes(`href="${r}"`)) hubProblems.push(`${pre}/solutions → ${r}`);
+    if (!main.includes(`href="${r}/"`)) hubProblems.push(`${pre}/solutions → ${r}`);
   }
   if (read(`${pre.slice(1)}${pre ? '/' : ''}resources/private-label/index.html`) === null) hubProblems.push(`${pre}/resources/private-label no longer exists`);
 }
