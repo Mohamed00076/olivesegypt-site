@@ -9716,6 +9716,70 @@ What remains is on the owner's device or network: a cached failed lookup, or the
 
 ---
 
+## Deploys 234 and 235 — Live check watches certificates and Umami; Arabic News description (PRs #353, #354)
+
+**Previous recorded deploy:** `e5a434e` (Deploy 233, PR #352)
+**Approvals:**
+- "merge" (#353).
+- "do 1 and 2", then "merge" (#354).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 234 | #353 | `f855462` | 2026-10-12 12:57:16 | 1 | +91 / −1 | Notes only |
+| 235 | #354 | `d8bc27c` | 2026-10-12 13:02:56 | 3 | +43 / −4 | Live check; one Arabic description |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 234** recorded Deploys 232 and 233.
+
+### What the deploys did
+
+- **Deploy 235 — Live check: certificates and Umami's heartbeat (#354).** `scripts/check-live.js` gains three checks:
+  - **HTTPS certificates:** one check each for `olivesegypt.com` and `www.olivesegypt.com`. Each fails within 14 days of expiry and names where to renew. Netlify renews them by itself; a failed renewal would otherwise show only when browsers refuse the site.
+  - **"Umami is up":** `/api/heartbeat` must answer `{"ok":true}`. Until now only the tracker file was checked, and a static file is served even when Umami's app or database is down.
+  - **Tested before merge:** a workflow run on the branch (38233648757) passed all three new checks. Its one failure was the expected "latest commit on main" line for an undeployed branch.
+- **Deploy 235 — `/ar/media/news/` description.** «أخبار وإعلانات الشركة الثلاثية للتنمية الصناعية، مورّد مصري لزيتون المائدة.», 75 characters (was 68).
+  - It is used in `description`, `og:description` and `twitter:description`.
+  - The only addition is «أخبار و», matching the page title. No new claim.
+  - The owner approved it with "merge". It stays on the list of Arabic wording for the owner's review.
+  - The sitemap date for that page moves to 2026-10-12.
+
+### Verified on the live site (GitHub Actions, 2026-10-12)
+
+- **Run after #354** (run 38233838383): **20 of 20 OK**, including:
+  - "The live site is the latest commit on main — d8bc27c"
+  - "HTTPS certificate for olivesegypt.com is current — valid to 2026-11-30, 49 days", and the same for `www`
+  - "Umami is up"
+- **The new description** is on the live page.
+
+### Claim register
+
+162 claims. No change.
+
+### Rollback
+
+- **Deploy 235:** `git revert -m 1 d8bc27c`.
+- **Deploy 234** is documentation only.
+
+### Known limitations shipped with Deploys 234 and 235
+
+- **Unchanged from Deploys 232 and 233:**
+  - owner: `www` on their own device or network
+  - owner: a click on the Facebook link
+  - owner: Umami sign-in and the Realtime check
+  - owner: the CRM Analytics report
+  - owner: GA4 key event, retention and the Search Console link
+  - owner: Dependabot alerts
+  - owner: the Search Console steps
+  - owner: the `claude/www-diagnose` branch
+  - the Arabic wording review
+  - counsel items, photographs and certificates
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9734,7 +9798,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 233 (2026-10-12).**
+**Unchanged since U4, through Deploy 235 (2026-10-12).**
 
 ## Outstanding, unresolved by this document
 
