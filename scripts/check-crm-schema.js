@@ -116,6 +116,8 @@ function makeStrictSql(fileName, seen) {
     if (/RETURNING/i.test(q)) return Promise.resolve([{ id: 1, created_at: new Date('2026-09-07T00:00:00Z') }]);
     return Promise.resolve([]);
   }
+  // neon 1.x: a direct call is sql.query(text, params); the fake answers it as before.
+  sql.query = (text, params) => sql(text, params);
   return sql;
 }
 

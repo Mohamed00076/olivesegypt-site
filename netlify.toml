@@ -26,6 +26,12 @@
   [plugins.inputs]
     paths = ["geo"]
 
+# Node 22 for the build and the functions (2026-10-12). @neondatabase/serverless
+# 1.x needs Node 19 or later; pinning it means a change in Netlify's default
+# cannot move the functions onto a version the driver does not support.
+[build.environment]
+  NODE_VERSION = "22"
+
 [functions]
   # Bundles the freshly-downloaded geo database into every function's
   # deploy package so analytics-collect.js can read it at runtime. Well

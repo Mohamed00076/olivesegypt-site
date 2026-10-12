@@ -4,6 +4,15 @@
 /*
  * Every method called on a Neon query handle must actually exist on one.
  *
+ * 2026-10-12, driver 1.x (Dependabot #344): the API turned round. A handle
+ * now HAS `.query(text, params)`, and a direct call `sql(text, params)` --
+ * the form this file used to require -- throws "can now be called only as a
+ * tagged-template function". All 21 direct calls (analytics report, buyer
+ * update and erase, retention purge and count) became `sql.query(...)`. This
+ * check now holds the new rule: tagged templates or `sql.query`, never a
+ * direct call. The history below is kept because the method check still
+ * guards against the next wrong name.
+ *
  * `neon()` returns a function. You query with it as a tagged template, or you
  * call it directly with text and parameters. It has exactly one property:
  * `transaction`. It has no `query`.
@@ -57,11 +66,12 @@ try {
 const sql = neon('postgresql://user:pass@example.neon.tech/db');
 
 t('the driver loads and builds a query handle', typeof sql === 'function', typeof sql);
-t('the handle is callable, which is the parameterised form the code must use',
-  typeof sql === 'function', typeof sql);
-t('and it has no .query property, which is the trap this check exists for',
-  sql.query === undefined,
-  'the driver grew a .query -- that is fine, but this check and its comment are now out of date');
+t('the handle has .query, the form a non-template query must use (driver 1.x)',
+  typeof sql.query === 'function', typeof sql.query);
+let directThrows = false;
+try { sql('SELECT $1', [1]); } catch (err) { directThrows = /tagged-template/.test(err.message); }
+t('and the real driver refuses a direct call sql(text, params), the trap this check now guards',
+  directThrows, 'a direct call no longer throws -- the driver changed again; revisit this check');
 
 // ---- what the code calls on it -------------------------------------------
 
@@ -89,6 +99,22 @@ for (const file of files) {
     }
   }
 }
+
+// No direct call anywhere a handle is used: sql(`...`, params) or sql(text).
+// A tagged template has no parenthesis (sql`...`), so `sql(` is always the
+// refused form. Library files that receive a handle are in scope too.
+const direct = [];
+for (const file of files) {
+  const src = fs.readFileSync(file, 'utf8');
+  for (const m of src.matchAll(/(?<![\w.$])sql\(/g)) {
+    const lineStart = src.lastIndexOf('\n', m.index) + 1;
+    const line = src.slice(lineStart, src.indexOf('\n', m.index));
+    if (/^\s*(\*|\/\/)/.test(line)) continue;                       // a comment
+    direct.push(`${path.relative(ROOT, file)}:${src.slice(0, m.index).split('\n').length}`);
+  }
+}
+t('no function calls a handle directly (sql(text, params) throws on driver 1.x)',
+  direct.length === 0, `${direct.length}: ${direct.slice(0, 6).join('; ')}`);
 
 t('every method called on a query handle exists on a real one',
   offences.length === 0,

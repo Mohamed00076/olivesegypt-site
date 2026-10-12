@@ -514,7 +514,7 @@ async function deleteSubmission(event, sql, kind) {
 
   await ensureBuyerTables(sql);   // crm_audit_log, on a new database
   // Table and column come from SUBMISSION_KINDS above, never from the request.
-  const gone = await sql(
+  const gone = await sql.query(
     `WITH gone AS (DELETE FROM ${k.table} WHERE id = $1 RETURNING id, created_at, ${k.kindColumn} AS kind)
      INSERT INTO crm_audit_log (actor, action, record_type, record_id, details)
      SELECT $2, 'delete', $3, id,
