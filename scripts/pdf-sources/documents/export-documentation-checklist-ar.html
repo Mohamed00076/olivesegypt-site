@@ -45,13 +45,12 @@ window.tcFit = () => {
   const tpl = (id) => document.getElementById(id).content;
   const pages = document.getElementById('pages');
   let body;
-  const newPage = (first, scale) => {
+  const newPage = (first) => {
     const pg = document.createElement('section');
     pg.className = 'pdf-page doc-page';
     pg.appendChild(tpl(first ? 'page-one' : 'page-next').cloneNode(true));
     body = document.createElement('div');
     body.className = 'page-body';
-    body.style.zoom = scale;
     pg.appendChild(body);
     pg.appendChild(tpl('page-foot').cloneNode(true));
     pages.appendChild(pg);
@@ -61,14 +60,14 @@ window.tcFit = () => {
     const last = body.lastElementChild;
     return !last || last.getBoundingClientRect().bottom <= limit();
   };
-  const layout = (scale) => {
+  const layout = () => {
     pages.textContent = '';
     const place = (blk) => {
       body.appendChild(blk);
       if (fits()) return;
       if (blk.classList.contains('keep') && body.children.length > 1) {
         blk.remove();
-        newPage(false, scale);
+        newPage(false);
         body.appendChild(blk);
         return;
       }
@@ -89,31 +88,20 @@ window.tcFit = () => {
       if (i === 0 && head) rest.appendChild(head); else rest.classList.add('cont');
       items.slice(i).forEach((it) => rest.appendChild(it));
       if (!body.children.length) { body.appendChild(rest); return; } // too tall for any page: the generator refuses it
-      newPage(false, scale);
+      newPage(false);
       place(rest);
     };
-    newPage(true, scale);
+    newPage(true);
     for (const blk of [...tpl('flow').cloneNode(true).children]) place(blk);
     // How full the last page is, from the top of its content to its foot.
     const top = body.getBoundingClientRect().top;
     const last = body.lastElementChild.getBoundingClientRect().bottom;
-    return { scale, count: pages.children.length, fill: (last - top) / (limit() - top) };
+    return { count: pages.children.length, fill: (last - top) / (limit() - top) };
   };
-  /*
-   * The scale: the type and spacing of the content, together. The brief
-   * allows no page more than about a quarter empty, and a document's length
-   * is what its source says, so the scale is chosen to fill its last page:
-   * the scale nearest 1 that leaves the last page at least three-quarters
-   * full, or failing that the one that fills it most. 0.96 keeps every size
-   * above the brief's minimums (body 11pt, tables 10pt, labels 8pt).
-   */
-  const SCALES = [1, 0.96, 1.04, 1.08, 1.12, 1.16, 1.2];
-  const tried = SCALES.map(layout);
-  const good = tried.filter((t) => t.fill >= 0.75);
-  const pick = good.length ? good.sort((a, b) => Math.abs(a.scale - 1) - Math.abs(b.scale - 1))[0]
-    : tried.sort((a, b) => b.fill - a.fill)[0];
-  const result = layout(pick.scale);
-  document.documentElement.dataset.scale = pick.scale;
+  // One fixed type scale for every document (owner, 2026-10-13): a short
+  // last page stays short rather than the type growing or shrinking to fill
+  // it. Its fill is recorded for the report.
+  const result = layout();
   document.documentElement.dataset.fill = result.fill.toFixed(2);
   const all = pages.querySelectorAll('.pdf-page');
   all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
