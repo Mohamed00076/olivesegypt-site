@@ -296,11 +296,12 @@
   "ar/downloads/spec-sheets/green-olives-ar.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/green-olives-ar.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/green-olives-ar.html": "320f539501ebc888886b4b9835e6a524aa85db1ba54c7e731e0626dea945cdec",
+      "scripts/pdf-sources/spec-sheets/green-olives-ar.html": "06aee47d94e1eb0c08c29ad897f5fda1f5506ba095424da93e2bb776cc18f090",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/photos/green-olives-pitted.jpg": "9f8264c0607d75089d3ae43285b25726e695cdc6bebd102878ceb5b20b1a215a",
       "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
+      "scripts/pdf-design/sheet-look.css": "89eac81e3d7e975623853c140920ebaae3831b00146306735389f311a62642c9",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -384,7 +385,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "a9acdf51eff7cc66d34d5c3d97047e5a0dfe2ff8b606481d0c1b11da2b8dcc3f"
+    "pdf": "7a8161bf3658497aea2adcd339c288ce97cf57f0312f580de2523d354b5ba87b"
   },
   "ar/downloads/spec-sheets/marinated-artichoke-hearts-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -591,10 +592,11 @@
   "ar/downloads/spec-sheets/oxidized-black-olives-ar.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/oxidized-black-olives-ar.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/oxidized-black-olives-ar.html": "cff47a5cbcf240340a4f59b3c1b47c96eb4a6cc34f3c15825871928a978b64ba",
+      "scripts/pdf-sources/spec-sheets/oxidized-black-olives-ar.html": "d00b165d70807ea3b56a0ae0c4d9cd24dbaf08868dbc015c7cdfc1f014f55c84",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/photos/oxidized-black-olives.jpg": "2a1d766b5f7bc3b92f0134f685c369ba7e4349b79f966243379eb4c68bcae763",
+      "scripts/pdf-design/sheet-look.css": "89eac81e3d7e975623853c140920ebaae3831b00146306735389f311a62642c9",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -678,7 +680,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "93bfc45e95ef6cf029d0fcea3d66164f0f34131344f72ea4721b818c36f7fe62"
+    "pdf": "d8696893e30610c50cd2f61ce292f5f20f1f1ecd2231032fbfd52a6b256c71cc"
   },
   "ar/downloads/spec-sheets/pepperoncini-peppers-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -784,11 +786,12 @@
   "ar/downloads/spec-sheets/sliced-jalapeno-peppers-ar.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/sliced-jalapeno-peppers-ar.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/sliced-jalapeno-peppers-ar.html": "04b867db5595bc5f725b71d5d5571e5af4dff0851467a7741c7124407b093cc2",
+      "scripts/pdf-sources/spec-sheets/sliced-jalapeno-peppers-ar.html": "510ab73caee1a6ed562963d58f5ba483fa4a77738a3021366c0574b1c25db648",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/photos/jalapeno-green-rings.jpg": "8f1f8758a2c240a93bd732f7ed8a16cdeab24ac7b5e1fe9a6b1e5a3577d9145d",
       "scripts/pdf-design/photos/jalapeno-red-rings.jpg": "8aa353bb0ab8c72d34739946d66c06090191514efbb63b686db897a1053a3a65",
+      "scripts/pdf-design/sheet-look.css": "89eac81e3d7e975623853c140920ebaae3831b00146306735389f311a62642c9",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -872,7 +875,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "00c43d450ad919293932be272a15b5c4c750267f5a6dfd2c491750bd0e9f5df0"
+    "pdf": "b581c123ce8cd6224a1276c997f956ebddacc05b1778f0b428a2bd496d06666f"
   },
   "ar/downloads/spec-sheets/stuffed-green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -1270,11 +1273,12 @@
   "downloads/spec-sheets/green-olives-en.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/green-olives-en.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/green-olives-en.html": "bd94ed351aa631284b20e2c7de0bba15669feaf8b41d3ebae201e9911b1fc0da",
+      "scripts/pdf-sources/spec-sheets/green-olives-en.html": "064858d205d6048bade8e880ca09b6db1c9e820f95c8c5163d2904cce7b5f69f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/photos/green-olives-pitted.jpg": "9f8264c0607d75089d3ae43285b25726e695cdc6bebd102878ceb5b20b1a215a",
       "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
+      "scripts/pdf-design/sheet-look.css": "89eac81e3d7e975623853c140920ebaae3831b00146306735389f311a62642c9",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -1358,7 +1362,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "01b3f80d100c8e2e9d9b3613e90acd04e9b3d85ebcc71f2f6f8e93e253a5c415"
+    "pdf": "5e4e2235e30b988fdf85980848614fef701d0889aabc164362882a031b98f788"
   },
   "downloads/spec-sheets/marinated-artichoke-hearts-en.pdf": {
     "source": "catalog/print/index.html",
@@ -1563,10 +1567,11 @@
   "downloads/spec-sheets/oxidized-black-olives-en.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/oxidized-black-olives-en.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/oxidized-black-olives-en.html": "ad6b9f0bfdccd3aba6e853a523170ee798f21ceefbb70208bf96bf2b615dc04c",
+      "scripts/pdf-sources/spec-sheets/oxidized-black-olives-en.html": "03b40539c73b7874f8881a1bdb41a67615b004adbcaa9fa10c656248f8e5564b",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/photos/oxidized-black-olives.jpg": "2a1d766b5f7bc3b92f0134f685c369ba7e4349b79f966243379eb4c68bcae763",
+      "scripts/pdf-design/sheet-look.css": "89eac81e3d7e975623853c140920ebaae3831b00146306735389f311a62642c9",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -1650,7 +1655,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "9f96be7faad0c99eb09f93f23a7410da63335b2f2f2f6a7009db9e98880aed17"
+    "pdf": "a630b0268d4e1c5684e2446bdcf2366291167e57f7a0a7dfb45ee79f511c2bc6"
   },
   "downloads/spec-sheets/pepperoncini-peppers-en.pdf": {
     "source": "catalog/print/index.html",
@@ -1755,11 +1760,12 @@
   "downloads/spec-sheets/sliced-jalapeno-peppers-en.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/sliced-jalapeno-peppers-en.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/sliced-jalapeno-peppers-en.html": "d1591bb8f7c548c2de57e581b7ed4d69c1e7e66233b285f36a8dfb38f9d3d8be",
+      "scripts/pdf-sources/spec-sheets/sliced-jalapeno-peppers-en.html": "d275b4265b615d0aad2a635768665047a7938fde37f3b923966d0d6b0516f68a",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/photos/jalapeno-green-rings.jpg": "8f1f8758a2c240a93bd732f7ed8a16cdeab24ac7b5e1fe9a6b1e5a3577d9145d",
       "scripts/pdf-design/photos/jalapeno-red-rings.jpg": "8aa353bb0ab8c72d34739946d66c06090191514efbb63b686db897a1053a3a65",
+      "scripts/pdf-design/sheet-look.css": "89eac81e3d7e975623853c140920ebaae3831b00146306735389f311a62642c9",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -1843,7 +1849,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "05321b929d81960b046ddbad78fe1aaec3af97333ea844afe18d446cfed33003"
+    "pdf": "a1a845ae1e61f43d83ab95e8abf0c67b18860663111ffa2d6d3ecc132257754e"
   },
   "downloads/spec-sheets/stuffed-green-olives-en.pdf": {
     "source": "catalog/print/index.html",

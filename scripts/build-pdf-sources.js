@@ -30,6 +30,9 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const OUT_DIR = 'scripts/pdf-sources';
 const DESIGN = '/scripts/pdf-design/sheet.css';
+// The look the company profile and guides shipped with (Deploy 241, owner:
+// "this one looks better"), carried over to the spec sheets.
+const SHEET_LOOK = '/scripts/pdf-design/sheet-look.css';
 const FONTS = '/assets/fonts/fonts.css';
 const LOGO = '/assets/logo-BJ1TOn9V.png';
 
@@ -224,6 +227,7 @@ const doc = (locale, title, pages) => `<!DOCTYPE html>
 <title>${title}</title>
 <link rel="stylesheet" href="${FONTS}" />
 <link rel="stylesheet" href="${DESIGN}" />
+<link rel="stylesheet" href="${SHEET_LOOK}" />
 </head>
 <body>
 ${pages.join('\n')}
@@ -261,8 +265,10 @@ function sheetPage(locale, key, n, total, kind) {
   const iso = (s) => isolateNumbers(locale, s);
   const chips = packagingChips(locale, p.packaging.text).map(iso);
   return `<section class="pdf-page" id="${DIR_OF[key]}">
+<div class="sheet-band">
 ${masthead(locale)}
 <div class="doc-line"><span class="doc-kind">${kind}</span><span>${t.revised} <span dir="ltr">${REVISED}</span></span></div>
+</div>
 <div class="hero">
   <div class="hero-text">
     ${repeatsName(p.type, p.name) ? '' : `<span class="pill">${p.type}</span>`}
@@ -317,8 +323,10 @@ function allSheetsHtml(locale) {
   }).join('');
   const first = productFrom(locale, SPEC_SHEETS[0]);
   const contents = `<section class="pdf-page contents-page">
+<div class="sheet-band">
 ${masthead(locale)}
 <div class="doc-line"><span class="doc-kind">${t.allKind}</span><span>${t.revised} <span dir="ltr">${REVISED}</span></span></div>
+</div>
 <h1>${t.contents}</h1>
 <table class="spec contents">
   <thead><tr><th scope="col">${t.product}</th><th scope="col">${first.formats.label}</th><th scope="col">${first.calibers.label}</th><th scope="col" class="num">${t.page}</th></tr></thead>
