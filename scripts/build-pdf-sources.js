@@ -32,25 +32,44 @@ const FONTS = '/assets/fonts/fonts.css';
 const LOGO = '/assets/logo-BJ1TOn9V.png';
 
 // The revision date printed on the redesigned documents.
-const REVISED = '2026-10-12';
+const REVISED = '2026-10-13';
 
 // Phase A: one product. Phase B adds the rest.
 const SPEC_SHEETS = ['green'];
 
-// The picture each sheet carries. Green olives: the homepage's photograph
-// (owner, 2026-10-12: "the other green olives photo like the one in
-// homepage"), 800 x 800, about 400 ppi at the sheet's 50 mm. The others keep
-// the site's illustrations until the owner decides the set (photos and
-// drawings are not to be mixed in one set: see the Phase A report).
-const ART = {
-  green: { en: '/assets/hero-green-olives.jpg', ar: '/assets/hero-green-olives.jpg', photo: true },
-  stuffed: { en: '/assets/illus-stuffed.svg', ar: '/assets/illus-stuffed-ar.svg' },
-  black_natural: { en: '/assets/illus-natural-black.svg', ar: '/assets/illus-natural-black-ar.svg' },
-  oxidized_black: { en: '/assets/illus-oxidized-black.svg', ar: '/assets/illus-oxidized-black-ar.svg' },
-  jalapeno: { en: '/assets/illus-jalapeno.svg', ar: '/assets/illus-jalapeno-ar.svg' },
-  artichoke: { en: '/assets/illus-artichoke.svg', ar: '/assets/illus-artichoke-ar.svg' },
-  pepperoncini: { en: '/assets/illus-pepperoncini.svg', ar: '/assets/illus-pepperoncini-ar.svg' },
+// The photographs each sheet carries (owner, 2026-10-13: the whole set uses
+// photographs; no mixed sets). One photo by default; a second, with
+// captions under both, is an optional slot any sheet can use (Green Olives:
+// whole and pitted). Files live in scripts/pdf-design/photos/, prepared by
+// scripts/prepare-pdf-photos.py: square, at least 300 ppi at the size they
+// print, JPEG quality 85, no EXIF or GPS. A photo not supplied yet (file
+// absent) is drawn as a neutral panel for working drafts, never captioned
+// "pending", and the generator refuses to print a sheet that has one.
+const PHOTO_DIR = 'scripts/pdf-design/photos';
+const PHOTOS = {
+  green: [
+    { file: 'green-olives-whole.jpg', caption: { en: 'Whole green olives', ar: 'زيتون أخضر كامل' } },
+    { file: 'green-olives-pitted.jpg', caption: { en: 'Pitted green olives', ar: 'زيتون أخضر منزوع النواة' } },
+  ],
+  stuffed: [{ file: 'stuffed-green-olives.jpg' }],
+  black_natural: [{ file: 'natural-black-olives.jpg' }],
+  oxidized_black: [{ file: 'oxidized-black-olives.jpg' }],
+  jalapeno: [{ file: 'sliced-jalapeno-peppers.jpg' }],
+  artichoke: [{ file: 'marinated-artichoke-hearts.jpg' }],
+  pepperoncini: [{ file: 'pepperoncini-peppers.jpg' }],
 };
+
+/** The photo block: one or two squares, captioned when the sheet gives captions. */
+function photosHtml(locale, key) {
+  const list = PHOTOS[key];
+  const cell = (ph) => {
+    const have = fs.existsSync(path.join(ROOT, PHOTO_DIR, ph.file));
+    const pic = have ? `<img src="/${PHOTO_DIR}/${ph.file}" alt="${ph.caption ? ph.caption[locale] : ''}" />`
+      : '<div class="photo-panel" aria-hidden="true"></div>';
+    return `<figure class="photo">${pic}${ph.caption ? `<figcaption>${ph.caption[locale]}</figcaption>` : ''}</figure>`;
+  };
+  return `<div class="hero-photos${list.length > 1 ? ' pair' : ''}">${list.map(cell).join('')}</div>`;
+}
 
 // The few words the new layout adds. Everything else comes from the catalogue.
 const T = {
@@ -169,7 +188,6 @@ function foot(locale, n, total) {
 function specSheetHtml(locale, key) {
   const t = T[locale];
   const p = productFrom(locale, key);
-  const art = ART[key][locale];
   const ltr = (s, on) => (on ? `<span dir="ltr">${s}</span>` : isolateNumbers(locale, s));
   const iso = (s) => isolateNumbers(locale, s);
   const chips = packagingChips(locale, p.packaging.text).map(iso);
@@ -192,7 +210,7 @@ ${masthead(locale)}
     <h1>${p.name}</h1>
     <p class="lede">${iso(p.lede)}</p>
   </div>
-  <div class="hero-art${ART[key].photo ? ' photo' : ''}"><img src="${art}" alt="" /></div>
+  ${photosHtml(locale, key)}
 </div>
 <div class="glance">
   <div class="card"><p class="label">${p.formats.label}</p><ul>${p.formats.items.map((s) => `<li>${iso(s)}</li>`).join('')}</ul></div>
@@ -252,4 +270,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { sources, SPEC_SHEETS, OUT_DIR, REVISED, productFrom, packagingChips, isolateNumbers };
+module.exports = { PHOTOS, PHOTO_DIR, sources, SPEC_SHEETS, OUT_DIR, REVISED, productFrom, packagingChips, isolateNumbers };

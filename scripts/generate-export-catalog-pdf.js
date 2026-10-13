@@ -133,6 +133,9 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     // A fixed page hides what does not fit, so a sheet that outgrows its page
     // prints one page as designed with its last lines cut off or under the
     // foot (the Arabic Phase A proof did). Refuse to write that.
+    if (job.kind === 'sheet' && await page.locator('.photo-panel').count()) {
+      throw new Error(`${job.source}: a photograph is not supplied yet (neutral panel). Drafts only; nothing was written for it.`);
+    }
     if (job.kind === 'sheet') {
       const crowded = await page.evaluate(() => [...document.querySelectorAll('.pdf-page')].map((pg, i) => {
         const foot = pg.querySelector('.foot');
