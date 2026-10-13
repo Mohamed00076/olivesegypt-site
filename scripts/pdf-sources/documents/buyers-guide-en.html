@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- Written by scripts/build-pdf-documents.js from netlify/functions/_guides/en/buyers-guide.html. Do not edit: edit that file and rebuild. -->
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<title>B2B Buyer's Guide | Triple Company for Industrial Development</title>
+<link rel="stylesheet" href="/assets/fonts/fonts.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/sheet.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/document.css" />
+</head>
+<body>
+<template id="page-one"><header class="masthead">
+  <div class="brand">
+    <img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" />
+    <div><div class="wordmark">TRIPLE COMPANY</div><div class="tagline">for Industrial Development</div></div>
+  </div>
+  <div class="contact">
+    Ouroba Square (<span class="ar-inline" lang="ar" dir="rtl">ميدان العروبة</span>), 5th Settlement,<br/>New Cairo, Cairo, Egypt<br/>
+    <span dir="ltr"><a href="mailto:sales@olivesegypt.com">sales@olivesegypt.com</a> &middot; <a href="tel:+201006045961">+20 100 604 5961</a></span>
+  </div>
+</header>
+<div class="doc-head"><h1>B2B Buyer's Guide</h1><p class="doc-date">Revised <span class="nb">2026-09</span>-28</p></div></template>
+<template id="page-next"><header class="run-head" aria-hidden="true">
+  <div class="brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" /><span class="wordmark">TRIPLE COMPANY</span></div>
+  <span class="run-title">B2B Buyer's Guide</span>
+</header></template>
+<template id="page-foot"><footer class="foot"><span>Triple Company for Industrial Development</span><span>Revised <span class="nb">2026-09</span>-28</span><span>Page <span dir="ltr" class="pageno">0 / 0</span></span><span>olivesegypt.com</span></footer></template>
+<template id="flow">
+<div class="block"><h2>Frequently Asked Questions</h2><div class="qa"><h3>Do you own the processing facility?</h3><p class="body">No. We work with an approved partner arrangement for processing and storage. Triple Company handles sourcing, quality specification, sales, and export logistics; the physical processing and brining takes place at a partner facility in the 10th of Ramadan Industrial Zone.</p></div><div class="qa"><h3>Have you exported before?</h3><p class="body">We are a newly established export company actively developing our first international buyer relationships. We are direct about this because we would rather earn your trust with an honest first order than with an inflated track record.</p></div><div class="qa"><h3>What certifications apply?</h3><p class="body">Quality and documentation information is being prepared. Current product specifications and available documents can be requested by qualified buyers. Any certification we do publish will name the partner facility that holds it, together with the exact certificate name, number, and scope — not a general claim about Triple Company.</p></div><div class="qa"><h3>What is the MOQ?</h3><p class="body">Our current indicative minimum order is one 20ft container, approximately <span class="nb">16–18</span> metric tons. Smaller trial orders are not available; before you order, we can send a <span class="nb">1–5</span> kg sample of the variety, caliber and packaging you are evaluating. Exact MOQ for your order is confirmed during quotation.</p></div><div class="qa"><h3>Can I request a sample?</h3><p class="body">Yes. Samples are reserved for qualified B2B buyers — importers, distributors, retail chains, and food-service buyers. We typically send a representative <span class="nb">1–5</span> kg assortment of the variety, caliber, and packaging you're evaluating. We coordinate dispatch and customs paperwork to your destination port or door, and sample requests are confirmed within 24 hours by our export team.</p></div><div class="qa"><h3>What packaging is available?</h3><p class="body">Glass jars, tin cans, plastic buckets, and plastic barrels (for bulk brine), depending on the product and order volume — these are the packaging formats we have actually confirmed as available. Private-label and OEM packaging is available; artwork, labeling, and minimum quantities for custom packaging are confirmed per project.</p></div><div class="qa"><h3>Which markets are you targeting?</h3><p class="body">We are actively engaging buyers in Africa, the Middle East, and Asia. These are the markets we are building relationships in — not markets we currently serve with an established shipping history.</p></div><div class="qa"><h3>What documents do you provide?</h3><p class="body">Standard export documentation — commercial invoice, packing list, certificate of origin, phytosanitary or health certificate, and bill of lading — is prepared for every order. Additional documents specific to your destination market's requirements are confirmed during quotation.</p></div></div>
+<div class="block"><h2>Export Markets We Are Targeting</h2><div class="unit"><p class="body">As a newly established export company, we are direct about where things stand: Triple Company has not yet completed an export shipment. The regions below are the markets we are actively targeting and building buyer relationships in. We will update this page as specific buyer relationships and shipments are confirmed.</p><ul class="list"><li><strong>Africa.</strong> Our home continent and a natural first market — shorter freight lanes, established trade relationships, and strong existing demand for Egyptian table olives across North and West Africa.</li><li><strong>Middle East.</strong> A region with deep cultural familiarity with cracked, brined, and marinated green olives, and strong retail and food-service demand for Egyptian green olives.</li><li><strong>Asia.</strong> A growing market for Mediterranean and Middle Eastern ingredients in retail, food service, and private label, with interest in competitively priced bulk and OEM supply.</li></ul></div><p class="body">Import duty and tariff treatment (including the correct HS classification for table olives in your destination market) varies by country and can change; we recommend confirming the applicable HS code and duty rate with your own customs broker for your specific market rather than relying on a general figure.</p></div>
+</template>
+<main id="pages"></main>
+<script>
+/*
+ * The layout: the flow above, poured onto fixed A4 pages. A block that does
+ * not fit splits between its items (the first part keeping the heading) or,
+ * if not even its heading and first item fit, moves to the next page. An
+ * item is never split. Runs again, from the start, whenever it is called:
+ * the generator calls it once the PDF's own fonts are on.
+ */
+window.tcFit = () => {
+  const tpl = (id) => document.getElementById(id).content;
+  const pages = document.getElementById('pages');
+  let body;
+  const newPage = (first, scale) => {
+    const pg = document.createElement('section');
+    pg.className = 'pdf-page doc-page';
+    pg.appendChild(tpl(first ? 'page-one' : 'page-next').cloneNode(true));
+    body = document.createElement('div');
+    body.className = 'page-body';
+    body.style.zoom = scale;
+    pg.appendChild(body);
+    pg.appendChild(tpl('page-foot').cloneNode(true));
+    pages.appendChild(pg);
+  };
+  const limit = () => body.parentElement.querySelector('.foot').getBoundingClientRect().top - 2;
+  const fits = () => {
+    const last = body.lastElementChild;
+    return !last || last.getBoundingClientRect().bottom <= limit();
+  };
+  const layout = (scale) => {
+    pages.textContent = '';
+    const place = (blk) => {
+      body.appendChild(blk);
+      if (fits()) return;
+      if (blk.classList.contains('keep') && body.children.length > 1) {
+        blk.remove();
+        newPage(false, scale);
+        body.appendChild(blk);
+        return;
+      }
+      const head = blk.querySelector(':scope > h2');
+      const items = [...blk.children].filter((c) => c !== head);
+      blk.remove();
+      const part = blk.cloneNode(false);
+      if (head) part.appendChild(head);
+      body.appendChild(part);
+      let i = 0;
+      for (; i < items.length; i++) {
+        part.appendChild(items[i]);
+        if (!fits()) { items[i].remove(); break; }
+      }
+      if (i === 0) part.remove();
+      if (i === items.length) return;
+      const rest = blk.cloneNode(false);
+      if (i === 0 && head) rest.appendChild(head); else rest.classList.add('cont');
+      items.slice(i).forEach((it) => rest.appendChild(it));
+      if (!body.children.length) { body.appendChild(rest); return; } // too tall for any page: the generator refuses it
+      newPage(false, scale);
+      place(rest);
+    };
+    newPage(true, scale);
+    for (const blk of [...tpl('flow').cloneNode(true).children]) place(blk);
+    // How full the last page is, from the top of its content to its foot.
+    const top = body.getBoundingClientRect().top;
+    const last = body.lastElementChild.getBoundingClientRect().bottom;
+    return { scale, count: pages.children.length, fill: (last - top) / (limit() - top) };
+  };
+  /*
+   * The scale: the type and spacing of the content, together. The brief
+   * allows no page more than about a quarter empty, and a document's length
+   * is what its source says, so the scale is chosen to fill its last page:
+   * the scale nearest 1 that leaves the last page at least three-quarters
+   * full, or failing that the one that fills it most. 0.96 keeps every size
+   * above the brief's minimums (body 11pt, tables 10pt, labels 8pt).
+   */
+  const SCALES = [1, 0.96, 1.04, 1.08, 1.12, 1.16, 1.2];
+  const tried = SCALES.map(layout);
+  const good = tried.filter((t) => t.fill >= 0.75);
+  const pick = good.length ? good.sort((a, b) => Math.abs(a.scale - 1) - Math.abs(b.scale - 1))[0]
+    : tried.sort((a, b) => b.fill - a.fill)[0];
+  const result = layout(pick.scale);
+  document.documentElement.dataset.scale = pick.scale;
+  document.documentElement.dataset.fill = result.fill.toFixed(2);
+  const all = pages.querySelectorAll('.pdf-page');
+  all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
+};
+window.tcFit();
+</script>
+</body>
+</html>

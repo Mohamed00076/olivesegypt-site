@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!-- Written by scripts/build-pdf-documents.js from netlify/functions/_guides/en/origin-comparison-guide.html. Do not edit: edit that file and rebuild. -->
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<title>Egypt Origin &amp; Sourcing Guide | Triple Company for Industrial Development</title>
+<link rel="stylesheet" href="/assets/fonts/fonts.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/sheet.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/document.css" />
+</head>
+<body>
+<template id="page-one"><header class="masthead">
+  <div class="brand">
+    <img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" />
+    <div><div class="wordmark">TRIPLE COMPANY</div><div class="tagline">for Industrial Development</div></div>
+  </div>
+  <div class="contact">
+    Ouroba Square (<span class="ar-inline" lang="ar" dir="rtl">ميدان العروبة</span>), 5th Settlement,<br/>New Cairo, Cairo, Egypt<br/>
+    <span dir="ltr"><a href="mailto:sales@olivesegypt.com">sales@olivesegypt.com</a> &middot; <a href="tel:+201006045961">+20 100 604 5961</a></span>
+  </div>
+</header>
+<div class="doc-head"><h1>Egypt Origin &amp; Sourcing Guide</h1><p class="doc-date">Revised <span class="nb">2026-09</span>-28</p></div></template>
+<template id="page-next"><header class="run-head" aria-hidden="true">
+  <div class="brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" /><span class="wordmark">TRIPLE COMPANY</span></div>
+  <span class="run-title">Egypt Origin &amp; Sourcing Guide</span>
+</header></template>
+<template id="page-foot"><footer class="foot"><span>Triple Company for Industrial Development</span><span>Revised <span class="nb">2026-09</span>-28</span><span>Page <span dir="ltr" class="pageno">0 / 0</span></span><span>olivesegypt.com</span></footer></template>
+<template id="flow">
+<div class="block"><h2>Egypt at a Glance</h2><div class="stats"><div class="stat"><p class="stat-value">#1</p><p class="stat-label">Table Olive Exporter in Africa</p></div><div class="stat"><p class="stat-value">698K MT</p><p class="stat-label">Annual Production (2023)</p></div><div class="stat"><p class="stat-value">+45%</p><p class="stat-label">Production Growth (<span class="nb">2014–2023</span>)</p></div></div><p class="small">Source: FAO / IOC</p></div>
+<div class="block"><h2>A Leading, Growing Origin</h2><p class="body">Egypt has quietly become one of the world's largest table-olive producers, and Africa's leading table-olive exporter, on the back of fertile Nile Delta and Fayoum growing regions, a long harvest window, and competitive FOB Alexandria pricing. Production has grown 45% over the past decade, reflecting sustained investment in the sector. We don't claim Egypt is the "best" origin for every buyer — the right origin depends on your variety, caliber, flavor profile, and price point — but it is a serious, scaling origin worth evaluating alongside any other.</p></div>
+<div class="block"><h2>How Egyptian Olives Compare</h2><ul class="list"><li><strong>Variety range.</strong> Egypt grows both its own local olive cultivars and internationally known ones, giving buyers a way to source a familiar variety from a competitively priced, less saturated origin.</li><li><strong>Harvest timing.</strong> Egypt's autumn harvest window means fresh-season supply is available on a different calendar than some other Mediterranean origins — useful for buyers managing year-round inventory across multiple sourcing regions.</li><li><strong>Cost position.</strong> FOB Alexandria pricing is generally competitive relative to established Mediterranean origins, which is part of why global demand for Egyptian olives has grown. Exact competitiveness depends on your specific variety, caliber, and packaging — request a current quote to compare.</li><li><strong>Co-packing &amp; OEM capacity.</strong> Buyers looking for a contract packing or white-label olive manufacturer can work with our partner facility on private label formats across glass, tin, bucket, and barrel, with label design help available on request.</li></ul><p class="small">Industry figures above are sourced from FAO and International Olive Council (IOC) reporting on Egyptian production. Company-specific claims elsewhere on this site are kept separate and are not implied by these industry statistics.</p></div>
+</template>
+<main id="pages"></main>
+<script>
+/*
+ * The layout: the flow above, poured onto fixed A4 pages. A block that does
+ * not fit splits between its items (the first part keeping the heading) or,
+ * if not even its heading and first item fit, moves to the next page. An
+ * item is never split. Runs again, from the start, whenever it is called:
+ * the generator calls it once the PDF's own fonts are on.
+ */
+window.tcFit = () => {
+  const tpl = (id) => document.getElementById(id).content;
+  const pages = document.getElementById('pages');
+  let body;
+  const newPage = (first, scale) => {
+    const pg = document.createElement('section');
+    pg.className = 'pdf-page doc-page';
+    pg.appendChild(tpl(first ? 'page-one' : 'page-next').cloneNode(true));
+    body = document.createElement('div');
+    body.className = 'page-body';
+    body.style.zoom = scale;
+    pg.appendChild(body);
+    pg.appendChild(tpl('page-foot').cloneNode(true));
+    pages.appendChild(pg);
+  };
+  const limit = () => body.parentElement.querySelector('.foot').getBoundingClientRect().top - 2;
+  const fits = () => {
+    const last = body.lastElementChild;
+    return !last || last.getBoundingClientRect().bottom <= limit();
+  };
+  const layout = (scale) => {
+    pages.textContent = '';
+    const place = (blk) => {
+      body.appendChild(blk);
+      if (fits()) return;
+      if (blk.classList.contains('keep') && body.children.length > 1) {
+        blk.remove();
+        newPage(false, scale);
+        body.appendChild(blk);
+        return;
+      }
+      const head = blk.querySelector(':scope > h2');
+      const items = [...blk.children].filter((c) => c !== head);
+      blk.remove();
+      const part = blk.cloneNode(false);
+      if (head) part.appendChild(head);
+      body.appendChild(part);
+      let i = 0;
+      for (; i < items.length; i++) {
+        part.appendChild(items[i]);
+        if (!fits()) { items[i].remove(); break; }
+      }
+      if (i === 0) part.remove();
+      if (i === items.length) return;
+      const rest = blk.cloneNode(false);
+      if (i === 0 && head) rest.appendChild(head); else rest.classList.add('cont');
+      items.slice(i).forEach((it) => rest.appendChild(it));
+      if (!body.children.length) { body.appendChild(rest); return; } // too tall for any page: the generator refuses it
+      newPage(false, scale);
+      place(rest);
+    };
+    newPage(true, scale);
+    for (const blk of [...tpl('flow').cloneNode(true).children]) place(blk);
+    // How full the last page is, from the top of its content to its foot.
+    const top = body.getBoundingClientRect().top;
+    const last = body.lastElementChild.getBoundingClientRect().bottom;
+    return { scale, count: pages.children.length, fill: (last - top) / (limit() - top) };
+  };
+  /*
+   * The scale: the type and spacing of the content, together. The brief
+   * allows no page more than about a quarter empty, and a document's length
+   * is what its source says, so the scale is chosen to fill its last page:
+   * the scale nearest 1 that leaves the last page at least three-quarters
+   * full, or failing that the one that fills it most. 0.96 keeps every size
+   * above the brief's minimums (body 11pt, tables 10pt, labels 8pt).
+   */
+  const SCALES = [1, 0.96, 1.04, 1.08, 1.12, 1.16, 1.2];
+  const tried = SCALES.map(layout);
+  const good = tried.filter((t) => t.fill >= 0.75);
+  const pick = good.length ? good.sort((a, b) => Math.abs(a.scale - 1) - Math.abs(b.scale - 1))[0]
+    : tried.sort((a, b) => b.fill - a.fill)[0];
+  const result = layout(pick.scale);
+  document.documentElement.dataset.scale = pick.scale;
+  document.documentElement.dataset.fill = result.fill.toFixed(2);
+  const all = pages.querySelectorAll('.pdf-page');
+  all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
+};
+window.tcFit();
+</script>
+</body>
+</html>

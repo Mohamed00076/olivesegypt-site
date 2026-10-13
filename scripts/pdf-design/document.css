@@ -1,0 +1,91 @@
+/*
+ * The company profile and buyer guides (scripts/build-pdf-documents.js), on
+ * top of sheet.css: the same pages, masthead, foot, type and colours, for
+ * documents that run to more than one page. Sizes keep to the brief's
+ * minimums: body 11.5pt, cards and tables 10.5pt and up, labels 8.5pt.
+ */
+
+/* ---- first page: masthead, then the title and its date ---- */
+.doc-head { margin: 8mm 0 7mm; }
+.doc-head h1 { font-size: 26pt; margin: 0 0 2mm; }
+.doc-date { font-size: 9.5pt; color: var(--label); margin: 0; }
+html[lang="ar"] .doc-head { margin: 6mm 0 5mm; }
+
+/* ---- every later page: a small head carrying the title ---- */
+.run-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6mm;
+  padding-bottom: 2.5mm;
+  margin-bottom: 7mm;
+  border-bottom: 1pt solid var(--olive);
+}
+.run-head .brand { gap: 2.5mm; }
+.run-head .brand img { width: 7mm; height: 8.5mm; }
+.run-head .wordmark { font-size: 11pt; }
+.run-title { font-size: 9pt; color: var(--label); text-align: end; }
+
+/* ---- the flow ---- */
+.block { margin-top: 8mm; }
+.page-body > .block:first-child { margin-top: 0; }
+.block > h2 { margin: 0 0 3mm; }
+.page-body .block > * + *:not(h2) { margin-top: 3.5mm; }
+.page-body .block > h2 + * { margin-top: 0; }
+
+p.body { font-size: 11.5pt; line-height: 1.6; color: var(--ink-soft); margin: 0; }
+p.body strong, .list strong { color: var(--ink); font-weight: 600; }
+p.small { font-size: 9.5pt; line-height: 1.5; color: var(--label); margin: 0; }
+.unit > .list { margin-top: 2mm; }
+
+.list { margin: 0; padding-inline-start: 5.5mm; }
+.list li { font-size: 11.5pt; line-height: 1.55; color: var(--ink-soft); }
+.list li + li { margin-top: 1.6mm; }
+.list li::marker { color: var(--olive); }
+.list.cols-2 { columns: 2; column-gap: 8mm; }
+.list.cols-2 li { break-inside: avoid; color: var(--ink); }
+
+/* a question and its answer */
+.qa h3 { font-size: 12pt; font-weight: 700; line-height: 1.4; color: var(--ink); margin: 0 0 1.2mm; }
+.page-body .block > .qa + .qa { margin-top: 4.5mm; }
+
+/* labelled facts, as cards in two columns */
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+.fact { background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; padding: 3mm 4.5mm; }
+.fact .label { margin-bottom: 1.2mm; }
+.fact-value { font-size: 11pt; font-weight: 600; line-height: 1.45; color: var(--ink); margin: 0; }
+
+/* cards with a title (the four price drivers) */
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.cards .card h3 { font-size: 12pt; font-weight: 700; line-height: 1.35; color: var(--olive-deep); margin: 0 0 1.6mm; }
+.cards .card p { font-size: 10.5pt; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+/* figures */
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+.stat { background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; padding: 4mm; text-align: center; }
+.stat-value { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20pt; line-height: 1.2; color: var(--olive); margin: 0; }
+.stat-label { font-size: 9.5pt; line-height: 1.4; color: var(--label); margin: 1.5mm 0 0; }
+
+/* a table in a document: up to four columns, top-aligned */
+table.doc-table th, table.doc-table td { vertical-align: top; padding: 2.4mm 3mm; }
+table.doc-table tbody th { width: auto; }
+
+.block.closing .note { margin-top: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+/* Arabic sets taller lines (Amiri). */
+html[lang="ar"] p.body, html[lang="ar"] .list li { line-height: 1.55; }
+html[lang="ar"] .block { margin-top: 7mm; }
+html[lang="ar"] .qa h3 { font-size: 12.5pt; }
+
+/* the packaging table's four columns: the longest text gets the most room */
+table.doc-table { table-layout: fixed; }
+table.doc-table thead th:nth-child(1) { width: 23%; }
+table.doc-table thead th:nth-child(2) { width: 22%; }
+table.doc-table thead th:nth-child(3) { width: 25%; }
+table.doc-table thead th:nth-child(4) { width: 30%; }
+
+/* Arabic inside English text keeps its regular face, even in a bold card:
+   the inline face has no bold, and a synthesised one embeds as Type3. */
+.ar-inline { font-weight: 400; }
