@@ -56,7 +56,7 @@ html[lang="ar"] body { font-family: 'Plus Jakarta Sans', 'Noto Naskh Arabic', se
   border-bottom: 1.5pt solid var(--olive);
 }
 .brand { display: flex; align-items: center; gap: 3.5mm; }
-.brand img { width: 11mm; height: 13.5mm; object-fit: contain; }
+.brand img { width: 14mm; height: 17mm; object-fit: contain; }
 .wordmark { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 17pt; line-height: 1.1; color: var(--olive); }
 .tagline { font-size: 9pt; line-height: 1.4; color: var(--label); margin-top: 0.6mm; }
 html[lang="ar"] .wordmark { font-size: 18pt; line-height: 1.3; }
@@ -104,7 +104,7 @@ html[lang="ar"] h1 { line-height: 1.4; }
 .photo img, .photo-panel { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 4mm; }
 /* A photo not supplied yet, in working drafts only: a plain panel, no text. */
 .photo-panel { background: var(--sand); border: 0.75pt solid var(--line); }
-.photo figcaption { margin-top: 1.8mm; font-size: 8.5pt; line-height: 1.35; color: var(--label); text-align: center; }
+.photo figcaption { margin-top: 1.8mm; font-size: 9.5pt; line-height: 1.35; color: var(--label); text-align: center; }
 
 /* ---- at-a-glance cards ---- */
 .glance { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin-top: 7mm; }
@@ -201,3 +201,38 @@ html[lang="ar"] .note { margin-top: 7mm; padding: 3.5mm 5mm; }
   color: var(--label);
 }
 .foot span:last-child { direction: ltr; }
+
+/* ---- contents page of the combined file: the range at a glance ---- */
+.contents-page h1 { margin: 2mm 0 6mm; }
+table.contents td, table.contents tbody th { vertical-align: top; padding-top: 3.6mm; padding-bottom: 3.6mm; }
+table.contents tbody th { width: 34%; }
+table.contents a { color: var(--olive); text-decoration: none; font-weight: 700; }
+.row-type { display: block; font-size: 9pt; font-weight: 500; color: var(--label); margin-top: 0.8mm; }
+table.contents .num { text-align: end; width: 12%; }
+
+/* A gentler first step, so a page only a little too long does not give up
+   more space than it needs. */
+.pdf-page.fit-0 .glance { margin-top: 6mm; }
+.pdf-page.fit-0 .section { margin-top: 6.5mm; }
+.pdf-page.fit-0 .note { margin-top: 6.5mm; }
+.pdf-page.fit-0 table.spec th, .pdf-page.fit-0 table.spec td { padding: 2.2mm 4mm; }
+
+/* ---- fitting: a page whose content would reach its foot tightens its
+   spacing, one step at a time (the page's own script adds fit-1, then
+   fit-2). Type sizes never change, so nothing drops under the minimums. ---- */
+.pdf-page.fit-1 .doc-line { margin: 4mm 0 3mm; }
+.pdf-page.fit-1 .glance { margin-top: 5mm; }
+.pdf-page.fit-1 .section { margin-top: 5mm; }
+.pdf-page.fit-1 .note { margin-top: 5mm; padding: 3mm 5mm; }
+.pdf-page.fit-1 table.spec th, .pdf-page.fit-1 table.spec td { padding: 1.8mm 4mm; }
+.pdf-page.fit-2 h1 { margin: 1.5mm 0; }
+.pdf-page.fit-2 .glance { margin-top: 4mm; }
+.pdf-page.fit-2 .card { padding: 2.6mm 4mm; }
+.pdf-page.fit-2 .section { margin-top: 3.5mm; }
+.pdf-page.fit-2 h2 { margin-bottom: 1.5mm; }
+.pdf-page.fit-2 .chips { margin-bottom: 1.5mm; }
+.pdf-page.fit-2 .note { margin-top: 3.5mm; padding: 2.5mm 4.5mm; }
+.pdf-page.fit-2 table.spec th, .pdf-page.fit-2 table.spec td { padding: 1.3mm 4mm; }
+
+/* A number range kept on one line. */
+.nb { white-space: nowrap; }

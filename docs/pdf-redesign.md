@@ -127,3 +127,26 @@ Not renamed. Awaiting approval of this list and of a new title.
   - the other six sheets
   - the shared letterhead used by quotations, invoices and letters
   - file URLs and the Downloads pages
+
+## Phase B — all seven spec sheets and the combined file (draft)
+
+- **Sources:** `scripts/build-pdf-sources.js` builds every sheet and `all-spec-sheets-<locale>`.
+- **Combined file:** a contents page that doubles as the range at a glance. It shows product and type, formats, calibers and page, and each name links to its page. One product per page follows, identical to its own sheet, with page n / 8 and bookmarks.
+- **Photos:** owner, 2026-10-13: the whole set uses photographs, and nothing ships until all seven are in.
+
+  | Sheet | Photos |
+  |---|---|
+  | Green Olives | two: whole, pitted |
+  | Sliced Jalapeño | two: green rings, red rings (the catalogue's format names as captions) |
+  | Oxidized Black | one: pitted, glossy |
+  | Stuffed, Natural Black, Artichoke, Pepperoncini | awaiting the owner's photographs |
+
+  A sheet is printed only when all its photographs exist (`READY_SHEETS`). The combined file is printed only when all seven are ready. Until then, the others keep their current PDFs, and their drafts show a plain panel; the generator refuses to print a panel.
+- **Owner-approved tweaks (2026-10-13):**
+  - the type pill is left out where it only repeats the name (Green Olives)
+  - captions at 9.5 pt
+  - a larger masthead logo
+- **Fitting:** a page that would reach its foot tightens its spacing in up to three steps (`fit-0` to `fit-2`), with type sizes unchanged. It is re-run after the PDF fonts load. The generator still refuses a page that does not fit.
+- **Empty space above the foot:**
+  - product pages: 0.3–4.6%
+  - contents page: 19.7% (EN) and 15.4% (AR)

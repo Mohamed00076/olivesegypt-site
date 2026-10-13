@@ -327,8 +327,11 @@ function renderFor(job) {
 // rendering. The generator refuses them.
 const BLOCKED_SCRIPTS = /\/assets\/(consent|analytics|locale-switch)\.js(\?|$)/;
 
-// The spec sheets moved to the new design so far (build-pdf-sources.js).
-const { SPEC_SHEETS: REDESIGNED_SHEETS } = require('./build-pdf-sources');
+// The spec sheets printed in the new design (build-pdf-sources.js): those
+// whose photographs are all supplied. The rest, and the combined file until
+// every sheet is ready, keep their current PDFs (owner: no mixed sets ship).
+const { READY_SHEETS: REDESIGNED_SHEETS, SPEC_SHEETS: ALL_SHEETS } = require('./build-pdf-sources');
+const ALL_READY = ALL_SHEETS.every((k) => REDESIGNED_SHEETS.includes(k));
 
 const JOBS = ['en', 'ar'].flatMap((locale) => [
   ...GUIDE_SLUGS.map((slug) => ({
@@ -370,7 +373,11 @@ const JOBS = ['en', 'ar'].flatMap((locale) => [
     out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/${dir}-${locale}.pdf`,
   })),
   // All ten sheets in one file, one product per page (?product=all).
-  {
+  ALL_READY ? {
+    locale, slug: 'spec-sheets-all', group: 'spec-sheets', kind: 'sheet', public: true,
+    source: `scripts/pdf-sources/spec-sheets/all-spec-sheets-${locale}.html`,
+    out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/all-spec-sheets-${locale}.pdf`,
+  } : {
     locale, slug: 'spec-sheets-all', group: 'spec-sheets', kind: 'print', public: true,
     source: locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html',
     query: '?product=all',

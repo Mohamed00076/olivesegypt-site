@@ -42,6 +42,14 @@ PHOTOS = {
     # this 620 x 620 crop of olives is kept (tight enough to match the whole-olive photo's scale; 328 ppi at 48 mm). To be re-cut from the camera
     # original when the owner sends it. Supplied on the command line.
     'green-olives-pitted.jpg': (None, (260, 620, 880, 1240)),
+    # Jalapeño, green and red rings: the owner's warehouse photographs
+    # (960 x 1280 copies, 2026-10-13). Cropped inside the vessel, so no rim,
+    # lid or the importer's label on the red one's bucket shows.
+    'jalapeno-green-rings.jpg': (None, (130, 280, 850, 1000)),
+    'jalapeno-red-rings.jpg': (None, (190, 330, 850, 990)),
+    # Oxidized black olives (pitted, in brine): the owner's warehouse
+    # photograph, cropped below the barrel lids and the bucket's tab.
+    'oxidized-black-olives.jpg': (None, (0, 420, 860, 1280)),
 }
 
 

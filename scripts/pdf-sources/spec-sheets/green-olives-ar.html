@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="/scripts/pdf-design/sheet.css" />
 </head>
 <body>
-<section class="pdf-page">
+<section class="pdf-page" id="green-olives">
 <header class="masthead">
   <div class="brand">
     <img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" />
@@ -22,7 +22,7 @@
 <div class="doc-line"><span class="doc-kind">ورقة مواصفات المنتج</span><span>آخر تحديث <span dir="ltr">2026-10-13</span></span></div>
 <div class="hero">
   <div class="hero-text">
-    <span class="pill">زيتون أخضر</span>
+    
     <h1>زيتون أخضر</h1>
     <p class="lede">زيتون مائدة أخضر من مصر. متاح كاملًا أو منزوع النواة أو مقطعًا. الأعيرة <span dir="ltr">140-360</span>.</p>
   </div>
@@ -48,5 +48,23 @@
 <p class="note">تُؤكَّد خيارات التغليف الدقيقة، ومواصفات المحلول الملحي، والأسعار أثناء عرض السعر للمنتج المحدد وحجم الطلب.</p>
 <footer class="foot"><span>الشركة الثلاثية للتنمية الصناعية</span><span>آخر تحديث <span dir="ltr">2026-10-13</span></span><span>صفحة <span dir="ltr">1 / 1</span></span><span>olivesegypt.com</span></footer>
 </section>
+<script>
+// Fitting (sheet.css): a page whose content reaches its foot tightens its
+// spacing a step at a time. The generator still refuses a page that does
+// not fit after the last step.
+// The generator calls tcFit() again once the PDF's own fonts are applied,
+// since those (Amiri above all) set taller lines than the screen fonts.
+window.tcFit = () => {
+  for (const pg of document.querySelectorAll('.pdf-page')) {
+    pg.classList.remove('fit-0', 'fit-1', 'fit-2');
+    const over = () => {
+      const foot = pg.querySelector('.foot').getBoundingClientRect().top - 2;
+      return [...pg.children].some((el) => !el.classList.contains('foot') && el.getBoundingClientRect().bottom > foot);
+    };
+    for (const step of ['fit-0', 'fit-1', 'fit-2']) { if (!over()) break; pg.classList.add(step); }
+  }
+};
+window.tcFit();
+</script>
 </body>
 </html>

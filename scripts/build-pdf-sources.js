@@ -19,7 +19,9 @@
  * The sources are written to scripts/pdf-sources/, which the deploy prunes,
  * and printed by scripts/generate-export-catalog-pdf.js like every other PDF.
  *
- * Phase A builds one sheet, Green Olives, in both languages (SPEC_SHEETS).
+ * Every product's sheet, and the combined file of all seven with a contents
+ * page. A sheet is printed only when all its photographs are supplied
+ * (READY_SHEETS); until then its source is a working draft.
  */
 
 const fs = require('fs');
@@ -34,8 +36,10 @@ const LOGO = '/assets/logo-BJ1TOn9V.png';
 // The revision date printed on the redesigned documents.
 const REVISED = '2026-10-13';
 
-// Phase A: one product. Phase B adds the rest.
-const SPEC_SHEETS = ['green'];
+// Every product, in the site's order (scripts/products.js).
+const { PRODUCTS } = require('./products');
+const SPEC_SHEETS = PRODUCTS.map((p) => p.key);
+const DIR_OF = Object.fromEntries(PRODUCTS.map((p) => [p.key, p.dir]));
 
 // The photographs each sheet carries (owner, 2026-10-13: the whole set uses
 // photographs; no mixed sets). One photo by default; a second, with
@@ -53,11 +57,22 @@ const PHOTOS = {
   ],
   stuffed: [{ file: 'stuffed-green-olives.jpg' }],
   black_natural: [{ file: 'natural-black-olives.jpg' }],
+  // Both the owner's oxidized photographs show pitted olives; the glossier,
+  // clearer one is used (owner, 2026-10-13: "do what you think is recommended").
   oxidized_black: [{ file: 'oxidized-black-olives.jpg' }],
-  jalapeno: [{ file: 'sliced-jalapeno-peppers.jpg' }],
+  // Captions are the catalogue's own format names (owner, 2026-10-13: both
+  // photos for jalapeño).
+  jalapeno: [
+    { file: 'jalapeno-green-rings.jpg', caption: { en: 'Sliced Green Rings', ar: 'حلقات خضراء مقطعة' } },
+    { file: 'jalapeno-red-rings.jpg', caption: { en: 'Sliced Red Rings', ar: 'حلقات حمراء مقطعة' } },
+  ],
   artichoke: [{ file: 'marinated-artichoke-hearts.jpg' }],
   pepperoncini: [{ file: 'pepperoncini-peppers.jpg' }],
 };
+
+/** A sheet can be printed once every photograph it names is supplied. */
+const ready = (key) => PHOTOS[key].every((ph) => fs.existsSync(path.join(ROOT, PHOTO_DIR, ph.file)));
+const READY_SHEETS = SPEC_SHEETS.filter(ready);
 
 /** The photo block: one or two squares, captioned when the sheet gives captions. */
 function photosHtml(locale, key) {
@@ -75,6 +90,8 @@ function photosHtml(locale, key) {
 const T = {
   en: {
     dir: 'ltr', kind: 'Product Specification Sheet', revised: 'Revised', page: 'Page',
+    allKind: 'Product Specification Sheets', allTitle: 'Product Specifications | Triple Company for Industrial Development',
+    contents: 'Contents', product: 'Product',
     titleSuffix: ' — Product Specification Sheet | Triple Company for Industrial Development',
     brine: 'Brine specification', param: 'Parameter', spec: 'Specification',
     wordmark: 'TRIPLE COMPANY', tagline: 'for Industrial Development',
@@ -83,6 +100,8 @@ const T = {
   },
   ar: {
     dir: 'rtl', kind: 'ورقة مواصفات المنتج', revised: 'آخر تحديث', page: 'صفحة',
+    allKind: 'أوراق مواصفات المنتجات', allTitle: 'مواصفات المنتجات | الشركة الثلاثية للتنمية الصناعية',
+    contents: 'المحتويات', product: 'المنتج',
     titleSuffix: ' — ورقة مواصفات المنتج | الشركة الثلاثية للتنمية الصناعية',
     brine: 'مواصفات المحلول الملحي', param: 'البند', spec: 'المواصفة',
     wordmark: 'الشركة الثلاثية', tagline: 'للتنمية الصناعية',
@@ -124,7 +143,14 @@ function productFrom(locale, key) {
     name: one(/<h2[^>]*>([^<]*)<\/h2>/, block, `${locale} ${key} name`),
     lede: one(/<p class="text-sm text-muted-foreground mt-2">([\s\S]*?)<\/p>/, block, `${locale} ${key} description`),
     formats: { label: formats.label, items: all(/<span class="chip-format">([^<]*)<\/span>/g, formats.body) },
-    calibers: { label: calibers.label, items: all(/<span class="chip">([^<]*)<\/span>/g, calibers.body), ltr: /dir="ltr"/.test(calibers.body) },
+    // A range as chips ("140-360"), or, where calibers are not fixed, the
+    // catalogue's sentence ("Confirmed during quotation").
+    calibers: (() => {
+      const chips = all(/<span class="chip">([^<]*)<\/span>/g, calibers.body);
+      const text = chips.length ? chips : all(/<p[^>]*>([\s\S]*?)<\/p>/g, calibers.body);
+      if (!text.length) throw new Error(`build-pdf-sources: ${locale} ${key} calibers are empty`);
+      return { label: calibers.label, items: text, ltr: chips.length > 0 && /dir="ltr"/.test(calibers.body) };
+    })(),
     packaging: { label: packaging.label, text: one(/<p[^>]*>([\s\S]*?)<\/p>/, packaging.body, `${locale} ${key} packaging`) },
     bestFor: { label: bestFor.label, items: all(/<li>([\s\S]*?)<\/li>/g, bestFor.body) },
     stats,
@@ -139,7 +165,12 @@ function productFrom(locale, key) {
  * and a number already inside <span dir="ltr"> is left as it is.
  */
 function isolateNumbers(locale, html) {
-  if (locale !== 'ar') return html;
+  // In English a range only needs keeping on one line ("140-\n360" read
+  // badly on the natural black sheet).
+  if (locale !== 'ar') {
+    return html.split(/(<[^>]+>)/).map((part) => (part.startsWith('<') ? part
+      : part.replace(/\d+(?:[.,]\d+)?[\u2013-]\d+(?:[.,]\d+)?%?/g, (n) => `<span class="nb">${n}</span>`))).join('');
+  }
   let inLtr = 0;
   return html.split(/(<[^>]+>)/).map((part) => {
     if (part.startsWith('<')) {
@@ -185,28 +216,56 @@ function foot(locale, n, total) {
     `<span>${t.page} <span dir="ltr">${n} / ${total}</span></span><span>olivesegypt.com</span></footer>`;
 }
 
-function specSheetHtml(locale, key) {
+const doc = (locale, title, pages) => `<!DOCTYPE html>
+<!-- Written by scripts/build-pdf-sources.js from ${locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html'}. Do not edit: edit the catalogue and rebuild. -->
+<html lang="${locale}" dir="${T[locale].dir}">
+<head>
+<meta charset="UTF-8" />
+<title>${title}</title>
+<link rel="stylesheet" href="${FONTS}" />
+<link rel="stylesheet" href="${DESIGN}" />
+</head>
+<body>
+${pages.join('\n')}
+<script>
+// Fitting (sheet.css): a page whose content reaches its foot tightens its
+// spacing a step at a time. The generator still refuses a page that does
+// not fit after the last step.
+// The generator calls tcFit() again once the PDF's own fonts are applied,
+// since those (Amiri above all) set taller lines than the screen fonts.
+window.tcFit = () => {
+  for (const pg of document.querySelectorAll('.pdf-page')) {
+    pg.classList.remove('fit-0', 'fit-1', 'fit-2');
+    const over = () => {
+      const foot = pg.querySelector('.foot').getBoundingClientRect().top - 2;
+      return [...pg.children].some((el) => !el.classList.contains('foot') && el.getBoundingClientRect().bottom > foot);
+    };
+    for (const step of ['fit-0', 'fit-1', 'fit-2']) { if (!over()) break; pg.classList.add(step); }
+  }
+};
+window.tcFit();
+</script>
+</body>
+</html>
+`;
+
+// The type pill names the product's category. Where it only repeats the
+// name ("Green Olive" over "Green Olives"), it is left out.
+const repeatsName = (type, name) => [type, `${type}s`].includes(name);
+
+/** One product's page. */
+function sheetPage(locale, key, n, total, kind) {
   const t = T[locale];
   const p = productFrom(locale, key);
   const ltr = (s, on) => (on ? `<span dir="ltr">${s}</span>` : isolateNumbers(locale, s));
   const iso = (s) => isolateNumbers(locale, s);
   const chips = packagingChips(locale, p.packaging.text).map(iso);
-  return `<!DOCTYPE html>
-<!-- Written by scripts/build-pdf-sources.js from ${locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html'}. Do not edit: edit the catalogue and rebuild. -->
-<html lang="${locale}" dir="${t.dir}">
-<head>
-<meta charset="UTF-8" />
-<title>${p.name}${t.titleSuffix}</title>
-<link rel="stylesheet" href="${FONTS}" />
-<link rel="stylesheet" href="${DESIGN}" />
-</head>
-<body>
-<section class="pdf-page">
+  return `<section class="pdf-page" id="${DIR_OF[key]}">
 ${masthead(locale)}
-<div class="doc-line"><span class="doc-kind">${t.kind}</span><span>${t.revised} <span dir="ltr">${REVISED}</span></span></div>
+<div class="doc-line"><span class="doc-kind">${kind}</span><span>${t.revised} <span dir="ltr">${REVISED}</span></span></div>
 <div class="hero">
   <div class="hero-text">
-    <span class="pill">${p.type}</span>
+    ${repeatsName(p.type, p.name) ? '' : `<span class="pill">${p.type}</span>`}
     <h1>${p.name}</h1>
     <p class="lede">${iso(p.lede)}</p>
   </div>
@@ -230,21 +289,57 @@ ${masthead(locale)}
   <p class="body">${iso(p.packaging.text)}</p>
 </div>
 <p class="note">${iso(p.closing)}</p>
-${foot(locale, 1, 1)}
-</section>
-</body>
-</html>
-`;
+${foot(locale, n, total)}
+</section>`;
+}
+
+function specSheetHtml(locale, key) {
+  const p = productFrom(locale, key);
+  return doc(locale, `${p.name}${T[locale].titleSuffix}`, [sheetPage(locale, key, 1, 1, T[locale].kind)]);
+}
+
+/*
+ * All seven sheets in one file: a contents page first, which doubles as the
+ * range at a glance (product, its formats and calibers, and the page it is
+ * on, each name a link to its page), then one product per page in the
+ * site's order, each laid out exactly as its own sheet.
+ */
+function allSheetsHtml(locale) {
+  const t = T[locale];
+  const total = SPEC_SHEETS.length + 1;
+  const iso = (s) => isolateNumbers(locale, s);
+  const rows = SPEC_SHEETS.map((key, i) => {
+    const p = productFrom(locale, key);
+    return `<tr><th scope="row"><a href="#${DIR_OF[key]}">${p.name}</a><span class="row-type">${p.type}</span></th>` +
+      `<td>${p.formats.items.map(iso).join(', ')}</td>` +
+      `<td>${p.calibers.items.map((s) => (p.calibers.ltr ? `<span dir="ltr">${s}</span>` : iso(s))).join(', ')}</td>` +
+      `<td class="num"><span dir="ltr">${i + 2}</span></td></tr>`;
+  }).join('');
+  const first = productFrom(locale, SPEC_SHEETS[0]);
+  const contents = `<section class="pdf-page contents-page">
+${masthead(locale)}
+<div class="doc-line"><span class="doc-kind">${t.allKind}</span><span>${t.revised} <span dir="ltr">${REVISED}</span></span></div>
+<h1>${t.contents}</h1>
+<table class="spec contents">
+  <thead><tr><th scope="col">${t.product}</th><th scope="col">${first.formats.label}</th><th scope="col">${first.calibers.label}</th><th scope="col" class="num">${t.page}</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+<p class="note">${iso(first.closing)}</p>
+${foot(locale, 1, total)}
+</section>`;
+  return doc(locale, t.allTitle, [contents, ...SPEC_SHEETS.map((key, i) => sheetPage(locale, key, i + 2, total, t.kind))]);
 }
 
 /** Every source this builder owns: { path, html }. */
 function sources() {
   const out = [];
   for (const key of SPEC_SHEETS) {
-    const dir = require('./products').PRODUCTS.find((p) => p.key === key).dir;
     for (const locale of ['en', 'ar']) {
-      out.push({ path: `${OUT_DIR}/spec-sheets/${dir}-${locale}.html`, html: specSheetHtml(locale, key) });
+      out.push({ path: `${OUT_DIR}/spec-sheets/${DIR_OF[key]}-${locale}.html`, html: specSheetHtml(locale, key) });
     }
+  }
+  for (const locale of ['en', 'ar']) {
+    out.push({ path: `${OUT_DIR}/spec-sheets/all-spec-sheets-${locale}.html`, html: allSheetsHtml(locale) });
   }
   return out;
 }
@@ -270,4 +365,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { PHOTOS, PHOTO_DIR, sources, SPEC_SHEETS, OUT_DIR, REVISED, productFrom, packagingChips, isolateNumbers };
+module.exports = { PHOTOS, PHOTO_DIR, sources, SPEC_SHEETS, READY_SHEETS, OUT_DIR, REVISED, productFrom, packagingChips, isolateNumbers };

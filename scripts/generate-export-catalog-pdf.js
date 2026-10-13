@@ -123,6 +123,9 @@ const ONLY = process.env.ONLY ? process.env.ONLY.split(',').map((s) => s.trim())
     });
     if (broken.length) throw new Error(`${job.source}${job.query || ''}: image(s) failed to load: ${broken.join(', ')}. Nothing was written for it.`);
     await page.evaluate(() => document.fonts.ready);
+    // The redesigned sheets fit their pages to the fonts actually in use
+    // (build-pdf-sources.js, tcFit): run it now that the PDF fonts are on.
+    if (job.kind === 'sheet') await page.evaluate(() => window.tcFit && window.tcFit());
 
     // The catalogue is laid out as fixed A4 pages. One whose content outgrows
     // its page does not get clipped -- it spills a few lines onto a page of
