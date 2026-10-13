@@ -9842,6 +9842,105 @@ The first check of the admin and CRM areas against the live site rather than a l
 
 ---
 
+## Deploys 238 and 239 — Pricing and caliber corrections, the Packaging & Quotation Guide (PRs #357, #360)
+
+**Previous recorded deploy:** `7773516` (Deploy 237, PR #356)
+**Approvals:**
+- "merge" (#357).
+- "approved 1 and 2" (the new title and the corrections, with the wider list of pages), then "merge" (#360).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 238 | #357 | `f45797a` | 2026-10-12 13:22:25 | 1 | +63 / −1 | Notes only |
+| 239 | #360 | `1c5988e` | 2026-10-13 08:04:33 | 25 | +63 / −57 | Copy corrections (EN, AR), 4 guide PDFs, register |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 238** recorded Deploys 236 and 237.
+
+### What the deploys did
+
+- **Deploy 239 — Pricing and caliber corrections; the guide's new title (#360).** Owner's PDF redesign brief of 2026-10-12, decisions 3a to 3e, applied in English and Arabic wherever the sentences appeared. This is Phase C1 of that brief: it does not depend on product photographs, so it shipped ahead of the redesigned PDFs.
+  - **3a, currency:** "Exports are priced in USD, so the Egyptian pound's exchange rate affects competitiveness" became "Quotes and payment can be in USD or EUR. Movements in the Egyptian pound's exchange rate can affect prices between quotations." (C-166)
+  - **3b, price claims:** "Large-caliber green olives and stuffed specialty lines sit at the premium end. Mid-caliber and oxidized black olives offer better value for high-volume food service." was removed; the supplier price lists show no such difference. It became "Price varies by product, caliber, packaging and order volume, and is confirmed in the quotation." (C-167)
+  - **3c, caliber bands:** the 101/110–181/200 ("premium retail jars") and 201/230+ ("food-service") bands were removed, since they implied sizes outside the 140–360 supplied, and so was the `/resources/packaging` caliber chart that drew them. The plain explanation of caliber stays, plus "We supply calibers from 140 to 360; the caliber for your order is confirmed in the quotation." (C-168)
+  - **3d, title:** the guide's visible title is now "Egyptian Table Olive Packaging & Quotation Guide" / «دليل التغليف وعروض الأسعار لزيتون المائدة المصري» (short forms "Packaging & Quotation Guide" / «دليل التغليف وعروض الأسعار»).
+    - It appears in the guide (title, H1, breadcrumb), the PDF metadata, both Downloads cards and the CRM enquiries label.
+    - The URL, PDF file names, form key `pricing_guide`, analytics labels, redirects and `robots.txt` are unchanged.
+  - **3e, where:**
+    - the Pricing/Packaging guide and the Packaging Overview guide, with their four PDFs reprinted in the current design
+    - `/resources/pricing` and `/resources/packaging`
+    - `/solutions/retail` and `/solutions/food-service`, via `scripts/generate-solutions-pages.py`
+    - the 2026 prices article, whose next sentence names "Egyptian olives" (Arabic «الزيتون المصري») where "them" lost its subject
+    - all Arabic twins
+  - **Also:**
+    - The guide's "Revised" line is now 2026-10-13.
+    - The packaging page keeps its spacing where the chart was.
+    - Sitemap dates were updated for 12 pages.
+  - **Claim register:**
+    - C-163 to C-165 record the three market lines kept as worded (decision 4: owner-confirmed, no source on file).
+    - C-166 to C-168 record the corrections.
+  - **Arabic wording is for the owner's review.**
+
+### Verified on the live site (GitHub Actions, 2026-10-13)
+
+- **Run after #360** (run 38349565566): success.
+- **Live pages:**
+  - `/resources/pricing` carries the new currency sentence.
+  - `/downloads/` names the "Packaging & Quotation Guide".
+  - `/resources/packaging` no longer mentions 101/110.
+
+### Not deployed: the PDF redesign (draft PRs #358 and #359)
+
+- **Phase A (#358):** inventory, the new A4 design, and the Green Olives sheet with two of the owner's photographs (whole and pitted).
+- **Phase B (#359):** all seven sheets and the combined file. Green Olives, Sliced Jalapeño (green and red rings) and Oxidized Black are printed; Stuffed, Natural Black, Artichoke and Pepperoncini are drafts awaiting photographs.
+- **Owner rules:**
+  - the whole set uses photographs, and no mixed set ships
+  - square crops, at least 300 ppi at print size, JPEG 85, no EXIF or GPS
+  - no grading and no enlargement
+  - originals showing more than the product stay out of the repository
+- **Photographs recorded in `docs/asset-rights-register.md`.** The rows live on the draft branches and are recorded on `main` when those phases merge.
+
+### Owner actions reported (2026-10-12 and 13)
+
+- **Search Console:**
+  - `sitemap.xml` resubmitted
+  - indexing requested for the Arabic product pages and the pages that changed most
+  - "Validate fix" on the two duplicate-page reports
+- **Facebook:** the button opens the company page (closes the audit's open item).
+- **`www.olivesegypt.com` on the owner's phone:** `ERR_CONNECTION_REFUSED` on mobile data and in incognito.
+  - From outside Egypt, `www` works on every Netlify address over IPv4. The only difference from the apex is that `www` (a CNAME to the site's netlify.app name) also has IPv6 (AAAA) records, while the apex (A `75.2.60.5`) has none.
+  - Likely cause: the owner's carrier connects over IPv6 and is refused.
+  - **Owner's fix, pending, in GoDaddy:** replace the `www` CNAME with an A record to `75.2.60.5`.
+
+### Claim register
+
+168 claims (C-163 to C-168 added).
+
+### Rollback
+
+- **Deploy 239:** `git revert -m 1 1c5988e`.
+- **Deploy 238** is documentation only.
+
+### Known limitations shipped with Deploys 238 and 239
+
+- **Owner:**
+  - the `www` DNS change at GoDaddy
+  - product photographs for Stuffed, Natural Black, Artichoke and Pepperoncini
+  - camera originals of the pitted green olives and jalapeño photographs
+  - Umami sign-in
+  - GA4 key event and retention
+  - Google Business Profile
+  - Dependabot alerts
+  - delete the `claude/www-diagnose` branch
+  - review of the Arabic wording above
+- **Unchanged from Deploys 236 and 237:** the remaining items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9860,7 +9959,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 237 (2026-10-12).**
+**Unchanged since U4, through Deploy 239 (2026-10-13).**
 
 ## Outstanding, unresolved by this document
 
