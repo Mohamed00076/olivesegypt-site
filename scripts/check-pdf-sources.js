@@ -13,5 +13,4 @@
  * something its page no longer does.
  */
 
-process.argv.push('--check');
-require('./build-pdf-documents');
+require('./build-pdf-documents').run(true);

@@ -404,8 +404,14 @@ function sources() {
   })));
 }
 
-if (require.main === module) {
-  const check = process.argv.includes('--check');
+/*
+ * Write the sources, or with check set, write nothing and fail (exit 1) if
+ * any is out of date. scripts/check-pdf-sources.js calls run(true): until
+ * 2026-10-13 it required this file expecting the --check flag to act, but
+ * the block below only runs when this file is started directly, so the
+ * check passed even when a source was stale.
+ */
+function run(check) {
   const stale = [];
   for (const s of sources()) {
     const file = path.join(ROOT, s.path);
@@ -425,4 +431,6 @@ if (require.main === module) {
   }
 }
 
-module.exports = { DOCUMENTS, OUT_DIR, sources, documentHtml };
+if (require.main === module) run(process.argv.includes('--check'));
+
+module.exports = { DOCUMENTS, OUT_DIR, sources, documentHtml, run };
