@@ -2,10 +2,10 @@
   "ar/downloads/company-profile-ar.pdf": {
     "source": "scripts/pdf-sources/documents/company-profile-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-profile-ar.html": "55f05234fe6ddb4a7582502083ddae14fca7460345434a513844b426cb7e4662",
+      "scripts/pdf-sources/documents/company-profile-ar.html": "7b107b8c1f54bc635780f7b3386416e2247187cb021ec14b0f0c57980032ced9",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -89,7 +89,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "a0694091a10916f3fd3a8799361b64a89a69ff39920da07092878406c994c1cc"
+    "pdf": "d91be8b14d8d1540986c920297adc7dca1717ecb8c79c35bc1dd3ba60056cb0f"
   },
   "ar/downloads/product-catalog-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -1003,10 +1003,10 @@
   "downloads/company-profile-en.pdf": {
     "source": "scripts/pdf-sources/documents/company-profile-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-profile-en.html": "b32c7a61be51f192c6c1aef5c0a7c6c57e4e5bddbcbc7f4425ac05323a809323",
+      "scripts/pdf-sources/documents/company-profile-en.html": "e8f9d4ec252d89155b8c23bd022c1c768c939b3716335dfa721d86e115ce0e6f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -1090,7 +1090,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "692136e4cb04728bcac0cc22d65739fc8d966fecb9068936c95105df7a257076"
+    "pdf": "c11a7cfb50fde339ba8013cb8de04c6c37da91356154b45473dae257185d1cb1"
   },
   "downloads/product-catalog-en.pdf": {
     "source": "catalog/print/index.html",
@@ -1995,10 +1995,10 @@
   "netlify/functions/_guides/ar/buyers-guide.pdf": {
     "source": "scripts/pdf-sources/documents/buyers-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/buyers-guide-ar.html": "d62040c518c122ba8dd37ac093a2fda9d11d79252115914762fd12e31ecc2fb7",
+      "scripts/pdf-sources/documents/buyers-guide-ar.html": "d079b1471260edf73cb4d1132bfc153800b925ae79a03ee0b262ed5159f81a7f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2082,15 +2082,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "97d56e87206f9e0e8420b20c61ab8ec7bda08ef04fbeae989899694ea9ceacff"
+    "pdf": "dd7716b9be47181882a5db08ec62771988556e482e5865482ab46e567d320b20"
   },
   "netlify/functions/_guides/ar/company-overview.pdf": {
     "source": "scripts/pdf-sources/documents/company-overview-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-overview-ar.html": "e4acddee0e83e718036b6cd44cda9f2ddf33a30dd8216e8862747a5bbb8d3b17",
+      "scripts/pdf-sources/documents/company-overview-ar.html": "5038f6bcad9119c6e438e2c58004a865d1ea10b0f27e5f08eb4bee7a261104f9",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2174,7 +2174,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "a83ae283d07f7c1ece29a772a52887f4bc11c482b38eeacf1e29604a6f1eb677"
+    "pdf": "b2a6b9a6ec9bbec553a9bdec35aba57c7430603cc209b65259f5d5cd7bf8fae4"
   },
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
@@ -2279,10 +2279,10 @@
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/export-documentation-checklist-ar.html": "e28fae8944982fde52894909c7418e62e7f6d9d087a5127b5d19da08aee6772e",
+      "scripts/pdf-sources/documents/export-documentation-checklist-ar.html": "9e4527d1a4076bd6c75e07d1422362b49f1c8d1fb0db5ba3c9883513eba21bfa",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2366,15 +2366,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "bbd839868de83c4ae582b1daafbf4996d4debcc8cd22961add13e5a41d090788"
+    "pdf": "4c89ed004a9e7b351d4ed8da4db9a0495969c2911e828c103476654e80da8c0a"
   },
   "netlify/functions/_guides/ar/origin-comparison-guide.pdf": {
     "source": "scripts/pdf-sources/documents/origin-comparison-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/origin-comparison-guide-ar.html": "77941c80c69dd0679b960c48ef13b6ddadd1eaeed0e340fe1678802626bc7dee",
+      "scripts/pdf-sources/documents/origin-comparison-guide-ar.html": "b147a447b3d4581dd9ea97d822a5407116a6b9485573fdf8b80517fbdf902bcd",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2458,15 +2458,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "94167e5f0502eb9bc315a72b9eaebe797d15d2e412fcec4e9aaabda7bd5f79a7"
+    "pdf": "a2ed9b4f1637897953d46c1b78a87d7687dca284c12b6d68f161c271519d0528"
   },
   "netlify/functions/_guides/ar/packaging-overview.pdf": {
     "source": "scripts/pdf-sources/documents/packaging-overview-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/packaging-overview-ar.html": "ab46b6731573a1ba193a7bc58e96155d8b30ac0306a0769f742b078fc8f8691d",
+      "scripts/pdf-sources/documents/packaging-overview-ar.html": "a8067e36a345b618a54ad96e2870cf5c6de99e27525992659f5519339f1380c3",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2550,15 +2550,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "c5050c3e3d70056dc972a21fe6cb3c961aec0da3e92a03b906b00bd785b22a72"
+    "pdf": "78815e0399338d69cafa6d6d0d8c3f6aeca17e96576a39382e6e1de608b739b9"
   },
   "netlify/functions/_guides/ar/pricing-packaging-guide.pdf": {
     "source": "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html": "58edcdcc28919f69738c1a716dc864e576eddab340231687f8a70073ea11c070",
+      "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html": "7e1c479289dbfdc587a8d72df343c9e78ec69ffcddde9a94c1aff39a622dff82",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2642,15 +2642,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "48dc90b40afc841b1443fd1587cfe1e6ecb85fd2c10c319d73a360a5e09354e9"
+    "pdf": "33e5953b1ca2c1f119bcb3acb345fa92059fec90813fbf854870981d1e6cf9e5"
   },
   "netlify/functions/_guides/ar/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/private-label-brochure-ar.html": "0b92fd77d58eef8f0f94c7965afbc070d9f8bbabbfde216b4445f922f1149059",
+      "scripts/pdf-sources/documents/private-label-brochure-ar.html": "c80318e9a9280d271e1e6645edd92e17f85a0058127a3f92111e8e51f88b5563",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2734,15 +2734,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "ea1f02002bd64e39cc3c6e5909b3b850838e9eb7f67cd32a2ca38e08e104250e"
+    "pdf": "866ae1c11d2380adf27c282d48199fe6f49f7216423be65264f1f107a26704b7"
   },
   "netlify/functions/_guides/en/buyers-guide.pdf": {
     "source": "scripts/pdf-sources/documents/buyers-guide-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/buyers-guide-en.html": "98feae03a37fa8d30712372f185328fbeb4178070e59138e779254e5f11a712e",
+      "scripts/pdf-sources/documents/buyers-guide-en.html": "60fbcb7e3185a1a27289cba9f1e345e3363a2a31374ca6fe959ad40ceafd8c88",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2826,15 +2826,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "d6ac242213026eb0a6120c43090adb2a9c84e7108941473e2ed0553f708fbdaf"
+    "pdf": "3881e7c2ae903b9562b27a886c9e5b59fc7e028dfb4f96ac2abb6e3b85a7b05c"
   },
   "netlify/functions/_guides/en/company-overview.pdf": {
     "source": "scripts/pdf-sources/documents/company-overview-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-overview-en.html": "f62fdc7236abaa998ac3b854c5c2e7637f1a0f8282cfad0c496c530d1f3d0bd9",
+      "scripts/pdf-sources/documents/company-overview-en.html": "6c064c55d2b67bfb86d9b5551e4e0b775e1a2830b9afc66d4d558b5b6f616a84",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2918,7 +2918,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "83733e0bdec711aeebdc2ff291aade7d669fdbeef50c4245a95b9addf534555e"
+    "pdf": "487689e92e38143e766bf39876364a99d4bb4500a6e5ed08a577f9a2ebc9b9af"
   },
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
@@ -3023,10 +3023,10 @@
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/export-documentation-checklist-en.html": "234cc9a043a9ffaa2444349c4f4dd5f78776236b592ee7dcbd67fc4ad6cf4be6",
+      "scripts/pdf-sources/documents/export-documentation-checklist-en.html": "83c1fe1eca364a28f2861aa3f81815d6d07cb204d18864cfe1ab0cb723c549d5",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3110,15 +3110,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "39f4872f0a6b0056dd0533db0931515e85177519f397a6c5236af7bfbfe7992f"
+    "pdf": "546d421da342d521708548e008eaadf117fd17935bc9ec27ed35c0daf8592832"
   },
   "netlify/functions/_guides/en/origin-comparison-guide.pdf": {
     "source": "scripts/pdf-sources/documents/origin-comparison-guide-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/origin-comparison-guide-en.html": "4a2395a8dee20497886c2827d9f14abb4a078b34f27af8172ff678f4cddcc4ea",
+      "scripts/pdf-sources/documents/origin-comparison-guide-en.html": "99ed56471a9d61110c036aaed9f0664174fda10c15f9a876d76f8953bd701a93",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3202,15 +3202,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "ec754ffa446962b5fc02313990cc6e1326a3ab540dc3e416167b18f7226ab233"
+    "pdf": "2ea2697bb938d3898f250146089f038aa7e9b2779bbca3d6753b20aef378dcdb"
   },
   "netlify/functions/_guides/en/packaging-overview.pdf": {
     "source": "scripts/pdf-sources/documents/packaging-overview-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/packaging-overview-en.html": "de56f828d524ef2fbb4cc2f1d13dcaf9c6a2d6cad88f06f1253aaee57eb107be",
+      "scripts/pdf-sources/documents/packaging-overview-en.html": "2756e89ebf6f918d38e7b958020d40cfa133ca2cddabcd3dce407cecdb7cb5c9",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3294,15 +3294,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "dfea65c672a9c8dd905cdc9aa2de950f388c6b5ae1af68194212ccd819972f50"
+    "pdf": "6b1e9aea97eacb75e9b9ba8d5607bf4a8e6dfb7b7200d05f8ed2b7037a47d503"
   },
   "netlify/functions/_guides/en/pricing-packaging-guide.pdf": {
     "source": "scripts/pdf-sources/documents/pricing-packaging-guide-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/pricing-packaging-guide-en.html": "6041c47b8c2e537e1b21fb3e48d3fe80f68f91bc01e859a12d97bee4284b4545",
+      "scripts/pdf-sources/documents/pricing-packaging-guide-en.html": "a788f4b4e6d180b9c960c44c5b7c0a871a1b7595091595b647930a80357f7909",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3386,15 +3386,15 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "f10379698f553f7c7ae6e1c6a57bd36b175d25af56ad5c6dfdb45a1610da527f"
+    "pdf": "e06c60dd7fcbfe7912181279dae53d92fe49a008bcb42544deb0e234e4f8d34e"
   },
   "netlify/functions/_guides/en/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/private-label-brochure-en.html": "c678506151a1ff54d408e4e8376ac6bdedbcbb8bbc52d7e6f1a13cf3a0f48472",
+      "scripts/pdf-sources/documents/private-label-brochure-en.html": "7c9af90a33e1169cda38de4c96b894e342c304bff0fc947862fe2d58c03a5be0",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "64030e6f6c2d8b035b3dc2931f13b39e017d59e3b8dbeec282bb5e40e3486b38",
+      "scripts/pdf-design/document.css": "38f0332e840c67f90014f22081725069b696c545c93841a2a8419e3d162826fe",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3478,6 +3478,6 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "35c0250295a0175bc3c7be57fce8baf099967abd890eaecbecf65eae0d9121be"
+    "pdf": "45616ecc237a7736d6c39545d299a03edc4d3739ec71a02a3a3f3806d4b18cde"
   }
 }
