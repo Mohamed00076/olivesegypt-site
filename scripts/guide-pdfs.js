@@ -247,21 +247,6 @@ const LETTERHEAD_PAGE = `@page { margin: 1.6cm 2cm 2.3cm 2cm; } @page :first { m
   .tc-pdf-masthead { margin: 0 0 0.9cm 0; break-inside: avoid; page-break-inside: avoid; }`;
 
 /*
- * Print adjustments for the guides. Their own print rules keep each section
- * whole, which in a PDF leaves a first page holding only the title whenever
- * the first section is longer than what is left of it. So sections may break
- * between questions, and each question, list item and table row stays
- * together instead. The site header stays hidden: the letterhead replaces it.
- */
-const GUIDE_PDF_CSS = `
-  ${LETTERHEAD_PAGE}
-  main { padding-top: 0 !important; padding-bottom: 0 !important; }
-  .spec-card { break-inside: auto !important; page-break-inside: auto !important; }
-  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
-  .qa-item, li, tr, figure { break-inside: avoid; page-break-inside: avoid; }
-`;
-
-/*
  * The public documents printed from site pages: the company profile and the
  * full product catalogue (/catalog/print). Their print rules already hide the
  * site header, footer and buttons. The profile's own "Page N" footer is a
@@ -290,12 +275,14 @@ const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize:
  * letterhead sheet (null for the export catalogue). The generator captures the
  * sheet and adds the templates; the sheet's HTML is part of the fingerprint.
  */
-// The redesigned downloads (scripts/build-pdf-sources.js): fixed A4 pages
+// The redesigned downloads (scripts/build-pdf-documents.js and
+// scripts/build-pdf-sources.js): fixed A4 pages
 // that carry their own masthead and foot as live text, so nothing is drawn
 // around them. Tagged for screen readers, with bookmarks from the headings.
 // 'TC Arabic Inline' is Amiri over its whole range, the word space included,
-// for the one Arabic phrase in the English masthead: with the space in a
-// Latin face it extracted as one-word runs in reverse order.
+// for the Arabic phrases in the English documents ("Ouroba Square (ميدان
+// العروبة)"): with the space in a Latin face they extracted as one-word runs
+// in reverse order.
 const SHEET_PDF = { format: 'A4', printBackground: true, preferCSSPageSize: true,
   margin: { top: 0, bottom: 0, left: 0, right: 0 }, tagged: true, outline: true };
 const SHEET_INLINE_ARABIC = `@font-face { font-family: 'TC Arabic Inline'; src: url(/${PDF_ARABIC_FONTS.regular}) format('truetype'); }`;
@@ -316,7 +303,7 @@ function renderFor(job) {
   }
   return {
     pdf: LETTERHEAD_PDF,
-    css: (job.kind === 'guide' ? GUIDE_PDF_CSS : PAGE_PDF_CSS) + STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
+    css: PAGE_PDF_CSS + STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
     letterhead: letterheadSheet(job.locale),
     mastheadHtml: mastheadHtml(job.locale),
     masthead: 'first-page',
@@ -334,9 +321,12 @@ const { READY_SHEETS: REDESIGNED_SHEETS, SPEC_SHEETS: ALL_SHEETS } = require('./
 const ALL_READY = ALL_SHEETS.every((k) => REDESIGNED_SHEETS.includes(k));
 
 const JOBS = ['en', 'ar'].flatMap((locale) => [
+  // Redesigned (owner's PDF brief, 2026-10-12, Phase C): each guide is
+  // printed from its own A4 source, which scripts/build-pdf-documents.js
+  // writes from the guide's HTML beside the PDF.
   ...GUIDE_SLUGS.map((slug) => ({
-    locale, slug, kind: 'guide',
-    source: `netlify/functions/_guides/${locale}/${slug}.html`,
+    locale, slug, kind: 'sheet',
+    source: `scripts/pdf-sources/documents/${slug}-${locale}.html`,
     out: `netlify/functions/_guides/${locale}/${slug}.pdf`,
   })),
   {
@@ -346,9 +336,10 @@ const JOBS = ['en', 'ar'].flatMap((locale) => [
   },
   // Public, not gated: the Downloads page offers it to everyone, so it is
   // published beside that page rather than kept in the functions bundle.
+  // Redesigned like the guides, from the company profile page.
   {
-    locale, slug: 'company-profile', kind: 'profile', public: true,
-    source: locale === 'en' ? 'company-profile/index.html' : 'ar/company-profile/index.html',
+    locale, slug: 'company-profile', kind: 'sheet', public: true,
+    source: `scripts/pdf-sources/documents/company-profile-${locale}.html`,
     out: locale === 'en' ? 'downloads/company-profile-en.pdf' : 'ar/downloads/company-profile-ar.pdf',
   },
   // The full product catalogue: every product's specification, as the

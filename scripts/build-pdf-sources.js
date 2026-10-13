@@ -344,8 +344,8 @@ function sources() {
   return out;
 }
 
-if (require.main === module) {
-  const check = process.argv.includes('--check');
+/** Write the sources, or with check set, fail (exit 1) if any is out of date. */
+function run(check) {
   const stale = [];
   for (const s of sources()) {
     const file = path.join(ROOT, s.path);
@@ -365,4 +365,6 @@ if (require.main === module) {
   }
 }
 
-module.exports = { PHOTOS, PHOTO_DIR, sources, SPEC_SHEETS, READY_SHEETS, OUT_DIR, REVISED, productFrom, packagingChips, isolateNumbers };
+if (require.main === module) run(process.argv.includes('--check'));
+
+module.exports = { run, PHOTOS, PHOTO_DIR, sources, SPEC_SHEETS, READY_SHEETS, OUT_DIR, REVISED, productFrom, packagingChips, isolateNumbers };
