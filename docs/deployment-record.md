@@ -9941,6 +9941,69 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 240 and 241 — The company profile and buyer guides in the new design (PRs #361, #362)
+
+**Previous recorded deploy:** `1c5988e` (Deploy 239, PR #360)
+**Approvals:**
+- "merge" (#361).
+- "Phase C approved with these changes" (1–7), "do it" (the last-page rule), "this one looks better" (Direction B), then "merge" (#362).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 240 | #361 | `7ec084a` | 2026-10-13 08:08:52 | 1 | +100 / −1 | Notes only |
+| 241 | #362 | `a741b5c` | 2026-10-13 15:15:13 | 43 | +3921 / −174 | 16 PDFs redesigned, pricing guide source, PDF tooling |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 240** recorded Deploys 238 and 239.
+
+### What the deploys did
+
+- **Deploy 241 — The company profile and the seven buyer guides in the new A4 design (#362).** Owner's PDF redesign brief of 2026-10-12, Phase C2. 16 PDFs (EN and AR); the file addresses, the Downloads pages and the shared letterhead are unchanged.
+  - **Source:** `scripts/build-pdf-documents.js` writes each document's A4 source (`scripts/pdf-sources/documents/`, pruned from the deploy) from its existing page: the guide HTML in `netlify/functions/_guides/` and the company profile page. `scripts/check-pdf-sources.js` (in `npm test`) fails when a source is out of date with its page.
+  - **No calls to action:** every "Request a Quote" and "Request a Sample" link and the profile's Download PDF link are gone; the only links are `mailto:` and `tel:`. Closing lines that were only an invitation were dropped ("Ready to move forward?" in the B2B Buyer's Guide; the Origin & Sourcing Guide's "Considering Egypt as a sourcing origin? …"); the Private Label Brochure's closing line ends "…for your market." Links inside sentences keep their words.
+  - **Design (Direction B, owner: "this one looks better"):** an olive cover band on page 1 with an olive-branch drawing (decoration only, mirrored in Arabic); a slim olive and gold strip on later pages; numbered section headings; leaf bullets; questions as cards; gold-edged fact cards; olive figure tiles and table head; the closing line as an olive band. Live-text foot with the legal name, date line, page n / N and domain. Tagged, `/Lang`, bookmarks.
+  - **Type:** one fixed scale for every document (owner): body 11.5pt in English, 13.22pt in Arabic (11.5pt with Amiri's 115% size adjustment); smallest text 8.5pt; no Type3 fonts.
+  - **Layout rules:** a section splits only between items; tables, card sets and lists of fewer than four paragraph-length points never break; a list of four or more such points may break between whole points, two at least on each side; the profile's Product Range always starts on page 2 (owner); a last page under 40% full is laid out again with tighter spacing, kept only if that removes the page; content stops at least 3 mm above the foot.
+  - **Packaging & Quotation Guide (EN, AR):**
+    - a packaging table (Format, Sizes, Case pack, Typical channel) restating every size and case pack from the old list; buckets and barrels read "Confirmed during quotation" / «تؤكد أثناء عرض السعر» (owner)
+    - the four price drivers as cards
+    - "What to Tell Us for a Quotation" in place of "Requesting a current quote", with the owner's first two items: product type and form (green, stuffed green, natural black, oxidized black; whole, pitted or sliced) and caliber; any specific cultivar (availability is checked per request)
+    - removed from the packaging list: "Showcases the product; supports branded and private-label labeling.", "Shelf-stable and durable", "Stack and ship efficiently.", "Balance cost, volume, and convenience."
+  - **Owner decisions recorded:** the title "Packaging & Quotation Guide" was approved on 2026-10-13 ("aproved 1 and 2"); short last pages are accepted without shortening or padding; "variety" elsewhere in the guides is reported, unchanged.
+  - **Arabic wording is for the owner's review.**
+
+### Verified on the live site (2026-10-13)
+
+- **Live PDFs:** `downloads/company-profile-en.pdf` and `ar/downloads/company-profile-ar.pdf` match the merged files byte for byte.
+- **Live check** after #362: 21 OK, 0 FAIL (local run); GitHub Actions "Live site check" runs 38395940233 and 38399194630: success.
+- **HTTPS certificates** (apex and `www`): valid to 2026-11-12.
+
+### Not deployed
+
+- **Spec sheets and the product catalogue** stay on hold until all seven product photographs are in (draft PRs #358 and #359).
+
+### Claim register
+
+168 claims (unchanged: the table and list restate existing claims).
+
+### Rollback
+
+- **Deploy 241:** `git revert -m 1 a741b5c`. The previous PDFs and their fingerprints come back together.
+- **Deploy 240** is documentation only.
+
+### Known limitations shipped with Deploys 240 and 241
+
+- **Short last pages, accepted by the owner:**
+  - EN: Origin & Sourcing p2 69%, Export Documentation Checklist p2 54%, Packaging & Quotation p3 52%, Buyer's Guide p3 50%, Private Label p2 29% empty
+  - AR: Export Documentation Checklist p2 60%, Packaging & Quotation p3 58%, Private Label p2 35% empty
+- **Unchanged from Deploys 238 and 239:** the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9959,7 +10022,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 239 (2026-10-13).**
+**Unchanged since U4, through Deploy 241 (2026-10-13).**
 
 ## Outstanding, unresolved by this document
 
