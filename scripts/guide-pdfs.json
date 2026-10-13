@@ -1,12 +1,12 @@
 {
   "ar/downloads/company-profile-ar.pdf": {
-    "source": "ar/company-profile/index.html",
+    "source": "scripts/pdf-sources/documents/company-profile-ar.html",
     "inputs": {
-      "ar/company-profile/index.html": "fc767489e0205a50b6d9be18cad817ebe64c0bed182f6edae6d6e730a1296435",
+      "scripts/pdf-sources/documents/company-profile-ar.html": "979fb6ded290f1818c5d0b2954d21004a05a40038284d4b5e550de4df74f7909",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -33,8 +33,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -90,8 +88,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "b6e413fd4059dac869bf7d5c90c9b6802d4aa73a6ba915e40a691fff7c5b8d95",
-    "pdf": "a1d67ba473e828a44988009f338b0e9e2035d1fa2ee221109be276d1c886142b"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "da55477c97fa1dc4007f5a4420bf0be6fb1686454bcd99c63c80dbd0763a0845"
   },
   "ar/downloads/product-catalog-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -1003,12 +1001,13 @@
     "pdf": "818fd2123845b53fb0787353b166cb52adc5d51f1ddd9c680ddfbb0bb2633840"
   },
   "downloads/company-profile-en.pdf": {
-    "source": "company-profile/index.html",
+    "source": "scripts/pdf-sources/documents/company-profile-en.html",
     "inputs": {
-      "company-profile/index.html": "c25cb578c0daea03ea6ddd4612002eb6522ab4b14a663cc45b032ed074634871",
+      "scripts/pdf-sources/documents/company-profile-en.html": "c1503fdeed04d239fdae878229ae47f000ab08f60967596f6e0f040191bb2661",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -1035,8 +1034,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -1092,8 +1089,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "532fc846fec77d05e65d29be8a08f8541ad32397b77408b7ecfd852b84945dcd",
-    "pdf": "53e06a262e8b68b3671a7a1be1387c42b5a3693ef9c9de37bbb3a082a48d46b1"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "583b6a96a80158f8676cf6b9d63c0a9af619e7f5dcead770513618e4b90761de"
   },
   "downloads/product-catalog-en.pdf": {
     "source": "catalog/print/index.html",
@@ -1996,13 +1993,13 @@
     "pdf": "b7cbb879694767239b42becd139e2f6315957cde858c6827c433742a1297747b"
   },
   "netlify/functions/_guides/ar/buyers-guide.pdf": {
-    "source": "netlify/functions/_guides/ar/buyers-guide.html",
+    "source": "scripts/pdf-sources/documents/buyers-guide-ar.html",
     "inputs": {
-      "netlify/functions/_guides/ar/buyers-guide.html": "49b483fcd20d4decf049a930a5a3f4f7b0ccbb9a7586e228f5d0d438669acaf2",
+      "scripts/pdf-sources/documents/buyers-guide-ar.html": "7a1c11bd7e3ebd8fb673c0daad7b33c7a313c7aa66df279b283cbc4658ceaf66",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2029,8 +2026,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2086,17 +2081,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "734872a61227d8e2a0df78ccd640c3f5b3a9f5c4db87c62cf6aeb3388c1ebdef"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "48e4e6e218e7262fa4f42ac34e9f571dad60d97a56f8b72c52e18eac0f44e0ad"
   },
   "netlify/functions/_guides/ar/company-overview.pdf": {
-    "source": "netlify/functions/_guides/ar/company-overview.html",
+    "source": "scripts/pdf-sources/documents/company-overview-ar.html",
     "inputs": {
-      "netlify/functions/_guides/ar/company-overview.html": "0ae2c026c1f45d6a773c0fad5c5f2ce0081f9fca2e086309b4ad61ab412ad23d",
+      "scripts/pdf-sources/documents/company-overview-ar.html": "8f5e507cc491db71c68d977a7fddba6aad0dc8f9d757d32b83f2ee5f911c832a",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2123,8 +2118,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2180,8 +2173,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "3579df07b0a978e1d4d76d62212fd3d7a4bc2f1d3942a848705b1b120a960626"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "379c534cf757f673a55d9fd6265d74bc3da0f8da61bffb0f9ab8faf362c5cfe5"
   },
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
@@ -2284,13 +2277,13 @@
     "pdf": "20c683842d2060b17f768284854dbbae5b716498fbddff648068da11bba6239c"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
-    "source": "netlify/functions/_guides/ar/export-documentation-checklist.html",
+    "source": "scripts/pdf-sources/documents/export-documentation-checklist-ar.html",
     "inputs": {
-      "netlify/functions/_guides/ar/export-documentation-checklist.html": "cb82e39655971afc8ab3e80fe45e9b71a96d74d05dc98f70183ce497ade9573a",
+      "scripts/pdf-sources/documents/export-documentation-checklist-ar.html": "524c7502e2820de63d6cd9214b844cdfcf9b357834b6bf23304cd4b70e8e5667",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2317,8 +2310,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2374,17 +2365,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "bb264ac27d1a0f2d0fa94bd8c0989e6fc5de34ab6cd2714c888f132d470dff1b"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "e7cb5d7e8872daac367c4e4c438e8b07aebe163c3b7671666a2255317b54ec6e"
   },
   "netlify/functions/_guides/ar/origin-comparison-guide.pdf": {
-    "source": "netlify/functions/_guides/ar/origin-comparison-guide.html",
+    "source": "scripts/pdf-sources/documents/origin-comparison-guide-ar.html",
     "inputs": {
-      "netlify/functions/_guides/ar/origin-comparison-guide.html": "4acabf4199e085c2395e3ec5ce7ea569e29d50a96f865d637ff722fad537bfbf",
+      "scripts/pdf-sources/documents/origin-comparison-guide-ar.html": "aa577546d1c36ef4955f40f233bdb7200cb7ceb232665968b6758e418bfca718",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2411,8 +2402,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2468,17 +2457,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "73b927715ac608c62c2d0044ca8f986f9356aa3b56a53f52674bf350f187c9a0"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "3d70fbd4c9d9f968826501c51fdd897ae7b19a6d4d45d23beafcbd80c0140976"
   },
   "netlify/functions/_guides/ar/packaging-overview.pdf": {
-    "source": "netlify/functions/_guides/ar/packaging-overview.html",
+    "source": "scripts/pdf-sources/documents/packaging-overview-ar.html",
     "inputs": {
-      "netlify/functions/_guides/ar/packaging-overview.html": "20a54fd0d348a0c53ed4f8dcacc8d8410e01a93b1b9e928747ed2e0ae1178000",
+      "scripts/pdf-sources/documents/packaging-overview-ar.html": "df0334b8515c1ed55ca0fa8d331b0006fac9e4c2e6491c29bbc3406ea7556aab",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2505,8 +2494,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2562,17 +2549,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "6e8a27e11817696a135ec02a08dfabb82d85fd0fa3e3507d2ed37ff9203f815e"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "64ece07dd2893b7d6fd74fa76f610d4a011ee28403b3da3f2976ba201963ae9d"
   },
   "netlify/functions/_guides/ar/pricing-packaging-guide.pdf": {
-    "source": "netlify/functions/_guides/ar/pricing-packaging-guide.html",
+    "source": "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html",
     "inputs": {
-      "netlify/functions/_guides/ar/pricing-packaging-guide.html": "28aaf39ec3d850047138562ed0de6fad8940a33df6b6a220efe84c4e6be886cc",
+      "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html": "9ec650c685e1af17113f7b57927d3ec70bc25e5540bc6b23583252abcefab436",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2599,8 +2586,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2656,17 +2641,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "a082d257479fde49b8dceb6c9d203b786348c2ddd712f11c7878a6a0953cae0a"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "21c263c20b64e5009594db2e9783dc84c2ff659653a20546b1206f385f8e7e3a"
   },
   "netlify/functions/_guides/ar/private-label-brochure.pdf": {
-    "source": "netlify/functions/_guides/ar/private-label-brochure.html",
+    "source": "scripts/pdf-sources/documents/private-label-brochure-ar.html",
     "inputs": {
-      "netlify/functions/_guides/ar/private-label-brochure.html": "290741dbde290b415a43c5bdf4597a87705d703f3284e24462e24e007a96e4ab",
+      "scripts/pdf-sources/documents/private-label-brochure-ar.html": "03003814c61d77e55637fb8e3127229325acfd2aab11b60260e282d82670a6f9",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
-      "assets/rtl.css": "5149549a3f3bf8d39d723592ab4deeae81db726000063b1d5cc89d07d9de2725",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2693,8 +2678,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2750,16 +2733,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "97eea9ac98a097b36a8ec93b4ba6c27e6a119831ebb82b1fd162b64c2236f990",
-    "pdf": "242c1bddef3b52f6c8841f44e4a7a428656575cf26822948daaa7e510c0ae544"
+    "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
+    "pdf": "ecc36d893ec5e6a14baf4ee1ecd575f85066f9ec7bcb0319afdb8a2ca541c3e5"
   },
   "netlify/functions/_guides/en/buyers-guide.pdf": {
-    "source": "netlify/functions/_guides/en/buyers-guide.html",
+    "source": "scripts/pdf-sources/documents/buyers-guide-en.html",
     "inputs": {
-      "netlify/functions/_guides/en/buyers-guide.html": "4e69b9d95f488d4665e4d6ec4d4ecdd684278ef58d5032ecff41242e8c92df74",
+      "scripts/pdf-sources/documents/buyers-guide-en.html": "2f331ad5d0d7e1ce4eae13cb21a644d3a39994547bcae85254241aac7464df9d",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2786,8 +2770,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2843,16 +2825,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "00ce69ab8e9ceeb7c28b366b8c89cdb016363332f92c366398fc3c49e017b893"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "d6350860530e3e1a2074af0ecd7f44503ff87d56a32ea6f942c92ba249eb2a90"
   },
   "netlify/functions/_guides/en/company-overview.pdf": {
-    "source": "netlify/functions/_guides/en/company-overview.html",
+    "source": "scripts/pdf-sources/documents/company-overview-en.html",
     "inputs": {
-      "netlify/functions/_guides/en/company-overview.html": "5c0f71ab3c9b6b0ea4571ff56d6b7bc954e4e982b7b444d021605200f253c05d",
+      "scripts/pdf-sources/documents/company-overview-en.html": "d1d295a49d363746643230b8a7ad072d4397848b5398d146e94bb1dd61b0d359",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -2879,8 +2862,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -2936,8 +2917,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "c5bae80a47d97651cdc5655c54eb873dc088d637d7268c94ec82e61236aee5f8"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "02c49d0e7a751488e66173d9016a418aa5ee1ab5005cdb82001820f35d345f6e"
   },
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
@@ -3040,12 +3021,13 @@
     "pdf": "3b12900cb239f972b56dd1cdd2578a3c80a8d0fda99ed85e6f0378a52bd70160"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
-    "source": "netlify/functions/_guides/en/export-documentation-checklist.html",
+    "source": "scripts/pdf-sources/documents/export-documentation-checklist-en.html",
     "inputs": {
-      "netlify/functions/_guides/en/export-documentation-checklist.html": "7a0b280aa3d40ff8caeee338b2e0ec775160f8791eaec90d212c9714cee25c2b",
+      "scripts/pdf-sources/documents/export-documentation-checklist-en.html": "ea72c2c2bc7fbbab7605887776c28aa33a7058b027bed309183d3a63c94b8de8",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -3072,8 +3054,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3129,16 +3109,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "b2c6ca23bb948fccd7d4435f60e717dd7a4274a9524ec5f7773bd0470264942b"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "1dfbe5eb6737165900c13beb0ee4c15822f6b855f3ceaae47b38c1067392b113"
   },
   "netlify/functions/_guides/en/origin-comparison-guide.pdf": {
-    "source": "netlify/functions/_guides/en/origin-comparison-guide.html",
+    "source": "scripts/pdf-sources/documents/origin-comparison-guide-en.html",
     "inputs": {
-      "netlify/functions/_guides/en/origin-comparison-guide.html": "bfd3a943e6ea23eeaf5820e30ebb971c5c97bce3d4553d3dbf78dac9ca13af00",
+      "scripts/pdf-sources/documents/origin-comparison-guide-en.html": "4f87cc36486888acfb8fd2a508a2c44da53ec42a9c535350d4ea5d2fca2d8933",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -3165,8 +3146,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3222,16 +3201,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "9e88a18beaa6a859c5d800009f395965ca0c00e9e9ce3936d3c8f51699b605ef"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "17131691065b207b4d87df278a50acafb438e3f70e32adc04b78cc0e787b694e"
   },
   "netlify/functions/_guides/en/packaging-overview.pdf": {
-    "source": "netlify/functions/_guides/en/packaging-overview.html",
+    "source": "scripts/pdf-sources/documents/packaging-overview-en.html",
     "inputs": {
-      "netlify/functions/_guides/en/packaging-overview.html": "eed99ec996a043a6a625fa379707402e1ee519e7310b94e599f116cf16b21962",
+      "scripts/pdf-sources/documents/packaging-overview-en.html": "eef61035a705611514cab70367f431ee5a3f9fe6612a54feab1fcf19ff7da8c5",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -3258,8 +3238,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3315,16 +3293,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "5409ec1e192d23e7babd4452768e0d1fe3ee6cdebff1e706ff8fe57c548888cd"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "0757285e59e1d183b5f17413bed2d8f7eb15e8e94f4c4943e405ed20924b9285"
   },
   "netlify/functions/_guides/en/pricing-packaging-guide.pdf": {
-    "source": "netlify/functions/_guides/en/pricing-packaging-guide.html",
+    "source": "scripts/pdf-sources/documents/pricing-packaging-guide-en.html",
     "inputs": {
-      "netlify/functions/_guides/en/pricing-packaging-guide.html": "10de510d9030d5feb7aa98612a553422579ac87afab552154be9a2a10ae07d5d",
+      "scripts/pdf-sources/documents/pricing-packaging-guide-en.html": "c9c241449fce130289991755a619126d2e3e38d6d27264a3b1c9215372a881d4",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -3351,8 +3330,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3408,16 +3385,17 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "07451adf93981b2d1c1dece9b0d3b93eddeb151e26822c61bc9c4a45517a7341"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "b1b3b6e8e75568ab3e86a71a16a9e9d4d4ef88ac93347629b5dddfd4bad8013f"
   },
   "netlify/functions/_guides/en/private-label-brochure.pdf": {
-    "source": "netlify/functions/_guides/en/private-label-brochure.html",
+    "source": "scripts/pdf-sources/documents/private-label-brochure-en.html",
     "inputs": {
-      "netlify/functions/_guides/en/private-label-brochure.html": "2e1f86472e2dcef50ea29d038f8a7ee8de861387c9b0f6ab1f2022aea7c74174",
+      "scripts/pdf-sources/documents/private-label-brochure-en.html": "cc61c90e18ff1cea205d29a75819362a4d7bbd3f602cbb0b2b83fd91a61b994f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/index-Dw0yUE42.css": "d8ee56ded6d85ef004ba8c0dde84e48497f7e43c810b0c9cd84803ca51f13fb7",
-      "assets/logo-header.png": "34121bb4b60284f1c5176986c4912939195980b100578f340a47dc881495f87d",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -3444,8 +3422,6 @@
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE58RWq7.woff2": "a748973d5d192a27d69862f5af5f9182d4420d3a924e7b992ae82182e9b12cd8",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYE98RWq7.woff2": "44ad50c760fa8f5b62da3d489edb40adebabaf97988b9b0adbbc3f0be859050a",
       "assets/fonts/spacemono-i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2": "fb4a81a2d0a893e5c38c394a7e716a1cef0b24610a0af49c96f6d529bd66bf2b",
-      "assets/fonts/arabic-sans.woff2": "ad1396d4674d78b113a7e2b7707ca95bd5a7342aa6f8e441f089da61f89d748b",
-      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
       "scripts/pdf-fonts/Amiri-Bold.ttf": "cfccb794268e7d573d857e6d6a67f89cf8a053e8ffd85dfa0c8ec1bb36fc4827",
       "scripts/pdf-fonts/static/notonaskharabic-RrQKbpV-9Dd1b1OAGA6M9PkyDuVBeN2DHV20Lg-400.woff2": "eb84418be6238bfb93456d7508a922ca3dbe8fe1f41ebaf4fddc01894903f101",
@@ -3501,7 +3477,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "ab73167c1cda55174a7d74163a0c658f136451399a843692f14312f635a17437",
-    "pdf": "556fe1e834819ef3697464ae4bce243be7f64ccd6718869f963cc8235cf5c710"
+    "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
+    "pdf": "23d1799ec7304067bfdb940b972f43aba64a2b34c71231f45a17e72cfa36c4c7"
   }
 }

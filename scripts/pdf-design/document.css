@@ -1,0 +1,208 @@
+/*
+ * The company profile and buyer guides (scripts/build-pdf-documents.js), on
+ * top of sheet.css: the same pages, masthead, foot, type and colours, for
+ * documents that run to more than one page. Sizes keep to the brief's
+ * minimums: body 11.5pt, cards and tables 10.5pt and up, labels 8.5pt.
+ */
+
+/* ---- first page: masthead, then the title and its date ---- */
+.doc-head { margin: 8mm 0 7mm; }
+.doc-head h1 { font-size: 26pt; margin: 0 0 2mm; }
+.doc-date { font-size: 9.5pt; color: var(--label); margin: 0; }
+html[lang="ar"] .doc-head { margin: 6mm 0 5mm; }
+
+/* ---- every later page: a small head carrying the title ---- */
+.run-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6mm;
+  padding-bottom: 2.5mm;
+  margin-bottom: 7mm;
+  border-bottom: 1pt solid var(--olive);
+}
+.run-head .brand { gap: 2.5mm; }
+.run-head .brand img { width: 7mm; height: 8.5mm; }
+.run-head .wordmark { font-size: 11pt; }
+.run-title { font-size: 9pt; color: var(--label); text-align: end; }
+
+/* ---- the flow ---- */
+.block { margin-top: 8mm; }
+.page-body > .block:first-child { margin-top: 0; }
+.block > h2 { margin: 0 0 3mm; }
+.page-body .block > * + *:not(h2) { margin-top: 3.5mm; }
+.page-body .block > h2 + * { margin-top: 0; }
+
+p.body { font-size: 11.5pt; line-height: 1.6; color: var(--ink-soft); margin: 0; }
+p.body strong, .list strong { color: var(--ink); font-weight: 600; }
+p.small { font-size: 9.5pt; line-height: 1.5; color: var(--label); margin: 0; }
+.unit > .list { margin-top: 2mm; }
+
+.list { margin: 0; padding-inline-start: 5.5mm; }
+.list li { font-size: 11.5pt; line-height: 1.55; color: var(--ink-soft); }
+.list li + li { margin-top: 1.6mm; }
+.list li::marker { color: var(--olive); }
+.list.cols-2 { columns: 2; column-gap: 8mm; }
+.list.cols-2 li { break-inside: avoid; color: var(--ink); }
+
+/* a question and its answer */
+.qa h3 { font-size: 12pt; font-weight: 700; line-height: 1.4; color: var(--ink); margin: 0 0 1.2mm; }
+.page-body .block > .qa + .qa { margin-top: 4.5mm; }
+
+/* labelled facts, as cards in two columns */
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+.fact { background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; padding: 3mm 4.5mm; }
+.fact .label { margin-bottom: 1.2mm; }
+.fact-value { font-size: 11pt; font-weight: 600; line-height: 1.45; color: var(--ink); margin: 0; }
+
+/* cards with a title (the four price drivers) */
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.cards .card h3 { font-size: 12pt; font-weight: 700; line-height: 1.35; color: var(--olive-deep); margin: 0 0 1.6mm; }
+.cards .card p { font-size: 10.5pt; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+/* figures */
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+.stat { background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; padding: 4mm; text-align: center; }
+.stat-value { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20pt; line-height: 1.2; color: var(--olive); margin: 0; }
+.stat-label { font-size: 9.5pt; line-height: 1.4; color: var(--label); margin: 1.5mm 0 0; }
+
+/* a table in a document: up to four columns, top-aligned */
+table.doc-table th, table.doc-table td { vertical-align: top; padding: 2.4mm 3mm; }
+table.doc-table tbody th { width: auto; }
+
+.block.closing .note { margin-top: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+/* Arabic sets taller lines (Amiri). */
+html[lang="ar"] p.body, html[lang="ar"] .list li { line-height: 1.55; }
+html[lang="ar"] .block { margin-top: 7mm; }
+html[lang="ar"] .qa h3 { font-size: 12.5pt; }
+
+/* the packaging table's four columns: the longest text gets the most room */
+table.doc-table { table-layout: fixed; }
+table.doc-table thead th:nth-child(1) { width: 23%; }
+table.doc-table thead th:nth-child(2) { width: 22%; }
+table.doc-table thead th:nth-child(3) { width: 25%; }
+table.doc-table thead th:nth-child(4) { width: 30%; }
+
+/* Arabic inside English text keeps its regular face, even in a bold card:
+   the inline face has no bold, and a synthesised one embeds as Type3. */
+.ar-inline { font-weight: 400; }
+
+/* Tighter spacing, used only to pull a last page of a few lines back onto
+   the page before (build-pdf-documents.js). Spacing only: every type size
+   stays as above. */
+#pages.tight .doc-head { margin: 5mm 0 4.5mm; }
+#pages.tight .block { margin-top: 5mm; }
+#pages.tight .page-body .block > * + *:not(h2) { margin-top: 2.2mm; }
+#pages.tight .block > h2 { margin-bottom: 2mm; }
+#pages.tight .list li + li { margin-top: 0.8mm; }
+#pages.tight .page-body .block > .qa + .qa { margin-top: 3mm; }
+#pages.tight p.body, #pages.tight .list li { line-height: 1.5; }
+#pages.tight .stat { padding: 3mm; }
+
+/* =====================================================================
+   Direction B (owner, 2026-10-13: "those pages still look so boring"):
+   the same words, set with more character -- a deep olive cover band with
+   an olive-branch drawing, numbered sections, leaf bullets, coloured
+   figures and a closing band. Type sizes as above.
+   ===================================================================== */
+
+/* ---- cover band on the first page ---- */
+.cover {
+  position: relative;
+  margin: -13mm -16mm 7mm;
+  padding: 9mm 16mm 7.5mm;
+  background: linear-gradient(160deg, #3d4a1d 0%, #4c5926 55%, #5b6a2f 100%);
+  color: #faf8f3;
+  overflow: hidden;
+}
+.cover::after {            /* gold rule along the band's foot */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.6mm; background: var(--gold);
+}
+.cover .masthead { border-bottom: 0.75pt solid rgba(250, 248, 243, 0.35); position: relative; z-index: 1; }
+.cover .brand img { background: #faf8f3; border-radius: 2.5mm; padding: 1.2mm; width: 15mm; height: 18mm; }
+.cover .wordmark { color: #faf8f3; }
+.cover .tagline, .cover .contact { color: rgba(250, 248, 243, 0.82); }
+.cover .doc-head { position: relative; z-index: 1; margin: 6mm 0 0; max-width: 120mm; min-height: 22mm; }
+.cover .doc-head h1 { color: #fff; font-size: 28pt; }
+.cover .doc-date { color: var(--gold-soft); }
+.cover-art {
+  position: absolute; z-index: 0;
+  width: 54mm; height: auto;
+  inset-inline-end: 12mm; bottom: 4.5mm;
+  opacity: 0.95;
+}
+html[dir="rtl"] .cover-art { transform: scaleX(-1); }
+html[lang="ar"] .cover .doc-head { margin-top: 5mm; }
+
+/* ---- later pages: a slim olive strip above the running head ---- */
+.run-head { position: relative; }
+.doc-page:not(:first-child)::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3.5mm;
+  background: linear-gradient(90deg, #3d4a1d, #5b6a2f); border-bottom: 1mm solid var(--gold);
+}
+
+/* ---- numbered section headings ---- */
+#pages { counter-reset: sec; }
+.block > h2 { counter-increment: sec; display: flex; align-items: baseline; gap: 3mm; padding-bottom: 1.2mm; border-bottom: 0.75pt solid var(--line); }
+.block > h2::before {
+  content: counter(sec, decimal-leading-zero);
+  font-family: 'Playfair Display', serif; font-size: 11pt; font-weight: 700;
+  color: var(--olive); background: var(--gold-soft); border: 0.75pt solid var(--gold);
+  border-radius: 99px; padding: 0.6mm 2.4mm; line-height: 1.3;
+  flex-shrink: 0; position: relative; top: -0.6mm;
+}
+
+/* ---- leaf bullets ---- */
+.list:not(.cols-2) { list-style: none; padding-inline-start: 0; }
+.list:not(.cols-2) li { position: relative; padding-inline-start: 6.5mm; }
+.list:not(.cols-2) li::before {
+  content: ""; position: absolute; inset-inline-start: 0; top: 1.6mm;
+  width: 3.4mm; height: 2.2mm; border-radius: 0 100% 0 100%;
+  background: linear-gradient(135deg, #8fa86a, #4c5926);
+}
+html[dir="rtl"] .list:not(.cols-2) li::before { border-radius: 100% 0 100% 0; top: 2.4mm; }
+
+/* product range: a tidy two-column panel */
+.list.cols-2 { list-style: none; padding: 4mm 5mm; background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; }
+.list.cols-2 li { position: relative; padding-inline-start: 5mm; font-weight: 600; }
+.list.cols-2 li::before { content: ""; position: absolute; inset-inline-start: 0; top: 1.7mm; width: 2.4mm; height: 2.4mm; border-radius: 50%; background: #8fa86a; }
+
+/* ---- questions as cards with an olive edge ---- */
+.qa { background: var(--cream); border-inline-start: 1.2mm solid var(--olive); border-radius: 0 2.5mm 2.5mm 0; padding: 2mm 3.5mm; }
+.page-body .block > .qa + .qa { margin-top: 2.8mm; }
+html[dir="rtl"] .qa { border-radius: 2.5mm 0 0 2.5mm; }
+
+/* ---- cards and facts: a gold top edge ---- */
+.fact, .cards .card { border-top: 1.2mm solid var(--gold); }
+
+/* ---- figures as olive tiles ---- */
+.stat { background: linear-gradient(160deg, #3d4a1d, #5b6a2f); border: 0; }
+.stat-value { color: #fff; }
+.stat-label { color: var(--gold-soft); }
+
+/* ---- table head in olive ---- */
+table.spec.doc-table thead th { background: var(--olive); color: #faf8f3; border-bottom: 1mm solid var(--gold); }
+table.spec.doc-table tbody tr:nth-child(even) td, table.spec.doc-table tbody tr:nth-child(even) th { background: var(--cream); }
+
+/* ---- the closing line as a band ---- */
+.block.closing .note {
+  background: linear-gradient(160deg, #3d4a1d, #4c5926); color: #faf8f3;
+  border-inline-start: 0; border-radius: 3mm; padding: 5mm 6mm;
+  border-bottom: 1.2mm solid var(--gold);
+}
+
+/* Direction B in the tighter spacing: the cover band and cards close up too. */
+#pages.tight .cover { padding: 7mm 16mm 6mm; margin-bottom: 5mm; }
+#pages.tight .cover .doc-head { margin: 4mm 0 0; min-height: 18mm; }
+#pages.tight .qa { padding: 1.6mm 3.5mm; }
+#pages.tight .page-body .block > .qa + .qa { margin-top: 2mm; }
+#pages.tight .block.closing .note { padding: 3.5mm 5mm; }
+/* the rest of a list that broke between points continues without a gap */
+.page-body > .block.cont:first-child > ul.cont:first-child { margin-top: 0; }
+#pages.tight .cover .masthead { padding-bottom: 3mm; }
+#pages.tight .cover .doc-head { min-height: 15mm; margin-top: 3.5mm; }
+#pages.tight .block { margin-top: 4.5mm; }
+#pages.tight .block > h2 { padding-bottom: 1mm; margin-bottom: 1.8mm; }
