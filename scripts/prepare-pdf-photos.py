@@ -36,10 +36,12 @@ PHOTOS = {
     # The homepage's whole green olives photograph, already a square crop of
     # the owner's original (owner-confirmed 2026-10-13).
     'green-olives-whole.jpg': ('assets/hero-green-olives.jpg', None),
-    # Pitted green olives at the partner facility, taken by the owner. The
-    # original shows a tray, barrels and handwriting: only the tight crop of
-    # olives is kept. Supplied on the command line.
-    'green-olives-pitted.jpg': (None, None),
+    # Pitted green olives at the partner facility, taken by the owner (date
+    # not recorded). The original (960 x 1280, a messaging-app copy) shows a
+    # tray, barrels and handwriting, so it stays out of the repository and only
+    # this 620 x 620 crop of olives is kept (tight enough to match the whole-olive photo's scale; 328 ppi at 48 mm). To be re-cut from the camera
+    # original when the owner sends it. Supplied on the command line.
+    'green-olives-pitted.jpg': (None, (260, 620, 880, 1240)),
 }
 
 

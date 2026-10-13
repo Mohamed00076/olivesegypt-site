@@ -298,11 +298,12 @@
   "ar/downloads/spec-sheets/green-olives-ar.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/green-olives-ar.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/green-olives-ar.html": "2116b38ed996d31ce552fdd96e989234399670149b036409fdc019571a31f235",
+      "scripts/pdf-sources/spec-sheets/green-olives-ar.html": "27617187963a84def1d1ffcf06216fcd38585023fb6a79e19a846c846296c524",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/hero-green-olives.jpg": "8cf6a7e0f2010e5a0c3f01d8c6aa8c0a3222f1226cc7d7bc4151712d3d5172ec",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/sheet.css": "a940d8304d5abc6bf69ea315494dd6d25a4d8693b017a9280f6935b379c10646",
+      "scripts/pdf-design/photos/green-olives-pitted.jpg": "9f8264c0607d75089d3ae43285b25726e695cdc6bebd102878ceb5b20b1a215a",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
+      "scripts/pdf-design/sheet.css": "6ef343f00a9b3d07bf3352681617e19ff95e16fa5d81980a75932979a9be9c08",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -385,7 +386,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "77411f80c96bc6694b5c7c625160dd9c82f1c81879e16c50c23b9189b807cd56"
+    "pdf": "30e6cfee44fad3124d10300ba509b6a0e777aff9a595333820bc6b6f68aea897"
   },
   "ar/downloads/spec-sheets/marinated-artichoke-hearts-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -1289,11 +1290,12 @@
   "downloads/spec-sheets/green-olives-en.pdf": {
     "source": "scripts/pdf-sources/spec-sheets/green-olives-en.html",
     "inputs": {
-      "scripts/pdf-sources/spec-sheets/green-olives-en.html": "2e95ed8b36765b1738b377badbc26b9a3f5c6d82ea96b291f550cfe925a81124",
+      "scripts/pdf-sources/spec-sheets/green-olives-en.html": "25a88bf522a2eddc5baf2ca80205bf1cd9d77c4275207af0b569c2bb80c7f0de",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
-      "assets/hero-green-olives.jpg": "8cf6a7e0f2010e5a0c3f01d8c6aa8c0a3222f1226cc7d7bc4151712d3d5172ec",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/sheet.css": "a940d8304d5abc6bf69ea315494dd6d25a4d8693b017a9280f6935b379c10646",
+      "scripts/pdf-design/photos/green-olives-pitted.jpg": "9f8264c0607d75089d3ae43285b25726e695cdc6bebd102878ceb5b20b1a215a",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
+      "scripts/pdf-design/sheet.css": "6ef343f00a9b3d07bf3352681617e19ff95e16fa5d81980a75932979a9be9c08",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XIiaQ6DQ.woff2": "6b071406bf0cb2c4a84a01ffbabe275032dca341733fe7f4ece8a1d4a615e44b",
@@ -1376,7 +1378,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "6e1a6c1a2178215b328a216b87595473806e4938442902eb516b994809f5f9fd"
+    "pdf": "c2d93f6a4fcfc218f99cc31f690af02e1d0fd4bf1d9693c94095647fc2c92527"
   },
   "downloads/spec-sheets/marinated-artichoke-hearts-en.pdf": {
     "source": "catalog/print/index.html",
