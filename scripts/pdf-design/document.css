@@ -89,3 +89,15 @@ table.doc-table thead th:nth-child(4) { width: 30%; }
 /* Arabic inside English text keeps its regular face, even in a bold card:
    the inline face has no bold, and a synthesised one embeds as Type3. */
 .ar-inline { font-weight: 400; }
+
+/* Tighter spacing, used only to pull a last page of a few lines back onto
+   the page before (build-pdf-documents.js). Spacing only: every type size
+   stays as above. */
+#pages.tight .doc-head { margin: 5mm 0 4.5mm; }
+#pages.tight .block { margin-top: 5mm; }
+#pages.tight .page-body .block > * + *:not(h2) { margin-top: 2.2mm; }
+#pages.tight .block > h2 { margin-bottom: 2mm; }
+#pages.tight .list li + li { margin-top: 0.8mm; }
+#pages.tight .page-body .block > .qa + .qa { margin-top: 3mm; }
+#pages.tight p.body, #pages.tight .list li { line-height: 1.5; }
+#pages.tight .stat { padding: 3mm; }
