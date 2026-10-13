@@ -46,7 +46,7 @@
 </header></template>
 <template id="page-foot"><footer class="foot"><span>Triple Company for Industrial Development</span><span>Revised <span class="nb">2026-09</span>-28</span><span>Page <span dir="ltr" class="pageno">0 / 0</span></span><span>olivesegypt.com</span></footer></template>
 <template id="flow">
-<div class="block"><h2>Packaging formats we offer</h2><ul class="list"><li><strong>Glass jars.</strong> Premium retail and deli presentation. Available in 320ml, 370ml, 467ml, 720ml and 1050ml — 12 jars per carton up to 720ml, 6 per carton at 1050ml. Showcases the product; supports branded and private-label labeling.</li><li><strong>Tin cans.</strong> Shelf-stable and durable, ideal for food service, warm-climate export, and oxidized black olive lines. Available as 65mm, A9, A10 and A12 cans — 12 per carton for 65mm, 6 for A9 and A10, 4 for A12. Stack and ship efficiently.</li><li><strong>Plastic buckets.</strong> Food-grade buckets in 2, 5, 10 and 20 kg sizes, for restaurants, caterers, and repackers. Balance cost, volume, and convenience.</li><li><strong>Plastic barrels.</strong> Bulk brine maturation and shipping in 220 kg barrels, for the lowest cost per kilogram on large volumes.</li></ul><p class="body">These are the packaging formats confirmed as available. Exact sizes, case configurations, and minimum order quantities per format are confirmed during quotation and depend on the specific product and order volume.</p></div>
+<div class="block"><h2>Packaging formats we offer</h2><ul class="list long"><li><strong>Glass jars.</strong> Premium retail and deli presentation. Available in 320ml, 370ml, 467ml, 720ml and 1050ml — 12 jars per carton up to 720ml, 6 per carton at 1050ml. Showcases the product; supports branded and private-label labeling.</li><li><strong>Tin cans.</strong> Shelf-stable and durable, ideal for food service, warm-climate export, and oxidized black olive lines. Available as 65mm, A9, A10 and A12 cans — 12 per carton for 65mm, 6 for A9 and A10, 4 for A12. Stack and ship efficiently.</li><li><strong>Plastic buckets.</strong> Food-grade buckets in 2, 5, 10 and 20 kg sizes, for restaurants, caterers, and repackers. Balance cost, volume, and convenience.</li><li><strong>Plastic barrels.</strong> Bulk brine maturation and shipping in 220 kg barrels, for the lowest cost per kilogram on large volumes.</li></ul><p class="body">These are the packaging formats confirmed as available. Exact sizes, case configurations, and minimum order quantities per format are confirmed during quotation and depend on the specific product and order volume.</p></div>
 <div class="block"><h2>Understanding caliber sizing</h2><p class="body">Table olives are graded by caliber — the count of olives per kilogram, written as a range such as 181/200. A lower number means larger individual olives. We supply calibers from 140 to 360; the caliber for your order is confirmed in the quotation. Exact caliber ranges available for each variety are listed on the product catalogue and each product’s own page.</p></div>
 <div class="block"><h2>Private label and OEM packaging</h2><p class="body">Your brand, your packaging design, our export-ready product. We support private-label packaging across glass, tin, bucket, and barrel formats, handling printing, filling, and export documentation. We can help with label design on request. Minimum order quantity, artwork specifications, and labeling requirements for private-label and custom packaging are confirmed per project during quotation, since they depend on the format, print method, and volume you need.</p></div>
 <div class="block closing"><p class="note">Exact sizes, case configurations and minimum quantities are confirmed during quotation.</p></div>
@@ -74,7 +74,8 @@ window.tcFit = () => {
     pg.appendChild(tpl('page-foot').cloneNode(true));
     pages.appendChild(pg);
   };
-  const limit = () => body.parentElement.querySelector('.foot').getBoundingClientRect().top - 2;
+  // Content stops at least 3 mm (11px) above the foot's rule.
+  const limit = () => body.parentElement.querySelector('.foot').getBoundingClientRect().top - 11;
   const fits = () => {
     const last = body.lastElementChild;
     return !last || last.getBoundingClientRect().bottom <= limit();
@@ -101,10 +102,34 @@ window.tcFit = () => {
         part.appendChild(items[i]);
         if (!fits()) { items[i].remove(); break; }
       }
-      if (i === 0) part.remove();
+      // A long list (class "long") that does not fit breaks between whole
+      // points, at least two on each side; every other item moves whole.
+      let broke = false;
+      if (i < items.length) {
+        const it = items[i];
+        const ul = it.matches('ul.list.long') ? it : it.matches('.unit') ? it.querySelector(':scope > ul.list.long') : null;
+        if (ul && ul.children.length >= 4) {
+          const first = it.cloneNode(true);
+          const firstUl = first.matches('ul') ? first : first.querySelector(':scope > ul');
+          part.appendChild(first);
+          // Leave at least two points for the next page, then take off more
+          // until what stays fits, keeping at least two here.
+          let k = ul.children.length;
+          while (k > ul.children.length - 2) { firstUl.lastElementChild.remove(); k--; }
+          while (k > 2 && !fits()) { firstUl.lastElementChild.remove(); k--; }
+          if (fits() && ul.children.length - k >= 2) {
+            const restUl = ul.cloneNode(false);
+            restUl.classList.add('cont');
+            [...ul.children].slice(k).forEach((li) => restUl.appendChild(li));
+            items[i] = restUl;
+            broke = true;
+          } else first.remove();
+        }
+      }
+      if (i === 0 && !broke) part.remove();
       if (i === items.length) return;
       const rest = blk.cloneNode(false);
-      if (i === 0 && head) rest.appendChild(head); else rest.classList.add('cont');
+      if (i === 0 && head && !broke) rest.appendChild(head); else rest.classList.add('cont');
       items.slice(i).forEach((it) => rest.appendChild(it));
       if (!body.children.length) { body.appendChild(rest); return; } // too tall for any page: the generator refuses it
       newPage(false);
@@ -127,7 +152,7 @@ window.tcFit = () => {
   // kept that way only if that removes the page.
   pages.classList.remove('tight');
   let result = layout();
-  if (result.count > 1 && result.fill < 0.25) {
+  if (result.count > 1 && result.fill < 0.4) {
     const before = result.count;
     pages.classList.add('tight');
     result = layout();

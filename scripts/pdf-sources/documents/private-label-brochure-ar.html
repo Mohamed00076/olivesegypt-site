@@ -77,7 +77,8 @@ window.tcFit = () => {
     pg.appendChild(tpl('page-foot').cloneNode(true));
     pages.appendChild(pg);
   };
-  const limit = () => body.parentElement.querySelector('.foot').getBoundingClientRect().top - 2;
+  // Content stops at least 3 mm (11px) above the foot's rule.
+  const limit = () => body.parentElement.querySelector('.foot').getBoundingClientRect().top - 11;
   const fits = () => {
     const last = body.lastElementChild;
     return !last || last.getBoundingClientRect().bottom <= limit();
@@ -104,10 +105,34 @@ window.tcFit = () => {
         part.appendChild(items[i]);
         if (!fits()) { items[i].remove(); break; }
       }
-      if (i === 0) part.remove();
+      // A long list (class "long") that does not fit breaks between whole
+      // points, at least two on each side; every other item moves whole.
+      let broke = false;
+      if (i < items.length) {
+        const it = items[i];
+        const ul = it.matches('ul.list.long') ? it : it.matches('.unit') ? it.querySelector(':scope > ul.list.long') : null;
+        if (ul && ul.children.length >= 4) {
+          const first = it.cloneNode(true);
+          const firstUl = first.matches('ul') ? first : first.querySelector(':scope > ul');
+          part.appendChild(first);
+          // Leave at least two points for the next page, then take off more
+          // until what stays fits, keeping at least two here.
+          let k = ul.children.length;
+          while (k > ul.children.length - 2) { firstUl.lastElementChild.remove(); k--; }
+          while (k > 2 && !fits()) { firstUl.lastElementChild.remove(); k--; }
+          if (fits() && ul.children.length - k >= 2) {
+            const restUl = ul.cloneNode(false);
+            restUl.classList.add('cont');
+            [...ul.children].slice(k).forEach((li) => restUl.appendChild(li));
+            items[i] = restUl;
+            broke = true;
+          } else first.remove();
+        }
+      }
+      if (i === 0 && !broke) part.remove();
       if (i === items.length) return;
       const rest = blk.cloneNode(false);
-      if (i === 0 && head) rest.appendChild(head); else rest.classList.add('cont');
+      if (i === 0 && head && !broke) rest.appendChild(head); else rest.classList.add('cont');
       items.slice(i).forEach((it) => rest.appendChild(it));
       if (!body.children.length) { body.appendChild(rest); return; } // too tall for any page: the generator refuses it
       newPage(false);
@@ -130,7 +155,7 @@ window.tcFit = () => {
   // kept that way only if that removes the page.
   pages.classList.remove('tight');
   let result = layout();
-  if (result.count > 1 && result.fill < 0.25) {
+  if (result.count > 1 && result.fill < 0.4) {
     const before = result.count;
     pages.classList.add('tight');
     result = layout();
