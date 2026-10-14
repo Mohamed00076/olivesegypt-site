@@ -181,15 +181,6 @@ function block(locale, html, ctx = {}) {
     const at = items.findIndex((it) => it.startsWith('<p class="body">'));
     if (at >= 0) items.splice(at + 1, 0, caliberScale(locale));
   }
-  // The profile's contact lines, each with its icon.
-  if (ctx.slug === 'company-profile' && /^(Contact|تواصل معنا)$/.test(heading.trim())) {
-    for (let k = 0; k < items.length; k++) {
-      if (!items[k].startsWith('<p class="body">')) continue;
-      const lines = items[k].slice('<p class="body">'.length, -'</p>'.length).split(/<br\s*\/?>/).map((l) => l.trim()).filter(Boolean);
-      const ic = [ICON.office, ICON.pin, ICON.mail, ICON.phone];
-      items[k] = `<ul class="contact-lines">${lines.map((l, n) => `<li>${ic[n] || ''}<span>${l}</span></li>`).join('')}</ul>`;
-    }
-  }
   // The profile's product range (owner, 2026-10-13: it starts on a page of
   // its own rather than at the foot of the one before) is never split.
   const keep = items.some((it) => it.includes('class="list cols-2"'));
@@ -284,9 +275,6 @@ const ICON = {
   hourglass: svg('<path d="M6 2.5h12M6 21.5h12"/><path d="M7 2.5c0 4.5 5 6 5 9.5s-5 5-5 9.5"/><path d="M17 2.5c0 4.5-5 6-5 9.5s5 5 5 9.5"/>'),
   office: svg('<rect x="4" y="3" width="16" height="18.5" rx="1.5"/><path d="M9 21.5v-4h6v4"/><path d="M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/>'),
   factory: svg('<path d="M2.5 21.5v-11l6 3.5v-3.5l6 3.5V5.5h7v16z"/><path d="M6.5 17.5h2M11.5 17.5h2M16.5 17.5h2"/>'),
-  pin: svg('<path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>'),
-  mail: svg('<rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6 9 7 9-7"/>'),
-  phone: svg('<path d="M21.5 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.6 4.2 2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.6 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'),
 };
 
 /** The packaging format a label names, if any (EN and AR). */
@@ -329,7 +317,11 @@ function documentHtml(locale, d) {
   const closings = [...tail.matchAll(/<p class="text-sm text-muted-foreground mt-8">([\s\S]*?)<\/p>/g)]
     .map((m) => closing(m[1])).filter(Boolean);
 
-  let flow = sections.map((s, i) => block(locale, s, { slug: d.slug, index: i })).join('\n') +
+  // The profile's Contact section repeats the masthead's address, email and
+  // phone; in the PDF it stood alone on a last page (owner, 2026-10-14:
+  // "approve all"). The web page keeps it.
+  const shown = sections.filter((sec) => !(d.slug === 'company-profile' && /<h2[^>]*>\s*(Contact|تواصل معنا)\s*<\/h2>/.test(sec)));
+  let flow = shown.map((s, i) => block(locale, s, { slug: d.slug, index: i })).join('\n') +
     closings.map((c) => `\n<div class="block closing"><p class="note">${c}</p></div>`).join('');
   flow = isolateNumbers(locale, flow);
   if (locale === 'en') flow = markInlineArabic(flow);

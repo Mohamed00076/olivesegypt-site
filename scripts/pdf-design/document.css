@@ -238,10 +238,5 @@ html[dir="rtl"] .caliber-scale .scale-bar { background: linear-gradient(270deg, 
 .split-card h3 { font-size: 12pt; font-weight: 700; color: var(--olive-deep); margin: 0 0 1.5mm; line-height: 1.35; }
 .split-card p { font-size: 10.5pt; line-height: 1.55; color: var(--ink-soft); margin: 0; }
 
-/* contact lines with icons */
-.contact-lines { list-style: none; margin: 0; padding: 4mm 5mm; display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 6mm; background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; }
-.contact-lines li { display: flex; gap: 2.5mm; align-items: flex-start; font-size: 11pt; line-height: 1.45; color: var(--ink); }
-.contact-lines .ico { flex-shrink: 0; width: 7mm; height: 7mm; padding: 1.3mm; color: var(--olive); background: var(--gold-soft); border-radius: 50%; }
-.contact-lines li span { padding-top: 1mm; }
 /* a lead-in sentence and the diagram it introduces */
 .unit > .steps, .unit > .split { margin-top: 3.5mm; }
