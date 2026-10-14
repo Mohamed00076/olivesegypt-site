@@ -10004,6 +10004,70 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 242 to 244 — The PDF source check fixed; photo covers, more room and pictures in the profile and guides (PRs #364, #363, #365)
+
+**Previous recorded deploy:** `a741b5c` (Deploy 241, PR #362)
+**Approvals:**
+- "merge" (#363 and #364).
+- "do 3" (photo covers), "do 1 2 3" (more room), "can you make them look more appealing and nice by adding diagrams or images", then "approve all and merge" (#365).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 242 | #364 | `b68538d` | 2026-10-14 01:57:09 | 2 | +12 / −5 | Test tooling |
+| 243 | #363 | `517bf2a` | 2026-10-14 01:57:12 | 1 | +64 / −1 | Notes only |
+| 244 | #365 | `63a115c` | 2026-10-14 10:57:29 | 37 | +385 / −640 | 16 PDFs reprinted, cover photograph, rights register |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 243** recorded Deploys 240 and 241.
+
+### What the deploys did
+
+- **Deploy 242 — The PDF source check now checks (#364).** A bug introduced in #362 and found while updating the spec-sheet branch: `scripts/check-pdf-sources.js` required `build-pdf-documents.js` expecting a `--check` flag to act, but the builder only ran when started directly, so the check passed even when a source was out of date with its page. The builder now exports `run(check)` and the check calls `run(true)`; a deliberately stale source fails it (exit 1). No live PDF was affected: all 16 sources matched their pages.
+- **Deploy 244 — Photo covers, more room and pictures (#365).** All 16 live PDFs (the company profile and the seven guides, EN and AR). No word of the documents changed except where noted.
+  - **Cover photograph** (owner, "do 3"): the owner's whole green olives (`scripts/pdf-design/photos/green-olives-whole.jpg`, from `assets/hero-green-olives.jpg`: 800 x 800, JPEG 85, no metadata) in a gold frame beside the title, 40 mm (484 ppi), mirrored in Arabic, in place of the olive-branch drawing. Alt text is its caption, "Whole green olives" / «زيتون أخضر كامل». Row added to `docs/asset-rights-register.md`.
+  - **More room** (owner: "a little bit crowded", "do 1"): the tighter-spacing pass that pulled a short last page back is removed; sections, items and list points have more space between them. Room comes before page count.
+  - **Pictures** (owner: "adding diagrams or images"), each drawing what the text already says, decoration only and hidden from screen readers:
+    - packaging icons (jar, tin, bucket, barrel) beside each format in the Packaging & Quotation Guide's table and the Packaging Overview's list
+    - a caliber scale, 140 to 360, olives drawn smaller as the count rises, under both caliber explanations; end labels "Larger olives" / "Smaller olives" (AR «حبات أكبر» / «حبات أصغر»), approved
+    - the Private Label Brochure's six order steps as a numbered timeline
+    - Company Overview's "We handle" / "The approved partner facility handles" as two cards side by side
+    - the export checklist's points marked prepared (check), confirmed per order (clipboard) or still being established (hourglass)
+  - **Company profile:** the PDF leaves out the Contact section, which repeated the masthead's address, email and phone and stood alone on a third page (owner: "approve all"); the web page keeps it.
+  - **Page counts:** EN Buyer's Guide 3, Origin 2, Packaging & Quotation 3, Company Overview 3, Private Label 2, Packaging Overview 2, Export Checklist 2, Profile 2; AR Buyer's Guide 2, Origin 2, Packaging & Quotation 3, Company Overview 2, Private Label 2, Packaging Overview 2, Export Checklist 2, Profile 2.
+  - **Arabic:** the Arabic Private Label Brochure's step numerals stay «١ … ٦», as in its source.
+
+### Verified on the live site (2026-10-14)
+
+- **Live PDFs:** `downloads/company-profile-en.pdf` and `ar/downloads/company-profile-ar.pdf` match the merged files byte for byte.
+- **Live check** after #365: 21 OK, 0 FAIL (local run); GitHub Actions "Live site check" run 38531780039: success.
+
+### Not deployed (draft PR #359)
+
+- **Spec sheets:** in the shipped look (olive band, numbered sections, gold-edged cards, olive table head and closing band); under the packaging chips only the catalogue's qualifier, "Subject to product and order volume." / «حسب المنتج وحجم الطلب.» (approved).
+- **Product catalogue:** a cover with the catalogue's own title, date and summary line over a photograph of every product, the range at a glance, then one product per page (9 pages).
+- **Both wait** for the photographs of Stuffed, Natural Black, Artichoke and Pepperoncini (no mixed set). Draft PR #358 was closed as contained in #359.
+
+### Claim register
+
+168 claims (unchanged).
+
+### Rollback
+
+- **Deploy 244:** `git revert -m 1 63a115c`. The previous PDFs and their fingerprints come back together.
+- **Deploy 242:** `git revert -m 1 b68538d`.
+- **Deploy 243** is documentation only.
+
+### Known limitations shipped with Deploys 242 to 244
+
+- **Short last pages, accepted by the owner:** the documents that gained a page with the extra room end on a partly filled page (largest gaps: Origin & Sourcing p2 69% empty in English and 72% in Arabic, Arabic Packaging Overview p2 68%, English Packaging Overview p2 47%).
+- **Unchanged from Deploys 238 and 239:** the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10022,7 +10086,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 241 (2026-10-13).**
+**Unchanged since U4, through Deploy 244 (2026-10-14).**
 
 ## Outstanding, unresolved by this document
 
