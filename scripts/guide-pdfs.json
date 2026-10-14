@@ -2,10 +2,11 @@
   "ar/downloads/company-profile-ar.pdf": {
     "source": "scripts/pdf-sources/documents/company-profile-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-profile-ar.html": "979fb6ded290f1818c5d0b2954d21004a05a40038284d4b5e550de4df74f7909",
+      "scripts/pdf-sources/documents/company-profile-ar.html": "f12443198548ffad86e380a95ca71779a7570ec4b88c873628bc391954146432",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -89,7 +90,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "da55477c97fa1dc4007f5a4420bf0be6fb1686454bcd99c63c80dbd0763a0845"
+    "pdf": "4a0825bc4eaeed5440c17daa3b5d57d6f7c0c3775e06f1d9f8ea856a8aa6221d"
   },
   "ar/downloads/product-catalog-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -1003,10 +1004,11 @@
   "downloads/company-profile-en.pdf": {
     "source": "scripts/pdf-sources/documents/company-profile-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-profile-en.html": "c1503fdeed04d239fdae878229ae47f000ab08f60967596f6e0f040191bb2661",
+      "scripts/pdf-sources/documents/company-profile-en.html": "9abf7d86e32f3e9ee1fe14ec4e1851c13c1f754d86583994df21d57efab42b8f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -1090,7 +1092,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "583b6a96a80158f8676cf6b9d63c0a9af619e7f5dcead770513618e4b90761de"
+    "pdf": "bef950cb329293ccd377fbfe04187d91829c512f42453c4f5651156110ff3f13"
   },
   "downloads/product-catalog-en.pdf": {
     "source": "catalog/print/index.html",
@@ -1995,10 +1997,11 @@
   "netlify/functions/_guides/ar/buyers-guide.pdf": {
     "source": "scripts/pdf-sources/documents/buyers-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/buyers-guide-ar.html": "7a1c11bd7e3ebd8fb673c0daad7b33c7a313c7aa66df279b283cbc4658ceaf66",
+      "scripts/pdf-sources/documents/buyers-guide-ar.html": "5037e66e9f992d807eab209111e2624a0339b8fbe072f286b90cfc505470791b",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2082,15 +2085,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "48e4e6e218e7262fa4f42ac34e9f571dad60d97a56f8b72c52e18eac0f44e0ad"
+    "pdf": "b996b1c3a46fecad8ec9a9a530879ca979298bdac328e61e7242e4b17f1d6b5f"
   },
   "netlify/functions/_guides/ar/company-overview.pdf": {
     "source": "scripts/pdf-sources/documents/company-overview-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-overview-ar.html": "8f5e507cc491db71c68d977a7fddba6aad0dc8f9d757d32b83f2ee5f911c832a",
+      "scripts/pdf-sources/documents/company-overview-ar.html": "8badcd4e4e11e6ecf86c4d18ae2f9900b58ebfa50d60bca37c2faf6e31056b21",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2174,7 +2178,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "379c534cf757f673a55d9fd6265d74bc3da0f8da61bffb0f9ab8faf362c5cfe5"
+    "pdf": "7b97f2ec952dfa346875dd83cde73ae3e4466a628ce917996951bcec91c24496"
   },
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
@@ -2279,10 +2283,11 @@
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/export-documentation-checklist-ar.html": "524c7502e2820de63d6cd9214b844cdfcf9b357834b6bf23304cd4b70e8e5667",
+      "scripts/pdf-sources/documents/export-documentation-checklist-ar.html": "070542d5912f1200ee01773a8f651b6d63b7bf8c3de3a6903038940492468d69",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2366,15 +2371,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "e7cb5d7e8872daac367c4e4c438e8b07aebe163c3b7671666a2255317b54ec6e"
+    "pdf": "cba23ce6abd11316999881719fe08f05ee2220b3143d1c39810b5371d50705ac"
   },
   "netlify/functions/_guides/ar/origin-comparison-guide.pdf": {
     "source": "scripts/pdf-sources/documents/origin-comparison-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/origin-comparison-guide-ar.html": "aa577546d1c36ef4955f40f233bdb7200cb7ceb232665968b6758e418bfca718",
+      "scripts/pdf-sources/documents/origin-comparison-guide-ar.html": "4551973fe127e4395dda675127bbe7b1e63d3d05fa1fab5a672b91a18ddfc38f",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2458,15 +2464,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "3d70fbd4c9d9f968826501c51fdd897ae7b19a6d4d45d23beafcbd80c0140976"
+    "pdf": "e8473b462ace7193295ddef0a7cd2b13efd0499183f9d142655a485e55994022"
   },
   "netlify/functions/_guides/ar/packaging-overview.pdf": {
     "source": "scripts/pdf-sources/documents/packaging-overview-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/packaging-overview-ar.html": "df0334b8515c1ed55ca0fa8d331b0006fac9e4c2e6491c29bbc3406ea7556aab",
+      "scripts/pdf-sources/documents/packaging-overview-ar.html": "3c797416081e7bc3c8635f9f2f7161a2e531db8c14b4c2af11c9ccae123ab6af",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2550,15 +2557,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "64ece07dd2893b7d6fd74fa76f610d4a011ee28403b3da3f2976ba201963ae9d"
+    "pdf": "cb7537fac2a6f48f1276209015ba12ef99463cdac53fd0134db738f0e0b315a2"
   },
   "netlify/functions/_guides/ar/pricing-packaging-guide.pdf": {
     "source": "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html": "9ec650c685e1af17113f7b57927d3ec70bc25e5540bc6b23583252abcefab436",
+      "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html": "142eca02f497cfb5fbaf13422d6ce7b7071decf36b08b795351b5edb33fa6c94",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2642,15 +2650,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "21c263c20b64e5009594db2e9783dc84c2ff659653a20546b1206f385f8e7e3a"
+    "pdf": "6a596fe8c1bcc860603eb5042b47d120085c19bb822937b7836ab7a5e4ed8502"
   },
   "netlify/functions/_guides/ar/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/private-label-brochure-ar.html": "03003814c61d77e55637fb8e3127229325acfd2aab11b60260e282d82670a6f9",
+      "scripts/pdf-sources/documents/private-label-brochure-ar.html": "c753b3b31796037bb1e2b6aaebdfa38b8b38c46b35028cf1424852f6b3016230",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2734,15 +2743,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "ecc36d893ec5e6a14baf4ee1ecd575f85066f9ec7bcb0319afdb8a2ca541c3e5"
+    "pdf": "65a867b025f1ab81b23997f1e48a40a5b7272282feaf0d050c4b0e0c59ef873e"
   },
   "netlify/functions/_guides/en/buyers-guide.pdf": {
     "source": "scripts/pdf-sources/documents/buyers-guide-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/buyers-guide-en.html": "2f331ad5d0d7e1ce4eae13cb21a644d3a39994547bcae85254241aac7464df9d",
+      "scripts/pdf-sources/documents/buyers-guide-en.html": "fef627343a3a75ae37f74ef04a45d3d98bb023e7d764acf03b53af12e05f024a",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2826,15 +2836,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "d6350860530e3e1a2074af0ecd7f44503ff87d56a32ea6f942c92ba249eb2a90"
+    "pdf": "f29955086eb03e125fd2da013d34296ae773f36717eea585aca7344620e9e808"
   },
   "netlify/functions/_guides/en/company-overview.pdf": {
     "source": "scripts/pdf-sources/documents/company-overview-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-overview-en.html": "d1d295a49d363746643230b8a7ad072d4397848b5398d146e94bb1dd61b0d359",
+      "scripts/pdf-sources/documents/company-overview-en.html": "f9a4461745b607c9c0a12b5cffa4adf1828e898c68874216d4070e788be349e0",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -2918,7 +2929,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "02c49d0e7a751488e66173d9016a418aa5ee1ab5005cdb82001820f35d345f6e"
+    "pdf": "65c0fe8fa4e82d0baa7fe8a970d8c5d9324bb5e8e1dc068392526edef78bdcef"
   },
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
@@ -3023,10 +3034,11 @@
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/export-documentation-checklist-en.html": "ea72c2c2bc7fbbab7605887776c28aa33a7058b027bed309183d3a63c94b8de8",
+      "scripts/pdf-sources/documents/export-documentation-checklist-en.html": "e48afc1a5edf28f30df36b2af1da778ef2503d0760076180ca7db80d7950c779",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3110,15 +3122,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "1dfbe5eb6737165900c13beb0ee4c15822f6b855f3ceaae47b38c1067392b113"
+    "pdf": "72f0b06f21677f03b60f549048732fd2a0fb4fe7c165a1e4d0804cc098d0ddbd"
   },
   "netlify/functions/_guides/en/origin-comparison-guide.pdf": {
     "source": "scripts/pdf-sources/documents/origin-comparison-guide-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/origin-comparison-guide-en.html": "4f87cc36486888acfb8fd2a508a2c44da53ec42a9c535350d4ea5d2fca2d8933",
+      "scripts/pdf-sources/documents/origin-comparison-guide-en.html": "2c5b6c4a8f1a601f58954fa0f5f4a0cee5d0fd01d1a39f4e295a758e704b39e4",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3202,15 +3215,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "17131691065b207b4d87df278a50acafb438e3f70e32adc04b78cc0e787b694e"
+    "pdf": "52202de93feefdd361c451016475a7840f4998030fe7f32cdacd3ae3f1c16763"
   },
   "netlify/functions/_guides/en/packaging-overview.pdf": {
     "source": "scripts/pdf-sources/documents/packaging-overview-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/packaging-overview-en.html": "eef61035a705611514cab70367f431ee5a3f9fe6612a54feab1fcf19ff7da8c5",
+      "scripts/pdf-sources/documents/packaging-overview-en.html": "2e46a1c2c64ab403454d3a837124da46c092deb2b3b48beaf40f4ffd0828121b",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3294,15 +3308,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "0757285e59e1d183b5f17413bed2d8f7eb15e8e94f4c4943e405ed20924b9285"
+    "pdf": "0959fabe7c1af092e0627ac0fccbac4b53135b6ca7324047c90b9bf7ae86ef20"
   },
   "netlify/functions/_guides/en/pricing-packaging-guide.pdf": {
     "source": "scripts/pdf-sources/documents/pricing-packaging-guide-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/pricing-packaging-guide-en.html": "c9c241449fce130289991755a619126d2e3e38d6d27264a3b1c9215372a881d4",
+      "scripts/pdf-sources/documents/pricing-packaging-guide-en.html": "9226646ba735b0fba1658a40f220a6ccf6fd48e852ef647b57cc30918d482df0",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3386,15 +3401,16 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "b1b3b6e8e75568ab3e86a71a16a9e9d4d4ef88ac93347629b5dddfd4bad8013f"
+    "pdf": "c025eec813000f5e12aa6622e45aaa230a2fd9cd47f8a2fef67961c1da38a22e"
   },
   "netlify/functions/_guides/en/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/private-label-brochure-en.html": "cc61c90e18ff1cea205d29a75819362a4d7bbd3f602cbb0b2b83fd91a61b994f",
+      "scripts/pdf-sources/documents/private-label-brochure-en.html": "c0053554b53a6aa673952d2d9173aa366e65ef3cebdee5d505b21ccf62be2db1",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/pdf-design/document.css": "d9dc87e1855465bb5a07cfa7ff178317526207dfe74e390664be6cd36554babf",
+      "scripts/pdf-design/document.css": "a64c03fa1a8c41d9684d2e5a6a094de1056910123994a93284cb97a423089f70",
+      "scripts/pdf-design/photos/green-olives-whole.jpg": "2e33c20e03ed67533e3d14b78e5504e9324e8518a194a53bdb26d0925c72881a",
       "scripts/pdf-design/sheet.css": "915321863b327625dcfa9f4af99f4cb7545a8901ed9436ad020a67cf61c6b910",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XBiaQ6DQ.woff2": "80b935e653c6426a8780daca822409f546c8a9bc0ea41fd3c0f98dcf456463f5",
       "assets/fonts/greatvibes-RWmMoKWR9v4ksMfaWd_JN9XFiaQ.woff2": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
@@ -3478,6 +3494,6 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "23d1799ec7304067bfdb940b972f43aba64a2b34c71231f45a17e72cfa36c4c7"
+    "pdf": "ee55231f99dab88716c7743204e881d070384942fe49c59af7b222ac1c6387f9"
   }
 }

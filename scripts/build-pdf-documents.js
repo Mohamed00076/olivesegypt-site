@@ -38,28 +38,13 @@ const OUT_DIR = 'scripts/pdf-sources/documents';
 const DOCUMENT_CSS = '/scripts/pdf-design/document.css';
 
 /*
- * The cover's olive branch: a line drawing in the site's olive and gold
- * (the product illustrations' palette), decoration only -- no words, hidden
- * from screen readers, and mirrored in Arabic by the stylesheet.
+ * The cover's photograph (owner, 2026-10-14: "do 3"): the owner's whole
+ * green olives, the same file as the Green Olives spec sheet's, square, in
+ * a rounded frame at the band's end. 800 px at 42 mm is 484 ppi. Its alt
+ * text is the photograph's existing caption.
  */
-const BRANCH = `<svg class="cover-art" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
-  <path d="M8,138 C60,118 110,92 150,60 C178,38 204,22 234,12" stroke="#c9a84c" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-  <g fill="#8fa86a">
-    <ellipse cx="44" cy="112" rx="20" ry="5.5" transform="rotate(-38 44 112)"/>
-    <ellipse cx="62" cy="132" rx="20" ry="5.5" transform="rotate(12 62 132)"/>
-    <ellipse cx="92" cy="86" rx="21" ry="5.5" transform="rotate(-52 92 86)"/>
-    <ellipse cx="118" cy="104" rx="20" ry="5.5" transform="rotate(4 118 104)"/>
-    <ellipse cx="146" cy="44" rx="20" ry="5.5" transform="rotate(-60 146 44)"/>
-    <ellipse cx="176" cy="62" rx="20" ry="5.5" transform="rotate(-6 176 62)"/>
-    <ellipse cx="200" cy="14" rx="18" ry="5" transform="rotate(-28 200 14)"/>
-    <ellipse cx="218" cy="36" rx="17" ry="5" transform="rotate(14 218 36)"/>
-  </g>
-  <g>
-    <ellipse cx="100" cy="118" rx="9" ry="11.5" fill="#b9c77a" transform="rotate(-14 100 118)"/>
-    <ellipse cx="160" cy="80" rx="9" ry="11.5" fill="#a3b665" transform="rotate(10 160 80)"/>
-    <ellipse cx="186" cy="40" rx="8" ry="10.5" fill="#c3cf86" transform="rotate(-8 186 40)"/>
-  </g>
-</svg>`;
+const COVER_PHOTO = '/scripts/pdf-design/photos/green-olives-whole.jpg';
+const COVER_ALT = { en: 'Whole green olives', ar: 'زيتون أخضر كامل' };
 
 const DOCUMENTS = [
   { slug: 'company-profile', source: (l) => (l === 'en' ? 'company-profile/index.html' : 'ar/company-profile/index.html') },
@@ -257,8 +242,10 @@ function documentHtml(locale, d) {
   const date = isolateNumbers(locale, dateLine);
   const pageOne = `<div class="cover">
 ${masthead(locale)}
+<div class="cover-row">
 <div class="doc-head"><h1>${title}</h1><p class="doc-date">${date}</p></div>
-${BRANCH}
+<figure class="cover-photo"><img src="${COVER_PHOTO}" alt="${COVER_ALT[locale]}" width="800" height="800" /></figure>
+</div>
 </div>`;
 
   return `<!DOCTYPE html>
