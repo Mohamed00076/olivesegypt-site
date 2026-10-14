@@ -344,7 +344,13 @@ const JOBS = ['en', 'ar'].flatMap((locale) => [
   },
   // The full product catalogue: every product's specification, as the
   // printable /catalog/print page shows it. Public, like the profile.
-  {
+  // Redesigned with the sheets (build-pdf-sources.js, catalogueHtml) and
+  // printed only when every product's photographs are in: no mixed set.
+  ALL_READY ? {
+    locale, slug: 'product-catalog', kind: 'sheet', public: true,
+    source: `scripts/pdf-sources/catalogue/product-catalog-${locale}.html`,
+    out: locale === 'en' ? 'downloads/product-catalog-en.pdf' : 'ar/downloads/product-catalog-ar.pdf',
+  } : {
     locale, slug: 'product-catalog', kind: 'print', public: true,
     source: locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html',
     out: locale === 'en' ? 'downloads/product-catalog-en.pdf' : 'ar/downloads/product-catalog-ar.pdf',

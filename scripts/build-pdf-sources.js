@@ -199,6 +199,18 @@ function packagingChips(locale, text) {
   return list.split(/،\s*/).map((s) => s.replace(/^أو\s+/, ''));
 }
 
+/*
+ * Under the chips, only the qualifier that follows the containers ("subject
+ * to product and order volume"): the chips already list them, and the full
+ * sentence repeated them (owner, 2026-10-14: "a little bit crowded", "do 2").
+ * Still read from the catalogue's own sentence.
+ */
+function packagingQualifier(locale, text) {
+  const q = locale === 'en' ? text.split(/,\s*(?=subject to)/)[1] : text.split(/،\s*(?=حسب)/)[1];
+  if (!q) throw new Error(`build-pdf-sources: ${locale} packaging sentence has no qualifier: ${text}`);
+  return locale === 'en' ? q.charAt(0).toUpperCase() + q.slice(1) : q;
+}
+
 function masthead(locale) {
   const t = T[locale];
   return `<header class="masthead">
@@ -292,7 +304,7 @@ ${masthead(locale)}
 <div class="section">
   <h2>${p.packaging.label}</h2>
   <ul class="chips">${chips.map((c) => `<li>${c}</li>`).join('')}</ul>
-  <p class="body">${iso(p.packaging.text)}</p>
+  <p class="body">${iso(packagingQualifier(locale, p.packaging.text))}</p>
 </div>
 <p class="note">${iso(p.closing)}</p>
 ${foot(locale, n, total)}
@@ -310,22 +322,26 @@ function specSheetHtml(locale, key) {
  * on, each name a link to its page), then one product per page in the
  * site's order, each laid out exactly as its own sheet.
  */
-function allSheetsHtml(locale) {
+/*
+ * The range at a glance: product, formats, calibers and the page each is on
+ * (each name a link to its page), with the catalogue's closing sentence.
+ * pageOf(i) is the page product i starts on; n and total number this page.
+ */
+function contentsPage(locale, kind, pageOf, n, total) {
   const t = T[locale];
-  const total = SPEC_SHEETS.length + 1;
   const iso = (s) => isolateNumbers(locale, s);
   const rows = SPEC_SHEETS.map((key, i) => {
     const p = productFrom(locale, key);
     return `<tr><th scope="row"><a href="#${DIR_OF[key]}">${p.name}</a><span class="row-type">${p.type}</span></th>` +
       `<td>${p.formats.items.map(iso).join(', ')}</td>` +
       `<td>${p.calibers.items.map((s) => (p.calibers.ltr ? `<span dir="ltr">${s}</span>` : iso(s))).join(', ')}</td>` +
-      `<td class="num"><span dir="ltr">${i + 2}</span></td></tr>`;
+      `<td class="num"><span dir="ltr">${pageOf(i)}</span></td></tr>`;
   }).join('');
   const first = productFrom(locale, SPEC_SHEETS[0]);
-  const contents = `<section class="pdf-page contents-page">
+  return `<section class="pdf-page contents-page">
 <div class="sheet-band">
 ${masthead(locale)}
-<div class="doc-line"><span class="doc-kind">${t.allKind}</span><span>${t.revised} <span dir="ltr">${REVISED}</span></span></div>
+<div class="doc-line"><span class="doc-kind">${kind}</span><span>${t.revised} <span dir="ltr">${REVISED}</span></span></div>
 </div>
 <h1>${t.contents}</h1>
 <table class="spec contents">
@@ -333,9 +349,52 @@ ${masthead(locale)}
   <tbody>${rows}</tbody>
 </table>
 <p class="note">${iso(first.closing)}</p>
+${foot(locale, n, total)}
+</section>`;
+}
+
+/*
+ * All seven sheets in one file: the contents page first, then one product
+ * per page in the site's order, each laid out exactly as its own sheet.
+ */
+function allSheetsHtml(locale) {
+  const t = T[locale];
+  const total = SPEC_SHEETS.length + 1;
+  return doc(locale, t.allTitle, [contentsPage(locale, t.allKind, (i) => i + 2, 1, total),
+    ...SPEC_SHEETS.map((key, i) => sheetPage(locale, key, i + 2, total, t.kind))]);
+}
+
+/*
+ * The product catalogue (Downloads: "Full Product Catalog"; owner,
+ * 2026-10-14: one product per page, "do 3"). A cover with the catalogue's
+ * own title, date and summary line from catalog/print, over a photograph of
+ * every product with its name; then the contents page and one page per
+ * product, as in the combined sheets. Printed only when every photograph
+ * is in, like the sheets.
+ */
+function catalogueHtml(locale) {
+  const t = T[locale];
+  const src = read(locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html');
+  const title = one(/<h1[^>]*>([^<]*)<\/h1>/, src, `${locale} catalogue title`);
+  const meta = one(/<p id="doc-meta"[^>]*>([^<]*)<\/p>/, src, `${locale} catalogue summary line`);
+  const total = SPEC_SHEETS.length + 2;
+  const tiles = SPEC_SHEETS.map((key) => {
+    const p = productFrom(locale, key);
+    const ph = PHOTOS[key][0];
+    const have = fs.existsSync(path.join(ROOT, PHOTO_DIR, ph.file));
+    const pic = have ? `<img src="/${PHOTO_DIR}/${ph.file}" alt="" />` : '<div class="photo-panel" aria-hidden="true"></div>';
+    return `<figure class="cat-tile">${pic}<figcaption>${p.name}</figcaption></figure>`;
+  }).join('');
+  const cover = `<section class="pdf-page cat-cover">
+<div class="sheet-band">
+${masthead(locale)}
+</div>
+<div class="cat-title"><h1>${title}</h1><p class="cat-date">${t.revised} <span dir="ltr">${REVISED}</span></p><p class="cat-meta">${isolateNumbers(locale, meta)}</p></div>
+<div class="cat-grid">${tiles}</div>
 ${foot(locale, 1, total)}
 </section>`;
-  return doc(locale, t.allTitle, [contents, ...SPEC_SHEETS.map((key, i) => sheetPage(locale, key, i + 2, total, t.kind))]);
+  return doc(locale, `${title} | ${t.legal}`, [cover, contentsPage(locale, title, (i) => i + 3, 2, total),
+    ...SPEC_SHEETS.map((key, i) => sheetPage(locale, key, i + 3, total, title))]);
 }
 
 /** Every source this builder owns: { path, html }. */
@@ -348,6 +407,9 @@ function sources() {
   }
   for (const locale of ['en', 'ar']) {
     out.push({ path: `${OUT_DIR}/spec-sheets/all-spec-sheets-${locale}.html`, html: allSheetsHtml(locale) });
+  }
+  for (const locale of ['en', 'ar']) {
+    out.push({ path: `${OUT_DIR}/catalogue/product-catalog-${locale}.html`, html: catalogueHtml(locale) });
   }
   return out;
 }
