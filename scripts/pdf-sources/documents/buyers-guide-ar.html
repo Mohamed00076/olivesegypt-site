@@ -129,20 +129,11 @@ window.tcFit = () => {
   // last page stays short rather than the type growing or shrinking to fill
   // it. Its fill is recorded for the report.
   //
-  // One exception (owner, 2026-10-13): a document whose last page holds only
-  // a few lines (under a quarter of the page) is laid out again with tighter
-  // spacing between sections and items -- the type is never resized -- and
-  // kept that way only if that removes the page.
-  pages.classList.remove('tight');
-  let result = layout();
-  if (result.count > 1 && result.fill < 0.4) {
-    const before = result.count;
-    pages.classList.add('tight');
-    result = layout();
-    if (result.count >= before) { pages.classList.remove('tight'); result = layout(); }
-  }
+  // No spacing is squeezed to save a page (owner, 2026-10-14: "a little bit
+  // crowded"; the tighter-spacing pass that pulled a short last page back
+  // was removed): room on the page comes before the page count.
+  const result = layout();
   document.documentElement.dataset.fill = result.fill.toFixed(2);
-  document.documentElement.dataset.tight = pages.classList.contains('tight') ? '1' : '0';
   const all = pages.querySelectorAll('.pdf-page');
   all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
 };

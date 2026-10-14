@@ -139,7 +139,7 @@ function closing(html) {
  * One section of the source, as a block of the flowing document: its heading
  * and its items, each item a unit the layout keeps whole.
  */
-function block(locale, html) {
+function block(locale, html, ctx = {}) {
   const items = [];
   let heading = null;
   const els = children(html);
@@ -153,12 +153,12 @@ function block(locale, html) {
       // A paragraph that introduces a list ("prepared for every order:", the
       // profile's "Full specifications ... for each product") stays with it.
       if (els[i + 1] && els[i + 1].tag === 'ul') {
-        items.push(`<div class="unit">${p}${list(els[i + 1])}</div>`);
+        items.push(`<div class="unit">${p}${list(els[i + 1], ctx, heading)}</div>`);
         i++;
       } else items.push(p);
       continue;
     }
-    if (el.tag === 'ul') { items.push(list(el)); continue; }
+    if (el.tag === 'ul') { items.push(list(el, ctx, heading)); continue; }
     if (el.tag === 'dl') { items.push(facts(el)); continue; }
     if (el.tag === 'table') { items.push(table(el)); continue; }
     if (el.tag === 'div' && hasClass(el, 'qa-item')) {
@@ -176,6 +176,20 @@ function block(locale, html) {
     fail(`${locale}: no layout for <${el.tag}${el.attrs}>`);
   }
   if (!heading) fail(`${locale}: a section has no heading`);
+  // The caliber sections carry the caliber scale under their explanation.
+  if (/calib|عيار|أعيرة/i.test(heading)) {
+    const at = items.findIndex((it) => it.startsWith('<p class="body">'));
+    if (at >= 0) items.splice(at + 1, 0, caliberScale(locale));
+  }
+  // The profile's contact lines, each with its icon.
+  if (ctx.slug === 'company-profile' && /^(Contact|تواصل معنا)$/.test(heading.trim())) {
+    for (let k = 0; k < items.length; k++) {
+      if (!items[k].startsWith('<p class="body">')) continue;
+      const lines = items[k].slice('<p class="body">'.length, -'</p>'.length).split(/<br\s*\/?>/).map((l) => l.trim()).filter(Boolean);
+      const ic = [ICON.office, ICON.pin, ICON.mail, ICON.phone];
+      items[k] = `<ul class="contact-lines">${lines.map((l, n) => `<li>${ic[n] || ''}<span>${l}</span></li>`).join('')}</ul>`;
+    }
+  }
   // The profile's product range (owner, 2026-10-13: it starts on a page of
   // its own rather than at the foot of the one before) is never split.
   const keep = items.some((it) => it.includes('class="list cols-2"'));
@@ -187,8 +201,25 @@ function block(locale, html) {
  * as four cards; the profile's product range (a grid on the page) in two
  * columns; every other list as a list.
  */
-function list(el) {
+function list(el, ctx = {}, heading = '') {
   const lis = children(el.inner).filter((c) => c.tag === 'li');
+  const strongOf = (li) => (li.inner.match(/^\s*<strong[^>]*>([\s\S]*?)<\/strong>\s*([\s\S]*)$/) || []);
+  // Numbered steps ("1. Enquiry -- ...") as a timeline: the number in a
+  // circle, the step's own words beside it.
+  if (lis.length >= 3 && lis.every((li) => /^[0-9\u0660-\u0669]+\.\s/.test((strongOf(li)[1] || '').trim()))) {
+    return `<ol class="steps">${lis.map((li) => {
+      const [, title, rest] = strongOf(li);
+      const m = title.trim().match(/^([0-9\u0660-\u0669]+)\.\s*([\s\S]*)$/);
+      return `<li><span class="step-num">${m[1]}</span><div class="step-body"><strong>${inline(m[2])}</strong> ${inline(rest)}</div></li>`;
+    }).join('')}</ol>`;
+  }
+  // "We handle" and "The approved partner facility handles", side by side.
+  if (ctx.slug === 'company-overview' && lis.length === 2 && lis.every((li) => strongOf(li)[1])) {
+    return `<div class="split">${lis.map((li, n) => {
+      const [, title, rest] = strongOf(li);
+      return `<div class="split-card">${n ? ICON.factory : ICON.office}<h3>${inline(title)}</h3><p>${inline(rest).replace(/^[\u2014\-\s]+/, '')}</p></div>`;
+    }).join('')}</div>`;
+  }
   if (hasClass(el, 'driver-cards')) {
     return `<div class="cards">${lis.map((li) => {
       const m = li.inner.match(/^\s*<strong[^>]*>([\s\S]*?)<\/strong>\s*([\s\S]*)$/);
@@ -201,7 +232,15 @@ function list(el) {
   const words = lis.map((li) => li.inner.replace(/<[^>]+>/g, '').trim().split(/\s+/).length);
   const long = lis.length >= 4 && words.reduce((a, b) => a + b, 0) / lis.length >= 18;
   const cls = /grid-cols-2/.test(el.attrs) ? 'list cols-2' : long ? 'list long' : 'list';
-  return `<ul class="${cls}">${lis.map((li) => `<li>${inline(li.inner)}</li>`).join('')}</ul>`;
+  // The export checklist's three kinds of document, each with its own mark:
+  // prepared for every shipment, confirmed per order, still being
+  // established.
+  const status = ctx.slug === 'export-documentation-checklist' ? [ICON.check, ICON.clipboard, null, ICON.hourglass][ctx.index] : null;
+  const item = (li) => {
+    const ic = status || packIcon(strongOf(li)[1] || '');
+    return ic ? `<li class="with-icon">${ic}<span>${inline(li.inner)}</span></li>` : `<li>${inline(li.inner)}</li>`;
+  };
+  return `<ul class="${cls}">${lis.map(item).join('')}</ul>`;
 }
 
 /** Labelled facts (the profile's identity and terms) as cards. */
@@ -220,7 +259,62 @@ function table(el) {
     const scope = (a.match(/scope="([^"]*)"/) || [])[1];
     return scope ? `<${tag} scope="${scope}">` : `<${tag}>`;
   });
-  return `<table class="spec doc-table">${inline(clean)}</table>`;
+  const withIcons = inline(clean).replace(/<th scope="row">([\s\S]*?)<\/th>/g, (whole, label) => {
+    const ic = packIcon(label);
+    return ic ? `<th scope="row"><span class="row-icon">${ic}</span>${label}</th>` : whole;
+  });
+  return `<table class="spec doc-table">${withIcons}</table>`;
+}
+
+/*
+ * Pictures added to the documents (owner, 2026-10-14: "make them look more
+ * appealing ... by adding diagrams or images"). Every one draws something
+ * the text already says -- a packaging format, the caliber scale, the order
+ * steps -- and none carries a claim of its own. Line icons in the site's
+ * style (24 x 24, round strokes), hidden from screen readers.
+ */
+const svg = (body) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
+const ICON = {
+  jar: svg('<rect x="7" y="2.5" width="10" height="3" rx="1"/><path d="M7.5 5.5h9l1 3v11a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-11z"/><path d="M6.5 11h11"/><circle cx="12" cy="15.5" r="2"/>'),
+  tin: svg('<ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v14c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5"/><path d="M5 9.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>'),
+  bucket: svg('<path d="M4.5 7h15l-1.6 13a1.5 1.5 0 0 1-1.5 1.3H7.6A1.5 1.5 0 0 1 6.1 20z"/><path d="M4.5 7c0-2.8 3.4-4.5 7.5-4.5s7.5 1.7 7.5 4.5"/><path d="M8 12.5h8"/>'),
+  barrel: svg('<path d="M6 3h12c1.3 2.6 2 5.6 2 9s-.7 6.4-2 9H6c-1.3-2.6-2-5.6-2-9s.7-6.4 2-9z"/><path d="M4.4 8h15.2"/><path d="M4.4 16h15.2"/>'),
+  check: svg('<circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.2 3 3 6-6.4"/>'),
+  clipboard: svg('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m8.5 13.5 2.5 2.5 4.5-5"/>'),
+  hourglass: svg('<path d="M6 2.5h12M6 21.5h12"/><path d="M7 2.5c0 4.5 5 6 5 9.5s-5 5-5 9.5"/><path d="M17 2.5c0 4.5-5 6-5 9.5s5 5 5 9.5"/>'),
+  office: svg('<rect x="4" y="3" width="16" height="18.5" rx="1.5"/><path d="M9 21.5v-4h6v4"/><path d="M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/>'),
+  factory: svg('<path d="M2.5 21.5v-11l6 3.5v-3.5l6 3.5V5.5h7v16z"/><path d="M6.5 17.5h2M11.5 17.5h2M16.5 17.5h2"/>'),
+  pin: svg('<path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>'),
+  mail: svg('<rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6 9 7 9-7"/>'),
+  phone: svg('<path d="M21.5 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.6 4.2 2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.6 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'),
+};
+
+/** The packaging format a label names, if any (EN and AR). */
+function packIcon(label) {
+  const t = label.replace(/<[^>]+>/g, '').trim();
+  if (/^(glass jars?|برطمانات زجاجية)/i.test(t)) return ICON.jar;
+  if (/^(tin cans?|علب صفيح)/i.test(t)) return ICON.tin;
+  if (/^(plastic buckets?|دِلاء بلاستيكية|دلاء بلاستيكية)/i.test(t)) return ICON.bucket;
+  if (/^(plastic barrels?|براميل بلاستيكية)/i.test(t)) return ICON.barrel;
+  return null;
+}
+
+/*
+ * The caliber scale: the range we supply (140 to 360, from the text beside
+ * it), with olives drawn smaller as the count per kilogram rises. Its two
+ * end labels restate "a lower number means larger individual olives".
+ */
+const CALIBER_WORDS = { en: ['Larger olives', 'Smaller olives'], ar: ['حبات أكبر', 'حبات أصغر'] };
+function caliberScale(locale) {
+  const sizes = [15, 13, 11, 9.5, 8, 6.8, 5.8];
+  let x = 18;
+  const olives = sizes.map((r) => { const cx = x + r; x += 2 * r + 9; return `<ellipse cx="${cx}" cy="22" rx="${r}" ry="${(r * 1.18).toFixed(1)}"/>`; }).join('');
+  const [big, small] = CALIBER_WORDS[locale];
+  return `<figure class="caliber-scale">
+<svg viewBox="0 0 ${x + 10} 44" aria-hidden="true" focusable="false"><g fill="#8fa86a" stroke="#4c5926" stroke-width="1.2">${olives}</g></svg>
+<div class="scale-bar" aria-hidden="true"></div>
+<figcaption><span><b dir="ltr">140</b> ${big}</span><span>${small} <b dir="ltr">360</b></span></figcaption>
+</figure>`;
 }
 
 /** One document's source: { title, html }. */
@@ -235,7 +329,7 @@ function documentHtml(locale, d) {
   const closings = [...tail.matchAll(/<p class="text-sm text-muted-foreground mt-8">([\s\S]*?)<\/p>/g)]
     .map((m) => closing(m[1])).filter(Boolean);
 
-  let flow = sections.map((s) => block(locale, s)).join('\n') +
+  let flow = sections.map((s, i) => block(locale, s, { slug: d.slug, index: i })).join('\n') +
     closings.map((c) => `\n<div class="block closing"><p class="note">${c}</p></div>`).join('');
   flow = isolateNumbers(locale, flow);
   if (locale === 'en') flow = markInlineArabic(flow);
@@ -360,20 +454,11 @@ window.tcFit = () => {
   // last page stays short rather than the type growing or shrinking to fill
   // it. Its fill is recorded for the report.
   //
-  // One exception (owner, 2026-10-13): a document whose last page holds only
-  // a few lines (under a quarter of the page) is laid out again with tighter
-  // spacing between sections and items -- the type is never resized -- and
-  // kept that way only if that removes the page.
-  pages.classList.remove('tight');
-  let result = layout();
-  if (result.count > 1 && result.fill < 0.4) {
-    const before = result.count;
-    pages.classList.add('tight');
-    result = layout();
-    if (result.count >= before) { pages.classList.remove('tight'); result = layout(); }
-  }
+  // No spacing is squeezed to save a page (owner, 2026-10-14: "a little bit
+  // crowded"; the tighter-spacing pass that pulled a short last page back
+  // was removed): room on the page comes before the page count.
+  const result = layout();
   document.documentElement.dataset.fill = result.fill.toFixed(2);
-  document.documentElement.dataset.tight = pages.classList.contains('tight') ? '1' : '0';
   const all = pages.querySelectorAll('.pdf-page');
   all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
 };

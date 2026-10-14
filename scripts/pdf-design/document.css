@@ -27,10 +27,10 @@ html[lang="ar"] .doc-head { margin: 6mm 0 5mm; }
 .run-title { font-size: 9pt; color: var(--label); text-align: end; }
 
 /* ---- the flow ---- */
-.block { margin-top: 8mm; }
+.block { margin-top: 10mm; }
 .page-body > .block:first-child { margin-top: 0; }
-.block > h2 { margin: 0 0 3mm; }
-.page-body .block > * + *:not(h2) { margin-top: 3.5mm; }
+.block > h2 { margin: 0 0 4mm; }
+.page-body .block > * + *:not(h2) { margin-top: 4.5mm; }
 .page-body .block > h2 + * { margin-top: 0; }
 
 p.body { font-size: 11.5pt; line-height: 1.6; color: var(--ink-soft); margin: 0; }
@@ -40,7 +40,7 @@ p.small { font-size: 9.5pt; line-height: 1.5; color: var(--label); margin: 0; }
 
 .list { margin: 0; padding-inline-start: 5.5mm; }
 .list li { font-size: 11.5pt; line-height: 1.55; color: var(--ink-soft); }
-.list li + li { margin-top: 1.6mm; }
+.list li + li { margin-top: 2.2mm; }
 .list li::marker { color: var(--olive); }
 .list.cols-2 { columns: 2; column-gap: 8mm; }
 .list.cols-2 li { break-inside: avoid; color: var(--ink); }
@@ -76,7 +76,7 @@ a { color: inherit; text-decoration: none; }
 
 /* Arabic sets taller lines (Amiri). */
 html[lang="ar"] p.body, html[lang="ar"] .list li { line-height: 1.55; }
-html[lang="ar"] .block { margin-top: 7mm; }
+html[lang="ar"] .block { margin-top: 9mm; }
 html[lang="ar"] .qa h3 { font-size: 12.5pt; }
 
 /* the packaging table's four columns: the longest text gets the most room */
@@ -89,18 +89,6 @@ table.doc-table thead th:nth-child(4) { width: 30%; }
 /* Arabic inside English text keeps its regular face, even in a bold card:
    the inline face has no bold, and a synthesised one embeds as Type3. */
 .ar-inline { font-weight: 400; }
-
-/* Tighter spacing, used only to pull a last page of a few lines back onto
-   the page before (build-pdf-documents.js). Spacing only: every type size
-   stays as above. */
-#pages.tight .doc-head { margin: 5mm 0 4.5mm; }
-#pages.tight .block { margin-top: 5mm; }
-#pages.tight .page-body .block > * + *:not(h2) { margin-top: 2.2mm; }
-#pages.tight .block > h2 { margin-bottom: 2mm; }
-#pages.tight .list li + li { margin-top: 0.8mm; }
-#pages.tight .page-body .block > .qa + .qa { margin-top: 3mm; }
-#pages.tight p.body, #pages.tight .list li { line-height: 1.5; }
-#pages.tight .stat { padding: 3mm; }
 
 /* =====================================================================
    Direction B (owner, 2026-10-13: "those pages still look so boring"):
@@ -138,8 +126,6 @@ table.doc-table thead th:nth-child(4) { width: 30%; }
   box-shadow: 0 1.5mm 4mm rgba(0, 0, 0, 0.25);
 }
 .cover-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
-#pages.tight .cover-row { margin-top: 3.5mm; }
-#pages.tight .cover-photo { width: 28mm; height: 28mm; border-width: 0.8mm; }
 html[lang="ar"] .cover .doc-head { margin-top: 5mm; }
 
 /* ---- later pages: a slim olive strip above the running head ---- */
@@ -177,7 +163,7 @@ html[dir="rtl"] .list:not(.cols-2) li::before { border-radius: 100% 0 100% 0; to
 
 /* ---- questions as cards with an olive edge ---- */
 .qa { background: var(--cream); border-inline-start: 1.2mm solid var(--olive); border-radius: 0 2.5mm 2.5mm 0; padding: 2mm 3.5mm; }
-.page-body .block > .qa + .qa { margin-top: 2.8mm; }
+.page-body .block > .qa + .qa { margin-top: 3.5mm; }
 html[dir="rtl"] .qa { border-radius: 2.5mm 0 0 2.5mm; }
 
 /* ---- cards and facts: a gold top edge ---- */
@@ -199,18 +185,63 @@ table.spec.doc-table tbody tr:nth-child(even) td, table.spec.doc-table tbody tr:
   border-bottom: 1.2mm solid var(--gold);
 }
 
-/* Direction B in the tighter spacing: the cover band and cards close up too. */
-#pages.tight .cover { padding: 7mm 16mm 6mm; margin-bottom: 5mm; }
-#pages.tight .cover .doc-head { margin: 4mm 0 0; min-height: 18mm; }
-#pages.tight .qa { padding: 1.6mm 3.5mm; }
-#pages.tight .page-body .block > .qa + .qa { margin-top: 2mm; }
-#pages.tight .block.closing .note { padding: 3.5mm 5mm; }
 /* the rest of a list that broke between points continues without a gap */
 .page-body > .block.cont:first-child > ul.cont:first-child { margin-top: 0; }
-#pages.tight .cover .masthead { padding-bottom: 3mm; }
-#pages.tight .cover .doc-head { min-height: 15mm; margin-top: 3.5mm; }
-#pages.tight .block { margin-top: 4.5mm; }
-#pages.tight .block > h2 { padding-bottom: 1mm; margin-bottom: 1.8mm; }
-#pages.tight .cover { padding: 6mm 16mm 5mm; }
-#pages.tight .cover .brand img { width: 12mm; height: 14.5mm; }
-#pages.tight .cover-row { margin-top: 2.5mm; }
+
+/* =====================================================================
+   Pictures (owner, 2026-10-14: "adding diagrams or images"): line icons,
+   the caliber scale, the order steps, the two-sided "how we operate" and
+   the contact lines. Decoration only; the words are unchanged.
+   ===================================================================== */
+.ico { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; display: block; }
+
+/* lists whose points carry an icon instead of a leaf */
+.list li.with-icon { padding-inline-start: 9mm; }
+.list li.with-icon::before { content: none; }
+.list li.with-icon > .ico {
+  position: absolute; inset-inline-start: 0; top: 0.2mm;
+  width: 6mm; height: 6mm; padding: 1mm; color: var(--olive);
+  background: var(--gold-soft); border-radius: 50%;
+}
+
+/* packaging icons in table row headers */
+table.doc-table .row-icon { display: block; width: 8mm; height: 8mm; padding: 1.3mm; margin-bottom: 1.5mm; color: var(--olive); background: var(--gold-soft); border-radius: 50%; }
+
+/* the caliber scale */
+.caliber-scale { margin: 0; padding: 4mm 5mm 3.5mm; background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; }
+.caliber-scale svg { display: block; width: 100%; height: 15mm; }
+.caliber-scale .scale-bar { height: 1.6mm; margin: 2.5mm 0 2mm; border-radius: 99px; background: linear-gradient(90deg, #4c5926, #c9a84c); }
+html[dir="rtl"] .caliber-scale svg { transform: scaleX(-1); }
+html[dir="rtl"] .caliber-scale .scale-bar { background: linear-gradient(270deg, #4c5926, #c9a84c); }
+.caliber-scale figcaption { display: flex; justify-content: space-between; font-size: 9.5pt; color: var(--label); }
+.caliber-scale figcaption b { font-size: 11pt; color: var(--olive-deep); }
+
+/* numbered steps as a timeline */
+.steps { list-style: none; margin: 0; padding: 0; position: relative; }
+.steps::before { content: ""; position: absolute; inset-inline-start: 4.2mm; top: 4mm; bottom: 4mm; width: 0.8mm; background: var(--gold); border-radius: 99px; }
+.steps li { position: relative; display: flex; gap: 4mm; align-items: flex-start; }
+.steps li + li { margin-top: 2.6mm; }
+.step-num {
+  position: relative; z-index: 1; flex-shrink: 0;
+  width: 9mm; height: 9mm; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--olive); color: #fff; border: 0.8mm solid var(--gold);
+  font-family: 'Playfair Display', serif; font-weight: 700; font-size: 11pt;
+}
+.step-body { font-size: 11.5pt; line-height: 1.55; color: var(--ink-soft); padding-top: 1.2mm; }
+.step-body strong { color: var(--ink); font-weight: 700; }
+
+/* "we handle" and "the partner facility handles", side by side */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.split-card { background: var(--cream); border: 0.75pt solid var(--line); border-top: 1.2mm solid var(--gold); border-radius: 3mm; padding: 4mm 4.5mm; }
+.split-card > .ico { width: 10mm; height: 10mm; padding: 2mm; color: #fff; background: var(--olive); border-radius: 50%; margin-bottom: 2.5mm; }
+.split-card h3 { font-size: 12pt; font-weight: 700; color: var(--olive-deep); margin: 0 0 1.5mm; line-height: 1.35; }
+.split-card p { font-size: 10.5pt; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+/* contact lines with icons */
+.contact-lines { list-style: none; margin: 0; padding: 4mm 5mm; display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 6mm; background: var(--cream); border: 0.75pt solid var(--line); border-radius: 3mm; }
+.contact-lines li { display: flex; gap: 2.5mm; align-items: flex-start; font-size: 11pt; line-height: 1.45; color: var(--ink); }
+.contact-lines .ico { flex-shrink: 0; width: 7mm; height: 7mm; padding: 1.3mm; color: var(--olive); background: var(--gold-soft); border-radius: 50%; }
+.contact-lines li span { padding-top: 1mm; }
+/* a lead-in sentence and the diagram it introduces */
+.unit > .steps, .unit > .split { margin-top: 3.5mm; }
