@@ -204,7 +204,7 @@ PAGE_TMPL = """<!DOCTYPE html>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#3f4f2b" />
-  </head>
+{extra_head}  </head>
   <body>
     
     <header class="relative sticky top-0 z-50 w-full border-b border-border bg-background shadow-sm"><div class="container flex h-16 max-w-screen-2xl items-center justify-between gap-4 mx-auto px-4"><a href="/" class="flex items-center gap-2 shrink-0">
@@ -291,6 +291,45 @@ def thumb(im):
     return '<img src="%s-320.webp" alt="" width="320" height="%d" loading="lazy" decoding="async"/>' % (base, th)
 
 
+# The caliber scale (2026-10-16): the range a product is supplied in, as on
+# /resources/packaging, under the specification table. Only a range written
+# "low-high" is drawn; a product without calibers gets none.
+CALIBER_WORDS = {"en": ("Larger olives", "Smaller olives"), "ar": ("حبات أكبر", "حبات أصغر")}
+
+
+def caliber_scale(lang, calibers):
+    if len(calibers) != 1 or "-" not in calibers[0]:
+        return ""
+    low, high = calibers[0].split("-")
+    sizes = [15, 13, 11, 9.5, 8, 6.8, 5.8]
+    x, olives = 18, []
+    for r in sizes:
+        olives.append('<ellipse cx="%g" cy="22" rx="%g" ry="%.1f"/>' % (x + r, r, r * 1.18))
+        x += 2 * r + 9
+    big, small = CALIBER_WORDS[lang]
+    return ('\n          <figure class="tc-caliber-scale"><svg viewBox="0 0 %g 44" aria-hidden="true" focusable="false">'
+            '<g class="tc-caliber-olives">%s</g></svg><div class="tc-caliber-bar" aria-hidden="true"></div>'
+            '<figcaption class="tc-caliber-labels"><span><b dir="ltr">%s</b> %s</span><span>%s <b dir="ltr">%s</b></span></figcaption></figure>'
+            % (x + 10, "".join(olives), low, big, small, high))
+
+
+# Its styles, added to the head of the pages that show the scale.
+CALIBER_STYLE = '''    <style>
+      /* The caliber scale under the specification table on the olive pages
+         (2026-10-16): the 140-360 range supplied, olives drawn smaller as
+         the count per kg rises, as on /resources/packaging. */
+      .tc-caliber-scale { margin: 0 0 1.5rem; padding: 1rem 1.25rem 0.85rem; border-radius: 0.75rem; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); }
+      .tc-caliber-scale svg { display: block; width: 100%; height: auto; max-height: 3.75rem; }
+      .tc-caliber-scale .tc-caliber-olives { fill: hsl(var(--primary) / 0.45); stroke: hsl(var(--primary)); stroke-width: 1.2; }
+      .tc-caliber-bar { height: 0.35rem; margin: 0.6rem 0 0.45rem; border-radius: 99px; background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.25)); }
+      [dir="rtl"] .tc-caliber-scale svg { transform: scaleX(-1); }
+      [dir="rtl"] .tc-caliber-bar { background: linear-gradient(270deg, hsl(var(--primary)), hsl(var(--primary) / 0.25)); }
+      .tc-caliber-labels { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.8125rem; color: hsl(var(--muted-foreground)); }
+      .tc-caliber-labels b { color: hsl(var(--foreground)); font-size: 0.9375rem; }
+    </style>
+'''
+
+
 def product_main(d):
     """The <main> of a product page. d carries the page's own words, so the
     same function writes both languages."""
@@ -328,7 +367,7 @@ def product_main(d):
         '            <h2 class="text-xl font-serif font-bold mb-2">%s</h2>\n'
         '            <p class="text-muted-foreground leading-relaxed">%s</p>\n'
         '          </section>\n'
-        '          <table class="tc-spec-table tc-kv mb-6"><tbody>%s</tbody></table>%s\n'
+        '          <table class="tc-spec-table tc-kv mb-6"><tbody>%s</tbody></table>%s%s\n'
         '          <div class="flex flex-wrap gap-3 pt-6 border-t border-border">%s</div>\n'
         '          %s\n'
         '        </div>\n'
@@ -345,7 +384,7 @@ def product_main(d):
         '      </div>\n'
         '    </main>'
     ) % (d["breadcrumb"], d["name"], d["origin_line"], product_image(d["image"]), L["profile"], d["profile"],
-         rows, brine, d["cta"], d["footnote"], L["best"], best, L["related"], related)
+         rows, caliber_scale(d["lang"], d["calibers"]), brine, d["cta"], d["footnote"], L["best"], best, L["related"], related)
 
 
 # Products with a page this script does not generate, so a related link can
@@ -418,6 +457,7 @@ def render(p):
         name=p["name"], slug=slug, print_slug=p["print_slug"], profile=p["profile"], profile_short=profile_short,
         description=description, crumb_href=crumb_href, crumb_name=crumb_name,
         main_block=main_block,
+        extra_head=CALIBER_STYLE if caliber_scale("en", calibers) else "",
         # Structured data names an image only when it is a photograph: an
         # illustration is not offered to search engines as the product
         # (2026-10-03).

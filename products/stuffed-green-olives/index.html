@@ -88,6 +88,19 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#3f4f2b" />
+    <style>
+      /* The caliber scale under the specification table on the olive pages
+         (2026-10-16): the 140-360 range supplied, olives drawn smaller as
+         the count per kg rises, as on /resources/packaging. */
+      .tc-caliber-scale { margin: 0 0 1.5rem; padding: 1rem 1.25rem 0.85rem; border-radius: 0.75rem; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); }
+      .tc-caliber-scale svg { display: block; width: 100%; height: auto; max-height: 3.75rem; }
+      .tc-caliber-scale .tc-caliber-olives { fill: hsl(var(--primary) / 0.45); stroke: hsl(var(--primary)); stroke-width: 1.2; }
+      .tc-caliber-bar { height: 0.35rem; margin: 0.6rem 0 0.45rem; border-radius: 99px; background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.25)); }
+      [dir="rtl"] .tc-caliber-scale svg { transform: scaleX(-1); }
+      [dir="rtl"] .tc-caliber-bar { background: linear-gradient(270deg, hsl(var(--primary)), hsl(var(--primary) / 0.25)); }
+      .tc-caliber-labels { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.8125rem; color: hsl(var(--muted-foreground)); }
+      .tc-caliber-labels b { color: hsl(var(--foreground)); font-size: 0.9375rem; }
+    </style>
   </head>
   <body>
     
@@ -110,6 +123,7 @@
             <p class="text-muted-foreground leading-relaxed">Green olives, pitted and stuffed with pepper or carrot. Machine-stuffed under hygienic, quality-controlled conditions at our partner facility.</p>
           </section>
           <table class="tc-spec-table tc-kv mb-6"><tbody><tr><th scope="row">Available Formats</th><td><div class="flex flex-wrap gap-1.5"><span class="tc-chip">Pepper</span><span class="tc-chip">Carrot</span></div></td></tr><tr><th scope="row">Calibers (count / kg)</th><td><div class="flex flex-wrap gap-1.5"><span class="tc-chip">140-360</span></div></td></tr><tr><th scope="row">Packaging Options</th><td>Glass jars, tin cans, plastic buckets, or plastic barrels (brine), subject to product and order volume.</td></tr></tbody></table>
+          <figure class="tc-caliber-scale"><svg viewBox="0 0 229.2 44" aria-hidden="true" focusable="false"><g class="tc-caliber-olives"><ellipse cx="33" cy="22" rx="15" ry="17.7"/><ellipse cx="70" cy="22" rx="13" ry="15.3"/><ellipse cx="103" cy="22" rx="11" ry="13.0"/><ellipse cx="132.5" cy="22" rx="9.5" ry="11.2"/><ellipse cx="159" cy="22" rx="8" ry="9.4"/><ellipse cx="182.8" cy="22" rx="6.8" ry="8.0"/><ellipse cx="204.4" cy="22" rx="5.8" ry="6.8"/></g></svg><div class="tc-caliber-bar" aria-hidden="true"></div><figcaption class="tc-caliber-labels"><span><b dir="ltr">140</b> Larger olives</span><span>Smaller olives <b dir="ltr">360</b></span></figcaption></figure>
           <section class="mb-6"><h2 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Brine Specification</h2><div class="grid grid-cols-3 gap-2 text-center text-sm"><div class="rounded-lg bg-muted px-2 py-2"><p class="text-[10px] text-muted-foreground uppercase">Salt</p><p class="font-semibold text-foreground">5–7%</p></div><div class="rounded-lg bg-muted px-2 py-2"><p class="text-[10px] text-muted-foreground uppercase">Acidity</p><p class="font-semibold text-foreground">0.2–0.4% lactic</p></div><div class="rounded-lg bg-muted px-2 py-2"><p class="text-[10px] text-muted-foreground uppercase">pH</p><p class="font-semibold text-foreground">3.7–4.2</p></div></div></section>
           <div class="flex flex-wrap gap-3 pt-6 border-t border-border"><a href="/downloads/spec-sheets/stuffed-green-olives-en.pdf" download class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Download Spec Sheet</a><a href="/sample/" class="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-foreground">Request a Sample</a><a href="/contact/" class="inline-flex items-center rounded-md bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold">Request a Quote</a></div>
           <p class="text-xs text-muted-foreground mt-4">Exact packaging, brine specification, and pricing are confirmed during quotation for the selected format and order volume.</p>
