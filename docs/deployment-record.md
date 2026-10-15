@@ -10068,6 +10068,62 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 245 to 247 — The PET pail in the guides, a closing-line rule, and the caliber scale on the packaging page (PRs #366, #367, #368)
+
+**Previous recorded deploy:** `63a115c` (Deploy 244, PR #365)
+**Approvals:**
+- "merge" (#366).
+- "do 5 and 6", "add it" (the PET pail), then "merge" (#367 and #368).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 245 | #366 | `3f422d5` | 2026-10-14 11:03:19 | 1 | +65 / −1 | Notes only |
+| 246 | #367 | `78ba4a9` | 2026-10-16 02:10:52 | 40 | +351 / −104 | 16 PDFs reprinted, guide sources, PDF tooling, test, register |
+| 247 | #368 | `7374757` | 2026-10-16 02:10:56 | 3 | +34 / −6 | Packaging page (EN, AR), sitemap |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 245** recorded Deploys 242 to 244.
+
+### What the deploys did
+
+- **Deploy 246 — The PET pail in the guides; a closing line never stands alone (#367).**
+  - **PET pail** (owner, "add it"): the Packaging & Quotation Guide's table and the Packaging Overview's list now carry the 4 kg PET pail, 4 per carton, for sliced jalapeño peppers only, as `/resources/packaging` has since 24 Sep. Source: C-100, the supplier's September 2026 jalapeño offer; the olive offers carry no PET line. English is the website's sentence; Arabic is the website's «كما يتوفر وعاء PET سعة 4 كجم للفلفل الهالبينو المقطّع، 4 في الكرتونة.», plus the new table cells «وعاء PET» and «للفلفل الهالبينو المقطّع فقط» (on the owner's Arabic review page). A pail icon beside it. Both guides' revision date is 2026-10-15; C-100 names the guides.
+  - **Closing-line rule:** when a guide's closing band would stand alone on its last page, the section before it starts that page instead. Verified by recreating the 14 Oct near-miss in a browser; no current document needs it.
+  - **Test fix:** `check-packaging-claims` stops a barrel's reach at the end of its own list item or table row, so the pail's "4kg" listed after the barrels is no longer read as a barrel size. Same 41 barrel figures checked; a planted wrong barrel size in a list or a table row still fails it.
+  - **Page counts unchanged.**
+- **Deploy 247 — The caliber scale on the packaging page (#368).** Under "Understanding caliber sizing" on `/resources/packaging` and `/ar/resources/packaging`: the 140 to 360 range, olives drawn smaller as the count rises, with the approved labels "Larger olives" / "Smaller olives" (AR «حبات أكبر» / «حبات أصغر»). In the site's own colours, dark mode included, mirrored in Arabic; styles in each page's own `<style>`, so the shared stylesheet is untouched. `/resources/pricing` has no packaging list or caliber section and is unchanged. Sitemap dates updated for the two pages.
+
+### Owner actions reported (2026-10-14 and 15)
+
+- **GitHub security:** Dependabot alerts, malware detection and another security feature switched on for both repositories by the owner (this session's access cannot change or read those settings; the alerts API changed from "disabled" to "not accessible by integration"). No Dependabot security PRs; `npm audit` (website, 33 packages) and `pnpm audit` (Umami, 1,143 packages) found no known vulnerabilities on 2026-10-14.
+- **Arabic review page** published for the owner (private), listing every Arabic phrase written since 13 Oct; answers pending.
+
+### Verified on the live site (2026-10-16)
+
+- `/resources/packaging` carries the caliber scale; `/ar/resources/packaging` shows «حبات أكبر».
+- **Live check** after #368: 21 OK, 0 FAIL (local run). GitHub Actions "Live site check" run 38822007095 was queued at the time of writing; run 38821999566 was cancelled when the second merge superseded it.
+- The guides are gated, so the reprinted PDFs were verified before merge, not fetched live.
+
+### Claim register
+
+168 claims (C-100 updated to name the guides).
+
+### Rollback
+
+- **Deploy 247:** `git revert -m 1 7374757`.
+- **Deploy 246:** `git revert -m 1 78ba4a9`. The previous PDFs and their fingerprints come back together.
+- **Deploy 245** is documentation only.
+
+### Known limitations shipped with Deploys 245 to 247
+
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10086,7 +10142,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 244 (2026-10-14).**
+**Unchanged since U4, through Deploy 247 (2026-10-16).**
 
 ## Outstanding, unresolved by this document
 
