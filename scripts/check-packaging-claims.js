@@ -61,7 +61,9 @@ function walk(dir, out) {
   return out;
 }
 
-const flatten = (html) => html.replace(/<[^>]+>/g, ' ').replace(/&ndash;/g, '–').replace(/\s+/g, ' ');
+// List items and table rows are kept apart by a marker (¶), so a figure
+// in the next item or row is never read as part of this one (see below).
+const flatten = (html) => html.replace(/<\/?(?:li|tr)\b[^>]*>/g, ' ¶ ').replace(/<[^>]+>/g, ' ').replace(/&ndash;/g, '–').replace(/\s+/g, ' ');
 
 let pass = 0, fail = 0;
 const t = (name, cond, extra) => {
@@ -94,7 +96,10 @@ for (const file of files) {
   const barrelAll = /[Bb]arrels?|براميل|برميل/g;
   while ((m = barrelAll.exec(text))) {
     const start = m.index + m[0].length;
-    const after = text.slice(start, start + REACH);
+    // A figure in the next list item or table cell describes another
+    // container (the 4 kg PET pail listed after the barrels, 2026-10-15),
+    // so the reach stops at the end of the barrel's own item.
+    const after = text.slice(start, start + REACH).split('¶')[0];
     CAPACITY.lastIndex = 0;
     let n;
     while ((n = CAPACITY.exec(after))) {
