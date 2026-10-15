@@ -269,6 +269,7 @@ const ICON = {
   jar: svg('<rect x="7" y="2.5" width="10" height="3" rx="1"/><path d="M7.5 5.5h9l1 3v11a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-11z"/><path d="M6.5 11h11"/><circle cx="12" cy="15.5" r="2"/>'),
   tin: svg('<ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v14c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5"/><path d="M5 9.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>'),
   bucket: svg('<path d="M4.5 7h15l-1.6 13a1.5 1.5 0 0 1-1.5 1.3H7.6A1.5 1.5 0 0 1 6.1 20z"/><path d="M4.5 7c0-2.8 3.4-4.5 7.5-4.5s7.5 1.7 7.5 4.5"/><path d="M8 12.5h8"/>'),
+  pail: svg('<rect x="5" y="4" width="14" height="3" rx="1"/><path d="M6 7h12l-1 13a1.5 1.5 0 0 1-1.5 1.4h-7A1.5 1.5 0 0 1 7 20z"/><path d="M9 11.5h6"/>'),
   barrel: svg('<path d="M6 3h12c1.3 2.6 2 5.6 2 9s-.7 6.4-2 9H6c-1.3-2.6-2-5.6-2-9s.7-6.4 2-9z"/><path d="M4.4 8h15.2"/><path d="M4.4 16h15.2"/>'),
   check: svg('<circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.2 3 3 6-6.4"/>'),
   clipboard: svg('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m8.5 13.5 2.5 2.5 4.5-5"/>'),
@@ -284,6 +285,7 @@ function packIcon(label) {
   if (/^(tin cans?|علب صفيح)/i.test(t)) return ICON.tin;
   if (/^(plastic buckets?|دِلاء بلاستيكية|دلاء بلاستيكية)/i.test(t)) return ICON.bucket;
   if (/^(plastic barrels?|براميل بلاستيكية)/i.test(t)) return ICON.barrel;
+  if (/^(PET pail|وعاء PET)/i.test(t)) return ICON.pail;
   return null;
 }
 
@@ -380,7 +382,7 @@ window.tcFit = () => {
     const last = body.lastElementChild;
     return !last || last.getBoundingClientRect().bottom <= limit();
   };
-  const layout = () => {
+  const layout = (breakBefore = -1) => {
     pages.textContent = '';
     const place = (blk) => {
       body.appendChild(blk);
@@ -436,7 +438,11 @@ window.tcFit = () => {
       place(rest);
     };
     newPage(true);
-    for (const blk of [...tpl('flow').cloneNode(true).children]) place(blk);
+    [...tpl('flow').cloneNode(true).children].forEach((blk, i) => {
+      blk.dataset.i = i;
+      if (i === breakBefore && body.children.length) newPage(false);
+      place(blk);
+    });
     // How full the last page is, from the top of its content to its foot.
     const top = body.getBoundingClientRect().top;
     const last = body.lastElementChild.getBoundingClientRect().bottom;
@@ -449,7 +455,17 @@ window.tcFit = () => {
   // No spacing is squeezed to save a page (owner, 2026-10-14: "a little bit
   // crowded"; the tighter-spacing pass that pulled a short last page back
   // was removed): room on the page comes before the page count.
-  const result = layout();
+  let result = layout();
+  // A closing line never stands alone on the last page: the section before
+  // it moves over to keep it company (it starts that page instead), as long
+  // as that leaves something on the page it came from.
+  const bodies = [...pages.querySelectorAll('.page-body')];
+  const lastBody = bodies[bodies.length - 1];
+  if (bodies.length > 1 && [...lastBody.children].every((c) => c.classList.contains('closing'))) {
+    const prev = bodies[bodies.length - 2];
+    const mover = prev.lastElementChild;
+    if (mover && prev.children.length > 1 && mover.dataset.i !== undefined) result = layout(Number(mover.dataset.i));
+  }
   document.documentElement.dataset.fill = result.fill.toFixed(2);
   const all = pages.querySelectorAll('.pdf-page');
   all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
