@@ -10124,6 +10124,52 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 248 to 250 — The location database back to weekly; the caliber scale on the olive product pages (PRs #369, #370, #371)
+
+**Previous recorded deploy:** `7374757` (Deploy 247, PR #368)
+**Approvals:**
+- "merge" (#369).
+- "do 1 and 2", then "merge" (#370 and #371).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 248 | #369 | `4c338b9` | 2026-10-16 02:13:54 | 1 | +57 / −1 | Notes only |
+| 249 | #370 | `e4f9062` | 2026-10-16 02:20:17 | 2 | +11 / −14 | Build setting (location database) |
+| 250 | #371 | `71fe61e` | 2026-10-16 02:20:20 | 10 | +163 / −11 | Olive product pages (EN, AR), generator, sitemap |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 248** recorded Deploys 245 to 247.
+
+### What the deploys did
+
+- **Deploy 249 — The location database refreshes weekly again (#370).** The 16 Oct review: `MAX_AGE_MS` in `scripts/build-geo.js` had been 1 day while the site deployed 14 to 25 times a day (9-12 Oct). With the pace at 3 or 4 merges a day (13-16 Oct) it goes back to 1 week, matching the weekly `geo-refresh` schedule; comments in `build-geo.js` and `netlify.toml` updated. The download path was exercised: the mirror served `GeoLite2-Country_20261013`. The weekly reminder for this review is complete.
+- **Deploy 250 — The caliber scale on the olive product pages (#371).** Under the specification table on Green, Stuffed Green, Natural Black and Oxidized Black, English and Arabic: each page's own caliber range (140 to 360 on all four), olives drawn smaller as the count rises, labels "Larger olives" / "Smaller olives" (AR «حبات أكبر» / «حبات أصغر»). English pages from `scripts/generate-product-pages.py` (`caliber_scale`, its styles only on pages that show it); the hand-kept Arabic pages carry the generator's own markup. The three pickled-vegetable pages have no calibers and are unchanged. Sitemap dates updated for the eight pages.
+
+### Verified on the live site (2026-10-16)
+
+- `/products/green-olives/` and `/ar/products/natural-black-olives/` carry the scale; `/products/marinated-artichoke-hearts/` does not.
+- **Live check** after #371: 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+168 claims (unchanged).
+
+### Rollback
+
+- **Deploy 250:** `git revert -m 1 71fe61e`.
+- **Deploy 249:** `git revert -m 1 e4f9062` (back to 1 day).
+- **Deploy 248** is documentation only.
+
+### Known limitations shipped with Deploys 248 to 250
+
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10142,7 +10188,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 247 (2026-10-16).**
+**Unchanged since U4, through Deploy 250 (2026-10-16).**
 
 ## Outstanding, unresolved by this document
 
