@@ -63,7 +63,7 @@ window.tcFit = () => {
     const last = body.lastElementChild;
     return !last || last.getBoundingClientRect().bottom <= limit();
   };
-  const layout = () => {
+  const layout = (breakBefore = -1) => {
     pages.textContent = '';
     const place = (blk) => {
       body.appendChild(blk);
@@ -119,7 +119,11 @@ window.tcFit = () => {
       place(rest);
     };
     newPage(true);
-    for (const blk of [...tpl('flow').cloneNode(true).children]) place(blk);
+    [...tpl('flow').cloneNode(true).children].forEach((blk, i) => {
+      blk.dataset.i = i;
+      if (i === breakBefore && body.children.length) newPage(false);
+      place(blk);
+    });
     // How full the last page is, from the top of its content to its foot.
     const top = body.getBoundingClientRect().top;
     const last = body.lastElementChild.getBoundingClientRect().bottom;
@@ -132,7 +136,17 @@ window.tcFit = () => {
   // No spacing is squeezed to save a page (owner, 2026-10-14: "a little bit
   // crowded"; the tighter-spacing pass that pulled a short last page back
   // was removed): room on the page comes before the page count.
-  const result = layout();
+  let result = layout();
+  // A closing line never stands alone on the last page: the section before
+  // it moves over to keep it company (it starts that page instead), as long
+  // as that leaves something on the page it came from.
+  const bodies = [...pages.querySelectorAll('.page-body')];
+  const lastBody = bodies[bodies.length - 1];
+  if (bodies.length > 1 && [...lastBody.children].every((c) => c.classList.contains('closing'))) {
+    const prev = bodies[bodies.length - 2];
+    const mover = prev.lastElementChild;
+    if (mover && prev.children.length > 1 && mover.dataset.i !== undefined) result = layout(Number(mover.dataset.i));
+  }
   document.documentElement.dataset.fill = result.fill.toFixed(2);
   const all = pages.querySelectorAll('.pdf-page');
   all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
