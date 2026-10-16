@@ -263,7 +263,12 @@
     }
   }
 
+  // Only the live site sends; deploy previews and local copies keep the same
+  // behaviour in the browser but report nothing (same rule as consent.js).
+  var LIVE_HOST = /^(www\.)?olivesegypt\.com$/.test(window.location.hostname);
+
   function post(payload, expectResponse) {
+    if (!LIVE_HOST) return;
     var body = JSON.stringify(payload);
     // sendBeacon is fire-and-forget by design -- no response is ever
     // readable, so the one call per session that needs to check for a

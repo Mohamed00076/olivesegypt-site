@@ -55,6 +55,13 @@
   var GA_SRC = 'https://www.googletagmanager.com/gtag/js';
   var GA_MEASUREMENT_ID = 'G-2GS8BNCXXQ';
 
+  // Only the live site reports anywhere. Deploy previews and local copies
+  // run the same code, and a choice made while checking one used to reach
+  // the real Google Analytics, Umami and consent register. Off the live
+  // hosts the banner, the choice and its storage behave exactly as live;
+  // nothing is sent. assets/analytics.js applies the same rule.
+  var LIVE_HOST = /^(www\.)?olivesegypt\.com$/.test(window.location.hostname);
+
   function readStoredConsent() {
     try {
       var raw = window.localStorage.getItem(STORAGE_KEY);
@@ -83,7 +90,7 @@
   }
 
   function loadUmamiIfConsented() {
-    if (!TC.consent.analytics) return;
+    if (!TC.consent.analytics || !LIVE_HOST) return;
     if (document.querySelector('script[data-tc-umami]')) return; // already injected this page load
     var s = document.createElement('script');
     s.defer = true;
@@ -94,7 +101,7 @@
   }
 
   function loadGoogleAnalyticsIfConsented() {
-    if (!TC.consent.analytics) return;
+    if (!TC.consent.analytics || !LIVE_HOST) return;
     if (document.querySelector('script[data-tc-ga]')) return; // already injected this page load
     window['ga-disable-' + GA_MEASUREMENT_ID] = false;
     window.dataLayer = window.dataLayer || [];
@@ -150,6 +157,7 @@
   }
 
   function logConsentServerSide(mechanism, analytics) {
+    if (!LIVE_HOST) return;
     try {
       fetch('/api/consent', {
         method: 'POST',
@@ -271,17 +279,19 @@
       reject: 'Reject',
       manage: 'Settings',
       accept: 'Accept',
-      reopen: '\uD83C\uDF6A Cookie Preferences',
-      reopenFooter: 'Cookie Preferences',
-      modalTitle: 'Cookie Preferences',
+      // The panel says what the banner says, in a little more detail, and
+      // uses the banner's names: "our counter", "Settings".
+      reopen: 'Cookie settings',
+      reopenFooter: 'Cookie settings',
+      modalTitle: 'Cookie settings',
       modalSubtext: "Choose what we're allowed to use. You can change this anytime.",
-      necessary: 'Strictly Necessary',
-      necessaryDesc: 'Required for the site to function (forms, navigation). Always on.',
-      necessaryAria: 'Strictly Necessary (always on)',
+      necessary: 'Needed for the site',
+      necessaryDesc: 'Forms, navigation, and remembering your choices here. Always on.',
+      necessaryAria: 'Needed for the site (always on)',
       analytics: 'Analytics',
-      analyticsDesc: 'Helps us understand site traffic, using our own Umami and Google Analytics. Google Analytics sets cookies and sends visit data to Google. Off unless you turn it on.',
+      analyticsDesc: 'Measures visits. Google Analytics sets cookies and sends visit data to Google; our counter stores an ID in your browser. Off unless you turn it on.',
       cancel: 'Cancel',
-      save: 'Save Preferences'
+      save: 'Save'
     },
     ar: {
       bannerLabel: 'الموافقة على الكوكيز',
@@ -291,17 +301,17 @@
       reject: 'رفض',
       manage: 'الإعدادات',
       accept: 'قبول',
-      reopen: '\uD83C\uDF6A تفضيلات الكوكيز',
-      reopenFooter: 'تفضيلات الكوكيز',
-      modalTitle: 'تفضيلات الكوكيز',
+      reopen: 'إعدادات الكوكيز',
+      reopenFooter: 'إعدادات الكوكيز',
+      modalTitle: 'إعدادات الكوكيز',
       modalSubtext: 'اختر ما يُسمح لنا باستخدامه. ويمكنك تغيير ذلك في أي وقت.',
-      necessary: 'ضروري تمامًا',
-      necessaryDesc: 'لازم لعمل الموقع (النماذج والتنقل). مفعّل دائمًا.',
-      necessaryAria: 'ضروري تمامًا (مفعّل دائمًا)',
+      necessary: 'لازم لعمل الموقع',
+      necessaryDesc: 'النماذج والتنقل وتذكّر اختياراتك هنا. مفعّل دائمًا.',
+      necessaryAria: 'لازم لعمل الموقع (مفعّل دائمًا)',
       analytics: 'التحليلات',
-      analyticsDesc: 'تساعدنا على فهم حركة الزيارات، باستخدام أداة Umami الخاصة بنا وGoogle Analytics. تضع Google Analytics الكوكيز وترسل بيانات الزيارة إلى Google. معطّل ما لم تفعّله أنت.',
+      analyticsDesc: 'تقيس الزيارات. تضع Google Analytics الكوكيز وترسل بيانات الزيارة إلى Google، ويحفظ عدّادنا معرّفًا في متصفحك. معطّل ما لم تفعّله أنت.',
       cancel: 'إلغاء',
-      save: 'حفظ التفضيلات'
+      save: 'حفظ'
     }
   };
   var T = STRINGS[document.documentElement.lang === 'ar' ? 'ar' : 'en'];

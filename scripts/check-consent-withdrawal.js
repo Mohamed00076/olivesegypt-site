@@ -61,7 +61,8 @@ function makeStorage() {
 // Just enough DOM for consent.js: elements with ids, listeners, classes.
 // innerHTML is not parsed as HTML; every tag carrying an id becomes a child
 // element, which is all the scripts look elements up by.
-function makePage(storage, pathname) {
+function makePage(storage, pathname, hostname) {
+  hostname = hostname || 'localhost';
   const listeners = {};
   class El {
     constructor(tag) {
@@ -132,7 +133,7 @@ function makePage(storage, pathname) {
     document,
     localStorage: storage,
     sessionStorage: makeStorage(),
-    location: { pathname, hostname: 'localhost', href: 'http://localhost' + pathname, origin: 'http://localhost' },
+    location: { pathname, hostname, href: 'https://' + hostname + pathname, origin: 'https://' + hostname },
     navigator: { language: 'en', webdriver: false, sendBeacon: (u, b) => { sent.push(u); return true; } },
     crypto: webcrypto,
     matchMedia: () => ({ matches: false, addEventListener() {}, addListener() {} }),
@@ -160,6 +161,7 @@ function makePage(storage, pathname) {
     setToggle: (on) => { byId('tc-consent-analytics-toggle').checked = on; },
     openSettings: () => byId('tc-consent-reopen').click(),
     sent,
+    trackerScripts: () => head.children.filter((e) => e.tagName === 'SCRIPT').map((e) => String(e.src).replace(/\?.*$/, '')),
   };
 }
 
@@ -232,6 +234,33 @@ const visitorId = (s) => { try { return JSON.parse(s.getItem(VISITOR)).id; } cat
   s.setItem(VISITOR, JSON.stringify({ id: 'kept' }));
   makePage(s, '/');
   check('a saved "yes" keeps its visitor ID', visitorId(s) === 'kept', visitorId(s));
+}
+
+// 6. Only the live site reports. A deploy preview or local copy behaves the
+//    same in the browser (choice saved, counter entries kept) but loads no
+//    tracker and sends nothing to /api/consent or /api/analytics-collect.
+for (const host of ['olivesegypt.com', 'www.olivesegypt.com']) {
+  const s = makeStorage();
+  let p = makePage(s, '/', host);
+  p.click('tc-consent-accept');
+  const scripts = p.trackerScripts();
+  p = makePage(s, '/catalog/', host);
+  check(`on ${host}, Accept loads Umami and Google Analytics and records the choice and the visit`,
+    scripts.some((u) => u.includes('umami')) && scripts.some((u) => u.includes('googletagmanager')) &&
+    p.sent.includes('/api/analytics-collect'),
+    `scripts ${scripts.join(',')}; sent ${p.sent.join(',')}`);
+}
+for (const host of ['deploy-preview-373--stirring-manatee-ca2643.netlify.app', 'localhost', '127.0.0.1']) {
+  const s = makeStorage();
+  let p = makePage(s, '/', host);
+  p.click('tc-consent-accept');
+  const sentOnChoice = p.sent.slice();
+  const scripts = p.trackerScripts();
+  p = makePage(s, '/catalog/', host);
+  check(`on ${host}, Accept loads no tracker and sends nothing, but the choice and counter entries are kept`,
+    scripts.length === 0 && sentOnChoice.length === 0 && p.sent.length === 0 &&
+    JSON.parse(s.getItem('tc-consent')).analytics === true && entries(s).length === 2,
+    `scripts ${scripts.join(',')}; sent ${sentOnChoice.concat(p.sent).join(',')}; entries ${entries(s).join(',')}`);
 }
 
 const failed = results.filter((r) => !r.ok).length;
