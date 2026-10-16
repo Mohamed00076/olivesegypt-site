@@ -10237,6 +10237,79 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 253 and 254 — The cookie settings panel matches the banner; only the live site reports (PRs #374, #375)
+
+**Previous recorded deploy:** `e50a6b3` (Deploy 252, PR #373)
+**Approvals:**
+- "merge" (#374).
+- "do 1 and 2", then "merge" (#375).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 253 | #374 | `db5e84f` | 2026-10-16 18:39:18 | 1 | +68 / −1 | Notes only |
+| 254 | #375 | `3a5762d` | 2026-10-16 19:04:16 | 7 | +70 / −23 | Cookie settings panel (EN, AR), analytics scripts, privacy pages (EN, AR), tests |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 253** recorded Deploys 251 and 252.
+
+### What the deploy did
+
+- **Deploy 254 — The settings panel matches the banner, and only the live site reports (#375).**
+  - **Settings panel, footer link and fallback pill (EN, AR).** They now use the banner's words and say what the counter stores.
+    - "Cookie Preferences" (pill: 🍪) becomes "Cookie settings" / «إعدادات الكوكيز».
+    - "Strictly Necessary" becomes "Needed for the site" / «لازم لعمل الموقع», described as "Forms, navigation, and remembering your choices here. Always on."
+    - The Analytics row reads: "Measures visits. Google Analytics sets cookies and sends visit data to Google; our counter stores an ID in your browser. Off unless you turn it on." It no longer names Umami.
+    - "Save Preferences" becomes "Save" / «حفظ».
+    - The "Analytics" label is kept, because the privacy pages refer to it. Both privacy pages refer to the footer link by its new name.
+  - **Only the live site reports.** `LIVE_HOST` in `assets/consent.js` and `assets/analytics.js` limits loading Umami and Google Analytics, and sending to `/api/consent` and `/api/analytics-collect`, to `olivesegypt.com` and `www.olivesegypt.com`. Deploy previews and local copies keep the same banner, choice and storage but send nothing. This follows Deploy 252's finding that choices made on a preview could reach real data.
+  - **Tests.**
+    - `check-consent-withdrawal` gains five live-host checks (15 in all): both live hosts send; a preview host, localhost and 127.0.0.1 do not.
+    - `check-csp-allows` accepts the Google Analytics consent guard with the live-host condition, and still requires consent.
+  - **No saved choice cleared.** `POLICY_VERSION` (2026-10-11) and `CONSENT_VERSION` (1.0) are unchanged.
+
+### Verified before merge (local copy, trackers blocked)
+
+- **Live-host rule in a real browser:** "olivesegypt.com" was served from the local copy. On both live hosts, Umami, Google Analytics, `/api/consent` and `/api/analytics-collect` were requested after Accept, and nothing before. On a preview host and 127.0.0.1, nothing was requested.
+- **Settings panel:** EN and AR, light and dark, at 320 and 390px, it fits on screen with the new wording. The footer link is renamed on four pages.
+- **Banner regression:** passes. That covers nothing sent before a choice, persistence, overlap at five widths in both languages and themes, keyboard, right-to-left order and contrast.
+- **Tests:** `npm test` passes.
+
+### Verified on the live site (2026-10-16)
+
+- **Files live:** `consent.js` and `analytics.js` serve `LIVE_HOST`, and both privacy pages name "Cookie settings" / «إعدادات الكوكيز».
+- **Live olivesegypt.com in a browser,** with tracker and `/api` requests blocked so nothing was recorded, in EN and AR:
+  - nothing before a choice
+  - the new panel wording
+  - after Accept, Umami and Google Analytics requested, and `/api/consent` and `/api/analytics-collect` called
+  - the footer link renamed
+  - no page errors
+- **Live check:** 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+175 claims (C-174 and C-175 added).
+
+### Rollback
+
+- **Deploy 254:** `git revert -m 1 3a5762d`. Saved choices are untouched either way.
+- **Deploy 253** is documentation only.
+
+### Known limitations shipped with Deploys 253 and 254
+
+- **Forms on a deploy preview** (enquiry, sample, guide) still reach the real CRM. They are business forms, not analytics, and were left for the owner to decide.
+- **Arabic wording** of the panel awaits the owner's review, as does the Arabic from Deploy 252.
+- **Unchanged from Deploys 251 and 252:**
+  - the visitor ID has no expiry (counsel question 8)
+  - visitors who accepted before the fuller disclosure are not asked again (counsel question 9)
+  - in-app browsers keep their own storage
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10255,7 +10328,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 252 (2026-10-16).**
+**Unchanged since U4, through Deploy 254 (2026-10-16).**
 
 ## Outstanding, unresolved by this document
 
