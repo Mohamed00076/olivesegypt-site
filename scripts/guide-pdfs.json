@@ -2562,7 +2562,7 @@
   "netlify/functions/_guides/ar/pricing-packaging-guide.pdf": {
     "source": "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html": "3487ef27b27d782933aea5303d7f776219278d2f8abaf32f1e7ad93214d6000a",
+      "scripts/pdf-sources/documents/pricing-packaging-guide-ar.html": "89b1d7646dfbe01242ce03e0e7a16ce44c5faef8835f660d67db0e6ddfc44e9e",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -2650,7 +2650,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "d5aed480fa75b26802b2f270e7358bd36fd1056fda013bfc2c6f9a18797212e9"
+    "pdf": "571e906c38dbf9893cea1af6c4919f11dc84ec57fc85d54a48da4b0a73fa9507"
   },
   "netlify/functions/_guides/ar/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-ar.html",
@@ -3401,7 +3401,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "885b1394b76a6a55de0e4ea49b420b2ba68c43b9b9ba0655aa4a36773af186b4"
+    "pdf": "8de3ce66b2385326fd9880848e42f0d0ffd9207019060681ed3cc715a7afe92b"
   },
   "netlify/functions/_guides/en/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-en.html",
