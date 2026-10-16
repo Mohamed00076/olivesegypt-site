@@ -89,7 +89,8 @@ t('the Umami host is really used by consent.js (else its CSP entry should go)',
     t('   including the regional analytics.google.com endpoints',
       (directives['connect-src'] || []).includes('https://*.analytics.google.com'));
     t('Google Analytics is loaded only behind the consent gate',
-      /function loadGoogleAnalyticsIfConsented\(\) \{\s*if \(!TC\.consent\.analytics\) return;/.test(consent)
+      // The guard may also require the live site (LIVE_HOST), never less than consent.
+      /function loadGoogleAnalyticsIfConsented\(\) \{\s*if \(!TC\.consent\.analytics( \|\| !LIVE_HOST)?\) return;/.test(consent)
         && !tracked.filter((x) => x.endsWith('.html')).some((f) => /googletagmanager\.com/.test(read(f))),
       'gtag.js must be injected by consent.js after consent, never by a static tag in a page');
     t('   and withdrawing consent switches it off and removes its cookies',
