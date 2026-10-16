@@ -10310,6 +10310,72 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 255 to 257 — Forms on a deploy preview send nothing; the Arabic guide's glass-jar row in the owner's wording (PRs #376, #377, #378)
+
+**Previous recorded deploy:** `3a5762d` (Deploy 254, PR #375)
+**Approvals:**
+- "merge" (#376).
+- "do 1 2 and 3", then "make the glass jar change ande merge" (#377 and #378).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 255 | #376 | `84fa255` | 2026-10-16 19:09:21 | 1 | +74 / −1 | Notes only |
+| 256 | #377 | `5746242` | 2026-10-16 19:17:06 | 6 | +98 / −3 | Form scripts (all form pages, EN and AR), tests |
+| 257 | #378 | `d011c19` | 2026-10-16 19:19:36 | 6 | +6 / −5 | Arabic Packaging & Quotation Guide (source, PDF) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 255** recorded Deploys 253 and 254.
+
+### What the deploys did
+
+- **Deploy 256 — Forms on a deploy preview send nothing (#377).** After Deploy 254, the forms were the last thing a preview could send to real systems: a form filled in on a preview created a real CRM record and notification email.
+  - The enquiry, sample, guide download, market brief, private-label and unsubscribe forms (`assets/inquiry-form.js`, `gated-download.js`, `unsubscribe.js`) send only from `olivesegypt.com` and `www.olivesegypt.com`.
+  - On a preview or local copy they show "This is a preview copy of the site: nothing was sent. Forms send only from olivesegypt.com." (Arabic: «هذه نسخة معاينة من الموقع: لم يُرسل أي شيء. لا تُرسل النماذج إلا من olivesegypt.com.») and send nothing. The live site is unchanged.
+  - **New check, `check-preview-sends`, in `npm test`:** every public script that posts to `/api` or loads a tracker must check the live-host rule before its first send. It fails with a guard removed. The staff CRM (`crm.js`) is exempt, with its reason stated: it needs a signed-in session, and blocking it would make CRM changes impossible to check on a preview.
+- **Deploy 257 — The Arabic guide's glass-jar row (#378).** The Arabic Packaging & Quotation Guide's glass-jar "typical channel" now reads «التجزئة ومحلات الأطعمة الفاخرة» (was «التجزئة الفاخرة ومحلات الأطعمة الفاخرة»).
+  - This is the owner's wording from the Arabic review page (answer `p-jars`, 14 Oct). The other 22 answers given then were all "Fine".
+  - Source edited, PDF source rebuilt, guide re-printed: still 3 pages. The English PDF was re-printed alongside it with identical text.
+
+### Verified before merge
+
+- **Forms (#377):** all 10 form pages, EN and AR, tested in a browser with dummy data, with `/api` answered locally.
+  - On 127.0.0.1, each showed the preview message and made no `/api` call.
+  - On a stand-in "olivesegypt.com" served from the local copy, each called `/api/inquiries`, `/api/leads` or `/api/unsubscribe` and showed its usual thank-you.
+- **Guide (#378):** the Arabic PDF contains the new wording and not the old; the row was checked visually.
+- **Tests:** `npm test` passes for both.
+
+### Verified on the live site (2026-10-16)
+
+- **Deployed commit:** `deployed-commit.txt` reads `d011c19`.
+- **Form scripts:** all three serve the live-host rule and the preview message. No live form was submitted, so no record was created.
+- **Live check:** 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+177 claims (C-176 and C-177 added).
+
+### Rollback
+
+- **Deploy 257:** `git revert -m 1 d011c19`.
+- **Deploy 256:** `git revert -m 1 5746242`. The live site is unaffected either way.
+- **Deploy 255** is documentation only.
+
+### Known limitations shipped with Deploys 255 to 257
+
+- **The staff CRM on a preview** still talks to the real database. This is deliberate (see above).
+- **Arabic awaiting the owner's review** on the review page:
+  - the 11 cookie and privacy lines (Deploys 252 and 254), with «تُعدّ» and «إدخالَي» flagged
+  - the preview message
+  - the PET pail row
+- **Unchanged from Deploys 251 to 254:** the visitor-ID lifetime and re-ask questions are with counsel, and in-app browsers keep their own storage.
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10328,7 +10394,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 254 (2026-10-16).**
+**Unchanged since U4, through Deploy 257 (2026-10-16).**
 
 ## Outstanding, unresolved by this document
 
