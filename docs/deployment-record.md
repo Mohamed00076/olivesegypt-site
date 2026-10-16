@@ -10376,6 +10376,72 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 258 and 259 — The privacy pages' cookie heading matches the footer link (PRs #379, #380)
+
+**Previous recorded deploy:** `d011c19` (Deploy 257, PR #378)
+**Approvals:**
+- "merge" (#379).
+- "do number 2", then "merge and do the brief corrections" (#380).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 258 | #379 | `2425431` | 2026-10-16 19:28:27 | 1 | +67 / −1 | Notes only |
+| 259 | #380 | `f6a03e7` | 2026-10-17 01:55:39 | 2 | +2 / −2 | Privacy pages (EN, AR) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 258** recorded Deploys 255 to 257.
+
+### What the deploy did
+
+- **Deploy 259 — The cookie heading on the privacy pages (#380).** "Managing cookie preferences" becomes "Managing cookie settings", and «إدارة تفضيلات الكوكيز» becomes «إدارة إعدادات الكوكيز».
+  - This matches the footer link and the settings panel (Deploy 254).
+  - The sentence under "Your rights" ("change your cookie preferences" / «تغيير تفضيلات الكوكيز») is kept, because it describes the action, not the control.
+  - No sitemap change: both pages already carried that day's date.
+
+### Related work outside the site (not deployed)
+
+- **Wording sweep, 16 Oct:** no visitor-facing text still uses the cookie wording replaced in Deploys 252 and 254. The old terms remain only in internal audit notes and a stylesheet comment.
+- **Speed check, 16 Oct, local copies:** 10 pages at 390px with 4x CPU slowdown, ~slow-4G network and a first-time visitor, median of 3 runs. Compared the site before PR #373 with main after #377.
+  - Largest content paint: 1.34–1.68 s, an average change of +9 ms per page, within run-to-run noise.
+  - Blocking time: 16 ms lower on average.
+  - Layout shift: at most 0.001.
+  - The cookie banner is never the largest content element.
+- **Counsel brief:** the owner's brief was corrected at the owner's request and delivered as a PDF, not committed. The corrections:
+  - the visit counter, not Umami, keeps the two browser entries
+  - the Facebook box is listed as a provider
+  - the 30-day hashed IP is noted
+  - the CRM's Delete and Erase are explained
+  - Meta is added to the agreements question
+
+### Verified on the live site (2026-10-17)
+
+- **Deployed commit:** `deployed-commit.txt` reads `f6a03e7`, and both privacy pages serve the new heading.
+- **Live check:** the first run reported 20 OK, 1 FAIL. Its output was not captured, so the failing check is not known. Four re-runs straight after each reported 21 OK, 0 FAIL. It is treated as transient, but recorded rather than dropped.
+- **Certificate:** the live check reports it valid to 2026-11-15, 29 days ahead.
+
+### Claim register
+
+177 claims (unchanged).
+
+### Rollback
+
+- **Deploy 259:** `git revert -m 1 f6a03e7`.
+- **Deploy 258** is documentation only.
+
+### Known limitations shipped with Deploys 258 and 259
+
+- **Unchanged from Deploys 255 to 257:**
+  - Arabic awaits the owner's review on the review page.
+  - The staff CRM on a preview uses the real database, by design.
+  - The visitor-ID lifetime and re-ask questions are with counsel.
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10394,7 +10460,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 257 (2026-10-16).**
+**Unchanged since U4, through Deploy 259 (2026-10-17).**
 
 ## Outstanding, unresolved by this document
 
