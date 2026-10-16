@@ -10170,6 +10170,73 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 251 and 252 — The cookie banner: equal choices, compact, plain wording; the visit counter disclosed and cleared on withdrawal (PRs #372, #373)
+
+**Previous recorded deploy:** `71fe61e` (Deploy 250, PR #371)
+**Approvals:**
+- "merge" (#372).
+- "approve and merge" (#373). Before that, after a read-only consent diagnosis: "do 1 2 3 and 5", the owner's wording and checks, "use shorter", "do 1 2 3 and b", and the six follow-up items.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 251 | #372 | `c49dbf6` | 2026-10-16 02:22:33 | 1 | +47 / −1 | Notes only |
+| 252 | #373 | `e50a6b3` | 2026-10-16 18:28:21 | 10 | +353 / −36 | Cookie banner, privacy pages (EN, AR), quote button, tests, counsel questions, sitemap |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 251** recorded Deploys 248 to 250.
+
+### What the deploy did
+
+- **Deploy 252 — The cookie banner, the visit counter's disclosure and a withdrawal fix (#373).** Follows a read-only diagnosis of low consent acceptance (15 Oct). It found: the banner covered up to 45% of a phone screen and could be scrolled past; Accept was a filled gold button while Reject was outlined; the wording was long and full of jargon; the settings panel had no keyboard handling. Nothing was stored or sent before a choice.
+  - **Equal choices.** Reject and Accept share one style and size, side by side; Settings is a text button. All are 44px tall.
+  - **Compact.** Banner coverage, English / Arabic: 320px 22.9% / 19.5% (English within the owner's 23% allowance at 320px only), 360px 17.6% / 15.0%, 390px 13.2%, 412px 12.1%, 768px 6.3%. It was 45% / 41% at 320px.
+  - **Wording.** English: "May we measure visits? Google Analytics sets cookies; our counter stores an ID in your browser. Privacy". Arabic: «هل نقيس الزيارات؟ تضع Google Analytics الكوكيز، ويحفظ عدّادنا معرّفًا في متصفحك. سياسة الخصوصية». Buttons: Reject / Settings / Accept, «رفض / الإعدادات / قبول». Arabic uses «الكوكيز» throughout the banner; the Arabic privacy page uses «ملفات تعريف الارتباط (الكوكيز)» once.
+  - **Keyboard.** In the settings panel, Escape closes it, Tab stays inside it, and focus returns to the control that opened it.
+  - **Privacy pages (EN, AR).** They now name the visit counter's two local-storage entries: `tc-analytics-visitor`, a random ID with no expiry, and `tc-analytics-session`, holding the visit's details and treated as ended after 30 minutes. Both are said to be removed on withdrawal. The Google Analytics cookie lifetime is corrected from "up to two years" to "until two years after your most recent visit", per Google's gtag.js reference: the default `cookie_update` renews them on every page load.
+  - **Bug fix (pre-existing).** Withdrawing consent removed the Google Analytics cookies but left the counter's two entries in the browser, so accepting again later revived the old ID. `clearCounterIds` in `assets/consent.js` now removes them on withdrawal and on any page load where the saved choice is "no".
+  - **Quote button.** On phones and tablets it shows as its icon while the banner is up, and returns to its full label after a choice. Its accessible name is unchanged.
+  - **Tests.** `scripts/check-consent-withdrawal.js` joins `npm test`; with the fix removed, 5 of its 10 checks fail. `check-rtl` allows the two entry names, like `_ga`.
+  - **Counsel questions 8–13** added to `docs/g0-counsel-questions.md`, including a finite visitor-ID lifetime (owner's suggestion: 13 months; not implemented) and whether the earlier, less detailed disclosure means asking again.
+  - **No saved choice cleared.** `POLICY_VERSION` (2026-10-11) and `CONSENT_VERSION` (1.0) are unchanged. The privacy pages show no last-updated date, so none changed (C-173).
+
+### Verified before merge (final commit `d7eeda5`, local copy, trackers blocked)
+
+- **Before a choice:** no cookies, no storage, no requests to Umami, Google or Facebook, and no errors.
+- **Persistence:** the banner never returned after any choice, across a reload, five pages and a new tab, including with in-app browser user agents.
+- **Failure cases:** with the consent script blocked or JavaScript off, there is no banner and no tracking.
+- **Overlap:** nothing overlaps at 320/360/390/412/768px, English and Arabic, light and dark.
+- **Keyboard, layout and tests:** keyboard handling, right-to-left order and contrast (12.9:1 text, 7.0:1 link) pass. The withdrawal and quote-button behaviour passes. `npm test` passes.
+
+### Verified on the live site (2026-10-16)
+
+- **Files live:** `consent.js`, `site-nav.js`, `/privacy/` and `/ar/privacy/` serve the new code and wording.
+- **320px, English and Arabic** (looked at only, nothing pressed, requests blocked): the new text and buttons, coverage 22.8% / 19.5%, the quote button as an icon with its name, nothing stored before a choice, and no errors.
+- **Live check:** 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+173 claims (C-169 to C-173 added).
+
+### Rollback
+
+- **Deploy 252:** `git revert -m 1 e50a6b3`. Saved choices are untouched either way, because the policy version is unchanged. Counter entries already removed for visitors who said "no" are not restored, which is correct.
+- **Deploy 251** is documentation only.
+
+### Known limitations shipped with Deploys 251 and 252
+
+- **Arabic wording** awaits the owner's review. Two vowel marks were noted against the site's convention: «تُعدّ», which the site writes as «يُعد», and «إدخالَي».
+- **The visitor ID has no expiry,** pending counsel (question 8).
+- **Visitors who accepted before the fuller disclosure are not asked again,** pending counsel (question 9).
+- **In-app browsers** (WhatsApp, Facebook, Instagram) keep their own storage, so a choice made there does not carry over to the phone's browser.
+- **The deploy preview** shares production's analytics IDs and functions, so choices made there may reach real data.
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10188,7 +10255,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 250 (2026-10-16).**
+**Unchanged since U4, through Deploy 252 (2026-10-16).**
 
 ## Outstanding, unresolved by this document
 
