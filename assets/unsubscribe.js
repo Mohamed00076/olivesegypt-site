@@ -19,7 +19,8 @@
       rateLimited: 'Too many requests from this connection. Please try again in a little while, or email sales@olivesegypt.com.',
       generic: 'Something went wrong and your request was not recorded. Please email sales@olivesegypt.com and we will remove you by hand.',
       network: 'Network error — your request was not recorded. Please try again, or email sales@olivesegypt.com.',
-      working: 'Recording your request…'
+      working: 'Recording your request…',
+      preview: 'This is a preview copy of the site: nothing was sent. Forms send only from olivesegypt.com.'
     },
     ar: {
       done: 'تم — سجّلنا رغبتك في عدم التواصل معك. يمكنك إغلاق هذه الصفحة.',
@@ -27,7 +28,8 @@
       rateLimited: 'طلبات كثيرة من هذا الاتصال. يرجى المحاولة بعد قليل، أو مراسلتنا على sales@olivesegypt.com.',
       generic: 'حدث خطأ ولم يُسجَّل طلبك. يرجى مراسلتنا على sales@olivesegypt.com وسنزيلك يدويًا.',
       network: 'خطأ في الشبكة — لم يُسجَّل طلبك. يرجى المحاولة مرة أخرى، أو مراسلتنا على sales@olivesegypt.com.',
-      working: 'جارٍ تسجيل طلبك…'
+      working: 'جارٍ تسجيل طلبك…',
+      preview: 'هذه نسخة معاينة من الموقع: لم يُرسل أي شيء. لا تُرسل النماذج إلا من olivesegypt.com.'
     }
   };
 
@@ -55,6 +57,13 @@
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
         show('error', T.invalid);
         input.focus();
+        return;
+      }
+
+      // Only the live site sends (same rule as consent.js): an unsubscribe
+      // tried on a deploy preview must not change the real contact list.
+      if (!/^(www\.)?olivesegypt\.com$/.test(window.location.hostname)) {
+        show('error', T.preview);
         return;
       }
 
