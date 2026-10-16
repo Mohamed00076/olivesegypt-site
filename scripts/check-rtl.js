@@ -61,6 +61,8 @@ const KEEP = new Set([
   'google', 'olivesegypt.com', 'sales',
   // Google Analytics, a service name, and its cookie names _ga / _ga_<id>.
   'analytics', 'ga',
+  // The visit counter's two local-storage entries, named on the privacy page.
+  'tc-analytics-visitor', 'tc-analytics-session',
 ]);
 
 const AR = /[؀-ۿ]/;

@@ -133,6 +133,21 @@
     }
   }
 
+  // Without analytics consent the visit counter's two entries
+  // (assets/analytics.js) must not exist. Withdrawal used to leave them
+  // behind, so accepting again later revived the old visitor ID and linked
+  // the new visits to the old ones. Also run on every page load where the
+  // saved choice is "no", which clears entries left by a withdrawal made
+  // before this fix.
+  function clearCounterIds() {
+    try {
+      window.localStorage.removeItem('tc-analytics-visitor');
+      window.localStorage.removeItem('tc-analytics-session');
+    } catch (e) {
+      // Storage unavailable: nothing can be stored there either.
+    }
+  }
+
   function logConsentServerSide(mechanism, analytics) {
     try {
       fetch('/api/consent', {
@@ -159,6 +174,7 @@
       loadGoogleAnalyticsIfConsented();
     } else {
       disableGoogleAnalytics();
+      clearCounterIds();
     }
     // Withdrawal: if analytics is false, we simply never inject Umami on
     // this or any future page load again (each full page load re-checks
@@ -373,7 +389,12 @@
     var el = fab();
     if (el) el.style.bottom = h ? (24 + h) + 'px' : '';
     var q = quoteFab();
-    if (q) q.style.bottom = h ? (28 + h) + 'px' : '';
+    if (q) {
+      q.style.bottom = h ? (28 + h) + 'px' : '';
+      // Icon only while the banner is up on a phone or tablet: the full
+      // label covered the text above the banner. site-nav.js keeps it so.
+      if (h) q.classList.toggle('tc-quote-fab--compact', window.matchMedia('(max-width: 1023.98px)').matches);
+    }
     positionTab(h);
   }
   // site-nav.js adds the quote button after this file has run; it calls this
@@ -407,7 +428,10 @@
     var el = fab();
     if (el) el.style.bottom = '';
     var q = quoteFab();
-    if (q) q.style.bottom = '';
+    if (q) {
+      q.style.bottom = '';
+      q.classList.remove('tc-quote-fab--compact');
+    }
     positionTab(0);
   }
 
@@ -551,6 +575,7 @@
     var stored = readStoredConsent();
     if (stored) {
       TC.setConsent(stored.analytics === true);
+      if (stored.analytics !== true) clearCounterIds();
       loadUmamiIfConsented();
       loadGoogleAnalyticsIfConsented();
       showReopenControl();

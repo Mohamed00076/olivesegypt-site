@@ -221,7 +221,14 @@
   var narrow = window.matchMedia('(max-width: 1023.98px)');
   var lastY = window.pageYOffset;
   var idle = null;
-  function setCompact(on) { a.classList.toggle('tc-quote-fab--compact', !!on && narrow.matches); }
+  // While the cookie banner is up the button stays a round icon (owner
+  // decision 2026-10-16), so its label never sits over the text above the
+  // banner; consent.js sets that state and lifts it once a choice is made.
+  // Its accessible name is the aria-label above, so it is unchanged.
+  function setCompact(on) {
+    var held = !!document.getElementById('tc-consent-banner');
+    a.classList.toggle('tc-quote-fab--compact', (held || !!on) && narrow.matches);
+  }
   window.addEventListener('scroll', function () {
     var y = window.pageYOffset;
     if (y < 200) setCompact(false);
