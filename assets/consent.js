@@ -248,7 +248,7 @@
       // Google Analytics sets cookies; our own counter (Umami plus the
       // site's /api/analytics-collect pipeline) sets none, but keeps a
       // visit ID in local storage (assets/analytics.js, VISITOR_KEY).
-      body: "We'd like to measure visits with Google Analytics, which sets cookies, and our own visit counter, which keeps a visit ID in your browser. Only if you agree. ",
+      body: 'May we measure visits? Google Analytics sets cookies; our counter stores an ID. ',
       privacy: 'Privacy',
       privacyHref: '/privacy/',
       reject: 'Reject',
@@ -268,8 +268,8 @@
     },
     ar: {
       bannerLabel: 'الموافقة على الكوكيز',
-      body: 'نودّ قياس الزيارات باستخدام Google Analytics، التي تضع الكوكيز، وعدّاد الزيارات الخاص بنا، الذي يحفظ معرّف زيارة في متصفحك. وذلك بموافقتك فقط. ',
-      privacy: 'الخصوصية',
+      body: 'هل نقيس الزيارات؟ تضع Google Analytics الكوكيز، ويحفظ عدّادنا معرّفًا في متصفحك. ',
+      privacy: 'سياسة الخصوصية',
       privacyHref: '/ar/privacy/',
       reject: 'رفض',
       manage: 'الإعدادات',
