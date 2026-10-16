@@ -113,7 +113,8 @@
   // Withdrawal. Not loading gtag.js on the next page is not enough for Google
   // Analytics the way it is for Umami: a copy already running on this page
   // would keep sending, and the _ga cookies it set would sit in the browser
-  // for up to two years. So: tell any running copy to stop, and expire the
+  // until two years after the last visit (gtag renews them on every page
+  // load by default). So: tell any running copy to stop, and expire the
   // cookies on every domain scope gtag.js may have written them to.
   function disableGoogleAnalytics() {
     window['ga-disable-' + GA_MEASUREMENT_ID] = true;
@@ -264,7 +265,7 @@
       // Google Analytics sets cookies; our own counter (Umami plus the
       // site's /api/analytics-collect pipeline) sets none, but keeps a
       // visit ID in local storage (assets/analytics.js, VISITOR_KEY).
-      body: 'May we measure visits? Google Analytics sets cookies; our counter stores an ID. ',
+      body: 'May we measure visits? Google Analytics sets cookies; our counter stores an ID in your browser. ',
       privacy: 'Privacy',
       privacyHref: '/privacy/',
       reject: 'Reject',
