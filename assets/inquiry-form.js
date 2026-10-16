@@ -49,6 +49,7 @@
       sampleSuccess: 'Thank you — your sample request has been received. Our export team will confirm within 24 hours.',
       generic: 'Something went wrong sending your request. Please try again, or email sales@olivesegypt.com directly.',
       network: 'Network error — please try again, or email sales@olivesegypt.com directly.',
+      preview: 'This is a preview copy of the site: nothing was sent. Forms send only from olivesegypt.com.',
       shipping: 'Shipping Address:',
       notes: 'Additional Notes:'
     },
@@ -58,11 +59,17 @@
       sampleSuccess: 'شكرًا لك — تم استلام طلب العينة. سيؤكده فريق التصدير لدينا خلال 24 ساعة.',
       generic: 'حدث خطأ أثناء إرسال طلبك. يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
       network: 'خطأ في الشبكة — يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
+      preview: 'هذه نسخة معاينة من الموقع: لم يُرسل أي شيء. لا تُرسل النماذج إلا من olivesegypt.com.',
       shipping: 'Shipping Address:',
       notes: 'Additional Notes:'
     }
   };
   var T = STRINGS[LANG];
+
+  // Only the live site sends. A form filled in on a deploy preview or a
+  // local copy used to reach the real CRM and send real notification email;
+  // there it now says so and sends nothing. Same rule as consent.js.
+  var LIVE_HOST = /^(www\.)?olivesegypt\.com$/.test(window.location.hostname);
 
   function val(id) {
     var el = document.getElementById(id);
@@ -109,6 +116,11 @@
 
       if (!form.checkValidity()) {
         form.reportValidity();
+        return;
+      }
+
+      if (!LIVE_HOST) {
+        showStatus('error', T.preview);
         return;
       }
 
