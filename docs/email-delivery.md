@@ -9,7 +9,7 @@ Covers every outbound email the site sends. Written for Phase 7.
 | --- | --- | --- | --- |
 | Contact / sample / quote forms (8 forms, `/api/inquiries`) | `netlify/functions/inquiries.js` | `NOTIFY_EMAIL` (may be several) | the enquirer |
 | Gated guide downloads (6 forms, `/api/leads`) | `netlify/functions/leads.js` | `NOTIFY_EMAIL` — **off unless `LEADS_NOTIFY` is on** | the enquirer |
-| CRM password reset | `netlify/functions/crm-auth-forgot.js` | the CRM user's own address | — |
+| CRM password reset | `netlify/functions/_forgot_core.js` (function `crm-auth-forgot.mjs`; sent after the answer, 8 s limit) | the CRM user's own address | — |
 
 All three go through `netlify/functions/_email_lib.js`, which talks to Resend's
 HTTP API directly. There is no SDK dependency.

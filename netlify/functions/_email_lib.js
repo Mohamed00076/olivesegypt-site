@@ -4,7 +4,7 @@
  * Section K -- optional outbound email, shared by anything that wants to
  * send mail: inquiries.js ("email me a copy of every new inquiry"),
  * leads.js (gated-guide downloads, off by default -- see its file header),
- * and crm-auth-forgot.js (emailing a reset link to a specific CRM user's
+ * and _forgot_core.js (crm-auth-forgot.mjs; emailing a reset link to a specific CRM user's
  * own address, not the site owner's).
  *
  * Uses Resend's HTTP API directly over fetch -- no SDK to add as a
@@ -65,9 +65,10 @@ function logResult(formType, count, ok, id, detail) {
   else console.error(`${tag} status=failed reason=${detail || 'unknown'}`);
 }
 
-async function postToResend(apiKey, payload) {
+async function postToResend(apiKey, payload, signal) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
+    signal,
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
@@ -92,6 +93,8 @@ async function postToResend(apiKey, payload) {
  * @param {object} [opts]
  * @param {string} [opts.replyTo]     so replying reaches the enquirer, not the site
  * @param {string} [opts.formType]    label for the log line, e.g. 'inquiry'
+ * @param {number} [opts.timeoutMs]   give up on Resend after this long, retry
+ *                                    included (the password reset uses 8 s)
  * @returns {Promise<boolean>}        never throws
  */
 async function sendEmail(to, subject, text, opts) {
@@ -131,6 +134,7 @@ async function sendEmail(to, subject, text, opts) {
   }
 
   const payload = { from, to: list, subject, text };
+  const deadline = options.timeoutMs > 0 ? AbortSignal.timeout(options.timeoutMs) : undefined;
   if (options.replyTo) payload.reply_to = options.replyTo;
 
   // One retry, and only for transient conditions. A 4xx (bad sender,
@@ -140,7 +144,7 @@ async function sendEmail(to, subject, text, opts) {
   let last = null;
   for (let attempt = 1; attempt <= 2; attempt += 1) {
     try {
-      const result = await postToResend(apiKey, payload);
+      const result = await postToResend(apiKey, payload, deadline);
       if (result.ok) {
         logResult(formType, list.length, true, result.id);
         return true;
@@ -150,6 +154,7 @@ async function sendEmail(to, subject, text, opts) {
     } catch (err) {
       last = { detail: `network: ${(err && err.message) || 'unknown'}` };
     }
+    if (deadline && deadline.aborted) { last = { detail: `no answer within ${options.timeoutMs} ms` }; break; }
     if (attempt === 1) await new Promise((r) => setTimeout(r, 400));
   }
 

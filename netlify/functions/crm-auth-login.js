@@ -1,11 +1,28 @@
 'use strict';
 
+/*
+ * CRM sign-in.
+ *
+ *   - limits, counted in auth_events by Netlify's own client IP: 10 sign-in
+ *     attempts per IP per 15 minutes, then 429. An account with 10 failures
+ *     in 15 minutes is slowed (2 s per attempt), never locked, so nobody can
+ *     lock its owner out on purpose
+ *   - a username that does not exist costs the same scrypt work as a wrong
+ *     password (DUMMY_HASH), and gets the same answer
+ *   - an old-format hash is upgraded to today's settings after a successful
+ *     sign-in
+ *   - the session carries the account id and its session number (raised by
+ *     every reset), and "must change password" after an emergency reset; such
+ *     a session opens only the change-password page
+ */
+
 const { neon } = require('@neondatabase/serverless');
+const auth = require('./_auth_lib');
+const emailLib = require('./_email_lib');
 const { reportFailure } = require('./_failure_lib');
 const {
-  verifyPassword,
-  crmSessionKey,
   signCrmSession,
+  crmSessionKey,
   crmSessionCookie,
   CRM_SESSION_TTL_SECONDS,
   readJsonBody,
@@ -22,91 +39,75 @@ function connectionString() {
   );
 }
 
-const attempts = new Map();
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 20;
-
-function rateLimited(ip) {
-  const now = Date.now();
-  const rec = attempts.get(ip);
-  if (!rec || rec.resetAt < now) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  rec.count += 1;
-  return rec.count > MAX_ATTEMPTS;
-}
-
-async function ensureSchema(sql) {
-  await sql`
-    CREATE TABLE IF NOT EXISTS crm_users (
-      id             bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      created_at     timestamptz NOT NULL DEFAULT now(),
-      username       text NOT NULL UNIQUE,
-      password_hash  text NOT NULL,
-      display_name   text
-    )
-  `;
-}
+const WRONG = 'Incorrect username or password. Please try again.';
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'POST' });
   }
+  const reply = (status, body, extra) => json(status, body, { ...auth.NO_STORE, ...(extra || {}) });
 
-  const SESSION_KEY = crmSessionKey();   // derived, never a raw secret -- see _crm_lib.js
   const cs = connectionString();
-  if (!SESSION_KEY || !cs) {
-    return json(500, { ok: false, error: 'Server not configured' });
-  }
-
-  const ip = (event.headers['x-nf-client-connection-ip'] || (event.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown');
-  if (rateLimited(ip)) {
-    return json(429, { ok: false, error: 'Too many attempts. Please try again later.' });
-  }
-
-  const body = readJsonBody(event) || {};
-  const username = typeof body.username === 'string' ? body.username.trim() : '';
-  const password = typeof body.password === 'string' ? body.password : '';
-
-  if (!username || !password) {
-    return json(200, { ok: false, error: 'Incorrect username or password. Please try again.' });
-  }
+  if (!crmSessionKey() || !cs) return reply(500, { ok: false, error: 'Server not configured' });
 
   const sql = neon(cs);
+  const store = auth.createStore(sql);
+  const app = 'crm';
 
   try {
-    await ensureSchema(sql);
-
-    const rows = await sql`SELECT id, username, password_hash, display_name FROM crm_users WHERE username = ${username} LIMIT 1`;
-    const user = rows[0];
-
-    // Always run verifyPassword, even with a placeholder hash, so a
-    // nonexistent username doesn't respond measurably faster than a
-    // wrong password for a real one (basic timing-attack hygiene). The
-    // placeholder must be a *correctly-sized* scrypt string (16-byte
-    // salt, 32-byte hash, both hex) -- verifyPassword's own length check
-    // rejects an undersized one (like the plain 'scrypt:00:00' this used
-    // to be) before ever reaching the expensive scryptSync call, which
-    // defeats the whole point: that short-circuit made a nonexistent
-    // username's response ~600x faster than a real one's, the exact
-    // timing side-channel this was meant to prevent. Confirmed via
-    // direct timing (see PR) that this padded form actually takes
-    // comparable time to a real check.
-    const DUMMY_HASH = 'scrypt:' + '00'.repeat(16) + ':' + '00'.repeat(32);
-    const passOk = verifyPassword(password, user ? user.password_hash : DUMMY_HASH);
-
-    if (!user || !passOk) {
-      return json(200, { ok: false, error: 'Incorrect username or password. Please try again.' });
+    const ready = await auth.prepare(store);
+    if (!ready.ok) {
+      console.error('[crm-auth-login] refused:', ready.reason);
+      return reply(503, { ok: false, error: 'Sign-in is temporarily unavailable.' });
     }
 
-    const token = signCrmSession(user.username);
-    return json(200, { ok: true, user: { username: user.username, display_name: user.display_name || user.username } }, {
-      'Set-Cookie': crmSessionCookie(token, CRM_SESSION_TTL_SECONDS),
-    });
+    const ipH = auth.ipHash(auth.clientIp(event));
+    const attempts = await auth.countSafe(store, { app, events: ['login_failed', 'login_succeeded', 'login_throttled'], minutes: 15, ipHash: ipH });
+    if (attempts >= auth.LIMITS_PER.loginPerIp15) {
+      await auth.audit(store, { app, event: 'login_throttled', ipHash: ipH });
+      await auth.maybeAlert(store, emailLib, { app, userId: null });
+      return reply(429, { ok: false, error: 'Too many attempts. Please try again later.' });
+    }
+
+    const body = readJsonBody(event) || {};
+    const username = typeof body.username === 'string' ? body.username.trim().slice(0, 100) : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    if (!username || !password || password.length > 1024) {
+      await auth.audit(store, { app, event: 'login_failed', ipHash: ipH, detail: 'empty_or_oversized' });
+      return reply(200, { ok: false, error: WRONG });
+    }
+
+    const user = await store.userByUsername(username);
+    if (user) {
+      const failures = await auth.countSafe(store, { app, events: ['login_failed'], minutes: 15, userId: user.id });
+      if (failures >= auth.LIMITS_PER.loginFailuresPerAccount15) await auth.sleep(2000);
+    }
+    const { ok, needsRehash } = await auth.verifyPassword(password, user ? user.password_hash : auth.DUMMY_HASH);
+    if (!user || !ok) {
+      await auth.audit(store, { app, event: 'login_failed', userId: user ? user.id : null, ipHash: ipH, detail: user ? null : 'no_account' });
+      if (user) await auth.maybeAlert(store, emailLib, { app, userId: user.id });
+      return reply(200, { ok: false, error: WRONG });
+    }
+
+    if (needsRehash) {
+      try {
+        await store.rehash({ userId: user.id, oldHash: user.password_hash, newHash: await auth.hashPassword(password) });
+      } catch (e) {
+        console.error('[crm-auth-login] rehash skipped:', String((e && e.message) || e).slice(0, 120));
+      }
+    }
+    await auth.audit(store, { app, event: 'login_succeeded', userId: user.id, ipHash: ipH });
+
+    const mustChange = user.must_change_password === true;
+    const token = signCrmSession(user.username, { uid: Number(user.id), sv: Number(user.session_version || 1), ...(mustChange ? { mc: 1 } : {}) });
+    return reply(200, {
+      ok: true,
+      must_change: mustChange,
+      user: { username: user.username, display_name: user.display_name || user.username },
+    }, { 'Set-Cookie': crmSessionCookie(token, CRM_SESSION_TTL_SECONDS) });
   } catch (err) {
-    console.error('[crm-auth-login] error:', err?.message ?? err);
+    console.error('[crm-auth-login] error:', String((err && err.message) || err).slice(0, 200));
     await reportFailure(sql, { source: 'crm-auth-login', method: event.httpMethod }, err);
-    return json(500, { ok: false, error: 'Could not sign in' });
+    return reply(500, { ok: false, error: 'Could not sign in' });
   }
 };

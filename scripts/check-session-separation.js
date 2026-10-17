@@ -91,7 +91,9 @@ const CONFIGS = [
   const loginSrc = fs.readFileSync(path.join(FN, 'crm-auth-login.js'), 'utf8');
   t('the CRM key is derived under a fixed label, never used raw',
     /createHmac\('sha256', secret\)\.update\(CRM_KEY_LABEL\)/.test(libSrc) && !/getCrmSession\(event, process\.env/.test(libSrc));
-  t('   and the login signs with it', /signCrmSession\(user\.username\)/.test(loginSrc) && !/signSession\(user\.username/.test(loginSrc));
+  // signCrmSession(user.username) or, since release 1 of the password reset,
+  // signCrmSession(user.username, { uid, sv, mc }) -- the same derived key.
+  t('   and the login signs with it', /signCrmSession\(user\.username[,)]/.test(loginSrc) && !/[^m]signSession\(user\.username/.test(loginSrc));
 
   const ok = fail === 0;
   console.log(`\nsession-separation ${ok ? 'OK' : 'FAILED'} -- a CRM session is never an admin session, whatever is configured.`);

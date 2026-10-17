@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reset Password | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
     <link rel="stylesheet" href="/assets/crm.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
@@ -26,21 +27,21 @@
         </div>
 
         <form id="reset-form">
-          <p class="crm-muted" style="margin-bottom:20px;">Choose a new password (at least 12 characters).</p>
+          <p class="crm-muted" style="margin-bottom:20px;">Choose a new password: 12 to 128 characters, not a common password and not built from your username. A short sentence works well. This password is for both the CRM and analytics.</p>
           <div class="crm-field">
             <label for="new_password">New Password</label>
-            <input id="new_password" type="password" autocomplete="new-password" minlength="12" required />
+            <input id="new_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required />
           </div>
           <div class="crm-field">
             <label for="confirm_password">Confirm New Password</label>
-            <input id="confirm_password" type="password" autocomplete="new-password" minlength="12" required />
+            <input id="confirm_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required />
           </div>
           <div id="reset-status" class="crm-status" style="display:none;"></div>
           <button type="submit" class="crm-btn crm-btn-primary" id="reset-submit" style="width:100%;justify-content:center;">Reset Password</button>
         </form>
 
         <div id="reset-done" style="display:none;">
-          <div class="crm-status crm-status-success">Password reset. You can now sign in with your new password.</div>
+          <div class="crm-status crm-status-success">Password changed. Every device that was signed in has been signed out. Sign in with your new password.</div>
           <p style="text-align:center;margin-top:14px;"><a href="/crm/login/" class="crm-btn crm-btn-primary" style="width:100%;justify-content:center;">Go to Sign In</a></p>
         </div>
       </div>
@@ -48,8 +49,15 @@
     <script>
       (function () {
         'use strict';
-        var qs = new URLSearchParams(window.location.search);
-        var token = qs.get('token');
+        // The token travels after '#', which the browser never sends to any
+        // server. Links mailed before 2026-10-17 carried it as ?token=; both
+        // work. Either way it is taken out of the address bar at once, so it
+        // is not left in history, bookmarks or a shared screen.
+        var fromHash = new URLSearchParams(window.location.hash.replace(/^#/, '')).get('token');
+        var token = fromHash || new URLSearchParams(window.location.search).get('token');
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
 
         if (!token) {
           document.getElementById('no-token').style.display = 'block';
@@ -81,11 +89,14 @@
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: token, new_password: newPassword }),
+            body: JSON.stringify({ token: token, new_password: newPassword, confirm_password: confirmPassword }),
           }).then(function (res) { return res.json(); }).then(function (data) {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Reset Password';
             if (data.ok) {
+              token = null;
+              document.getElementById('new_password').value = '';
+              document.getElementById('confirm_password').value = '';
               form.style.display = 'none';
               document.getElementById('reset-done').style.display = 'block';
             } else {
