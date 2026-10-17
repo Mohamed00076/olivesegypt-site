@@ -47,6 +47,8 @@ const NOT_REPORTED = {
     'a failed email is not reported by email -- that would loop',
   'crm-dashboard.js [crm-dashboard] could not read recent failures':
     'reporting it would write to the very table that just failed to be read',
+  'crm-auth-login.js [crm-auth-login] rehash skipped':
+    'the sign-in itself succeeded; upgrading the old password hash is retried at the next sign-in',
 };
 
 function catchBlocks(src) {

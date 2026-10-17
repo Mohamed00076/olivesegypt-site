@@ -286,10 +286,10 @@
   <div id="gate" class="gate hidden">
     <div class="mark" style="color: var(--gold);">&#9673;</div>
     <h2>Admin sign-in required</h2>
-    <p>Analytics are private. Sign in with your admin account to view the dashboard.</p>
+    <p>Analytics are private. Sign in with your CRM username and password; your account needs analytics (admin) access.</p>
     <form id="gate-login-form" style="text-align:left;max-width:280px;margin:0 auto;">
       <div style="margin-bottom:12px;">
-        <label for="gate-username" style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Username</label>
+        <label for="gate-username" style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">CRM username</label>
         <input id="gate-username" type="text" autocomplete="username" required
                style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;box-sizing:border-box;" />
       </div>
@@ -300,6 +300,7 @@
       </div>
       <div id="gate-login-status" style="display:none;color:#a3312a;font-size:13px;margin-bottom:12px;"></div>
       <button type="submit" id="gate-login-submit" class="btn-primary" style="width:100%;border:none;cursor:pointer;">Sign In</button>
+      <p style="text-align:center;margin-top:12px;font-size:12px;"><a href="/crm/forgot-password/">Forgot password?</a></p>
     </form>
   </div>
 
@@ -701,6 +702,8 @@
           if (data.ok) {
             document.getElementById('gate-password').value = '';
             loadAll();
+          } else if (data.must_change) {
+            window.location.href = '/crm/login/';
           } else {
             gateStatus.textContent = data.error || 'Incorrect username or password.';
             gateStatus.style.display = 'block';

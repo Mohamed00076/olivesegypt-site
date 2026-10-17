@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Forgot Password | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
     <link rel="stylesheet" href="/assets/crm.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
@@ -20,8 +21,9 @@
       <div class="crm-login-wrap crm-card">
         <h1>Forgot Password</h1>
         <p class="crm-muted" style="margin-bottom:20px;">
-          Enter your CRM username. If your account has a recovery email on
-          file, we'll send a reset link to it.
+          Enter your username (the same one for the CRM and analytics). If
+          your account has an email on file, we'll send a reset link to it.
+          The link works once, for 30 minutes.
         </p>
         <form id="forgot-form">
           <div class="crm-field">
@@ -55,10 +57,16 @@
           }).then(function (res) { return res.json(); }).then(function (data) {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Send Reset Link';
+            if (!data.ok) {
+              statusEl.className = 'crm-status crm-status-error';
+              statusEl.textContent = data.error || 'Password reset is temporarily unavailable.';
+              statusEl.style.display = 'block';
+              return;
+            }
             // Deliberately the same message whether or not the account
             // exists -- see crm-auth-forgot.js.
             statusEl.className = 'crm-status crm-status-success';
-            statusEl.textContent = data.message || 'If that account exists and has a recovery email on file, a reset link has been sent to it.';
+            statusEl.textContent = data.message || 'If that account exists and has an email on file, a reset link has been sent to it.';
             statusEl.style.display = 'block';
             form.reset();
           }).catch(function () {

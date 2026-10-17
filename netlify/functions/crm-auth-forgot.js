@@ -1,32 +1,31 @@
 'use strict';
 
 /*
- * Section H -- self-service "forgot password" for CRM users. Previously
- * the only way to reset a CRM password was scripts/crm-create-user.js,
- * which requires direct DATABASE_URL access -- fine for the one person
- * running this project today, but a real gap for any real multi-user
- * CRM (a locked-out staff member shouldn't need a developer to get back
- * in). That script still works and still needs no email setup, so it
- * stays as the always-available fallback; this is the self-service path
- * on top of it.
+ * "Forgot password": emails a single-use reset link to the account's own
+ * address. Shared by the CRM and /admin/analytics (one user store).
  *
- * Deliberately never reveals whether a username exists or has a
- * recovery email set -- the response is identical either way, to avoid
- * turning this endpoint into a way to enumerate valid CRM usernames.
+ * The answer never tells the caller anything about the account: the same
+ * status, the same words and about the same time (auth.padTo) whether the
+ * username exists, has no email, has a shared mailbox, or was throttled.
  *
- * The token itself is never stored -- only its SHA-256 hash
- * (crm_password_resets.token_hash), the same "don't store the credential
- * itself" discipline this codebase already applies to session tokens and
- * passwords elsewhere. A raw token that only ever exists in the emailed
- * link and the requester's browser can't be replayed from a database
- * breach the way a stored plaintext token could.
+ *   - the link: 256 random bits; only its SHA-256 is stored; 30 minutes;
+ *     single use; a new request cancels earlier links
+ *   - its address: APP_BASE_URL (https), never the request's Host header;
+ *     the token travels after '#', so it never reaches a server log
+ *   - recipient: the account's own email only, never a role mailbox
+ *     (sales@, info@, contact@, admin@, noreply@)
+ *   - limits: 5 requests per IP per 15 minutes and 20 per day; 3 per account
+ *     per hour -- counted in auth_events, so they hold across servers
+ *   - audit: requested / throttled / not sent and why; never the token
+ *
+ * scripts/auth-emergency-reset.js remains the backstop when email is down.
  */
 
-const crypto = require('crypto');
 const { neon } = require('@neondatabase/serverless');
+const auth = require('./_auth_lib');
+const emailLib = require('./_email_lib');
 const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json } = require('./_crm_lib');
-const { sendEmail } = require('./_email_lib');
 
 function connectionString() {
   return (
@@ -38,64 +37,21 @@ function connectionString() {
   );
 }
 
-const RESET_TTL_MINUTES = 60;
-
-const attempts = new Map();
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 10;
-
-function rateLimited(ip) {
-  const now = Date.now();
-  const rec = attempts.get(ip);
-  if (!rec || rec.resetAt < now) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  rec.count += 1;
-  return rec.count > MAX_ATTEMPTS;
-}
-
-async function ensureSchema(sql) {
-  await sql`
-    CREATE TABLE IF NOT EXISTS crm_users (
-      id             bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      created_at     timestamptz NOT NULL DEFAULT now(),
-      username       text NOT NULL UNIQUE,
-      password_hash  text NOT NULL,
-      display_name   text
-    )
-  `;
-  // Table may already exist from before this column was added.
-  await sql`ALTER TABLE crm_users ADD COLUMN IF NOT EXISTS email text`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS crm_password_resets (
-      id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      created_at   timestamptz NOT NULL DEFAULT now(),
-      user_id      bigint NOT NULL,
-      token_hash   text NOT NULL UNIQUE,
-      expires_at   timestamptz NOT NULL,
-      used_at      timestamptz
-    )
-  `;
-}
-
-function siteUrl() {
-  // Netlify sets URL to the site's real production origin, and
-  // DEPLOY_PRIME_URL to the deploy-preview origin when this is running
-  // as one -- preferring URL when set means a real reset link either
-  // way, not always the production domain regardless of context.
-  return process.env.URL || process.env.DEPLOY_PRIME_URL || 'https://olivesegypt.com';
-}
+const GENERIC = {
+  ok: true,
+  message: 'If that account exists and has an email on file, a reset link has been sent to it. The link works once, for 30 minutes.',
+};
 
 function resetEmailText(link) {
   return [
-    'A password reset was requested for your Triple Company CRM account.',
+    'Someone asked to reset the password for your olivesegypt.com account (CRM and analytics).',
     '',
-    'Reset your password: ' + link,
+    'To choose a new password, open this link:',
+    link,
     '',
-    `This link expires in ${RESET_TTL_MINUTES} minutes and can only be used once.`,
+    `The link works once and expires in ${auth.RESET_TTL_MINUTES} minutes.`,
     '',
-    "If you didn't request this, you can ignore this email -- your password hasn't changed.",
+    "If this wasn't you, ignore this email. Your password has not changed.",
   ].join('\n');
 }
 
@@ -103,50 +59,74 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'POST' });
   }
+  const startedAt = Date.now();
+  const answer = async (status, body) => {
+    await auth.padTo(startedAt);
+    return json(status, body, auth.NO_STORE);
+  };
 
   const cs = connectionString();
-  if (!cs) return json(500, { ok: false, error: 'Server not configured' });
-
-  const ip = event.headers['x-nf-client-connection-ip'] || (event.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
-  if (rateLimited(ip)) {
-    return json(429, { ok: false, error: 'Too many requests. Please try again later.' });
-  }
-
-  const body = readJsonBody(event) || {};
-  const username = typeof body.username === 'string' ? body.username.trim() : '';
-
-  // Same response whether or not this leads anywhere -- see file header.
-  const genericOk = { ok: true, message: 'If that account exists and has a recovery email on file, a reset link has been sent to it.' };
-  if (!username) return json(200, genericOk);
+  if (!cs) return answer(503, { ok: false, error: 'Password reset is temporarily unavailable.' });
 
   const sql = neon(cs);
+  const store = auth.createStore(sql);
+  const app = 'crm';
+
   try {
-    await ensureSchema(sql);
-
-    const rows = await sql`SELECT id, email FROM crm_users WHERE username = ${username} LIMIT 1`;
-    const user = rows[0];
-    if (user && user.email) {
-      const token = crypto.randomBytes(32).toString('hex');
-      const tokenHash = crypto.createHash('sha256').update(token, 'utf8').digest('hex');
-      const expiresAt = new Date(Date.now() + RESET_TTL_MINUTES * 60 * 1000).toISOString();
-
-      await sql`
-        INSERT INTO crm_password_resets (user_id, token_hash, expires_at)
-        VALUES (${user.id}, ${tokenHash}, ${expiresAt})
-      `;
-
-      const link = `${siteUrl()}/crm/reset-password/?token=${token}`;
-      // Best-effort -- a failed/unconfigured send still returns the same
-      // generic response; scripts/crm-create-user.js remains the
-      // always-available fallback if email delivery isn't set up.
-      await sendEmail(user.email, 'Reset your Triple Company CRM password', resetEmailText(link)).catch(() => {});
+    const ready = await auth.prepare(store);
+    if (!ready.ok) {
+      console.error('[crm-auth-forgot] refused:', ready.reason);
+      return answer(503, { ok: false, error: 'Password reset is temporarily unavailable.' });
     }
-  } catch (err) {
-    console.error('[crm-auth-forgot] error:', err?.message ?? err);
-    await reportFailure(sql, { source: 'crm-auth-forgot', method: event.httpMethod }, err);
-    // Still return the generic response -- an error here must not leak
-    // "that username doesn't exist" vs. "something broke" to the caller.
-  }
 
-  return json(200, genericOk);
+    const body = readJsonBody(event) || {};
+    const username = typeof body.username === 'string' ? body.username.trim().slice(0, 100) : '';
+    const ipH = auth.ipHash(auth.clientIp(event));
+
+    const ip15 = await auth.countSafe(store, { app, events: ['reset_requested', 'reset_throttled'], minutes: 15, ipHash: ipH });
+    const ipDay = await auth.countSafe(store, { app, events: ['reset_requested', 'reset_throttled'], minutes: 1440, ipHash: ipH });
+    if (ip15 >= auth.LIMITS_PER.forgotPerIp15 || ipDay >= auth.LIMITS_PER.forgotPerIpDay) {
+      await auth.audit(store, { app, event: 'reset_throttled', ipHash: ipH, detail: 'per_ip' });
+      await auth.maybeAlert(store, emailLib, { app, userId: null });
+      return answer(200, GENERIC);
+    }
+
+    const user = username ? await store.userByUsername(username) : null;
+    await auth.audit(store, { app, event: 'reset_requested', userId: user ? user.id : null, ipHash: ipH, detail: user ? null : 'no_account' });
+    if (!user) return answer(200, GENERIC);
+
+    const perAccount = await auth.countSafe(store, { app, events: ['reset_requested'], minutes: 60, userId: user.id });
+    if (perAccount > auth.LIMITS_PER.forgotPerAccountHour) {
+      await auth.audit(store, { app, event: 'reset_throttled', userId: user.id, ipHash: ipH, detail: 'per_account' });
+      await auth.maybeAlert(store, emailLib, { app, userId: user.id });
+      return answer(200, GENERIC);
+    }
+
+    if (!user.email) {
+      await auth.audit(store, { app, event: 'reset_not_sent', userId: user.id, ipHash: ipH, detail: 'no_email' });
+      return answer(200, GENERIC);
+    }
+    if (!auth.usableEmail(user.email)) {
+      await auth.audit(store, { app, event: 'reset_not_sent', userId: user.id, ipHash: ipH, detail: auth.isRoleMailbox(user.email) ? 'shared_mailbox' : 'invalid_email' });
+      return answer(200, GENERIC);
+    }
+    const base = auth.appBaseUrl();
+    if (!base) {
+      await auth.audit(store, { app, event: 'reset_not_sent', userId: user.id, ipHash: ipH, detail: 'app_base_url_missing_or_not_https' });
+      await reportFailure(sql, { source: 'crm-auth-forgot', method: event.httpMethod }, new Error('APP_BASE_URL is not set to an https origin; reset email not sent'));
+      return answer(200, GENERIC);
+    }
+
+    const { token, hash } = auth.newResetToken();
+    await store.issueResetToken({ userId: user.id, tokenHash: hash, ipHash: ipH, minutes: auth.RESET_TTL_MINUTES });
+    const link = `${base}/crm/reset-password/#token=${token}`;
+    const sent = await emailLib.sendEmail(user.email.trim(), 'Reset your olivesegypt.com password', resetEmailText(link), { formType: 'password-reset' });
+    if (!sent) await auth.audit(store, { app, event: 'reset_not_sent', userId: user.id, ipHash: ipH, detail: 'email_failed' });
+    return answer(200, GENERIC);
+  } catch (err) {
+    console.error('[crm-auth-forgot] error:', String((err && err.message) || err).slice(0, 200));
+    await reportFailure(sql, { source: 'crm-auth-forgot', method: event.httpMethod }, err);
+    // The same answer: an error must not tell the caller anything about the account.
+    return answer(200, GENERIC);
+  }
 };
