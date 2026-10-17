@@ -6,7 +6,7 @@
  * own computer against the staging branch deploy, never the live site:
  *
  *   node scripts/staging-smoke-test.js <staging-base-url>
- *   node scripts/staging-smoke-test.js https://claude-auth-release-1--stirring-manatee-ca2643.netlify.app
+ *   node scripts/staging-smoke-test.js <staging-base-url> --send-one-email owner-test-2
  *
  * Needs Node.js 18 or later and nothing else (no npm install). It asks for
  * one thing, hidden: the password of the staging account "smoke-nonadmin"
@@ -26,7 +26,19 @@
  *      analytics"); then 429 after 10 attempts
  *
  * It sends no email: smoke-nonadmin has no email address, so no reset link
- * is ever sent, and the other names it uses do not exist. Run it at most
+ * is ever sent, and the other names it uses do not exist.
+ *
+ * --send-one-email <owner-test account> is the one exception, and only when
+ * asked for: the 5th forgot-password request goes to that account instead of
+ * a made-up name, so exactly one real reset email reaches its inbox, and its
+ * response time is compared with the made-up-account times. Only the staging
+ * test accounts owner-test and owner-test-2 are accepted. It is one of the
+ * five forgot-password requests the run makes anyway, so the run still uses
+ * five of the 5-per-15-minutes allowance, and one of that account's three
+ * per hour. If no email arrives, the request was limited by an earlier run
+ * and the timing it measured means nothing: wait 15 minutes and run again.
+ *
+ * Run it at most
  * twice an hour -- a third run in the same hour can add up to the
  * site-wide alert threshold and send one alert to NOTIFY_EMAIL.
  *
@@ -38,9 +50,11 @@ const crypto = require('crypto');
 const { ask } = require('./_prompt');
 
 const TEST_ACCOUNT = 'smoke-nonadmin';
+const EMAIL_ACCOUNTS = /^owner-test(-2)?$/;   // the staging inbox accounts (docs/staging-setup.md N4)
 const LIMIT_WINDOW_MINUTES = 15;
 const PAGES = ['/crm/login/', '/crm/forgot-password/', '/crm/reset-password/', '/crm/change-password/'];
 const TIMING_TOLERANCE_MS = 500;
+const EMAIL_MARGIN_MS = 200;   // one email sample against the slowest of four; see checkForgot
 const ANSWER_FLOOR_MS = 1400;   // the server pads every forgot-password answer to 1.5 s
 
 // ---- 1. where it may run -----------------------------------------------------
@@ -128,7 +142,7 @@ async function checkPages() {
   }
 }
 
-async function checkForgot() {
+async function checkForgot(emailAccount) {
   console.log('\n-- 2. Forgot password: an existing account and a made-up one look the same');
   const real = [], fake = [];
   // Alternate, so a slow moment on the network does not land on one side only.
@@ -154,13 +168,28 @@ async function checkForgot() {
   check('every answer took at least the padded 1.5 s', all.every((r) => r.ms >= ANSWER_FLOOR_MS),
     `fastest ${Math.min(...all.map((r) => r.ms))} ms`);
 
+  if (emailAccount) {
+    console.log(`\n-- 2b. One real reset email, to ${emailAccount}`);
+    const sent = await post('/api/crm/auth/forgot', { username: emailAccount });
+    sentAt = new Date();
+    check(`the answer for ${emailAccount} has the same status, words and headers`,
+      sent.status === first.status && sent.text === first.text && headerNames(sent) === headerNames(first), summary(sent));
+    // The server pads every answer to 1.5 s plus up to 0.25 s of random
+    // jitter. An emailed answer slower than every answer without an email,
+    // by more than network noise, means sending outran the padding.
+    const others = all.map((r) => r.ms), slowest = Math.max(...others);
+    check(`its timing is no slower than the answers without an email (+${EMAIL_MARGIN_MS} ms for network noise)`, sent.ms <= slowest + EMAIL_MARGIN_MS,
+      `with email: ${sent.ms} ms; without: ${others.join(', ')} ms (slowest ${slowest}); difference ${sent.ms - slowest > 0 ? '+' : ''}${sent.ms - slowest} ms`);
+  }
+
   console.log('\n-- 3. Forgot password past its limit (5 per 15 minutes)');
   const more = [];
-  for (let i = 0; i < 2; i++) more.push(await post('/api/crm/auth/forgot', { username: randomName() }));
-  check('the 5th and 6th requests get the identical answer (the limit is silent by design)',
+  for (let i = emailAccount ? 1 : 0; i < 2; i++) more.push(await post('/api/crm/auth/forgot', { username: randomName() }));
+  check(`the ${emailAccount ? '6th request gets' : '5th and 6th requests get'} the identical answer (the limit is silent by design)`,
     more.every((r) => r.status === 200 && r.text === first.text), more.map(summary).join(' | '));
   return true;
 }
+let sentAt = null;
 
 // Sends requests until the 429 or `max` requests. Every answer before the 429
 // must match `expect`.
@@ -225,8 +254,15 @@ async function checkAnalyticsLogin(password) {
 
 async function main() {
   const args = process.argv.slice(2);
+  let emailAccount = null;
+  const at = args.indexOf('--send-one-email');
+  if (at !== -1) { emailAccount = args[at + 1] || ''; args.splice(at, 2); }
   if (args.length !== 1) {
-    console.error('Usage: node scripts/staging-smoke-test.js <staging-base-url>');
+    console.error('Usage: node scripts/staging-smoke-test.js <staging-base-url> [--send-one-email owner-test|owner-test-2]');
+    process.exit(2);
+  }
+  if (emailAccount !== null && !EMAIL_ACCOUNTS.test(emailAccount)) {
+    console.error('REFUSED: --send-one-email only accepts the staging test accounts owner-test or owner-test-2.');
     process.exit(2);
   }
   const target = stagingTarget(args[0]);
@@ -239,9 +275,10 @@ async function main() {
 
   const startedAt = new Date();
   console.log(`Staging smoke test -- ${ORIGIN} -- ${startedAt.toISOString()}`);
+  if (emailAccount) console.log(`This run sends ONE real reset email, to the address on ${emailAccount}.`);
   try {
     await checkPages();
-    await checkForgot();
+    await checkForgot(emailAccount);
     await checkReset();
     await checkCrmLogin(password);
     await checkAnalyticsLogin(password);
@@ -256,9 +293,15 @@ async function main() {
   console.log(`Run: ${startedAt.toISOString()}  Node ${process.version}`);
   console.log(`Result: ${failed.length === 0 ? 'PASS' : 'FAIL'} -- ${results.length - failed.length} passed, ${failed.length} failed`);
   for (const f of failed) console.log(`  FAIL  ${f.name}${f.detail ? `  (${f.detail})` : ''}`);
+  const timing = results.find((r) => /^its timing is no slower/.test(r.name));
+  if (timing) console.log(`Email timing: ${timing.detail}`);
+  if (sentAt) {
+    console.log(`CONFIRM BY HAND: one reset email to ${emailAccount}, requested at ${sentAt.toTimeString().slice(0, 5)}, shows Delivered in Resend -> Emails.`);
+    console.log('  If it is not there, the request was limited by an earlier run: the timing above means nothing. Wait 15 minutes and run again.');
+  }
   console.log(`Wait until ${resume.toTimeString().slice(0, 5)} (${LIMIT_WINDOW_MINUTES} minutes) before testing sign-in or reset by hand.`);
   process.exit(failed.length === 0 ? 0 : 1);
 }
 
 if (require.main === module) main();
-module.exports = { stagingTarget };
+module.exports = { stagingTarget, EMAIL_ACCOUNTS };

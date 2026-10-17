@@ -58,10 +58,11 @@ Go to **Site configuration → Environment variables**. For each variable: **Edi
 | # | Do this | It worked when |
 |---|---|---|
 | S1 | In the repository (branch `claude/auth-release-1`, Node.js 18+, no `npm install` needed): `node scripts/staging-smoke-test.js https://claude-auth-release-1--stirring-manatee-ca2643.netlify.app`. Type the `smoke-nonadmin` password when asked; it stays hidden. | The last block reads `Result: PASS -- 35 passed, 0 failed`. Paste that block back to me. |
+| S1+ | *Optional, sends one real email:* add `--send-one-email owner-test-2` to the end of the S1 command. | `Result: PASS -- 37 passed, 0 failed`, an `Email timing:` line, and one reset email to your Outlook address shown as **Delivered** in Resend → Emails. Ignore the email's link. |
 | S2 | Wait the 15 minutes the script prints, then follow `docs/staging-owner-tests.md`. | |
 
 Notes on the smoke test:
-- **No email:** it never sends one.
+- **No email:** it never sends one, unless you add `--send-one-email`. That switch accepts only `owner-test` or `owner-test-2`, and sends exactly one email. It takes the place of one of the run's own forgot-password requests, so the run still makes 6, and the first 5 use up the 15-minute allowance as before. It also uses 1 of that account's 3 per hour. Use `owner-test-2`: `owner-test` needs all 3 of its own for the checklist.
 - **Live site refused:** it will not run against `olivesegypt.com` or the site's own `stirring-manatee-ca2643.netlify.app` address.
 - **At most twice an hour:** a third run can reach the alert threshold and send you one alert email.
 - **"Temporarily unavailable" failures:** the database guard refused. Re-check N3, L1, L2 and L7.

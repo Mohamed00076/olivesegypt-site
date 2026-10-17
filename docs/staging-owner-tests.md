@@ -4,7 +4,7 @@ Before you start, two conditions:
 - **Smoke test:** it has passed (`docs/staging-setup.md` S1), and 15 minutes have passed since it finished.
 - **Staging address:** `https://claude-auth-release-1--stirring-manatee-ca2643.netlify.app`.
 
-**Why the order matters:** forgot-password allows 5 requests per 15 minutes from your connection and 3 per account per hour. Any request past those limits gets the normal answer, but no email is sent. The order below uses exactly 5, so do not add extra requests.
+**Why the order matters:** forgot-password allows 5 requests per 15 minutes from your connection and 3 per account per hour. Any request past those limits gets the normal answer, but no email is sent. The order below uses exactly 5, so do not add extra requests. If you ran the smoke test with `--send-one-email owner-test-2` within the last hour, do not run it again before section C. C1 is that account's third and last request in the hour.
 
 If an expected email does not arrive within 2 minutes:
 1. Check Resend → **Emails** first.

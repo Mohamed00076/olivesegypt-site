@@ -12,7 +12,7 @@
  * or deploy preview (<name>--<site>.netlify.app) and this computer pass.
  */
 
-const { stagingTarget } = require('./staging-smoke-test');
+const { stagingTarget, EMAIL_ACCOUNTS } = require('./staging-smoke-test');
 
 let pass = 0, fail = 0;
 const t = (name, cond, extra) => {
@@ -43,6 +43,11 @@ const ALLOWED = [
   ['http://localhost:8888', 'http://localhost:8888'],
 ];
 for (const [u, origin] of ALLOWED) t(`allows ${u}`, stagingTarget(u).origin === origin, JSON.stringify(stagingTarget(u)));
+
+// --send-one-email mails a real inbox: only the two staging test accounts.
+for (const u of ['owner-test', 'owner-test-2']) t(`--send-one-email accepts ${u}`, EMAIL_ACCOUNTS.test(u));
+for (const u of ['owner', 'admin', 'owner-test-3', 'xowner-test', 'owner-test-2x', 'smoke-nonadmin', ''])
+  t(`--send-one-email refuses "${u}"`, !EMAIL_ACCOUNTS.test(u));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);
