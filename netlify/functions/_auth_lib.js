@@ -442,16 +442,9 @@ async function maybeAlert(store, emailLib, { app, userId }) {
 }
 
 // ---------------------------------------------------------------------------
-// Timing: the forgot-password answer takes the same time whether or not the
-// account exists, because the slow parts (a database write, an email) happen
-// only when it does. Tests shorten these.
-const timing = { floorMs: 1500, jitterMs: 250 };
+// The forgot-password answer no longer needs padding: it is sent before the
+// account is looked up (_forgot_core.js, context.waitUntil).
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-async function padTo(startedAt) {
-  const target = timing.floorMs + (timing.jitterMs > 0 ? crypto.randomInt(0, timing.jitterMs + 1) : 0);
-  const left = target - (Date.now() - startedAt);
-  if (left > 0) await sleep(left);
-}
 
 const NO_STORE = { 'Cache-Control': 'no-store, private' };
 
@@ -472,5 +465,5 @@ module.exports = {
   clientIp, ipHash, appBaseUrl, isRoleMailbox, usableEmail,
   createStore, deployEnv, prepare, resetPreparedForTests,
   audit, countSafe, maybeAlert, LIMITS_PER, ALERT,
-  timing, padTo, sleep, NO_STORE, changedEmailText,
+  sleep, NO_STORE, changedEmailText,
 };

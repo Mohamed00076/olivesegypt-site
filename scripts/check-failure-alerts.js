@@ -67,7 +67,8 @@ function catchBlocks(src) {
   return out;
 }
 
-const files = fs.readdirSync(FN).filter((f) => /^(crm-.*|inquiries|leads)\.js$/.test(f)).sort();
+// _forgot_core.js holds crm-auth-forgot.mjs's handling (the newer function format).
+const files = fs.readdirSync(FN).filter((f) => /^(crm-.*|inquiries|leads)\.m?js$|^_forgot_core\.js$/.test(f)).sort();
 let examined = 0;
 for (const f of files) {
   const src = fs.readFileSync(path.join(FN, f), 'utf8');
@@ -131,6 +132,11 @@ const lib = require(path.join(FN, '_failure_lib.js'));
   t('when the database itself is down, reporting does not throw', !threw);
   t('   it cannot record, and says so', rec2 === false);
   t('   but still emails -- the one channel that does not need the database', emails.length === 1, emails.length);
+
+  // The alert email has its own time limit: the password reset reports a
+  // hanging email service, after answering, and the alert must not hang the
+  // same way until the function's 60-second limit.
+  t('the alert email gives up after 8 seconds', /formType: 'failure-alert', timeoutMs: 8000/.test(fs.readFileSync(path.join(FN, '_failure_lib.js'), 'utf8')));
 
   // ---- 3. a real handler: the response is unchanged ------------------------------
   const SECRET = 'test-secret-not-a-real-one';

@@ -36,15 +36,27 @@ const M = [
   ['_auth_lib.js', 'const HASH = { N: 32768, r: 8, p: 3,', 'const HASH = { N: 16384, r: 8, p: 1,', '[hash] new hashes use scrypt N=32768 r=8 p=3'],
   ['_auth_lib.js', 'const PASSWORD_MIN = 12;', 'const PASSWORD_MIN = 1;', '[rules] fewer than 12 characters is refused'],
   ['_auth_lib.js', 'if (COMMON_PASSWORDS.has(lower))', 'if (false)', '[rules] a common password is refused'],
-  ['crm-auth-forgot.js', 'if (!user) return answer(200, GENERIC);', "if (!user) return answer(200, { ok: true, message: 'No such account.' });", '[enumeration] same status and words for a real and a missing account'],
-  ['crm-auth-forgot.js', '    await auth.padTo(startedAt);\n', '', '[enumeration] similar timing: both answers take at least the floor'],
-  ['crm-auth-forgot.js', 'const base = auth.appBaseUrl();', "const base = 'https://' + (event.headers.host || 'olivesegypt.example');", '[host] the link is built from APP_BASE_URL; a spoofed Host header is ignored'],
+  // Forgot password: the answer goes out before the account is looked up, so
+  // no one-line change can make its words depend on the account any more;
+  // what can break is the timing, which these prove.
+  ['_forgot_core.js', 'waitUntil(deliver(work));', 'await deliver(work);', '[answer] the answer does not wait for the account lookup or the email'],
+  ['crm-auth-forgot.mjs', "waitUntil: context && typeof context.waitUntil === 'function' ? (p) => context.waitUntil(p) : null,", 'waitUntil: null,', '[answer] the answer does not wait for the account lookup or the email'],
+  ['crm-auth-forgot.mjs', "import '@neondatabase/serverless';\n", '', '[bundle] crm-auth-forgot.mjs imports every package'],
+  ['_forgot_core.js', 'return await Promise.race([sent, timeout]);', 'return await sent;', '[hang] it is given up after its time limit and recorded as email_failed'],
+  ['_forgot_core.js', "    await auth.audit(store, { app, event: 'reset_not_sent', userId: user.id, ipHash: ipH, detail: 'email_failed' });\n", '', '[hang] it is given up after its time limit and recorded as email_failed'],
+  ['_forgot_core.js', "await reportFailure(sql, { source: 'crm-auth-forgot', method: 'POST', step: 'sending the reset email' }", "void ({ source: 'crm-auth-forgot', method: 'POST', step: 'sending the reset email' }", '[hang] and reported through the failure alert'],
+  ['_forgot_core.js', "{ formType: 'password-reset', timeoutMs: settings.emailTimeoutMs }", "{ formType: 'password-reset' }", '[hang] the email call itself is given the same time limit'],
+  ['_forgot_core.js', "    await auth.audit(store, { app, event: 'reset_not_sent', ipHash: ipH, detail: 'failed_after_answer' });\n", '', '[after answer] it is recorded (failed_after_answer)'],
+  ['_forgot_core.js', "    await reportFailure(sql, { source: 'crm-auth-forgot', method: 'POST', step: 'after answering a reset request' }, err);\n", '', '[after answer] and reported through the failure alert'],
+  ['_forgot_core.js', "      await reportFailure(sql, { source: 'crm-auth-forgot', method, step: 'answering a reset request' },\n", '      void (', '[no waitUntil] and that is reported'],
+  ['_forgot_core.js', 'const settings = { emailTimeoutMs: 8000 };', 'const settings = { emailTimeoutMs: 60000 };', '[time limit] the email time limit as shipped is 8 seconds'],
+  ['_forgot_core.js', 'const base = auth.appBaseUrl();', "const base = 'https://evil.example';", '[host] the link is built from APP_BASE_URL; a spoofed Host header is ignored'],
   ['_auth_lib.js', "if (u.protocol !== 'https:' ||", 'if (false ||', '[host] an http:// base address sends no email (https only)'],
   ['_auth_lib.js', 'return ROLE_MAILBOXES.has(local);', 'return false;', "[email] a role mailbox (sales@) never receives a reset link"],
-  ['crm-auth-forgot.js', 'tokenHash: hash, ipHash: ipH', 'tokenHash: token, ipHash: ipH', '[token] only its SHA-256 is stored, never the token'],
+  ['_forgot_core.js', 'tokenHash: hash, ipHash: ipH', 'tokenHash: token, ipHash: ipH', '[token] only its SHA-256 is stored, never the token'],
   ['_auth_lib.js', 'const RESET_TTL_MINUTES = 30;', 'const RESET_TTL_MINUTES = 60 * 24;', '[expiry] a link older than 30 minutes is refused'],
-  ['crm-auth-forgot.js', 'ip15 >= auth.LIMITS_PER.forgotPerIp15', 'ip15 >= 1e9', '[rate] and sends nothing (per-IP limit 5 per 15 minutes)'],
-  ['crm-auth-forgot.js', 'perAccount > auth.LIMITS_PER.forgotPerAccountHour', 'perAccount > 1e9', '[rate] the 4th request for one account in an hour sends nothing (3 per hour)'],
+  ['_forgot_core.js', 'ip15 >= auth.LIMITS_PER.forgotPerIp15', 'ip15 >= 1e9', '[rate] and sends nothing (per-IP limit 5 per 15 minutes)'],
+  ['_forgot_core.js', 'perAccount >= auth.LIMITS_PER.forgotPerAccountHour', 'perAccount >= 1e9', '[rate] the 4th request for one account in an hour sends nothing (3 per hour)'],
   ['crm-auth-reset.js', 'recent >= auth.LIMITS_PER.resetPerIp15', 'recent >= 1e9', '[rate] reset-page submits: the 11th failure from one IP gets 429'],
   ['crm-auth-login.js', 'attempts >= auth.LIMITS_PER.loginPerIp15', 'attempts >= 1e9', '[rate] sign-in: the 11th attempt from one IP gets 429'],
   ['_auth_lib.js', "const ip = h['x-nf-client-connection-ip'];", "const ip = (h['x-forwarded-for'] || '').split(',')[0] || h['x-nf-client-connection-ip'];", "[ip] a changing X-Forwarded-For does not escape the limit (Netlify's header only)"],
@@ -60,7 +72,7 @@ const M = [
   ['auth-login.js', "return String(process.env.ADMIN_FALLBACK_LOGIN || '').trim().toLowerCase() === 'on';", 'return true;', '[fallback] the old Netlify-settings login is refused while ADMIN_FALLBACK_LOGIN is off'],
   ['_auth_lib.js', "if (env === 'staging' && marker !== 'staging') {", 'if (false) {', '[guard] a staging deploy on an unlabelled database changes nothing'],
   ['_auth_lib.js', "if (env === 'production' && marker === 'staging') {", 'if (false) {', '[guard] a production deploy on the staging-labelled database is refused'],
-  ['crm-auth-forgot.js', 'const link = `${base}/crm/reset-password/#token=${token}`;', "const link = `${base}/crm/reset-password/#token=${token}`; console.log('[crm-auth-forgot] sent', link);", '[logs] none of the'],
+  ['_forgot_core.js', 'const link = `${base}/crm/reset-password/#token=${token}`;', "const link = `${base}/crm/reset-password/#token=${token}`; console.log('[crm-auth-forgot] sent', link);", '[logs] none of the'],
 ];
 
 let proven = 0;
@@ -73,6 +85,9 @@ for (const [file, find, replace, expect] of M) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'auth-mut-'));
   try {
     fs.cpSync(FN, dir, { recursive: true });
+    // crm-auth-forgot.mjs imports a package; ES-module imports ignore
+    // NODE_PATH, so the copy gets the repository's node_modules beside it.
+    fs.symlinkSync(path.join(ROOT, 'node_modules'), path.join(dir, 'node_modules'), 'dir');
     fs.writeFileSync(path.join(dir, file), src.replace(find, replace));
     const r = spawnSync(process.execPath, [path.join(__dirname, 'check-password-reset.js')], {
       env: { ...process.env, AUTH_FN_DIR: dir, AUTH_REPORT_FAILED: '1', NODE_PATH: path.join(ROOT, 'node_modules') },

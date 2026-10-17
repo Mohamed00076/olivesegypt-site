@@ -11,6 +11,11 @@
  * clock, and a fake mailbox. No network, no real database, no real email:
  * the email library is replaced, and NOTIFY_DRY_RUN is set besides.
  *
+ * crm-auth-forgot is Netlify's newer function format (crm-auth-forgot.mjs):
+ * it gets a web Request and a stand-in for Netlify's context, whose
+ * waitUntil collects the work done after the answer. Most checks let that
+ * work finish before looking; the [answer] checks time the answer alone.
+ *
  * scripts/check-password-reset-mutations.js runs this file again with each
  * protection removed in turn, and requires the matching check here to fail.
  * The SQL each fake method stands for was run against PostgreSQL 16 when this
@@ -44,11 +49,13 @@ for (const k of ['log', 'error', 'warn', 'info']) {
 }
 const out = (s) => process.stdout.write(s + '\n');
 
-// ---- the Neon driver: never reached; the store is replaced below ----
+// ---- the Neon driver: the store is replaced below; only the failure alert
+// (_failure_lib.js, crm_failures) still writes through it, and is recorded ----
+const sqlLog = [];
 const neonId = require.resolve('@neondatabase/serverless', { paths: [ROOT] });
 require.cache[neonId] = Object.assign(new Module(neonId, null), {
   filename: neonId, loaded: true,
-  exports: { neon: () => { const f = () => Promise.resolve([]); f.query = f; f.transaction = async () => []; return f; } },
+  exports: { neon: () => { const f = (q) => { sqlLog.push(Array.isArray(q) ? q.join('?') : String(q)); return Promise.resolve([]); }; f.query = f; f.transaction = async () => []; return f; } },
 });
 
 const auth = require(path.join(FN, '_auth_lib.js'));
@@ -56,8 +63,6 @@ const emailLib = require(path.join(FN, '_email_lib.js'));
 const { verifySession, parseCookies, COOKIE_NAME } = require(path.join(FN, '_lib.js'));
 const crmLib = require(path.join(FN, '_crm_lib.js'));
 
-auth.timing.floorMs = 150;
-auth.timing.jitterMs = 0;
 const sleeps = [];
 auth.sleep = async (ms) => { sleeps.push(ms); };
 
@@ -65,13 +70,21 @@ auth.sleep = async (ms) => { sleeps.push(ms); };
 let mail = [];
 let notices = [];
 const everyToken = [];
+// emailMode: 'ok', 'hang' (never answers) or 'refuse'; emailDelay in ms.
+let emailMode = 'ok', emailDelay = 0, lastEmailOpts = null;
 emailLib.sendEmail = async (to, subject, text, opts) => {
+  lastEmailOpts = opts || null;
+  if (emailMode === 'hang') return new Promise(() => {});
+  if (emailDelay) await new Promise((r) => setTimeout(r, emailDelay));
+  if (emailMode === 'refuse') return false;
   mail.push({ to, subject, text, opts });
   const m = /#token=([A-Za-z0-9_-]+)/.exec(text || '');
   if (m) everyToken.push(m[1]);
   return true;
 };
 emailLib.sendNotification = async (subject, text) => { notices.push({ subject, text }); return true; };
+// Loaded after the fake mailbox: it keeps its own reference to sendNotification.
+const failureLib = require(path.join(FN, '_failure_lib.js'));
 
 // ---- the fake database ----
 const everyAuditRow = [];
@@ -83,7 +96,7 @@ function makeStore() {
     db,
     async readMarker() { return db.marker; },
     async ensureSchema() { db.ensured++; },
-    async userByUsername(u) { await delay(); return db.users.find((x) => x.username === u) || null; },
+    async userByUsername(u) { await delay(); if (db.throwOnLookup) throw new Error('database went away mid-request'); return db.users.find((x) => x.username === u) || null; },
     async userById(id) { return db.users.find((x) => x.id === id) || null; },
     async countEvents({ app, events, minutes, ipHash = null, userId = null }) {
       return db.events.filter((e) => e.app === app && events.includes(e.event) && e.at > db.now - minutes * 60000 &&
@@ -131,7 +144,9 @@ const STAFF_PW = 'blue tractors in the morning';
 async function fresh() {
   store = makeStore();
   auth.resetPreparedForTests();
-  mail = []; notices = []; sleeps.length = 0;
+  mail = []; notices = []; sleeps.length = 0; sqlLog.length = 0; pending.length = 0;
+  emailMode = 'ok'; emailDelay = 0; core.settings.emailTimeoutMs = 300;
+  failureLib._resetThrottle();
   store.db.users.push(
     { id: 1, username: 'owner', display_name: 'Owner', email: 'owner.personal@example.com', password_hash: await auth.hashPassword(OWNER_PW), is_admin: true, session_version: 1, must_change_password: false },
     { id: 2, username: 'staff', display_name: 'Staff', email: 'staff.person@example.com', password_hash: await auth.hashPassword(STAFF_PW), is_admin: false, session_version: 1, must_change_password: false },
@@ -140,7 +155,28 @@ async function fresh() {
 }
 
 const fn = (name) => require(path.join(FN, name + '.js')).handler;
-const forgot = fn('crm-auth-forgot');
+const core = require(path.join(FN, '_forgot_core.js'));
+const EMAIL_TIMEOUT_AS_SHIPPED = core.settings.emailTimeoutMs;
+
+// ---- the newer-format forgot function, with a stand-in for context ----
+let forgotDefault = null;   // crm-auth-forgot.mjs's default export, imported below
+const pending = [];         // what the function handed to context.waitUntil
+let contextHasWaitUntil = true;
+async function settle(capMs = 3000) {
+  const cap = new Promise((r) => setTimeout(r, capMs));
+  while (pending.length) await Promise.race([Promise.all(pending.splice(0)), cap]);
+}
+async function forgotRaw(event, opts) {
+  const req = new Request('https://staging.example/api/crm/auth/forgot', { method: event.httpMethod, headers: event.headers, body: event.body });
+  const context = { ip: '192.0.2.250', ...(contextHasWaitUntil ? { waitUntil: (p) => { pending.push(p); } } : {}) };
+  const res = await forgotDefault(req, context);
+  const answer = { statusCode: res.status, headers: Object.fromEntries(res.headers), body: await res.text() };
+  if (!(opts && opts.leavePending)) await settle();
+  return answer;
+}
+const forgot = (event) => forgotRaw(event);
+const failureAlerts = () => notices.filter((n) => /^CRM failure: crm-auth-forgot/.test(n.subject));
+const failureRows = () => sqlLog.filter((q) => /INSERT INTO crm_failures/.test(q)).length;
 const reset = fn('crm-auth-reset');
 const change = fn('crm-auth-change');
 const crmLogin = fn('crm-auth-login');
@@ -162,6 +198,8 @@ function t(name, cond, extra) {
 }
 
 (async () => {
+  forgotDefault = (await import(require('url').pathToFileURL(path.join(FN, 'crm-auth-forgot.mjs')).href)).default;
+
   // ---------------------------------------------------------------- hashing
   await fresh();
   const h = await auth.hashPassword('x'.repeat(12));
@@ -183,17 +221,62 @@ function t(name, cond, extra) {
   t('[rules] a long ordinary sentence is accepted', auth.passwordProblem('the river is low in august', 'owner') === null);
 
   // ------------------------------------------------- forgot: no enumeration
+  // The account's work is slow here (a 250 ms lookup and write, a 250 ms
+  // email). The answer must not wait for any of it.
   await fresh();
-  store.db.slow = 120; // the real path writes and mails; the fake makes that slow
-  let s0 = Date.now(); const known = await call(forgot, { username: 'owner' }); const tKnown = Date.now() - s0;
-  s0 = Date.now(); const unknown = await call(forgot, { username: 'nobody-here' }); const tUnknown = Date.now() - s0;
-  store.db.slow = 0;
+  store.db.slow = 250; emailDelay = 250;
+  let s0 = Date.now(); const known = await forgotRaw(ev({ username: 'owner' }), { leavePending: true }); const tKnown = Date.now() - s0;
+  s0 = Date.now(); const unknown = await forgotRaw(ev({ username: 'nobody-here' }), { leavePending: true }); const tUnknown = Date.now() - s0;
+  const kd = JSON.parse(known.body);
   t('[enumeration] same status and words for a real and a missing account',
-    known.status === unknown.status && JSON.stringify(known.data) === JSON.stringify(unknown.data), JSON.stringify([known, unknown]));
-  t('[enumeration] similar timing: both answers take at least the floor',
-    tKnown >= auth.timing.floorMs && tUnknown >= auth.timing.floorMs && Math.abs(tKnown - tUnknown) < 200, `${tKnown}ms vs ${tUnknown}ms`);
+    known.statusCode === unknown.statusCode && known.body === unknown.body && kd.ok === true, JSON.stringify([known, unknown]));
+  t('[enumeration] same headers for a real and a missing account',
+    JSON.stringify(known.headers) === JSON.stringify(unknown.headers) && /no-store/.test(known.headers['cache-control'] || ''), JSON.stringify([known.headers, unknown.headers]));
+  t('[answer] the answer does not wait for the account lookup or the email: same time for a real and a missing account',
+    tKnown < 150 && tUnknown < 150 && Math.abs(tKnown - tUnknown) < 100, `${tKnown}ms vs ${tUnknown}ms (the account work takes 500ms)`);
+  t('[answer] the account work was handed to context.waitUntil', pending.length === 2 && mail.length === 0, `${pending.length} pending, ${mail.length} sent`);
+  await settle();
+  t('[answer] and the email still goes out after the answer', mail.length === 1 && mail[0].to === 'owner.personal@example.com' &&
+    store.db.events.some((e) => e.event === 'reset_sent' && e.userId === 1), JSON.stringify(mail.map((m) => m.to)));
   t('[enumeration] the shared-mailbox account gets the same answer and no email',
-    JSON.stringify((await call(forgot, { username: 'shared' })).data) === JSON.stringify(known.data) && !mail.some((m) => m.to === 'sales@olivesegypt.com'));
+    (await forgot(ev({ username: 'shared' }))).body === known.body && !mail.some((m) => m.to === 'sales@olivesegypt.com'));
+
+  // --------------------------------------- forgot: failures after the answer
+  await fresh();
+  emailMode = 'hang';
+  let hs = Date.now(); const hung = await forgotRaw(ev({ username: 'owner' }), { leavePending: true }); const tHung = Date.now() - hs;
+  await settle(2000);
+  t('[hang] a hanging email does not hold up the answer', hung.statusCode === 200 && hung.body === known.body && tHung < 150, `${tHung}ms`);
+  t('[hang] it is given up after its time limit and recorded as email_failed',
+    store.db.events.some((e) => e.event === 'reset_not_sent' && e.detail === 'email_failed' && e.userId === 1), JSON.stringify(store.db.events.map((e) => e.event + '/' + e.detail)));
+  t('[hang] and reported through the failure alert (recorded and emailed)',
+    failureRows() === 1 && failureAlerts().length === 1 && /within 0.3 s/.test(failureAlerts()[0].text), JSON.stringify({ rows: failureRows(), alerts: failureAlerts().map((n) => n.subject) }));
+  t('[hang] the email call itself is given the same time limit, so the Resend request is aborted too',
+    !mail.length && lastEmailOpts && lastEmailOpts.timeoutMs === 300, JSON.stringify(lastEmailOpts));
+
+  await fresh();
+  emailMode = 'refuse';
+  await forgot(ev({ username: 'owner' }));
+  t('[email failed] a refused email is recorded as email_failed and alerted',
+    store.db.events.some((e) => e.detail === 'email_failed') && failureRows() === 1 && failureAlerts().length === 1);
+
+  await fresh();
+  store.db.throwOnLookup = true;
+  const errAnswer = await forgot(ev({ username: 'owner' }));
+  t('[after answer] an error after the answer still gave the generic answer', errAnswer.statusCode === 200 && errAnswer.body === known.body);
+  t('[after answer] it is recorded (failed_after_answer)',
+    store.db.events.some((e) => e.event === 'reset_not_sent' && e.detail === 'failed_after_answer'), JSON.stringify(store.db.events.map((e) => e.event + '/' + e.detail)));
+  t('[after answer] and reported through the failure alert (recorded and emailed)',
+    failureRows() === 1 && failureAlerts().length === 1 && /database went away/.test(failureAlerts()[0].text), JSON.stringify({ rows: failureRows(), alerts: failureAlerts().length }));
+
+  await fresh();
+  contextHasWaitUntil = false;
+  const noWait = await forgot(ev({ username: 'owner' }));
+  contextHasWaitUntil = true;
+  t('[no waitUntil] without context.waitUntil the email is still sent, before the answer', noWait.statusCode === 200 && mail.length === 1);
+  t('[no waitUntil] and that is reported, because the timing protection is off', failureAlerts().length === 1 && /waitUntil is not available/.test(failureAlerts()[0].text));
+
+  t('[time limit] the email time limit as shipped is 8 seconds', EMAIL_TIMEOUT_AS_SHIPPED === 8000, EMAIL_TIMEOUT_AS_SHIPPED);
 
   // ---------------------------------------------------------- forgot: email
   await fresh();
@@ -356,6 +439,28 @@ function t(name, cond, extra) {
   store.db.ensured = 0;
   r = await call(crmLogin, { username: 'owner', password: OWNER_PW });
   t('[guard] a production deploy on the staging-labelled database is refused', r.status === 503 && store.db.ensured === 0);
+
+  // ---------------------------------------------------------------- bundle
+  // Every npm package the forgot function's CommonJS files require must also
+  // be imported by crm-auth-forgot.mjs, or Netlify's bundler leaves it out.
+  {
+    const fs = require('fs');
+    const builtin = new Set(require('module').builtinModules);
+    const seen = new Set(), packages = new Set();
+    const walk = (file) => {
+      if (seen.has(file)) return; seen.add(file);
+      const src = fs.readFileSync(path.join(FN, file), 'utf8');
+      for (const [, spec] of src.matchAll(/require\(\s*'([^']+)'\s*\)/g)) {
+        if (spec.startsWith('./')) walk(spec.slice(2).replace(/\.js$/, '') + '.js');
+        else if (!builtin.has(spec) && !spec.startsWith('node:')) packages.add(spec);
+      }
+    };
+    walk('_forgot_core.js');
+    const entry = fs.readFileSync(path.join(FN, 'crm-auth-forgot.mjs'), 'utf8');
+    const missing = [...packages].filter((p) => !new RegExp(`^import\\s+(?:[^'\n]*from\\s+)?'${p.replace(/[/.]/g, '\\$&')}'`, 'm').test(entry));
+    t(`[bundle] crm-auth-forgot.mjs imports every package its CommonJS files require (${[...packages].join(', ') || 'none'})`,
+      packages.size > 0 && missing.length === 0, 'missing: ' + missing.join(', '));
+  }
 
   // ---------------------------------------------------------------- logs
   const leaked = logged.filter((l) => everyToken.some((tk) => l.includes(tk)));

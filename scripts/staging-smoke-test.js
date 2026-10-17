@@ -55,7 +55,6 @@ const LIMIT_WINDOW_MINUTES = 15;
 const PAGES = ['/crm/login/', '/crm/forgot-password/', '/crm/reset-password/', '/crm/change-password/'];
 const TIMING_TOLERANCE_MS = 500;
 const EMAIL_MARGIN_MS = 200;   // one email sample against the slowest of four; see checkForgot
-const ANSWER_FLOOR_MS = 1400;   // the server pads every forgot-password answer to 1.5 s
 
 // ---- 1. where it may run -----------------------------------------------------
 
@@ -165,8 +164,6 @@ async function checkForgot(emailAccount) {
   const mr = median(real.map((r) => r.ms)), mf = median(fake.map((r) => r.ms));
   check(`similar timing (within ${TIMING_TOLERANCE_MS} ms)`, Math.abs(mr - mf) <= TIMING_TOLERANCE_MS,
     `existing: ${real.map((r) => r.ms).join(', ')} ms; made-up: ${fake.map((r) => r.ms).join(', ')} ms`);
-  check('every answer took at least the padded 1.5 s', all.every((r) => r.ms >= ANSWER_FLOOR_MS),
-    `fastest ${Math.min(...all.map((r) => r.ms))} ms`);
 
   if (emailAccount) {
     console.log(`\n-- 2b. One real reset email, to ${emailAccount}`);
@@ -174,9 +171,10 @@ async function checkForgot(emailAccount) {
     sentAt = new Date();
     check(`the answer for ${emailAccount} has the same status, words and headers`,
       sent.status === first.status && sent.text === first.text && headerNames(sent) === headerNames(first), summary(sent));
-    // The server pads every answer to 1.5 s plus up to 0.25 s of random
-    // jitter. An emailed answer slower than every answer without an email,
-    // by more than network noise, means sending outran the padding.
+    // The server answers before it looks the account up; the email goes out
+    // afterwards (context.waitUntil). An emailed answer slower than every
+    // answer without an email, by more than network noise, means the answer
+    // waited for the email after all.
     const others = all.map((r) => r.ms), slowest = Math.max(...others);
     check(`its timing is no slower than the answers without an email (+${EMAIL_MARGIN_MS} ms for network noise)`, sent.ms <= slowest + EMAIL_MARGIN_MS,
       `with email: ${sent.ms} ms; without: ${others.join(', ')} ms (slowest ${slowest}); difference ${sent.ms - slowest > 0 ? '+' : ''}${sent.ms - slowest} ms`);

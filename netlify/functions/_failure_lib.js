@@ -112,7 +112,9 @@ async function reportFailure(sql, ctx, err) {
             : 'It could NOT be recorded on the CRM dashboard -- the database itself may be unreachable.',
           'The full detail is in the Netlify function log for ' + row.source + '.',
         ].filter((l) => l !== null).join('\n') + also,
-        { formType: 'failure-alert' }
+        // Bounded, so an alert about a hanging email service cannot itself
+        // hang until the function's 60-second limit.
+        { formType: 'failure-alert', timeoutMs: 8000 }
       );
     }
   } catch (e) {

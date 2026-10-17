@@ -57,8 +57,8 @@ Go to **Site configuration → Environment variables**. For each variable: **Edi
 
 | # | Do this | It worked when |
 |---|---|---|
-| S1 | In the repository (branch `claude/auth-release-1`, Node.js 18+, no `npm install` needed): `node scripts/staging-smoke-test.js https://claude-auth-release-1--stirring-manatee-ca2643.netlify.app`. Type the `smoke-nonadmin` password when asked; it stays hidden. | The last block reads `Result: PASS -- 35 passed, 0 failed`. Paste that block back to me. |
-| S1+ | *Optional, sends one real email:* add `--send-one-email owner-test-2` to the end of the S1 command. | `Result: PASS -- 37 passed, 0 failed`, an `Email timing:` line, and one reset email to your Outlook address shown as **Delivered** in Resend → Emails. Ignore the email's link. |
+| S1 | In the repository (branch `claude/auth-release-1`, Node.js 18+, no `npm install` needed): `node scripts/staging-smoke-test.js https://claude-auth-release-1--stirring-manatee-ca2643.netlify.app`. Type the `smoke-nonadmin` password when asked; it stays hidden. | The last block reads `Result: PASS -- 34 passed, 0 failed`. Paste that block back to me. |
+| S1+ | *Optional, sends one real email:* add `--send-one-email owner-test-2` to the end of the S1 command. This confirms on Netlify that the email is sent **after** the answer: the emailed answer should be no slower than the others. | `Result: PASS -- 36 passed, 0 failed`, an `Email timing:` line showing a difference near 0 ms (negative is fine), and one reset email to your Outlook address shown as **Delivered** in Resend → Emails. Ignore the email's link. **If the timing check fails** or you get an alert email saying "context.waitUntil is not available", stop and send me both. |
 | S2 | Wait the 15 minutes the script prints, then follow `docs/staging-owner-tests.md`. | |
 
 Notes on the smoke test:
