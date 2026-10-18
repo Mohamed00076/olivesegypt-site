@@ -23,7 +23,7 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
-const { readJsonBody, json } = require('./_lib');
+const { readJsonBody, json, netlifyClientIp } = require('./_lib');
 const { currentAdminSession } = require('./_sessions');
 const {
   normaliseEmail, looksLikeEmail, ensureOptOutSchema, unsubscribe, resubscribe,
@@ -49,8 +49,7 @@ function connectionString() {
 // Netlify this header is always present; without it, every request shares
 // the 'unknown' bucket, which fails safe (the same rule as the sign-in code).
 function clientIp(event) {
-  const h = event.headers || {};
-  return h['x-nf-client-connection-ip'] || 'unknown';
+  return netlifyClientIp(event);
 }
 
 // The analytics session, checked against its account (_sessions.js).

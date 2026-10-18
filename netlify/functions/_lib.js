@@ -141,7 +141,18 @@ function parseId(value) {
 }
 const INVALID_ID_ERROR = 'Which one? A valid id is required.';
 
+// The caller's IP address, from Netlify's own header only. X-Forwarded-For
+// and client-ip are whatever the caller sends, so falling back to them
+// would let a request choose its own address. On Netlify this header is
+// always present; without it, `fallback` is returned (deployment record,
+// Deploy 261). The sign-in code (_auth_lib.js clientIp) follows the same rule.
+function netlifyClientIp(event, fallback = 'unknown') {
+  const ip = event && event.headers && event.headers['x-nf-client-connection-ip'];
+  return ip ? String(ip) : fallback;
+}
+
 module.exports = {
+  netlifyClientIp,
   COOKIE_NAME,
   SESSION_TTL_SECONDS,
   hashPassword,
