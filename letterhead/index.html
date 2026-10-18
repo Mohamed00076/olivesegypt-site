@@ -47,14 +47,24 @@
          * doubled the margin -- so every letter printed a second, almost
          * empty page. Same fix as crm/document/view.
          */
+        /*
+         * The footer belongs at the foot of the paper, not under the last
+         * line of text. The printable area of A4 with 2cm margins is 25.7cm;
+         * 25.6cm fills it without spilling a blank second page, and a longer
+         * letter still runs on to page two with the footer after it. A4 is
+         * named so the sheet does not depend on the printer's default paper.
+         */
         .sheet {
           box-shadow: none;
           margin: 0;
-          min-height: 0;
+          min-height: 25.6cm;
           max-width: none;
           padding: 0;
         }
-        @page { margin: 2cm; }
+        @page { size: A4; margin: 2cm; }
+        /* The "click here to draft" prompt is for the screen only: a blank
+           letterhead must print blank. */
+        .lh-body[contenteditable]:empty:before { content: none; }
       }
     </style>
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
