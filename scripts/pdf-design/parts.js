@@ -22,7 +22,7 @@ const T = {
   en: {
     dir: 'ltr', page: 'Page',
     wordmark: 'TRIPLE COMPANY', tagline: 'for Industrial Development',
-    address: ['Ouroba Square (<span class="ar-inline" lang="ar" dir="rtl">ميدان العروبة</span>), 5th Settlement,', 'New Cairo, Cairo, Egypt'],
+    address: ['Ouroba Square, 5th Settlement,', 'New Cairo, Cairo, Egypt'],
     legal: 'Triple Company for Industrial Development',
   },
   ar: {
@@ -93,7 +93,7 @@ function isolateNumbers(locale, html) {
 }
 
 /*
- * Arabic inside an English document ("Ouroba Square (ميدان العروبة)"), set
+ * Arabic inside an English document ("Ouroba Square"), set
  * in the face that keeps its words whole and in order when copied out
  * (guide-pdfs.js, 'TC Arabic Inline').
  */

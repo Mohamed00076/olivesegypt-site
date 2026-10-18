@@ -152,7 +152,7 @@ const STATIC_PDF_CSS = (() => {
 const LETTERHEAD_TEXT = {
   en: {
     dir: 'ltr', wordmark: 'TRIPLE COMPANY', tagline: 'for Industrial Development',
-    address: ['Ouroba Square (ميدان العروبة), 5th Settlement,', 'New Cairo, Cairo, Egypt'],
+    address: ['Ouroba Square, 5th Settlement,', 'New Cairo, Cairo, Egypt'],
     legal: 'Triple Company for Industrial Development',
   },
   ar: {
@@ -279,9 +279,9 @@ const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize:
 // that carry their own masthead and foot as live text, so nothing is drawn
 // around them. Tagged for screen readers, with bookmarks from the headings.
 // 'TC Arabic Inline' is Amiri over its whole range, the word space included,
-// for the Arabic phrases in the English documents ("Ouroba Square (ميدان
-// العروبة)"): with the space in a Latin face they extracted as one-word runs
-// in reverse order.
+// for any Arabic phrase in an English document (the address carried its
+// Arabic name until 2026-10-18): with the space in a Latin face such phrases
+// extracted as one-word runs in reverse order.
 const SHEET_PDF = { format: 'A4', printBackground: true, preferCSSPageSize: true,
   margin: { top: 0, bottom: 0, left: 0, right: 0 }, tagged: true, outline: true };
 const SHEET_INLINE_ARABIC = `@font-face { font-family: 'TC Arabic Inline'; src: url(/${PDF_ARABIC_FONTS.regular}) format('truetype'); }`;
