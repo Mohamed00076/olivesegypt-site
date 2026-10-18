@@ -1,6 +1,7 @@
 'use strict';
 
-const { parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
+const { json } = require('./_lib');
+const { currentAdminSession } = require('./_sessions');
 
 const RANGES = { '7d': 7, '30d': 30, '90d': 90 };
 
@@ -87,9 +88,7 @@ exports.handler = async (event) => {
     return json(405, { error: 'Method not allowed' }, { Allow: 'GET' });
   }
 
-  const SESSION_SECRET = process.env.SESSION_SECRET;
-  const token = SESSION_SECRET ? parseCookies(event.headers)[COOKIE_NAME] : null;
-  const session = token ? verifySession(token, SESSION_SECRET) : null;
+  const session = await currentAdminSession(event);
   if (!session) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

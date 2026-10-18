@@ -76,9 +76,12 @@ require.cache[neonId] = new Module(neonId, null);
 require.cache[neonId].filename = neonId;
 require.cache[neonId].loaded = true;
 require.cache[neonId].exports = { neon: () => sql };
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
-const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
+const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff', fx.crmClaims('staff'))}`;
 const buyers = require(path.join(FN, 'crm-buyers.js')).handler;
 const activity = require(path.join(FN, 'crm-activity.js')).handler;
 const documents = require(path.join(FN, 'crm-documents.js')).handler;

@@ -3,7 +3,7 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json } = require('./_lib');
-const { requireReaderSession } = require('./_crm_lib');
+const { currentReaderSession } = require('./_sessions');
 const { sendNotification } = require('./_email_lib');
 const { addEnquiryToPipeline } = require('./_crm_intake');
 const { describeDbError, ensureBuyerTables, deleteSubmission } = require('./_crm_lib');
@@ -238,11 +238,12 @@ async function handlePost(event, sql) {
   return json(200, { ok: true });
 }
 
-// Who may read enquiries: see requireReaderSession in _crm_lib.js.
-const readerSession = requireReaderSession;
+// Who may read enquiries: either app's session, each checked against its
+// account (_sessions.js currentReaderSession; why both: _crm_lib.js).
+const readerSession = currentReaderSession;
 
 async function handleGet(event, sql) {
-  if (!readerSession(event)) {
+  if (!(await readerSession(event))) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }
 

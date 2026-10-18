@@ -42,6 +42,9 @@ const sql = (strings) => {
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const crm = require(path.join(FN, '_crm_lib.js'));
 const load = (f) => require(path.join(FN, f)).handler;
@@ -70,7 +73,7 @@ const CONFIGS = [
     const setCookie = String((login.headers && (login.headers['Set-Cookie'] || login.headers['set-cookie'])) || '');
     const crmToken = (setCookie.match(/tc_crm_session=([^;]+)/) || [])[1];
     t('the real CRM login issues a session', login.statusCode === 200 && !!crmToken, login.body);
-    const adminToken = lib.signSession(process.env.ADMIN_USERNAME || 'owner', process.env.SESSION_SECRET);   // as auth-login.js signs it
+    const adminToken = lib.signSession('owner', process.env.SESSION_SECRET, fx.adminClaims('owner'));   // as auth-login.js signs it (release 1)
 
     const crmOwn = await get('crm-buyers.js', `${crm.CRM_COOKIE_NAME}=${crmToken}`);
     t('   the CRM accepts its own session', crmOwn.statusCode === 200, crmOwn.statusCode);

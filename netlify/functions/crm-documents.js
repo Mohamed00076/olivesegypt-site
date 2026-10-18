@@ -7,7 +7,7 @@
  * and /dashboard/invoice ... need real dynamic data entry ... a
  * materially different, larger task better paired with Section H's CRM
  * build"). Same CRM session/auth as everything else under /crm/ --
- * requireCrmSession, no separate login.
+ * currentCrmSession (_sessions.js), no separate login.
  *
  * Deliberately no PATCH/update: once created, a document is either kept
  * as issued or voided (never silently edited), the same integrity
@@ -45,7 +45,8 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
-const { requireCrmSession, readJsonBody, json, parseId, INVALID_ID_ERROR } = require('./_crm_lib');
+const { readJsonBody, json, parseId, INVALID_ID_ERROR } = require('./_crm_lib');
+const { currentCrmSession } = require('./_sessions');
 
 function connectionString() {
   return (
@@ -390,7 +391,7 @@ async function handleVoid(event, sql, id, actor) {
 }
 
 exports.handler = async (event) => {
-  const session = requireCrmSession(event);
+  const session = await currentCrmSession(event);
   if (!session) {
     return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

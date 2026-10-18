@@ -68,6 +68,9 @@ require.cache[neonId] = new Module(neonId, null);
 require.cache[neonId].filename = neonId;
 require.cache[neonId].loaded = true;
 require.cache[neonId].exports = { neon: () => fakeSql };
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const SECRET = 'test-secret-not-a-real-one';
 process.env.DATABASE_URL = 'postgres://stub';
@@ -83,7 +86,7 @@ const t = (name, cond, extra) => {
   console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '   <-- ' + (extra === undefined ? '' : extra)}`);
 };
 
-const ADMIN_COOKIE = `${COOKIE_NAME}=${signSession('admin', SECRET)}`;
+const ADMIN_COOKIE = `${COOKIE_NAME}=${signSession('admin', SECRET, fx.adminClaims('admin'))}`;
 
 function call(method, { body, query, cookie, ip } = {}) {
   return unsub.handler({

@@ -58,6 +58,21 @@ If an expected email does not arrive within 2 minutes:
   You should see `emergency_reset` and `password_changed`, plus the earlier `reset_*` and `login_*` rows.
 - [ ] **D6. Rehearse the "wrong name" case.** Run the script again with the username `nobody-at-all` and paste the output into staging. Neon shows "No CRM user named nobody-at-all. Nothing was changed."
 
+## E. Release 2: a reset signs you out everywhere (once Release 2 is on staging)
+
+Use two browsers (or one normal window and one private window).
+
+- [ ] **E1. Start signed in twice.** Sign in to the CRM as `owner-test` in both browsers, and to `/admin/analytics` in browser 1.
+- [ ] **E2. Change the password in browser 2.** Use Change password there; browser 2 is signed out.
+- [ ] **E3. Browser 1 is signed out too.** Click anything in its CRM tab → you land on the sign-in page. Reload analytics → it asks you to sign in.
+- [ ] **E4. Removing admin access ends analytics at once.** Sign in to analytics again. In the **staging** SQL Editor run:
+
+  UPDATE crm_users SET is_admin = false WHERE username = 'owner-test';
+
+  Reload analytics → it asks you to sign in, and signing in says "does not have access to analytics". Then put admin back:
+
+  UPDATE crm_users SET is_admin = true WHERE username = 'owner-test';
+
 ## Report back (copy, fill in, paste)
 
 ```
@@ -67,5 +82,6 @@ Outlook: Inbox/Junk              spf __  dkim __  dmarc __   Resend: Delivered/o
 B1-B8: all OK / failed at __ (what you saw)
 C1-C2: OK / failed at __
 D1-D6: OK / failed at __
+E1-E4 (Release 2): OK / failed at __
 Login felt slow? yes/no
 ```

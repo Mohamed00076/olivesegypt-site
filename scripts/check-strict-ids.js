@@ -48,11 +48,14 @@ const sql = (strings, ...vals) => {
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const { parseId, signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const base = require(path.join(FN, '_lib.js'));
-const crmCookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
-const adminCookie = `${base.COOKIE_NAME}=${base.signSession('owner', SECRET + '-admin')}`;
+const crmCookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff', fx.crmClaims('staff'))}`;
+const adminCookie = `${base.COOKIE_NAME}=${base.signSession('owner', SECRET + '-admin', fx.adminClaims('owner'))}`;
 const cookieFor = (file) => (/^kpi-/.test(file) ? adminCookie : crmCookie);
 
 // Queries that name a record, as opposed to creating tables.

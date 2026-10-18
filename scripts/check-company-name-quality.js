@@ -148,7 +148,8 @@ t('nothing throws on rubbish input',
       !/\b(UPDATE|INSERT\s+INTO|DELETE\s+FROM)\b/i.test(src.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')),
       'the owner asked for a list to review, not a cleanup that runs itself');
     t('   and it requires a CRM session like every other endpoint',
-      /requireCrmSession\(/.test(src), 'buyer records behind an unauthenticated endpoint');
+      // Release 2: the session checked against its account (_sessions.js).
+      /await currentCrmSession\(/.test(src), 'buyer records behind an unauthenticated endpoint');
   }
 
   const page = path.join(ROOT, 'crm/data-quality/index.html');

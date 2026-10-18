@@ -15,7 +15,8 @@ const { neon } = require('@neondatabase/serverless');
 const auth = require('./_auth_lib');
 const emailLib = require('./_email_lib');
 const { reportFailure } = require('./_failure_lib');
-const { requireCrmSession, clearCrmSessionCookie, readJsonBody, json } = require('./_crm_lib');
+const { clearCrmSessionCookie, readJsonBody, json } = require('./_crm_lib');
+const { currentCrmSession } = require('./_sessions');
 
 function connectionString() {
   return (
@@ -33,7 +34,7 @@ exports.handler = async (event) => {
   }
   const reply = (status, body, extra) => json(status, body, { ...auth.NO_STORE, ...(extra || {}) });
 
-  const session = requireCrmSession(event, { allowMustChange: true });
+  const session = await currentCrmSession(event, { allowMustChange: true });
   if (!session) return reply(401, { ok: false, error: 'Your session has ended. Please sign in again.' });
 
   const cs = connectionString();

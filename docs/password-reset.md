@@ -58,6 +58,16 @@ ALTER TABLE crm_users ADD COLUMN IF NOT EXISTS is_admin boolean NOT NULL DEFAULT
 UPDATE crm_users SET is_admin = true WHERE username = 'your-crm-username';
 ```
 
+## 4b. Release 2: every session checked against its account
+
+Deployed after Release 1, as its own deployment request.
+- **Every gated function:** each of the 20 functions that read a session (plus deleting an enquiry or lead) now checks the session's account id and session number against `crm_users`, so a reset or password change signs that account out everywhere.
+- **Analytics also checks:** that the account is still admin.
+- **Sessions from before Release 1:** these carry neither number, so they are refused. Everyone signs in once more.
+- **If the database can't be read:** the session is refused, never let through, and the failure alert reports it.
+- **The emergency fallback login:** its sessions only work while `ADMIN_FALLBACK_LOGIN` is on.
+- **Schema:** the columns it reads are created by Release 1 the first time anyone signs in. Release 1 must be live, with one sign-in done, before Release 2 is deployed.
+
 ## 5. Emergency: locked out of everything
 
 `node scripts/auth-emergency-reset.js` on your computer (it asks for the

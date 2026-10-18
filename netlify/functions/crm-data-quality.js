@@ -22,9 +22,10 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const {
-  requireCrmSession, json, describeDbError, dbStep,
+  json, describeDbError, dbStep,
   classifyCompanyName, findNearDuplicates,
 } = require('./_crm_lib');
+const { currentCrmSession } = require('./_sessions');
 
 function connectionString() {
   return (
@@ -37,7 +38,7 @@ function connectionString() {
 }
 
 exports.handler = async (event) => {
-  const session = requireCrmSession(event);
+  const session = await currentCrmSession(event);
   if (!session) {
     return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

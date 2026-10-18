@@ -77,6 +77,9 @@ require.cache[neonId] = new Module(neonId, null);
 require.cache[neonId].filename = neonId;
 require.cache[neonId].loaded = true;
 require.cache[neonId].exports = { neon: () => fakeSql };
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const SECRET = 'test-secret-not-a-real-one';
 process.env.DATABASE_URL = `postgres://user:${SECRET_PASSWORD}@${SECRET_HOST}/db`;
@@ -84,7 +87,7 @@ process.env.CRM_SESSION_SECRET = SECRET;
 
 const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const buyers = require(path.join(FN, 'crm-buyers.js'));
-const COOKIE = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
+const COOKIE = `${CRM_COOKIE_NAME}=${signCrmSession('staff', fx.crmClaims('staff'))}`;
 
 let pass = 0, fail = 0;
 const t = (name, cond, extra) => {

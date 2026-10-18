@@ -138,6 +138,12 @@ function makeStore() {
 
 let store;
 auth.createStore = () => store;
+// Release 2: sessions are checked against the account, read here from the
+// same fake database.
+require(path.join(FN, '_sessions.js')).lookup.accountRow = async (uid) => {
+  const u = store.db.users.find((x) => x.id === uid);
+  return u ? { username: u.username, session_version: u.session_version, is_admin: u.is_admin, must_change_password: u.must_change_password } : null;
+};
 
 const OWNER_PW = 'a quiet orchard by the river';
 const STAFF_PW = 'blue tractors in the morning';
