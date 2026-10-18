@@ -44,6 +44,7 @@ Go to **Site configuration → Environment variables**. For each variable: **Edi
 | L5 | `ADMIN_FALLBACK_LOGIN` (new) | `off` | `off` | Production `off`. |
 | L6 | **Branch deploys:** go to **Build & deploy → Continuous deployment → Branches and deploy contexts → Configure** → Branch deploys: **Let me add individual branches** → `claude/auth-release-1` → Save. | | | The setting lists the branch. |
 | L7 | **Deploys → Trigger deploy** for branch `claude/auth-release-1`. Do this again after any variable change: variables only apply to a new deploy. | | | The deploy is labelled "Branch deploy" and is **Published**. The staging address opens `/crm/login/`. |
+| L8 | *For Release 2's tests E1–E4.* In the same Branch deploys setting, also add `claude/auth-release-2`, then **Trigger deploy** for it. It uses the same staging database and variables. Its address is `https://claude-auth-release-2--stirring-manatee-ca2643.netlify.app`. | | | That address opens `/crm/login/`. Do E1–E4 there; do everything else on the Release 1 address. `APP_BASE_URL` points at Release 1, so reset emails link there, which E1–E4 don't need. |
 
 ## Resend (email on staging)
 
