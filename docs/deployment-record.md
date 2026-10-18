@@ -10516,6 +10516,80 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 262 and 263 — Every visitor IP address comes from Netlify's own header (PRs #385, #386)
+
+**Previous recorded deploy:** `6df6f65` (Deploy 261, PR #384)
+**Approvals:**
+- "merge" (#385).
+- "do 4 5 and 7", then "mereg" (#386).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 262 | #385 | `a4bda67` | 2026-10-18 06:46:57 | 1 | +75 / −1 | Notes only |
+| 263 | #386 | `d0dff1e` | 2026-10-18 07:06:31 | 8 | +84 / −15 | Functions + check |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 262** recorded Deploys 260 and 261. It was merged while its deploy preview was still building; the preview passed afterwards.
+
+### What the deploy did
+
+- **Deploy 263 — Client IP from Netlify's header only (#386).** A shared helper, `_lib.js` `netlifyClientIp`, reads `x-nf-client-connection-ip` and never `client-ip` or `X-Forwarded-For`, which the caller writes. It is now used by:
+  - `consent.js`, for the consent record's one-way device fingerprint;
+  - `inquiries.js` and `leads.js`, for the form rate limits;
+  - `_analytics_lib.js`, for the visit collector's rate limit (still `''` when the header is missing);
+  - `unsubscribe.js`, the same rule as Deploy 261, now through the helper.
+  - **No live behaviour changed.** As in Deploy 261, Netlify always sets its header and every file already read it first. So no stored value, fingerprint or limit changes; this only keeps the fallback from ever being reachable.
+  - **`scripts/check-client-ip.js` (in `npm test`)** checks the helper and scans every function for code that reads the caller-written headers. The three old sign-in functions (`auth-login.js`, `crm-auth-login.js`, `crm-auth-forgot.js`) are exempt on `main`, with the reason: #382 rewrites them to read Netlify's header only. On the #382 branch the exemptions are already removed and the scan covers everything.
+
+### Related work outside the site (not deployed)
+
+- **Drafts #382 and #383 brought up to date with `main` (through Deploy 263).**
+  - **Conflicts:** only in `package.json` and import lines.
+  - **Release 1 (#382):** 37 of 37 protections still proven.
+  - **Release 2 (#383):** 16 of 16 still proven.
+  - **Bundle check:** 48 of 48 OK on #383.
+- **Found and fixed on #382:** its new `/api/crm/auth/change` route was missing from `check-live.js`, so the live check would have failed after Release 1 shipped. It is now listed as POST only.
+  - **How it was found:** a live check run from the Release 2 branch, whose `netlify.toml` already has that route, reported it. This was a local artefact, not a fault on the live site.
+- **Found and fixed on #383:** `npm test` had been failing on that branch since `d06adfa`.
+  - **Cause:** the script-integrity check read code snippets inside the new session mutation harness as file references.
+  - **Fix (`685370a`):** the snippets are spelt so they no longer look like file references; they produce the same code.
+  - **Why it was missed:** the passing run reported then was taken before the file was committed.
+- **Staging sheet (#382), new step L8:** Release 2 on its own branch deploy, for staging tests E1–E4.
+
+### Verified on the live site (2026-10-18)
+
+- **Deployed commit:** `deployed-commit.txt` reads `d0dff1e2462f1ac4139bbc8ae23cab824a4d71e6`.
+- **Live check:** straight after the merge, 21 OK, 0 FAIL.
+- **One failure while writing this record:** a later run reported 20 OK, 1 FAIL. The "/page redirects to /page/" check got a network error fetching `/ar/resources/export-markets`.
+  - **Direct probe:** the address answered 301 to `/ar/resources/export-markets/`, which answered 200.
+  - **Reruns:** three, each 21 OK, 0 FAIL.
+  - **Treated as transient,** and recorded rather than dropped.
+- **Certificates:** both are valid to 2026-11-17, 29 days ahead.
+
+### Claim register
+
+177 claims (unchanged).
+
+### Rollback
+
+- **Deploy 263:** `git revert -m 1 d0dff1e`.
+- **Deploy 262** is documentation only.
+
+### Known limitations shipped with Deploys 262 and 263
+
+- **The three old sign-in functions on `main`** keep their fallback until #382 is deployed (the same low risk).
+- **Unchanged from Deploys 260 and 261:**
+  - Arabic awaits the owner's review.
+  - The staff CRM on a preview uses the real database, by design.
+  - The visitor-ID lifetime and re-ask questions are with counsel.
+  - The owner items listed at Deploys 242 to 244.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10534,7 +10608,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 261 (2026-10-18).**
+**Unchanged since U4, through Deploy 263 (2026-10-18).**
 
 ## Outstanding, unresolved by this document
 
