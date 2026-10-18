@@ -26,6 +26,9 @@ const { spawnSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 const FN = path.join(ROOT, 'netlify', 'functions');
 
+// Snippets below are code for the copied functions folder, not requires of
+// this script; R keeps check-script-integrity from reading them as such.
+const R = 'require';
 const M = [
   ['_sessions.js', '  if (Number(row.session_version) !== sv) return false;\n', '', '[crm] an old session (its session number is out of date after a reset): refused'],
   ['_sessions.js', '  if (Number(row.session_version) !== sv) return false;\n', '', '[admin] an old session (session number out of date): refused'],
@@ -36,13 +39,13 @@ const M = [
   ['_sessions.js', "return fallbackOn() && process.env.ADMIN_USERNAME && session.sub === process.env.ADMIN_USERNAME ? session : null;", 'return fallbackOn() ? session : null;', '[admin]    but only for ADMIN_USERNAME'],
   ['_sessions.js', "    await reportFailure(cs ? neon(cs) : null, { source: 'session-check', step: 'checking a session against its account' }, err);\n    return false;", '    return true;', '[crm] the account cannot be read (database down): refused, never waved through'],
   ['_sessions.js', "    await reportFailure(cs ? neon(cs) : null, { source: 'session-check', step: 'checking a session against its account' }, err);\n    return false;", '    return true;', '[admin] the account cannot be read (database down): refused'],
-  ['_sessions.js', "  return (await currentAdminSession(event)) || (await currentCrmSession(event));", "  return (await currentAdminSession(event)) || require('./_crm_lib').requireCrmSession(event);", '[reader] an old CRM session: refused'],
+  ['_sessions.js', "  return (await currentAdminSession(event)) || (await currentCrmSession(event));", `  return (await currentAdminSession(event)) || ${R}('./_crm_lib').requireCrmSession(event);`, '[reader] an old CRM session: refused'],
   // Call sites: one of each kind going back to the unchecked gate.
-  ['crm-buyers.js', 'const session = await currentCrmSession(event);', "const session = require('./_crm_lib').requireCrmSession(event);", '[crm] an old session (its session number is out of date after a reset): refused'],
-  ['crm-buyers.js', 'const session = await currentCrmSession(event);', "const session = require('./_crm_lib').requireCrmSession(event);", 'no function checks a session without _sessions.js'],
-  ['analytics-report.js', 'const requireAdmin = currentAdminSession;', "const requireAdmin = (e) => { const l = require('./_lib'); const tk = l.parseCookies(e.headers)[l.COOKIE_NAME]; return tk ? l.verifySession(tk, process.env.SESSION_SECRET) : null; };", '[admin] an old session (session number out of date): refused'],
+  ['crm-buyers.js', 'const session = await currentCrmSession(event);', `const session = ${R}('./_crm_lib').requireCrmSession(event);`, '[crm] an old session (its session number is out of date after a reset): refused'],
+  ['crm-buyers.js', 'const session = await currentCrmSession(event);', `const session = ${R}('./_crm_lib').requireCrmSession(event);`, 'no function checks a session without _sessions.js'],
+  ['analytics-report.js', 'const requireAdmin = currentAdminSession;', `const requireAdmin = (e) => { const l = ${R}('./_lib'); const tk = l.parseCookies(e.headers)[l.COOKIE_NAME]; return tk ? l.verifySession(tk, process.env.SESSION_SECRET) : null; };`, '[admin] an old session (session number out of date): refused'],
   ['unsubscribe.js', '  return !!(await currentAdminSession(event));', '  return true;', '[admin] no session: refused'],
-  ['_crm_lib.js', "const session = await require('./_sessions').currentCrmSession(event);", 'const session = requireCrmSession(event);', '[crm] an old session (its session number is out of date after a reset): refused'],
+  ['_crm_lib.js', `const session = await ${R}('./_sessions').currentCrmSession(event);`, 'const session = requireCrmSession(event);', '[crm] an old session (its session number is out of date after a reset): refused'],
   ['crm-auth-change.js', 'const session = await currentCrmSession(event, { allowMustChange: true });', 'const session = await currentCrmSession(event);', '[crm]    and does open change-password'],
 ];
 
