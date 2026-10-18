@@ -66,7 +66,15 @@ prints into the Neon SQL Editor and click Run. Sign in; you will be asked to
 choose a new password straight away. If analytics is the problem, the script
 can also grant admin access.
 
-## 6. Rollback
+## 6. How long the sign-in records are kept
+
+**Working default, pending counsel (owner decision 2026-10-18): option B.**
+- **`auth_events`:** the scrambled IP is removed after 30 days, and the row is deleted after 90 days.
+- **Reset-link rows (`crm_password_resets`):** deleted 7 days after they expire or are used.
+
+The questions are rows 14 to 17 of `docs/g0-counsel-questions.md`. **No purge job exists yet**; it will be built once counsel answers. Until then, rows are kept.
+
+## 7. Rollback
 
 Revert the merge in GitHub (or ask me). The new columns and the
 `auth_events` table stay and are ignored; old passwords and accounts keep
