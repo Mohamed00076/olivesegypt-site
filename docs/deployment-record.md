@@ -10451,6 +10451,80 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 260 and 261 — The unsubscribe rate limit counts only Netlify's own client IP (PRs #381, #384)
+
+**Previous recorded deploy:** `f6a03e7` (Deploy 259, PR #380)
+**Approvals:**
+- "merge" (#381).
+- "do 4", then "merge" (#384).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 260 | #381 | `37e9842` | 2026-10-17 02:03:28 | 1 | +67 / −1 | Notes only |
+| 261 | #384 | `6df6f65` | 2026-10-18 06:35:51 | 2 | +25 / −4 | Function + check |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 260** recorded Deploys 258 and 259.
+
+### What the deploy did
+
+- **Deploy 261 — Unsubscribe rate limit (#384).** `unsubscribe.js` limits how many addresses one connection can opt out. It now counts only Netlify's own client-IP header (`x-nf-client-connection-ip`). Before, if that header was missing, it fell back to `client-ip` and then `X-Forwarded-For`, which the caller writes.
+  - **A precaution, not a live repair.** On Netlify the header is always present and was already read first, so the fallback was never reached on the live site. The new test that a changing `X-Forwarded-For` cannot escape the limit passes on the old code too. Only the no-header case behaves differently: such a request now counts as `unknown`.
+  - **Why this was raised:** in the "what else" list of 18 Oct it was described as a bypass anyone could use. Testing showed that overstated the risk, and the request and this record say so.
+  - **Same rule elsewhere:** the sign-in code follows the same rule since PR #382 (not yet deployed).
+  - **Same fallback, unchanged:** `consent.js`, `inquiries.js`, `leads.js` and `_analytics_lib.js` keep the fallback, with the same low risk, pending the owner's decision.
+  - **`check-unsubscribe.js`** gains three checks:
+    - 40 requests, each with a new `X-Forwarded-For` and `client-ip`, still hit the limit;
+    - every recorded row holds Netlify's IP;
+    - without Netlify's header, the caller's headers are ignored. This check fails on the old code.
+
+### Related work outside the site (not deployed)
+
+- **Password reset, release 1 (draft PR #382).**
+  - **What it does:** one CRM account opens both the CRM and analytics. The reset flow is hardened, and the reset email is sent after the answer (`context.waitUntil`).
+  - **Testing:** 75 checks, and 37 protections proven by removing each in turn.
+  - **Staging kit:** a setup sheet, a smoke test that refuses the live site, and the owner's checklist.
+  - **Retention:** option B is the working default for the sign-in log, and counsel questions 14–17 are added in `docs/g0-counsel-questions.md`. Both live on the PR branch until it merges.
+- **Password reset, release 2 (draft PR #383, stacked on #382).**
+  - **What it does:** every session is checked against its account on each request, across 20 functions plus the enquiry and lead delete.
+  - **Testing:** a 33-check regression test, and 16 protections proven.
+- **`npm run test:bundles` (in #383):** packages every function with Netlify's bundler and loads each package on its own.
+  - **Before every production deploy:** the owner decided on 18 Oct that it runs then; the standing note at the top of this record arrives with #383.
+  - **Deploy 261:** run on `533152c` with the script from #383: 43 of 43 packages OK.
+- **Bundler finding, 17 Oct:** Netlify's bundler left the database driver out of the newer-format forgot-password function. It was caught locally before any deploy and fixed in #382.
+
+### Verified on the live site (2026-10-18)
+
+- **Deployed commit:** `deployed-commit.txt` reads `6df6f656944e3d829ef7210bba784b2267dda9f3`.
+- **Live check:** the latest run reported 21 OK, 0 FAIL. The run straight after the merge counted 20 OK lines and no FAIL lines; its output was not kept, so the difference cannot be named.
+- **Certificates:** `olivesegypt.com` and `www.olivesegypt.com` are valid to 2026-11-17, 29 days ahead.
+- **Not exercised on the live site:** the rate limit itself, since that would write real opt-out records. It is covered by `check-unsubscribe.js`.
+
+### Claim register
+
+177 claims (unchanged).
+
+### Rollback
+
+- **Deploy 261:** `git revert -m 1 6df6f65`.
+- **Deploy 260** is documentation only.
+
+### Known limitations shipped with Deploys 260 and 261
+
+- **The fallback in the four files above.**
+- **#383 conflict:** #383 edits `unsubscribe.js` a few lines below this change, so a small conflict is expected when it is brought up to date with `main`.
+- **Unchanged from Deploys 258 and 259:**
+  - Arabic awaits the owner's review.
+  - The staff CRM on a preview uses the real database, by design.
+  - The visitor-ID lifetime and re-ask questions are with counsel.
+  - The owner items listed at Deploys 242 to 244.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10469,7 +10543,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 259 (2026-10-17).**
+**Unchanged since U4, through Deploy 261 (2026-10-18).**
 
 ## Outstanding, unresolved by this document
 

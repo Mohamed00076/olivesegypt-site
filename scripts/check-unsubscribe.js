@@ -88,10 +88,10 @@ const t = (name, cond, extra) => {
 
 const ADMIN_COOKIE = `${COOKIE_NAME}=${signSession('admin', SECRET, fx.adminClaims('admin'))}`;
 
-function call(method, { body, query, cookie, ip } = {}) {
+function call(method, { body, query, cookie, ip, headers } = {}) {
   return unsub.handler({
     httpMethod: method,
-    headers: Object.assign({ 'x-nf-client-connection-ip': ip || '203.0.113.9' }, cookie ? { cookie } : {}),
+    headers: headers || Object.assign({ 'x-nf-client-connection-ip': ip || '203.0.113.9' }, cookie ? { cookie } : {}),
     queryStringParameters: query || {},
     body: body === undefined ? undefined : JSON.stringify(body),
   });
@@ -201,6 +201,23 @@ const parse = (res) => JSON.parse(res.body);
   }
   t('one connection cannot opt out an unlimited number of addresses', limited > 0, `${limited} refused of 40`);
   t('   and the refusals wrote nothing', db.events.length - before === 40 - limited, db.events.length - before);
+
+  // The limit counts Netlify's client-IP header only: headers the caller
+  // writes (X-Forwarded-For, client-ip) cannot buy a fresh allowance.
+  db.events.length = 0;
+  let spoofLimited = 0;
+  for (let i = 0; i < 40; i++) {
+    const r = await call('POST', { body: { email: `spoof${i}@example.com` }, headers: {
+      'x-nf-client-connection-ip': '198.51.100.2', 'x-forwarded-for': `10.0.${i}.1`, 'client-ip': `10.1.${i}.1` } });
+    if (r.statusCode === 429) spoofLimited++;
+  }
+  t('a new X-Forwarded-For or client-ip on every request does not escape the limit', spoofLimited === limited, `${spoofLimited} refused of 40, expected ${limited}`);
+  t('   and what is recorded is Netlify\'s client IP, never a caller-written header',
+    db.events.length > 0 && db.events.every((e) => e.client_ip === '198.51.100.2'), JSON.stringify([...new Set(db.events.map((e) => e.client_ip))]));
+  db.events.length = 0;
+  await call('POST', { body: { email: 'noheader@example.com' }, headers: { 'x-forwarded-for': '10.9.9.9', 'client-ip': '10.8.8.8' } });
+  t('without Netlify\'s header, the caller\'s headers are ignored (counted as "unknown")',
+    db.events.length === 1 && db.events[0].client_ip === 'unknown', JSON.stringify(db.events.map((e) => e.client_ip)));
 
   // ---- 5. a fresh consented submission lifts an old opt-out --------------
   db.optOuts.clear(); db.events.length = 0;
