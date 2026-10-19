@@ -168,13 +168,14 @@ const call = async (h, method, qs, body) => {
   if (m) {
     const el = () => ({ style: {}, textContent: '' });
     const card = el();
-    const els = { 'delete-btn': el(), 'erase-btn': el(), 'page-title': el(), 'activity-card': el(), 'documents-card': el(),
+    const els = { 'delete-btn': el(), 'erase-btn': el(), 'page-title': el(), 'activity-card': el(), 'documents-card': el(), 'files-card': el(),
       'buyer-form': { parentNode: card } };
     let status = null;
     const sandbox = { document: { getElementById: (id) => els[id] }, showStatus: (msg, ok) => { status = { msg, ok }; } };
     vm.createContext(sandbox);
     vm.runInContext('(' + m[0] + ')', sandbox)({ deleted: true, deleted_on: '2026-09-27', error: 'This buyer was deleted on 2026-09-27. Its details are no longer shown in the CRM.' });
-    t('   the details card, notes and documents are hidden', card.style.display === 'none' && els['activity-card'].style.display === 'none' && els['documents-card'].style.display === 'none');
+    t('   the details card, notes, documents and uploaded files are hidden', card.style.display === 'none' && els['activity-card'].style.display === 'none' &&
+      els['documents-card'].style.display === 'none' && els['files-card'].style.display === 'none');
     t('   Delete is hidden; Erase is offered', els['delete-btn'].style.display === 'none' && els['erase-btn'].style.display === '');
     t('   a lasting notice says it was deleted, when, and what Erase is for',
       els['page-title'].textContent === 'Deleted buyer' && status && status.ok === false && /deleted on 2026-09-27/.test(status.msg) && /use Erase/.test(status.msg),
