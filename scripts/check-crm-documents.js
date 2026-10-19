@@ -46,6 +46,7 @@ const db = {
     }],
   ]),
   documents: [],
+  audit: [],
   altered: false,
 };
 
@@ -107,7 +108,18 @@ function fakeSql(strings, ...vals) {
     if (doc) doc.doc_number = vals[0];
     return Promise.resolve([]);
   }
-  if (/INSERT INTO crm_audit_log/i.test(q)) return Promise.resolve([]);
+  if (/INSERT INTO crm_audit_log/i.test(q)) { db.audit.push(vals); return Promise.resolve([]); }
+  // The document a new one is made from (source_doc_id).
+  if (/SELECT id, doc_type, doc_number, voided_at FROM crm_documents WHERE id/i.test(q)) {
+    const doc = db.documents.find((d) => d.id === Number(vals[0]));
+    return Promise.resolve(doc ? [{ id: doc.id, doc_type: doc.doc_type, doc_number: doc.doc_number, voided_at: doc.voided_at || null }] : []);
+  }
+  // "Copy from last invoice": newest live invoice or proforma with bank details.
+  if (/bank_details IS NOT NULL/i.test(q)) {
+    const hit = db.documents.filter((d) => ['invoice', 'proforma'].includes(d.doc_type) && !d.voided_at && d.bank_details)
+      .sort((a, b) => b.id - a.id)[0];
+    return Promise.resolve(hit ? [{ doc_number: hit.doc_number, bank_details: hit.bank_details }] : []);
+  }
 
   return Promise.resolve([]);
 }
@@ -484,6 +496,64 @@ function create(body, { cookie = COOKIE } = {}) {
   }
 
   // ---- everything else the handler validated, it still validates -------
+  {
+    // proforma invoice: PI- numbers, a validity date and bank details, no due date
+    const res = await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS,
+      valid_until: '2026-11-30', due_date: '2026-12-31', bank_details: 'IBAN: EG00 TEST' });
+    const doc = db.documents[db.documents.length - 1];
+    t('a proforma invoice is issued with a PI- number', res.statusCode === 200 && /^PI-\d{4}-\d{6}$/.test(JSON.parse(res.body).doc_number), res.body);
+    t('   it keeps a validity date and bank details, and no due date',
+      doc.valid_until === '2026-11-30' && doc.due_date === null && doc.bank_details === 'IBAN: EG00 TEST',
+      JSON.stringify([doc.valid_until, doc.due_date, doc.bank_details]));
+  }
+
+  {
+    // made from another document: the source is checked, linked and audited
+    await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    const quote = db.documents[db.documents.length - 1];
+    let res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    let doc = db.documents[db.documents.length - 1];
+    t('an invoice made from a quotation records which one', res.statusCode === 200 &&
+      doc.source_doc_id === quote.id && doc.source_doc_number === quote.doc_number, JSON.stringify([doc.source_doc_id, doc.source_doc_number]));
+    t('   and the audit log says so', db.audit.some((a) => a.includes(`${doc.doc_number} from ${quote.doc_number}`)));
+
+    res = await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    const pi = db.documents[db.documents.length - 1];
+    t('   a proforma can be made from a quotation', res.statusCode === 200 && pi.source_doc_number === quote.doc_number, res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: pi.id });
+    t('   and an invoice from a proforma', res.statusCode === 200 && db.documents[db.documents.length - 1].source_doc_number === pi.doc_number, res.body);
+
+    const before = db.documents.length;
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    t('a quotation cannot be made from another document', res.statusCode === 400 && /source_doc_id/.test(res.body), res.body);
+    res = await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: pi.id });
+    t('   nor a proforma from a proforma', res.statusCode === 400, res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: 999999 });
+    t('   a source that does not exist is refused', res.statusCode === 400, res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: 'abc' });
+    t('   so is one that is not an id', res.statusCode === 400, res.body);
+    quote.voided_at = new Date();
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    t('   nothing is issued from a void quotation', res.statusCode === 409 && /void/.test(res.body), res.body);
+    t('   and none of the refused ones was created', db.documents.length === before, String(db.documents.length - before));
+  }
+
+  {
+    // the last bank details, for "Copy from last invoice"
+    await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: 'OLD ACCOUNT' });
+    await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: 'NEW ACCOUNT' });
+    const newest = db.documents[db.documents.length - 1];
+    const get = (cookie = COOKIE) => docs.handler({ httpMethod: 'GET', headers: cookie ? { cookie } : {}, queryStringParameters: { last_bank_details: '1' } });
+    let res = await get();
+    t('the last bank details come from the newest invoice or proforma', res.statusCode === 200 &&
+      JSON.parse(res.body).bank_details === 'NEW ACCOUNT' && JSON.parse(res.body).doc_number === newest.doc_number, res.body);
+    newest.voided_at = new Date();
+    res = await get();
+    t('   a void one is skipped', JSON.parse(res.body).bank_details === 'OLD ACCOUNT', res.body);
+    res = await get(null);
+    t('   and they are not given out without a session', res.statusCode === 401, String(res.statusCode));
+  }
+
   {
     const res = await create({ doc_type: 'receipt', buyer_company_name: 'X', line_items: LINE_ITEMS });
     t('an unknown doc_type is refused', res.statusCode === 400 && /doc_type/.test(res.body), res.body);

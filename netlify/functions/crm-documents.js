@@ -57,8 +57,8 @@ function connectionString() {
   );
 }
 
-const DOC_TYPES = new Set(['quotation', 'invoice', 'letter']);
-const DOC_PREFIX = { quotation: 'Q', invoice: 'INV', letter: 'L' };
+const DOC_TYPES = new Set(['quotation', 'proforma', 'invoice', 'letter']);
+const DOC_PREFIX = { quotation: 'Q', proforma: 'PI', invoice: 'INV', letter: 'L' };
 
 /*
  * A letter is priced-document-shaped in every way that matters for the
@@ -70,7 +70,25 @@ const DOC_PREFIX = { quotation: 'Q', invoice: 'INV', letter: 'L' };
  * identical, and duplicating that for the sake of two different columns
  * would mean two of everything to keep in step.
  */
-const PRICED = new Set(['quotation', 'invoice']);
+const PRICED = new Set(['quotation', 'proforma', 'invoice']);
+
+/*
+ * A proforma invoice (2026-10-20) is what an export buyer pays an advance or
+ * opens a letter of credit against, before the goods ship. It is priced like
+ * a quotation and paid against like an invoice: it carries a validity date
+ * and the bank details, and takes its own PI- numbers so it is never mistaken
+ * for the commercial invoice that follows the shipment.
+ */
+const BANK_TYPES = new Set(['proforma', 'invoice']);
+const VALIDITY_TYPES = new Set(['quotation', 'proforma']);
+
+/*
+ * What a document may be made from (2026-10-20): an accepted quotation
+ * becomes a proforma or an invoice, and a proforma becomes the invoice. The
+ * new document is a new document -- its own number, everything re-sent and
+ * re-validated by the form -- and records only which one it came from.
+ */
+const SOURCE_FOR = { proforma: new Set(['quotation']), invoice: new Set(['quotation', 'proforma']) };
 
 /*
  * The language a document is written in (2026-09-07).
@@ -139,7 +157,7 @@ const TERMS_FIELDS = ['payment_terms', 'lead_time'];
  * cannot be printed by an old default. Invoices only -- a quotation is not
  * paid against.
  */
-const INVOICE_FIELDS = ['bank_details'];
+const INVOICE_FIELDS = ['bank_details']; // on BANK_TYPES: invoices and proformas
 const MAX_LINE_ITEMS = 50;
 
 function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v); }
@@ -209,6 +227,11 @@ async function ensureSchema(sql) {
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS lead_time text`;
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS bank_details text`;
 
+  // Which document this one was made from, and that document's number as it
+  // was then (2026-10-20). Both nullable: most documents start from nothing.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS source_doc_id bigint`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS source_doc_number text`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
       id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -255,6 +278,22 @@ async function handleList(event, sql) {
     ? await sql`SELECT id, created_at, doc_type, doc_number, currency, total, language, voided_at FROM crm_documents WHERE buyer_id = ${buyerId} ORDER BY created_at DESC LIMIT 500`
     : await sql`SELECT id, created_at, doc_type, doc_number, buyer_company_name, currency, total, language, voided_at FROM crm_documents ORDER BY created_at DESC LIMIT 500`;
   return json(200, rows);
+}
+
+/*
+ * The bank details on the most recent invoice or proforma that has them
+ * (2026-10-20), for the form's "Copy from last invoice" button: account
+ * numbers are typed once and copied on a deliberate click, never filled in
+ * by default and never kept in the code. A void document is skipped -- it
+ * may have been voided for the wrong account.
+ */
+async function handleLastBank(sql) {
+  const row = (await sql`
+    SELECT doc_number, bank_details FROM crm_documents
+    WHERE doc_type IN ('invoice', 'proforma') AND voided_at IS NULL AND bank_details IS NOT NULL
+    ORDER BY created_at DESC LIMIT 1
+  `)[0];
+  return json(200, row ? { ok: true, doc_number: row.doc_number, bank_details: row.bank_details } : { ok: true, doc_number: null, bank_details: null });
 }
 
 async function handleGet(sql, id, actor) {
@@ -345,7 +384,7 @@ async function handleCreate(event, sql, actor) {
   LETTER_FIELDS.forEach(function (f) { letterParts[f] = null; });
   const terms = {};
   TERMS_FIELDS.forEach(function (f) { terms[f] = null; });
-  INVOICE_FIELDS.forEach(function (f) { terms[f] = docType === 'invoice' ? optional(body[f], MAX[f]) : null; });
+  INVOICE_FIELDS.forEach(function (f) { terms[f] = BANK_TYPES.has(docType) ? optional(body[f], MAX[f]) : null; });
   const signatory = {};
   SIGNATORY_FIELDS.forEach(function (f) { signatory[f] = optional(body[f], MAX[f]); });
 
@@ -375,8 +414,25 @@ async function handleCreate(event, sql, actor) {
   }
 
   const notes = optional(body.notes, MAX.notes);
-  const validUntil = docType === 'quotation' && body.valid_until ? clean(body.valid_until, 10) : null;
+  const validUntil = VALIDITY_TYPES.has(docType) && body.valid_until ? clean(body.valid_until, 10) : null;
   const dueDate = docType === 'invoice' && body.due_date ? clean(body.due_date, 10) : null;
+
+  /*
+   * The document this one is made from, checked here rather than trusted:
+   * it must exist, be a kind this type can come from, and not be void -- an
+   * invoice raised against a cancelled quotation is exactly the mistake the
+   * void exists to prevent.
+   */
+  let sourceId = null;
+  let sourceNumber = null;
+  if (body.source_doc_id != null && body.source_doc_id !== '') {
+    sourceId = parseId(String(body.source_doc_id));
+    if (!sourceId || !SOURCE_FOR[docType]) return json(400, { ok: false, error: 'Validation failed', fields: ['source_doc_id'] });
+    const src = (await sql`SELECT id, doc_type, doc_number, voided_at FROM crm_documents WHERE id = ${sourceId} LIMIT 1`)[0];
+    if (!src || !SOURCE_FOR[docType].has(src.doc_type)) return json(400, { ok: false, error: 'Validation failed', fields: ['source_doc_id'] });
+    if (src.voided_at) return json(409, { ok: false, error: `${src.doc_number} is void, so nothing can be issued from it.` });
+    sourceNumber = src.doc_number;
+  }
 
   // Recomputed here, never trusted from the client -- the client's
   // running total is a convenience preview only. A letter totals zero.
@@ -389,7 +445,7 @@ async function handleCreate(event, sql, actor) {
       buyer_company_name, buyer_contact_name, buyer_country, buyer_address,
       currency, incoterm, valid_until, due_date, notes, subject, body, language,
       salutation, closing, signatory_name, signatory_title, enclosures, cc,
-      payment_terms, lead_time, bank_details,
+      payment_terms, lead_time, bank_details, source_doc_id, source_doc_number,
       line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
@@ -398,7 +454,7 @@ async function handleCreate(event, sql, actor) {
       ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody}, ${language},
       ${letterParts.salutation}, ${letterParts.closing}, ${signatory.signatory_name},
       ${signatory.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
-      ${terms.payment_terms}, ${terms.lead_time}, ${terms.bank_details},
+      ${terms.payment_terms}, ${terms.lead_time}, ${terms.bank_details}, ${sourceId}, ${sourceNumber},
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )
     RETURNING id, created_at
@@ -408,7 +464,7 @@ async function handleCreate(event, sql, actor) {
   const docNumber = `${DOC_PREFIX[docType]}-${year}-${String(id).padStart(6, '0')}`;
   await sql`UPDATE crm_documents SET doc_number = ${docNumber} WHERE id = ${id}`;
 
-  await audit(sql, actor, 'create', id, docNumber);
+  await audit(sql, actor, 'create', id, sourceNumber ? `${docNumber} from ${sourceNumber}` : docNumber);
 
   return json(200, { ok: true, id, doc_number: docNumber });
 }
@@ -445,6 +501,7 @@ exports.handler = async (event) => {
   try {
     await ensureSchema(sql);
 
+    if (event.httpMethod === 'GET' && qs.last_bank_details) return await handleLastBank(sql);
     if (event.httpMethod === 'GET' && id) return await handleGet(sql, id, actor);
     if (event.httpMethod === 'GET') return await handleList(event, sql);
     if (event.httpMethod === 'POST') return await handleCreate(event, sql, actor);

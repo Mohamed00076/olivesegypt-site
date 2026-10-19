@@ -143,6 +143,7 @@
           <h2 style="margin:0;">Documents</h2>
           <div class="crm-flex">
             <a class="crm-btn crm-btn-secondary" id="new-quotation-link" href="#">New Quotation</a>
+            <a class="crm-btn crm-btn-secondary" id="new-proforma-link" href="#">New Proforma</a>
             <a class="crm-btn crm-btn-secondary" id="new-invoice-link" href="#">New Invoice</a>
           </div>
         </div>
@@ -343,7 +344,9 @@
             link.textContent = d.doc_number + (d.voided_at ? ' (void)' : '');
             numTd.appendChild(link);
             tr.appendChild(numTd);
-            [d.doc_type === 'invoice' ? 'Invoice' : 'Quotation',
+            // Every type by name: this said "Quotation" for anything not an
+            // invoice, letters included (fixed 2026-10-20).
+            [({ quotation: 'Quotation', proforma: 'Proforma', invoice: 'Invoice', letter: 'Letter' })[d.doc_type] || d.doc_type,
              (Number(d.total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + d.currency,
              CRM.fmtDate(d.created_at)].forEach(function (v) {
               var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
@@ -360,6 +363,7 @@
           document.getElementById('documents-card').style.display = '';
           document.getElementById('new-quotation-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=quotation';
           document.getElementById('new-invoice-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=invoice';
+          document.getElementById('new-proforma-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=proforma';
           CRM.fetchJson('/api/crm/documents?buyer_id=' + encodeURIComponent(buyerId)).then(function (result) {
             if (result.ok) renderDocuments(result.data);
           });

@@ -225,6 +225,10 @@
       <div class="container doc-toolbar mx-auto px-4 flex items-center justify-between">
         <a href="#" id="back-link" class="text-sm font-semibold text-primary">&larr; Back to buyer</a>
         <div class="flex gap-2">
+          <!-- The next document in the sale, started from this one: shown on a
+               live quotation (proforma, invoice) and a live proforma (invoice). -->
+          <a id="make-proforma" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;" href="#">Create proforma</a>
+          <a id="make-invoice" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;" href="#">Create invoice</a>
           <button id="void-btn" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;">Void</button>
           <button id="print-btn" onclick="window.print()" class="text-sm px-4 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold">Print / Save as PDF</button>
         </div>
@@ -388,7 +392,7 @@
             voidConfirm: 'Void this document? This is permanent and cannot be undone (the record stays for your records, marked VOID).',
             backBuyer: '← Back to buyer',
             backDocs: '← Back to documents',
-            titles: { quotation: 'Quotation', invoice: 'Invoice' },
+            titles: { quotation: 'Quotation', proforma: 'Proforma Invoice', invoice: 'Invoice' },
             kindFallback: 'Document',
             numberPrefix: 'No. ',
             billTo: 'Bill To / Buyer',
@@ -427,7 +431,7 @@
             voidConfirm: 'إلغاء هذا المستند؟ لا يمكن التراجع عن ذلك (يبقى السجل محفوظًا ومؤشرًا عليه بـ ملغى).',
             backBuyer: '→ العودة إلى المشتري',
             backDocs: '→ العودة إلى المستندات',
-            titles: { quotation: 'عرض سعر', invoice: 'فاتورة' },
+            titles: { quotation: 'عرض سعر', proforma: 'فاتورة مبدئية', invoice: 'فاتورة' },
             kindFallback: 'مستند',
             numberPrefix: 'رقم ',
             billTo: 'إلى السادة',
@@ -621,14 +625,18 @@
 
           // Dates beside the title: the issue date, and the one other date this kind of document has.
           var dates = [[t.dates.date, fmtDate(d.created_at)]];
-          if (isQuote && d.valid_until) dates.push([t.dates.valid, fmtDate(d.valid_until)]);
+          if ((isQuote || d.doc_type === 'proforma') && d.valid_until) dates.push([t.dates.valid, fmtDate(d.valid_until)]);
           if (d.doc_type === 'invoice' && d.due_date) dates.push([t.dates.due, fmtDate(d.due_date)]);
+          // The quotation or proforma this was made from, by its number: the
+          // buyer matches the two up. "Ref" is the letters' own label.
+          if (d.source_doc_number) dates.push([t.refPrefix.replace(/:\s*$/, ''), d.source_doc_number, true]);
           var datesEl = document.getElementById('doc-dates');
           datesEl.innerHTML = '';
           dates.forEach(function (pair) {
             var line = document.createElement('div');
             line.appendChild(document.createTextNode(pair[0] + ': '));
             var b = document.createElement('b'); b.textContent = pair[1];
+            if (pair[2]) b.className = 'ltr'; // a document number keeps its order in Arabic
             line.appendChild(b);
             datesEl.appendChild(line);
           });
@@ -720,7 +728,7 @@
             document.getElementById('doc-terms').style.display = '';
 
             // Only on an invoice, and only if typed on it.
-            if (d.doc_type === 'invoice' && d.bank_details) {
+            if ((d.doc_type === 'invoice' || d.doc_type === 'proforma') && d.bank_details) {
               setText('doc-bank-body', d.bank_details);
               document.getElementById('doc-bank').style.display = '';
               document.getElementById('doc-terms-wrap').classList.add('has-bank');
@@ -730,6 +738,18 @@
           if (d.notes) {
             setText('doc-notes', d.notes);
             document.getElementById('doc-notes-block').style.display = '';
+          }
+
+          // Staff links to the next document; never on a void one.
+          if (!d.voided_at && (isQuote || d.doc_type === 'proforma')) {
+            var mi = document.getElementById('make-invoice');
+            mi.href = '/crm/document/?type=invoice&from=' + encodeURIComponent(d.id);
+            mi.style.display = '';
+            if (isQuote) {
+              var mp = document.getElementById('make-proforma');
+              mp.href = '/crm/document/?type=proforma&from=' + encodeURIComponent(d.id);
+              mp.style.display = '';
+            }
           }
 
           var voidBtn = document.getElementById('void-btn');
