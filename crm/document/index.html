@@ -181,6 +181,12 @@
               <input id="lead-time" maxlength="200" dir="auto" placeholder="e.g. 4-6 weeks from confirmed order" />
             </div>
           </div>
+          <!-- Invoices only. Typed per invoice and stored with it; nothing
+               is pre-filled, so an old account can never print by default. -->
+          <div class="crm-field" id="bank-field" style="display:none;">
+            <label for="bank-details">Bank details for payment <span class="crm-muted">(optional)</span></label>
+            <textarea id="bank-details" rows="4" maxlength="600" dir="auto" placeholder="Beneficiary, bank, account / IBAN, SWIFT"></textarea>
+          </div>
           <div class="crm-field">
             <label for="notes">Notes (packaging, shipping details, etc.)</label>
             <textarea id="notes" rows="3" maxlength="2000" dir="auto"></textarea>
@@ -336,6 +342,7 @@
             payload.incoterm = document.getElementById('incoterm').value.trim();
             payload.payment_terms = document.getElementById('payment-terms').value.trim();
             payload.lead_time = document.getElementById('lead-time').value.trim();
+            if (docType === 'invoice') payload.bank_details = document.getElementById('bank-details').value.trim();
             payload.line_items = lines;
           }
           payload.signatory_name = document.getElementById('l-signatory').value.trim();
@@ -403,6 +410,7 @@
             document.getElementById('line-items-card').style.display = 'none';
           } else {
             document.getElementById('date-label').textContent = docType === 'invoice' ? 'Due Date' : 'Valid Until';
+            if (docType === 'invoice') document.getElementById('bank-field').style.display = '';
           }
 
           var langSelect = document.getElementById('doc-language');

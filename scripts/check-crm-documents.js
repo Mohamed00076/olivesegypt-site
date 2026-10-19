@@ -398,6 +398,30 @@ function create(body, { cookie = COOKIE } = {}) {
   }
 
   {
+    // bank details: typed on an invoice, kept with it, nowhere else
+    const BANK = 'Beneficiary: Sample Co\nBank: Sample Bank\nIBAN: EG00 0000 0000 0000\nSWIFT: SAMPEGCX';
+    let res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: BANK });
+    let doc = db.documents[db.documents.length - 1];
+    t('an invoice stores bank details, line breaks kept', res.statusCode === 200 && doc.bank_details === BANK, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    doc = db.documents[db.documents.length - 1];
+    t('   left blank, nothing is filled in', res.statusCode === 200 && doc.bank_details === null, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: BANK });
+    doc = db.documents[db.documents.length - 1];
+    t('   a quotation ignores them', res.statusCode === 200 && doc.bank_details === null, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'letter', buyer_company_name: 'X', body: 'Hello.', bank_details: BANK });
+    doc = db.documents[db.documents.length - 1];
+    t('   so does a letter', res.statusCode === 200 && doc.bank_details === null, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: 'B'.repeat(900) });
+    doc = db.documents[db.documents.length - 1];
+    t('   long values are capped', res.statusCode === 200 && doc.bank_details.length === 600, String(doc.bank_details && doc.bank_details.length));
+  }
+
+  {
     // long values are capped rather than rejected, like every other field
     const res = await create({
       doc_type: 'letter', buyer_company_name: 'X', body: 'Note.',
