@@ -10737,6 +10737,75 @@ Files and lines are the merge against the `main` it landed on.
 
 ---
 
+## Deploys 268 and 269 — Minimum order is a full container load (FCL), with no figure anywhere; the record of Deploys 264 to 267 (PRs #392, #391)
+
+**Previous recorded deploy:** `b401d53` (Deploy 267, PR #393)
+**Approvals:**
+- The owner asked that the minimum order carry no figures: "different packing have different dry or drained weight so the 16 to 18 tons doesn't apply to all … just leave it fcl or fully loaded container". Then "b yes remove all numbers" (#392).
+- The owner asked what was waiting for approval. The reply named #392 and #391, and the owner answered "okay merge" (both).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 268 | #392 | `36e50e2` | 2026-10-20 01:52:43 | 71 | +202 / −193 | Minimum-order wording (EN, AR), 10 PDFs, checks, claims |
+| 269 | #391 | `836c1af` | 2026-10-20 01:52:59 | 1 | +148 / −1 | Notes only |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 269** recorded Deploys 264 to 267.
+
+### What the deploys did
+
+- **Deploy 268 — Minimum order (#392).**
+  - **The rule:** every statement of the export minimum now reads "a full container load (FCL)" / «حاوية كاملة (FCL)». No statement gives a tonnage ("16–18 MT") or a container size ("1 × 20ft"). On the homepage, the "1×20ft · Container MOQ" figure is now "FCL".
+  - **"Indicative" goes:** the sentence becomes "Our minimum order is…". The hedge existed only because of the tonnage.
+  - **Inside Egypt:** the minimum for 220 kg barrels, "10 metric tons (about 45 barrels)", becomes "confirmed during quotation". The local page's title drops "from 10 tons". Jars, tins and buckets follow the FCL minimum.
+  - **Where:**
+    - pages: the homepage (FAQ, structured data and stats tile), `/resources/faq`, `/company-profile`, `/how-we-work`, `/resources/private-label`, `/resources/certifications`, `/catalog`, the olive and pickled-vegetable pages, four articles, the solutions hub and five solutions pages, and `llms.txt`, each in English and Arabic (37 pages);
+    - 10 PDFs: company profile, buyer's guide, company overview, export catalogue and private-label brochure, in English and Arabic.
+  - **Kept on purpose:**
+    - the pricing page's worked example ("…for a full 20ft container FOB Alexandria"), in the page and in the pricing guide, which shows how costs add up and is not a minimum;
+    - the contact form's estimated-volume choices.
+  - **Generated content:** `generate-solutions-pages.py` was re-run, and its output is identical to the edited pages. The PDF sources were rebuilt and the 10 PDFs reprinted with new fingerprints. The other 26 PDFs, rewritten by the generator with no change in content, were restored.
+  - **Checks:**
+    - `check-article-claims.js` now fails any minimum-order sentence that carries a quantity, and any tonnage put on a container. It was shown to fail on the old text.
+    - `check-solutions.js` holds the new Egypt wording.
+    - The figure-parity check caught three Arabic texts still saying "20" before the PR opened; all three were fixed.
+  - **Register and sitemap:** C-133, C-136, C-138, C-139 and C-140 record the decision, and `evidence-needed.md` is updated. 37 `sitemap.xml` dates moved, one for each page whose text changed.
+  - **Before merging:** the branch was merged locally with the `main` that carried Deploy 267. `npm test` passed on the combination, and `check-function-bundles.js` (copied temporarily from #383) reported 43 packaged and 0 problems.
+- **Deploy 269 — The record (#391):** Deploys 264 to 266 and Deploy 267. Deploy 267 was added to the same branch because #393 merged first.
+
+### Verified on the live site (2026-10-20)
+
+- **Deployed commit:** `deployed-commit.txt` reads `836c1af12ce35fb5b70c410e2c7de669337376bf`.
+- **Minimum order:** these pages carry "FCL" and no "16–18" or "20 tons" in either language: `/`, `/ar/`, `/products/`, `/ar/resources/certifications/` and `llms.txt`.
+- **Live check:** two runs, each 20 OK and 1 FAIL. The failure was a different page each time (`/ar/resources/pricing` and then `/catalog/`), each a connection error with no response. Fetched again, `/ar/resources/pricing` returned 301 to `/ar/resources/pricing/` and `/catalog/` returned 200. With the earlier single failure on `/ar/solutions` at Deploy 267, the pattern points to the checking connection, not the site.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims. C-133, C-136, C-138, C-139 and C-140 have been reworded, not added.
+
+### Rollback
+
+- **Deploy 268:** `git revert -m 1 36e50e2`. This restores the pages, the PDFs, the checks and the five claims together.
+- **Deploy 269** is documentation only.
+
+### Known limitations shipped with Deploys 268 and 269
+
+- **Arabic awaits the owner's review:** the new minimum-order sentence, «حاوية كاملة (FCL)» and the Egypt-page wording, along with the CRM document labels listed at Deploy 267.
+- **Listings outside this repository:** directories, marketplaces or past PDFs sent to buyers may still state a tonnage. The owner updates those.
+- **Unchanged from Deploy 267:**
+  - the three old sign-in functions keep their IP fallback until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions are with counsel;
+  - the owner items listed at Deploys 242 to 244.
+- **#359 (PDF redesign, Phase B)** stays a draft until the four remaining product photographs arrive. This was the owner's choice on 2026-10-20.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10755,7 +10824,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 267 (2026-10-19).**
+**Unchanged since U4, through Deploy 269 (2026-10-20).**
 
 ## Outstanding, unresolved by this document
 
