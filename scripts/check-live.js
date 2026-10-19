@@ -48,10 +48,26 @@ function certExpiry(host) {
   });
 }
 
+/*
+ * One request, tried a second time if the connection itself fails -- no
+ * reply at all, not a wrong one. A dropped connection on the checker's side
+ * ("fetch failed" on one random page per run, a different page each time,
+ * Deploys 267 to 269) is not the site failing; a second failure is reported
+ * as before. Any HTTP status, right or wrong, is answered first time.
+ */
+let retried = 0;
 async function get(url, opts = {}) {
-  const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': 'olivesegypt-live-check' }, ...opts });
-  const body = opts.method === 'HEAD' ? '' : await res.text();
-  return { status: res.status, location: res.headers.get('location') || '', headers: res.headers, body };
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': 'olivesegypt-live-check' }, ...opts });
+      const body = opts.method === 'HEAD' ? '' : await res.text();
+      return { status: res.status, location: res.headers.get('location') || '', headers: res.headers, body };
+    } catch (e) {
+      if (attempt >= 2) throw e;
+      retried++;
+      await sleep(2000);
+    }
+  }
 }
 
 const localSitemap = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
@@ -246,7 +262,9 @@ async function main() {
   const icon = { OK: '✅', FAIL: '❌', PENDING: '⏳' };
   const lines = results.map(([lvl, name, d]) => `${icon[lvl]} **${lvl}** ${name}${d ? ` — ${d}` : ''}`);
   const counts = ['OK', 'FAIL', 'PENDING'].map((l) => `${results.filter((r) => r[0] === l).length} ${l}`).join(', ');
-  const report = `## Live check of ${BASE}\n\n${counts}\n\n${lines.join('\n')}\n`;
+  // Retries are said, not hidden: many in one run would mean something.
+  const retriedNote = retried ? `\n\n${retried} request${retried === 1 ? '' : 's'} retried once after a dropped connection.` : '';
+  const report = `## Live check of ${BASE}\n\n${counts}${retriedNote}\n\n${lines.join('\n')}\n`;
   console.log(report);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, report);
   process.exit(results.some((r) => r[0] === 'FAIL') ? 1 : 0);
