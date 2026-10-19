@@ -83,6 +83,9 @@ const BAD = ['5abc', '5; DROP TABLE buyers', '0', '-5', '5.5', '0x10', '1e3', ' 
     { file: 'crm-documents.js', method: 'GET', key: 'id', what: 'opening a document' },
     { file: 'crm-documents.js', method: 'GET', key: 'buyer_id', what: "listing a buyer's documents" },
     { file: 'crm-documents.js', method: 'DELETE', key: 'id', what: 'voiding a document', extra: { confirmed: '1' } },
+    { file: 'crm-buyer-files.js', method: 'GET', key: 'id', what: 'opening an uploaded file' },
+    { file: 'crm-buyer-files.js', method: 'GET', key: 'buyer_id', what: "listing a buyer's uploaded files" },
+    { file: 'crm-buyer-files.js', method: 'DELETE', key: 'id', what: 'deleting an uploaded file', extra: { confirmed: '1' } },
     { file: 'kpi-values.js', method: 'GET', key: 'kpi_id', what: "reading a KPI's history", error: /kpi_id must be a number/ },
   ];
   for (const c of QS_CASES) {

@@ -154,6 +154,57 @@
         <p class="crm-muted" id="documents-empty" style="display:none;">No quotations or invoices yet.</p>
       </div>
 
+      <!-- Documents this buyer has that the CRM did not issue (2026-10-20):
+           an old quotation, an invoice from before the CRM, a contract. They
+           are kept as files, beside the documents above, never renumbered. -->
+      <div class="crm-card" id="files-card" style="display:none;">
+        <div class="crm-flex-between">
+          <h2 style="margin:0;">Uploaded documents</h2>
+          <div class="crm-flex">
+            <button type="button" class="crm-btn crm-btn-secondary" data-upload-kind="quotation">Upload quotation</button>
+            <button type="button" class="crm-btn crm-btn-secondary" data-upload-kind="invoice">Upload invoice</button>
+            <button type="button" class="crm-btn crm-btn-secondary" data-upload-kind="other">Upload other</button>
+          </div>
+        </div>
+        <p class="crm-muted" style="margin:8px 0 0;">Quotations, invoices and other documents you have from outside the CRM: PDF, PNG, JPEG, WebP, Word or Excel, up to 4 MB each.</p>
+        <div id="file-status" class="crm-status" style="display:none; margin-top:12px;"></div>
+
+        <form id="file-form" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--crm-border, #e5e2d9);">
+          <h3 id="file-form-title" style="margin:0 0 10px;">Upload quotation</h3>
+          <div class="crm-field">
+            <label for="f-file">File</label>
+            <input id="f-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,application/pdf,image/png,image/jpeg,image/webp" />
+          </div>
+          <div class="crm-field" id="f-title-field" style="display:none;">
+            <label for="f-title">What it is</label>
+            <input id="f-title" maxlength="200" dir="auto" placeholder="e.g. Signed sales contract, Certificate of analysis" />
+          </div>
+          <div class="crm-grid crm-grid-3">
+            <div class="crm-field"><label for="f-reference">Their number <span class="crm-muted">(optional)</span></label><input id="f-reference" maxlength="100" dir="auto" placeholder="e.g. Q-17/2025" /></div>
+            <div class="crm-field"><label for="f-date">Date on the document <span class="crm-muted">(optional)</span></label><input id="f-date" type="date" /></div>
+            <div class="crm-field"><label for="f-issued-by">Issued by <span class="crm-muted">(optional)</span></label><input id="f-issued-by" maxlength="200" dir="auto" placeholder="e.g. our previous agent" /></div>
+          </div>
+          <div class="crm-grid crm-grid-3" id="f-amount-row">
+            <div class="crm-field"><label for="f-amount">Total <span class="crm-muted">(optional)</span></label><input id="f-amount" type="number" min="0" step="any" /></div>
+            <div class="crm-field"><label for="f-currency">Currency</label><input id="f-currency" maxlength="3" value="USD" style="text-transform:uppercase;" /></div>
+          </div>
+          <div class="crm-field">
+            <label for="f-note">Note <span class="crm-muted">(optional)</span></label>
+            <textarea id="f-note" rows="2" maxlength="1000" dir="auto"></textarea>
+          </div>
+          <div class="crm-flex">
+            <button type="submit" class="crm-btn crm-btn-primary" id="f-upload-btn">Upload</button>
+            <button type="button" class="crm-btn crm-btn-secondary" id="f-cancel-btn">Cancel</button>
+          </div>
+        </form>
+
+        <table style="margin-top:12px;" id="files-table">
+          <thead><tr><th>Type</th><th>Their number</th><th>Issued by</th><th>Date</th><th>Total</th><th>File</th><th>Uploaded</th><th></th></tr></thead>
+          <tbody id="files-tbody"></tbody>
+        </table>
+        <p class="crm-muted" id="files-empty" style="display:none;">No uploaded documents yet.</p>
+      </div>
+
       <div class="crm-card" id="stage-history-card" style="display:none;">
         <h2>Stage History</h2>
         <table>
@@ -370,6 +421,143 @@
           });
         }
 
+        /* ---- Uploaded documents ------------------------------------------- */
+        var FILE_KIND = { quotation: 'Quotation', invoice: 'Invoice', other: 'Other' };
+        var FILE_MAX = 4 * 1024 * 1024;
+        var uploadKind = 'quotation';
+
+        function fileStatus(msg, ok) {
+          var el = document.getElementById('file-status');
+          el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
+          el.textContent = msg;
+          el.style.display = msg ? 'block' : 'none';
+        }
+        function fmtSize(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+
+        function renderFiles(rows) {
+          var tbody = document.getElementById('files-tbody');
+          tbody.innerHTML = '';
+          document.getElementById('files-empty').style.display = rows.length ? 'none' : '';
+          document.getElementById('files-table').style.display = rows.length ? '' : 'none';
+          rows.forEach(function (f) {
+            var tr = document.createElement('tr');
+            var kind = FILE_KIND[f.kind] || f.kind;
+            [f.kind === 'other' && f.title ? f.title : kind,
+             f.reference || '',
+             f.issued_by || '',
+             f.doc_date ? CRM.fmtDate(f.doc_date) : '',
+             f.amount != null ? Number(f.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + (f.currency || '') : ''].forEach(function (v) {
+              var td = document.createElement('td'); td.textContent = v; td.dir = 'auto'; tr.appendChild(td);
+            });
+            var fileTd = document.createElement('td');
+            var open = document.createElement('a');
+            open.href = '/api/crm/buyer-files?id=' + encodeURIComponent(f.id);
+            open.target = '_blank'; open.rel = 'noopener';
+            open.textContent = f.filename;
+            fileTd.appendChild(open);
+            fileTd.appendChild(document.createTextNode(' (' + fmtSize(f.size_bytes) + ')'));
+            if (f.note) { var n = document.createElement('div'); n.className = 'crm-muted'; n.style.fontSize = '12px'; n.textContent = f.note; n.dir = 'auto'; fileTd.appendChild(n); }
+            tr.appendChild(fileTd);
+            var upTd = document.createElement('td');
+            upTd.textContent = CRM.fmtDate(f.uploaded_at) + (f.uploaded_by ? ' \u00b7 ' + f.uploaded_by : '');
+            tr.appendChild(upTd);
+            var delTd = document.createElement('td');
+            var del = document.createElement('button');
+            del.type = 'button'; del.className = 'crm-btn crm-btn-secondary'; del.textContent = 'Delete';
+            del.addEventListener('click', function () { deleteFile(f); });
+            delTd.appendChild(del);
+            tr.appendChild(delTd);
+            tbody.appendChild(tr);
+          });
+        }
+
+        function loadFiles() {
+          document.getElementById('files-card').style.display = '';
+          CRM.fetchJson('/api/crm/buyer-files?buyer_id=' + encodeURIComponent(buyerId)).then(function (result) {
+            if (result.ok) renderFiles(result.data);
+            else fileStatus((result.data && result.data.error) || 'Could not load the uploaded documents.', false);
+          }).catch(function (e) {
+            var msg = CRM.noReplyMessage(e, 'Loading the uploaded documents', 'Reload the page to try again.');
+            if (msg) fileStatus(msg, false);
+          });
+        }
+
+        function openUpload(kind) {
+          uploadKind = kind;
+          var form = document.getElementById('file-form');
+          form.reset();
+          document.getElementById('f-currency').value = 'USD';
+          document.getElementById('file-form-title').textContent = kind === 'other' ? 'Upload another document' : 'Upload ' + FILE_KIND[kind].toLowerCase();
+          document.getElementById('f-title-field').style.display = kind === 'other' ? '' : 'none';
+          document.getElementById('f-amount-row').style.display = kind === 'other' ? 'none' : '';
+          form.style.display = '';
+          fileStatus('', true);
+          document.getElementById('f-file').focus();
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('[data-upload-kind]'), function (b) {
+          b.addEventListener('click', function () { openUpload(b.getAttribute('data-upload-kind')); });
+        });
+        document.getElementById('f-cancel-btn').addEventListener('click', function () {
+          document.getElementById('file-form').style.display = 'none';
+        });
+
+        document.getElementById('file-form').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var input = document.getElementById('f-file');
+          var file = input.files && input.files[0];
+          if (!file) { fileStatus('Choose the file to upload.', false); return; }
+          // Checked here to save a wasted upload; the server checks again, and decides the type from the file itself.
+          if (file.size > FILE_MAX) { fileStatus('The file is larger than 4 MB. Save a smaller copy (for example, export the PDF at a lower quality) and try again.', false); return; }
+          var title = document.getElementById('f-title').value.trim();
+          if (uploadKind === 'other' && !title) { fileStatus('Say what the document is.', false); document.getElementById('f-title').focus(); return; }
+          var btn = document.getElementById('f-upload-btn');
+          btn.disabled = true;
+          fileStatus('Uploading ' + file.name + '…', true);
+          var reader = new FileReader();
+          reader.onerror = function () { btn.disabled = false; fileStatus('The file could not be read. Try choosing it again.', false); };
+          reader.onload = function () {
+            var data = String(reader.result || '');
+            var payload = {
+              buyer_id: Number(buyerId), kind: uploadKind, title: title, filename: file.name,
+              data_base64: data.slice(data.indexOf(',') + 1),
+              reference: document.getElementById('f-reference').value.trim(),
+              doc_date: document.getElementById('f-date').value || null,
+              issued_by: document.getElementById('f-issued-by').value.trim(),
+              note: document.getElementById('f-note').value.trim(),
+            };
+            var amount = document.getElementById('f-amount').value;
+            if (uploadKind !== 'other' && amount !== '') {
+              payload.amount = Number(amount);
+              payload.currency = document.getElementById('f-currency').value.trim().toUpperCase();
+            }
+            CRM.fetchJson('/api/crm/buyer-files', { method: 'POST', body: payload }).then(function (result) {
+              btn.disabled = false;
+              if (!result.ok) { fileStatus((result.data && result.data.error) || 'Could not upload the file.', false); return; }
+              document.getElementById('file-form').style.display = 'none';
+              fileStatus('Uploaded ' + file.name + '.', true);
+              loadFiles();
+            }).catch(function (e) {
+              btn.disabled = false;
+              var msg = CRM.noReplyMessage(e, 'Uploading ' + file.name,
+                'Reload the page and check the list before uploading it again, so it is not there twice.');
+              if (msg) fileStatus(msg, false);
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+
+        function deleteFile(f) {
+          if (!window.confirm('Delete ' + f.filename + ' from this buyer? The file is removed for good.')) return;
+          CRM.fetchJson('/api/crm/buyer-files?id=' + encodeURIComponent(f.id) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
+            if (!result.ok) { fileStatus((result.data && result.data.error) || 'Could not delete the file.', false); return; }
+            fileStatus('Deleted ' + f.filename + '.', true);
+            loadFiles();
+          }).catch(function (e) {
+            var msg = CRM.noReplyMessage(e, 'Deleting ' + f.filename, 'Reload the page to see whether it is gone.');
+            if (msg) fileStatus(msg, false);
+          });
+        }
+
         function loadExisting() {
           return CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
             if (!result.ok && result.data.deleted) { showDeletedBuyer(result.data); return; }
@@ -397,6 +585,7 @@
             renderStageHistory(b.stage_history || []);
             renderActivity(b.activity_log || []);
             loadDocuments();
+            loadFiles();
           });
         }
 
@@ -415,6 +604,7 @@
           document.getElementById('buyer-form').parentNode.style.display = 'none';
           document.getElementById('activity-card').style.display = 'none';
           document.getElementById('documents-card').style.display = 'none';
+          document.getElementById('files-card').style.display = 'none';
           document.getElementById('delete-btn').style.display = 'none';
           document.getElementById('erase-btn').style.display = '';
           document.getElementById('page-title').textContent = 'Deleted buyer';

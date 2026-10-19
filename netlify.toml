@@ -294,6 +294,14 @@
   status = 200
   force = true
 
+# Files a buyer has that the CRM did not issue (uploaded quotations, invoices
+# and other documents). See netlify/functions/crm-buyer-files.js.
+[[redirects]]
+  from = "/api/crm/buyer-files"
+  to = "/.netlify/functions/crm-buyer-files"
+  status = 200
+  force = true
+
 # Section J2 -- KPI Manager (extends /admin/analytics; same admin auth,
 # same database, no separate app)
 [[redirects]]
