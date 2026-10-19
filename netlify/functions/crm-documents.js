@@ -99,7 +99,7 @@ const MAX = {
   subject: 300, body: 20000,
   salutation: 120, closing: 80, signatory_name: 200, signatory_title: 200,
   enclosures: 500, cc: 500,
-  payment_terms: 200, lead_time: 200,
+  payment_terms: 200, lead_time: 200, bank_details: 600,
 };
 
 /*
@@ -131,6 +131,15 @@ const SIGNATORY_FIELDS = ['signatory_name', 'signatory_title'];
  * printed default would quietly promise terms nobody agreed.
  */
 const TERMS_FIELDS = ['payment_terms', 'lead_time'];
+
+/*
+ * Where an invoice is paid (2026-10-20). Typed on each invoice and kept only
+ * in that document's row: never a default, and never in the site's code, so
+ * account numbers are not published with the site and a changed account
+ * cannot be printed by an old default. Invoices only -- a quotation is not
+ * paid against.
+ */
+const INVOICE_FIELDS = ['bank_details'];
 const MAX_LINE_ITEMS = 50;
 
 function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v); }
@@ -198,6 +207,7 @@ async function ensureSchema(sql) {
   // simply did not state them, and the sheet prints only what is there.
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS payment_terms text`;
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS lead_time text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS bank_details text`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
@@ -335,6 +345,7 @@ async function handleCreate(event, sql, actor) {
   LETTER_FIELDS.forEach(function (f) { letterParts[f] = null; });
   const terms = {};
   TERMS_FIELDS.forEach(function (f) { terms[f] = null; });
+  INVOICE_FIELDS.forEach(function (f) { terms[f] = docType === 'invoice' ? optional(body[f], MAX[f]) : null; });
   const signatory = {};
   SIGNATORY_FIELDS.forEach(function (f) { signatory[f] = optional(body[f], MAX[f]); });
 
@@ -378,7 +389,7 @@ async function handleCreate(event, sql, actor) {
       buyer_company_name, buyer_contact_name, buyer_country, buyer_address,
       currency, incoterm, valid_until, due_date, notes, subject, body, language,
       salutation, closing, signatory_name, signatory_title, enclosures, cc,
-      payment_terms, lead_time,
+      payment_terms, lead_time, bank_details,
       line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
@@ -387,7 +398,7 @@ async function handleCreate(event, sql, actor) {
       ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody}, ${language},
       ${letterParts.salutation}, ${letterParts.closing}, ${signatory.signatory_name},
       ${signatory.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
-      ${terms.payment_terms}, ${terms.lead_time},
+      ${terms.payment_terms}, ${terms.lead_time}, ${terms.bank_details},
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )
     RETURNING id, created_at

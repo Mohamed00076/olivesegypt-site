@@ -104,6 +104,18 @@
       .doc-letter-annex dd { margin: 0; }
 
       /* notes, signature, stamp ------------------------------------------- */
+      /* Bank details: as typed, line breaks kept, Latin isolated by dir=auto. */
+      .doc-bank { margin-bottom: 16px; break-inside: avoid; }
+      /*
+       * With bank details, terms and bank sit side by side: stacked, they
+       * pushed a three-line invoice's signature onto a second page. The
+       * terms fold to one label/value column to make room.
+       */
+      .doc-terms-wrap.has-bank { display: grid; grid-template-columns: 1.15fr 1fr; gap: 0 24px; align-items: start; }
+      .doc-terms-wrap.has-bank .doc-terms-grid { grid-template-columns: 2.4cm 1fr; }
+      .doc-terms-wrap.has-bank .doc-terms { margin-top: 0; }
+      .doc-bank-body { white-space: pre-wrap; font-size: 11px; line-height: 1.6; font-variant-numeric: tabular-nums; }
+      [dir="rtl"] .doc-bank-body { font-size: 12px; }
       .doc-notes { font-size: 10.5px; line-height: 1.6; white-space: pre-wrap; color: #4a4d40; margin-bottom: 18px; }
       .doc-notes b { color: var(--doc-ink); }
       .doc-sign { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-top: 8px; break-inside: avoid; }
@@ -166,6 +178,7 @@
         .doc-body { padding: 20px 0.9cm; overflow-x: auto; }
         .doc-cards { grid-template-columns: 1fr; }
         .doc-terms-grid { grid-template-columns: auto 1fr; }
+        .doc-terms-wrap.has-bank { grid-template-columns: 1fr; }
       }
 
       @media print {
@@ -302,9 +315,16 @@
         <!-- Terms, notes and signature move as one block, so a long
              document never ends with a page holding only the signature. -->
         <div class="doc-close">
+        <div class="doc-terms-wrap" id="doc-terms-wrap">
         <div class="doc-terms" id="doc-terms" style="display:none;">
           <div class="doc-section-label" id="label-terms">Terms</div>
           <dl class="doc-terms-grid" id="doc-terms-grid"></dl>
+        </div>
+
+        <div class="doc-bank" id="doc-bank" style="display:none;">
+          <div class="doc-section-label" id="label-bank">Bank Details</div>
+          <div class="doc-bank-body" id="doc-bank-body" dir="auto"></div>
+        </div>
         </div>
 
         <div class="doc-notes" id="doc-notes-block" style="display:none;"><b id="label-notes">Notes:</b> <span id="doc-notes"></span></div>
@@ -380,6 +400,7 @@
             total: 'Total',
             terms: 'Terms',
             notes: 'Notes:',
+            bank: 'Bank Details',
             enc: 'Enc.',
             cc: 'cc',
             signFor: 'For Triple Company for Industrial Development',
@@ -418,6 +439,7 @@
             total: 'الإجمالي',
             terms: 'الشروط',
             notes: 'ملاحظات:',
+            bank: 'البيانات المصرفية',
             enc: 'المرفقات',
             cc: 'نسخة إلى',
             signFor: 'عن الشركة الثلاثية للتنمية الصناعية',
@@ -543,6 +565,7 @@
           setText('label-total', t.total);
           setText('label-terms', t.terms);
           setText('label-notes', t.notes);
+          setText('label-bank', t.bank);
           setText('annex-enc-label', t.enc);
           setText('annex-cc-label', t.cc);
           setText('sign-for', t.signFor);
@@ -695,6 +718,13 @@
               grid.appendChild(dt); grid.appendChild(dd);
             });
             document.getElementById('doc-terms').style.display = '';
+
+            // Only on an invoice, and only if typed on it.
+            if (d.doc_type === 'invoice' && d.bank_details) {
+              setText('doc-bank-body', d.bank_details);
+              document.getElementById('doc-bank').style.display = '';
+              document.getElementById('doc-terms-wrap').classList.add('has-bank');
+            }
           }
 
           if (d.notes) {
