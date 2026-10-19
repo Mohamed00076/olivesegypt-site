@@ -10659,7 +10659,81 @@ Files and lines are each merge against the `main` it landed on.
   - the visitor-ID lifetime and re-ask questions are with counsel;
   - the owner items listed at Deploys 242 to 244.
 
-**Listed in the next entry:** the merge of this record (notes only).
+---
+
+## Deploy 267 — The CRM's quotation, invoice and letter in the owner's new design; minimum order as a full container; payment terms and lead time as fill-in fields (PR #393)
+
+**Previous recorded deploy:** `389260a` (Deploy 266, PR #389)
+**Approval:**
+- The owner sent the new design for the CRM's official documents and asked for the minimum-order wording to carry no figures.
+- "a yes, b yes remove all numbers, c fill-in fields": build the design into the CRM; remove the minimum-order figures (#392, separate and not yet merged); payment terms and lead time as fill-in fields.
+- After the samples, the owner asked for a header check and less empty space ("if you agree"). This was done in the same PR.
+- "merge" (#393).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 267 | #393 | `b401d53` | 2026-10-19 10:08:34 | 4 | +557 / −421 | CRM document view and form, documents function, its check |
+
+Files and lines are the merge against the `main` it landed on.
+
+**Notes-only deploys listed here:** none. #391, which records Deploys 264 to 266, had not merged yet, so this entry is on the same branch.
+
+### What the deploy did
+
+- **The printed document (`crm/document/view/`).** The layout follows the owner's 2026-10-19 design, in English and Arabic:
+  - a green masthead with the logo tile and a gold contact column;
+  - the title and number, with the dates beside them;
+  - a buyer card and a "Sales Representative" card;
+  - a green-headed table and a green total bar;
+  - a terms grid;
+  - a signature line and a dashed company-stamp box (quotations and invoices; letters keep a plain signature).
+- **The printed footer** is now the page's own `@bottom-center` box. It prints on every page with the company line, the document number and "Page n / N". This resolves the limitation listed at Deploys 264 to 266, where the footer followed the content.
+- **Pages 2 onward** open with a slim green band naming the company and the document number. Before, they started straight on the table.
+- **Empty space.** Type is slightly larger, more so in Arabic, because Noto Naskh sets smaller than Plus Jakarta Sans at the same size. On a one-page quotation or invoice, the signature and stamp sit at the foot of the page. Terms, notes and signature move as one block, so no page carries the signature alone.
+- **Minimum order** on a quotation reads "Full container load (FCL)" / «حاوية كاملة (FCL)», with no tonnage or container size.
+- **Payment terms and lead time** are new optional fields on quotations and invoices. They have no defaults and print only when written. The documents function stores them in two new nullable columns, `payment_terms` and `lead_time`, each up to 200 characters, and ignores them on letters.
+- **Signatory.** "Signed by" (name and title) is taken for every document type, not only letters. The form's "Signed by" card is shared by all three types.
+- **Fixed, pre-existing:** the form pre-filled the letter signatory with "[object Object]". `CRM.user` is `{ username }`; the form now uses the username.
+- **Arabic print footer.** Its Latin runs are wrapped in Unicode isolates, so the page counter, email and web address read in the right order.
+- **Checks:**
+  - `check-crm-documents.js` gained five checks (66 in all): terms are stored, left empty when blank, capped, and ignored on letters, and a quotation keeps its signatory.
+  - `npm test` passed.
+  - `npm run test:bundles` (script copied temporarily from #383) reported 43 packaged and 0 problems.
+  - Sample documents were printed with Chromium from fictitious data: every type in both languages, a voided quotation, blank terms, and a 30-line invoice (3 pages). Samples were sent to the owner; none was committed.
+
+### Database
+
+`ensureSchema` adds `payment_terms` and `lead_time` with `ADD COLUMN IF NOT EXISTS`. This runs on the first documents request after the deploy, the same pattern as the `language` column. No migration was run by hand. Existing documents have neither field and print without those rows.
+
+### Verified on the live site (2026-10-19)
+
+- **Deployed commit:** `deployed-commit.txt` reads `b401d532d5e758deb5a8121e97a8d50923cf24a7`.
+- **Document view:** `/crm/document/view/` serves the new layout. It contains the closing block, the continuation-page header rule and «حاوية كاملة (FCL)».
+- **Form:** `/crm/document/` serves the payment-terms field and the username prefill.
+- **Live check:** 20 OK and 1 FAIL. The failure was `/ar/solutions` returning a network error with no response. Fetched again on its own, it returned 301 to `/ar/solutions/`, so all 21 pass.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims, unchanged. The FCL wording repeats the minimum-order claims as #392 rewrites them. Until #392 merges, the public pages still carry the earlier figures.
+
+### Rollback
+
+`git revert -m 1 b401d53`. The two new columns stay in place. They are nullable, and the earlier code never reads them.
+
+### Known limitations shipped with Deploy 267
+
+- **Arabic labels** new with this design await the owner's review: «الأسعار: للوحدة المبينة», «صفحة», «رقم», the date labels and the table headings.
+- **Browser support.** The every-page footer and the continuation header use `@page` margin boxes. Chrome and Edge (131 and later) print them; another browser prints the document without them.
+- **Bank details** are not on invoices. They were not requested.
+- **Unchanged from Deploys 264 to 266:**
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244.
+
+**Listed in the next entry:** the merge of this record (#391, notes only).
 
 ---
 
@@ -10681,7 +10755,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 266 (2026-10-19).**
+**Unchanged since U4, through Deploy 267 (2026-10-19).**
 
 ## Outstanding, unresolved by this document
 
