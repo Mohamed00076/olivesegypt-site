@@ -18,8 +18,12 @@
  * third-person "reputable exporter" voice that never named the company.
  *
  * This reads every article, English and Arabic, and fails on:
- *   - a minimum order stated as anything but the 20ft container, or any
- *     tonnage below the container's 16 MT
+ *   - a minimum order stated with a quantity -- tonnes, kilograms or a
+ *     container size. Since 2026-10-19 the minimum is "a full container
+ *     load (FCL)" with no figure: what a container holds depends on the
+ *     packing, its dry or drained weight (owner decision), so no tonnage
+ *     applies to every order. Nor may an article say how many tonnes a
+ *     container holds.
  *   - wording that claims an event, certification history or ownership the
  *     register does not support (recertification, a certification held or
  *     renewed by us, our own factory, plant, line, groves or farms)
@@ -80,7 +84,7 @@ const body = (html) => {
 t(`articles found (${articles.length}, both languages)`, articles.length >= 14, articles.length);
 
 const BANNED = [
-  [/trial pallet|منصة تجريبية/i, 'a trial-pallet minimum; the minimum order is one 20ft container'],
+  [/trial pallet|منصة تجريبية/i, 'a trial-pallet minimum; the minimum order is a full container load (FCL)'],
   [/\b\d{2,3}\s*[–-]\s*\d{3}\s*(kg|كجم)\b[^.]{0,40}(minimum|MOQ|الحد الأدنى)|(minimum order|MOQ|الحد الأدنى للطلب)[^.]{0,80}\b\d{2,3}\s*[–-]\s*\d{3}\s*(kg|كجم)/i, 'a minimum order in kilograms'],
   [/40ft|40 قدمًا/, 'a 40ft container, which no register row supports'],
   [/recertif|إعادة اعتماد/i, 'a certification history the company does not have'],
@@ -103,12 +107,12 @@ for (const f of articles) {
   const own = body((read(f).match(/<article[\s\S]*?<\/article>/) || [''])[0].replace(/^/, '<main>') + '</main>');
   if (!/Triple Company|الشركة الثلاثية/.test(own)) unnamed.push(f);
   for (const s of text.split(/\n|(?<=[.؟!])\s/)) {
-    if (/minimum order|MOQ|الحد الأدنى للطلب|الحد الأدنى لطلب/i.test(s) && /\d[\d.,–-]*\s*(MT|metric|tons?|tonnes?|kg|كجم|طن|ft|قدم)/i.test(s) && !/20ft|20 قدمًا/.test(s)) moq.push(`${f}: "${s.trim().slice(0, 120)}"`);
+    if (/minimum order|MOQ|الحد الأدنى للطلب|الحد الأدنى لطلب/i.test(s) && /\d[\d.,–-]*\s*(MT|metric|tons?|tonnes?|kg|كجم|طن|ft|قدم)/i.test(s)) moq.push(`${f}: "${s.trim().slice(0, 120)}"`);
   }
 }
 t('no article states a minimum order, event, certification history or ownership the register does not support',
   bad.length === 0, bad.join(' | '));
-t('   and every minimum order an article states is the 20ft container', moq.length === 0, moq.join(' | '));
+t('   and no minimum order an article states carries a figure (it is a full container load, FCL)', moq.length === 0, moq.join(' | '));
 t('every article names Triple Company in its own body', unnamed.length === 0, unnamed.join(', '));
 
 // ---- named trade shows: only one a verified-approved register row names ----
@@ -182,16 +186,19 @@ const guides = execSync('git ls-files "netlify/functions/_guides/*.html"', { cwd
 const trial = [...pages, ...guides, 'llms.txt'].filter((f) => {
   try { return TRIAL.test(read(f).replace(/&ndash;/g, '–')); } catch (e) { return false; }
 });
-t('no page, guide or llms.txt offers a trial order below the 20ft container', trial.length === 0, trial.join(', '));
+t('no page, guide or llms.txt offers a trial order below a full container load', trial.length === 0, trial.join(', '));
 
-// ---- tonnage below the container in an article ----------------------------
-const lowTonnage = [];
+// ---- no tonnage beside a container in an article -------------------------
+// What a container holds depends on the packing (owner, 2026-10-19), so no
+// article may put a weight on one: neither the old "16-18 MT" nor any other.
+const containerTonnage = [];
+const TONNAGE = /(\d+(?:[.,]\d+)?)\s*(?:[–-]\s*\d+(?:[.,]\d+)?\s*)?(?:MT\b|metric tons?|tonnes?\b|tons?\b|طنًا|طن\b|أطنان)/i;
 for (const f of articles) {
-  for (const m of body(read(f)).matchAll(/(\d+(?:[.,]\d+)?)\s*(?:[–-]\s*\d+(?:[.,]\d+)?\s*)?(?:MT\b|metric tons?|tonnes?\b|tons?\b|طنًا|طن\b|أطنان)/gi)) {
-    if (parseFloat(m[1].replace(',', '')) < 16) lowTonnage.push(`${f}: "${m[0]}"`);
+  for (const sentence of body(read(f)).split(/\n|(?<=[.؟!])\s/)) {
+    if (/container|حاوي/i.test(sentence) && TONNAGE.test(sentence)) containerTonnage.push(`${f}: "${sentence.trim().slice(0, 120)}"`);
   }
 }
-t('no article states a tonnage below the 20ft container\'s 16 MT', lowTonnage.length === 0, lowTonnage.join(' | '));
+t('no article puts a tonnage on a container', containerTonnage.length === 0, containerTonnage.join(' | '));
 
 // ---- one reply time: 24 hours (C-115) --------------------------------------
 // The articles' CTA and /media (and its Inquiries page) said "one business day"
