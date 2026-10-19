@@ -15,62 +15,91 @@
     <link rel="stylesheet" href="/assets/rtl.css">
 
     <style>
-      /* Same sheet system as crm/document/view -- see the notes there. This
-         page is the unsaved quick letterhead, so it shares the masthead,
-         rule and footer but keeps its contenteditable body.
+      /* ------------------------------------------------------------------
+         The blank letterhead, in the owner's design of 2026-10-19 -- the
+         same masthead and footer band as the CRM's printed quotation,
+         invoice and letter (crm/document/view), so a letter typed here and
+         one issued from the CRM come from the same company. Keep the two in
+         step: colours, masthead and footer are copied from that page.
 
-         text-align:end rather than right: this stylesheet is shared with the
-         Arabic letterhead, where the contact block sits on the left and a
-         physical property would align it against the wrong edge. */
+         Green #4b5a23, gold #b8923a. Plus Jakarta Sans; Noto Naskh Arabic
+         for Arabic. Logical properties, so the Arabic sheet is this sheet
+         mirrored by the browser.
+         ------------------------------------------------------------------ */
+      :root { --doc-green: #4b5a23; --doc-gold: #b8923a; --doc-ink: #25281c; }
       .sheet {
-        max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; padding: 1.8cm 2cm;
+        max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; padding: 0;
         background: #fff; box-shadow: 0 2px 24px rgba(24, 32, 16, 0.10);
         display: flex; flex-direction: column;
-        font-size: 13px; line-height: 1.55; color: #20241a;
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        font-size: 12px; line-height: 1.55; color: var(--doc-ink);
       }
-      .doc-masthead { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding-bottom: 14px; }
-      .doc-mark { display: flex; align-items: center; gap: 12px; }
-      .doc-mark img { width: 46px; height: 46px; object-fit: contain; flex-shrink: 0; }
-      .doc-wordmark { font-family: 'Playfair Display', Georgia, serif; font-size: 19px; font-weight: 700; color: hsl(var(--primary)); line-height: 1.1; }
-      .doc-tagline { font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.18em; color: hsl(var(--muted-foreground)); margin-top: 3px; }
-      .doc-contact { text-align: end; font-size: 10.5px; line-height: 1.7; color: hsl(var(--muted-foreground)); max-width: 8.8cm; }
-      .doc-rule { height: 2px; background: hsl(var(--primary)); margin-bottom: 30px; }
-      .lh-body { flex: 1; outline: none; min-height: 14cm; line-height: 1.85; font-size: 12.5px; max-width: 15.5cm; }
+      .doc-head { background: var(--doc-green); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 26px 1.5cm 24px; }
+      .doc-brand { display: flex; align-items: center; gap: 16px; }
+      .doc-logo-tile { width: 64px; height: 64px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .doc-logo-tile img { width: 44px; height: 54px; object-fit: contain; }
+      .doc-wordmark { font-size: 22px; font-weight: 800; letter-spacing: 0.01em; line-height: 1.1; }
+      .doc-sub { font-size: 12.5px; opacity: 0.92; margin-top: 2px; }
+      .doc-trade { font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--doc-gold); margin-top: 6px; }
+      .doc-contact { display: grid; grid-template-columns: auto auto; gap: 3px 14px; margin: 0; padding-inline-start: 16px; border-inline-start: 1px solid var(--doc-gold); font-size: 9.5px; line-height: 1.45; max-width: 8.4cm; }
+      .doc-contact dt { font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-gold); padding-top: 2px; }
+      .doc-contact dd { margin: 0; }
+      .doc-goldbar { height: 5px; background: var(--doc-gold); }
+      .lh-body { flex: 1; outline: none; min-height: 14cm; padding: 30px 1.5cm 24px; line-height: 1.85; font-size: 13px; }
       .lh-body[contenteditable]:empty:before { content: attr(data-placeholder); color: #9aa08f; }
-      .doc-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid hsl(var(--border)); display: flex; justify-content: space-between; gap: 1rem; font-size: 9px; letter-spacing: 0.04em; color: hsl(var(--muted-foreground)); }
-      /* The toolbar above the sheet. It used max-w-screen-md, which is not in
-         the compiled stylesheet and so did nothing: the bar ran the full
-         window width above a 21cm sheet. Pre-existing; matching the sheet is
-         the point of a toolbar that belongs to it. */
+      .doc-foot { background: var(--doc-green); color: #fff; text-align: center; padding: 10px 1.5cm 11px; font-size: 8px; line-height: 1.6; }
+
+      [dir="rtl"] .sheet { font-family: 'Noto Naskh Arabic', 'Plus Jakarta Sans', sans-serif; line-height: 1.75; }
+      [dir="rtl"] .doc-trade, [dir="rtl"] .doc-contact dt, [dir="rtl"] .doc-wordmark { letter-spacing: normal; text-transform: none; }
+      [dir="rtl"] .doc-trade, [dir="rtl"] .doc-contact dt { font-size: 9px; }
+      [dir="rtl"] .lh-body { font-size: 14.5px; }
+      /* Email, phone and web address keep their order on the Arabic sheet. */
+      .ltr { direction: ltr; unicode-bidi: isolate; }
+
+      /* The toolbar above the sheet matches the sheet's width. */
       .doc-toolbar { max-width: 21cm; }
+
+      @media screen and (max-width: 820px) {
+        .sheet { margin: 1rem auto; }
+        .doc-head { flex-direction: column; align-items: flex-start; padding: 20px 0.9cm; }
+        .lh-body { padding: 24px 0.9cm; }
+      }
+
       @media print {
         .no-print { display: none !important; }
+        html, body { background: #fff !important; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         /*
-         * @page supplies the 2cm margin, so the sheet drops the screen-only
-         * geometry that makes it look like a page on a grey background.
-         * Keeping min-height:29.7cm forced 29.7cm into a 25.7cm printable
-         * area (A4 less two 2cm margins), and the sheet's own 2cm padding
-         * doubled the margin -- so every letter printed a second, almost
-         * empty page. Same fix as crm/document/view.
+         * The masthead runs to the paper's edge, so the first page has no top
+         * or side margin and the sheet supplies the white space. The footer
+         * band is the page's own @bottom-center box, so it sits at the foot
+         * of every printed page, blank or full. A letter that runs on gets a
+         * slim band naming the company at the top of each later page, as the
+         * CRM's documents do.
          */
-        /*
-         * The footer belongs at the foot of the paper, not under the last
-         * line of text. The printable area of A4 with 2cm margins is 25.7cm;
-         * 25.6cm fills it without spilling a blank second page, and a longer
-         * letter still runs on to page two with the footer after it. A4 is
-         * named so the sheet does not depend on the printer's default paper.
-         */
-        .sheet {
-          box-shadow: none;
-          margin: 0;
-          min-height: 25.6cm;
-          max-width: none;
-          padding: 0;
-        }
-        @page { size: A4; margin: 2cm; }
+        .sheet { box-shadow: none; margin: 0; max-width: none; min-height: 0; }
+        .doc-foot { display: none; }
         /* The "click here to draft" prompt is for the screen only: a blank
            letterhead must print blank. */
         .lh-body[contenteditable]:empty:before { content: none; }
+        @page {
+          /* The bottom margin is the footer band plus a gap above it, so a
+             full page of text never runs into the band. */
+          size: A4; margin: 14mm 0 22mm 0;
+          @top-center {
+            content: "الشركة الثلاثية للتنمية الصناعية · \2066 olivesegypt.com\2069 ";
+            text-align: center; vertical-align: middle; background: #4b5a23; color: #ffffff;
+            font-size: 8.5px; font-weight: 700; height: 9mm; margin-bottom: 5mm;
+            font-family: 'Noto Naskh Arabic', 'Plus Jakarta Sans', sans-serif; direction: rtl;
+          }
+          @bottom-center {
+            content: "الشركة الثلاثية للتنمية الصناعية · ميدان العروبة، التجمع الخامس، القاهرة الجديدة، القاهرة، مصر · \2066 sales@olivesegypt.com\2069  · \2066 olivesegypt.com\2069 ";
+            text-align: center; vertical-align: middle; background: #4b5a23; color: #ffffff;
+            font-size: 7.5px; line-height: 1.6; height: 14mm; margin-top: 8mm;
+            font-family: 'Noto Naskh Arabic', 'Plus Jakarta Sans', sans-serif; direction: rtl;
+          }
+        }
+        @page :first { margin-top: 0; @top-center { content: none; background: none; } }
       }
     </style>
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -102,31 +131,27 @@
 
     <div class="sheet">
       <h1 class="sr-only">الشركة الثلاثية للتنمية الصناعية &mdash; نموذج الترويسة الرسمية</h1>
-      <div class="doc-masthead">
-        <div class="doc-mark">
-          <img src="/assets/logo-BJ1TOn9V.png" alt="شعار الشركة الثلاثية للتنمية الصناعية" width="236" height="289"/>
+      <!-- One canonical address, per C-22. Email, phone and web address are
+           isolated LTR so an RTL page cannot reorder their characters. -->
+      <header class="doc-head">
+        <div class="doc-brand">
+          <div class="doc-logo-tile"><img src="/assets/logo-BJ1TOn9V.png" alt="شعار الشركة الثلاثية للتنمية الصناعية" width="236" height="289"/></div>
           <div>
             <div class="doc-wordmark">الشركة الثلاثية</div>
-            <div class="doc-tagline">للتنمية الصناعية</div>
+            <div class="doc-sub">للتنمية الصناعية</div>
+            <div class="doc-trade">تصدير زيتون المائدة المصري</div>
           </div>
         </div>
-        <!-- One canonical address, per C-22. This block used to repeat
-             "القاهرة، مصر" on its own line after the full address already
-             ended with it. The email and phone stay in a dir="ltr" span so
-             the digits are not reordered on an RTL page. -->
-        <div class="doc-contact">
-          ميدان العروبة، التجمع الخامس،<br/>
-          القاهرة الجديدة، القاهرة، مصر<br/>
-          <span dir="ltr">sales@olivesegypt.com &middot; +20 100 604 5961</span>
-        </div>
-      </div>
-      <div class="doc-rule"></div>
+        <dl class="doc-contact">
+          <dt>المقر</dt><dd>ميدان العروبة، التجمع الخامس، القاهرة الجديدة، القاهرة، مصر</dd>
+          <dt>البريد</dt><dd><span class="ltr">sales@olivesegypt.com</span></dd>
+          <dt>واتساب</dt><dd><span class="ltr">+20 100 604 5961</span></dd>
+          <dt>الموقع</dt><dd><span class="ltr">olivesegypt.com</span></dd>
+        </dl>
+      </header>
+      <div class="doc-goldbar"></div>
       <div class="lh-body" contenteditable="true" data-placeholder="اضغط هنا لكتابة خطابك..."></div>
-
-      <div class="doc-foot">
-        <span>الشركة الثلاثية للتنمية الصناعية</span>
-        <span dir="ltr">olivesegypt.com</span>
-      </div>
+      <footer class="doc-foot">الشركة الثلاثية للتنمية الصناعية &middot; ميدان العروبة، التجمع الخامس، القاهرة الجديدة، القاهرة، مصر &middot; <span class="ltr">sales@olivesegypt.com</span> &middot; <span class="ltr">olivesegypt.com</span></footer>
     </div>
   </body>
 </html>
