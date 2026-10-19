@@ -97,7 +97,11 @@ async function checkDeployed(wait) {
   for (;;) {
     let same = false;
     try { const r = await get(BASE + '/sitemap.xml'); same = r.status === 200 && norm(r.body) === norm(localSitemap); } catch (e) { /* retry */ }
-    if (same) return ok('Live sitemap matches main', 'no deploy marker yet, so compared by sitemap');
+    // Reached when there is no commit to compare against -- a run outside
+    // GitHub Actions, which sets GITHUB_SHA -- or a site from before the
+    // marker existed. It said "no deploy marker yet" in both cases, which
+    // read as the site missing its marker when only the expected commit was.
+    if (same) return ok('Live sitemap matches main', want ? 'no deploy marker on the live site, so compared by sitemap' : 'no commit to compare against outside GitHub Actions, so compared by sitemap');
     if (Date.now() >= deadline) return fail('Live sitemap matches main', 'the live sitemap differs from main: the latest merge may not have deployed');
     await sleep(30000);
   }
