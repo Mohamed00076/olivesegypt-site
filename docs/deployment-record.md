@@ -10590,6 +10590,79 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 264 to 266 — The letterhead prints blank with its footer at the foot; the English address loses its bracketed Arabic street name (PRs #387, #388, #389)
+
+**Previous recorded deploy:** `d0dff1e` (Deploy 263, PR #386)
+**Approvals:**
+- "merge" (#387).
+- "fix 1. 2 and 3", then "merge 388 and 389" (#388).
+- "b", then "merge 388 and 389" (#389).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 264 | #387 | `b40ba1b` | 2026-10-19 02:07:01 | 1 | +75 / −1 | Notes only |
+| 265 | #388 | `3ae182f` | 2026-10-19 09:17:10 | 2 | +24 / −4 | Letterhead (EN, AR), print only |
+| 266 | #389 | `389260a` | 2026-10-19 09:18:45 | 85 | +118 / −116 | Address everywhere, 18 English PDFs |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 264** recorded Deploys 262 and 263.
+
+### What the deploys did
+
+- **Background.** The owner asked to see every PDF the CRM can issue. Sample quotation, invoice and letter PDFs (EN and AR, plus a voided quotation) and the two letterhead pages were rendered from the CRM's own document view with fictitious data, and sent to the owner; none was issued or committed. Three problems were raised from that review and the owner chose to fix all three.
+- **Deploy 265 — The letterhead's print output (#388).** These are print-only changes to `/letterhead/` and `/ar/letterhead/`; the screen view is unchanged.
+  - **The prompt no longer prints.** A blank sheet no longer prints the "Click here to draft your letter..." / «اضغط هنا لكتابة خطابك...» prompt.
+  - **The footer sits at the foot of the paper.** The sheet now fills the A4 printable area (25.6 of 25.7 cm), instead of the footer sitting under the last line. A longer letter still runs on to page two, with the footer after it.
+  - **The paper size is fixed.** `@page` names A4.
+  - **Checked by printing:** blank, short and long letters in both languages gave 1, 1 and 2 A4 pages, with no prompt in any.
+- **Deploy 266 — The English head-office address (#389).**
+  - **New wording:** "Ouroba Square, 5th Settlement, New Cairo, Cairo, Egypt". The bracketed «(ميدان العروبة)» is dropped everywhere: page footers, /contact, /company-profile, /privacy, /business-card, the letterhead, the CRM document template, the Organization JSON-LD, `llms.txt`, the product-page generator, and all 18 English PDFs.
+  - **The Arabic address is unchanged.**
+  - **A reversal of an earlier decision.** Claim C-22 (owner-confirmed 2026-09-05) had fixed the bracketed form as the one English string, so the owner was asked to choose between keeping it and changing it everywhere. Changing only the documents would have reintroduced two wordings. The owner chose to change it everywhere.
+  - **What changed with it:**
+    - C-22 records the decision;
+    - `check-nav-footer.js` holds the new string and rejects the bracketed form;
+    - `sitemap.xml` dates moved for /privacy/, /company-profile/ and /contact/, whose content carries the address.
+  - **PDFs.** The English PDFs were rebuilt with `scripts/generate-export-catalog-pdf.js`. The Arabic PDFs, which the generator also rewrote with no change in content, were restored so the deploy carries only what changed.
+  - **Merge order.** #388 and #389 both touch `letterhead/index.html`, on different lines. #389 merged cleanly after #388, and `npm test` passed on the combination before it merged.
+
+### Verified on the live site (2026-10-19)
+
+- **Deployed commit:** `deployed-commit.txt` reads `389260ad2302e9227781cb570a7f3bba125d4091`.
+- **Address:**
+  - /contact/, /letterhead/ and /crm/document/view/ serve "Ouroba Square, 5th Settlement…" without the bracketed Arabic.
+  - /ar/contact/ keeps the Arabic address.
+  - The live `downloads/company-profile-en.pdf` carries the new line.
+- **Live check:** 21 OK, 0 FAIL, both straight after the deploy and while writing this record.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims. C-22 has been reworded, not added.
+
+### Rollback
+
+- **Deploy 266:** `git revert -m 1 389260a`. This restores the pages, the PDFs, the check and C-22 together.
+- **Deploy 265:** `git revert -m 1 3ae182f`.
+- **Deploy 264** is documentation only.
+
+### Known limitations shipped with Deploys 264 to 266
+
+- **Listings outside this repository:** Google Business Profile, Maps and any directory listings still show whatever was entered there; the owner updates those.
+- **CRM documents:** their footer still follows the content rather than the foot of the page. This was not part of the request; for a document with a table that is the usual layout.
+- **Unchanged from Deploys 262 and 263:**
+  - the three old sign-in functions keep their IP fallback until #382;
+  - Arabic awaits the owner's review;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID lifetime and re-ask questions are with counsel;
+  - the owner items listed at Deploys 242 to 244.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10608,7 +10681,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 263 (2026-10-18).**
+**Unchanged since U4, through Deploy 266 (2026-10-19).**
 
 ## Outstanding, unresolved by this document
 
