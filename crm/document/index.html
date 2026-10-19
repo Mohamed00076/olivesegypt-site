@@ -139,14 +139,6 @@
                 <option value="">(none)</option>
               </select>
             </div>
-            <div class="crm-field">
-              <label for="l-signatory">Signed by</label>
-              <input id="l-signatory" maxlength="200" placeholder="Full name" autocomplete="name" />
-            </div>
-            <div class="crm-field">
-              <label for="l-signatory-title">Title</label>
-              <input id="l-signatory-title" maxlength="200" placeholder="e.g. Export Manager" />
-            </div>
           </div>
 
           <div class="crm-grid crm-grid-2">
@@ -177,9 +169,37 @@
               <input id="date-input" type="date" />
             </div>
           </div>
+          <!-- Printed under "Terms". No defaults (owner, 2026-10-19): they
+               differ deal to deal, and a blank is left off the sheet. -->
+          <div class="crm-grid crm-grid-2">
+            <div class="crm-field">
+              <label for="payment-terms">Payment terms <span class="crm-muted">(optional)</span></label>
+              <input id="payment-terms" maxlength="200" dir="auto" placeholder="e.g. 30% advance, balance against documents" />
+            </div>
+            <div class="crm-field">
+              <label for="lead-time">Lead time <span class="crm-muted">(optional)</span></label>
+              <input id="lead-time" maxlength="200" dir="auto" placeholder="e.g. 4-6 weeks from confirmed order" />
+            </div>
+          </div>
           <div class="crm-field">
-            <label for="notes">Notes (payment terms, packaging, shipping details, etc.)</label>
+            <label for="notes">Notes (packaging, shipping details, etc.)</label>
             <textarea id="notes" rows="3" maxlength="2000" dir="auto"></textarea>
+          </div>
+        </div>
+
+        <!-- Every document is signed: a letter at its foot, a quotation or
+             invoice also in its "Sales Representative" card. -->
+        <div class="crm-card" id="signatory-card">
+          <h2>Signed by</h2>
+          <div class="crm-grid crm-grid-2">
+            <div class="crm-field">
+              <label for="l-signatory">Name</label>
+              <input id="l-signatory" maxlength="200" placeholder="Full name" autocomplete="name" />
+            </div>
+            <div class="crm-field">
+              <label for="l-signatory-title">Title</label>
+              <input id="l-signatory-title" maxlength="200" placeholder="e.g. Export Manager" />
+            </div>
           </div>
         </div>
 
@@ -309,15 +329,17 @@
             payload.body = letterBody;
             payload.salutation = document.getElementById('l-salutation').value.trim();
             payload.closing = document.getElementById('l-closing').value;
-            payload.signatory_name = document.getElementById('l-signatory').value.trim();
-            payload.signatory_title = document.getElementById('l-signatory-title').value.trim();
             payload.enclosures = document.getElementById('l-enclosures').value.trim();
             payload.cc = document.getElementById('l-cc').value.trim();
           } else {
             payload.currency = document.getElementById('currency').value.trim().toUpperCase() || 'USD';
             payload.incoterm = document.getElementById('incoterm').value.trim();
+            payload.payment_terms = document.getElementById('payment-terms').value.trim();
+            payload.lead_time = document.getElementById('lead-time').value.trim();
             payload.line_items = lines;
           }
+          payload.signatory_name = document.getElementById('l-signatory').value.trim();
+          payload.signatory_title = document.getElementById('l-signatory-title').value.trim();
           if (buyerId) {
             payload.buyer_id = Number(buyerId);
           } else {
@@ -360,20 +382,23 @@
         function init() {
           document.getElementById('page-title').textContent = TITLE[docType];
 
+          /*
+           * Prefill what we already know. The signatory is whoever is logged
+           * in -- they are the one writing it -- and a letter's salutation is
+           * filled in from the recipient's contact name once that is known,
+           * below. Defaults that are usually right beat an empty field the
+           * writer has to think about every time. CRM.user is { username },
+           * not a string: assigning it whole printed "[object Object]".
+           */
+          var me = CRM.user && CRM.user.username;
+          if (me) document.getElementById('l-signatory').value = me;
+
           if (isLetter) {
             // Currency, incoterm, dates and line items mean nothing on a
             // letter, and a form that shows fields it will not send is how
             // people end up believing they set something.
             document.getElementById('letter-card').style.display = '';
 
-            /*
-             * Prefill what we already know. The signatory is whoever is
-             * logged in -- they are the one writing it -- and the salutation
-             * is filled in from the recipient's contact name once that is
-             * known, below. Defaults that are usually right beat an empty
-             * field the writer has to think about every time.
-             */
-            if (CRM.user) document.getElementById('l-signatory').value = CRM.user;
             document.getElementById('details-card').style.display = 'none';
             document.getElementById('line-items-card').style.display = 'none';
           } else {
