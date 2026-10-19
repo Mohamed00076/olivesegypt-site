@@ -99,6 +99,7 @@ const MAX = {
   subject: 300, body: 20000,
   salutation: 120, closing: 80, signatory_name: 200, signatory_title: 200,
   enclosures: 500, cc: 500,
+  payment_terms: 200, lead_time: 200,
 };
 
 /*
@@ -115,7 +116,21 @@ const MAX = {
  * close -- but each one now has a field asking for it rather than depending
  * on the writer to remember the convention.
  */
-const LETTER_FIELDS = ['salutation', 'closing', 'signatory_name', 'signatory_title', 'enclosures', 'cc'];
+const LETTER_FIELDS = ['salutation', 'closing', 'enclosures', 'cc'];
+
+/*
+ * Who signs. A letter always had a signature block; since the 2026-10-19
+ * design a quotation and an invoice carry one too, plus a "Sales
+ * Representative" card, so these two are taken for every type.
+ */
+const SIGNATORY_FIELDS = ['signatory_name', 'signatory_title'];
+
+/*
+ * The terms a priced document states. Fill-in fields with no default
+ * (owner, 2026-10-19): payment and lead time differ from deal to deal, and a
+ * printed default would quietly promise terms nobody agreed.
+ */
+const TERMS_FIELDS = ['payment_terms', 'lead_time'];
 const MAX_LINE_ITEMS = 50;
 
 function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v); }
@@ -178,6 +193,11 @@ async function ensureSchema(sql) {
    * statement, and ADD COLUMN IF NOT EXISTS keeps this safe to re-run.
    */
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'en'`;
+
+  // Payment terms and lead time (2026-10-19). Nullable: older documents
+  // simply did not state them, and the sheet prints only what is there.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS payment_terms text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS lead_time text`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
@@ -313,6 +333,10 @@ async function handleCreate(event, sql, actor) {
   let letterBody = null;
   const letterParts = {};
   LETTER_FIELDS.forEach(function (f) { letterParts[f] = null; });
+  const terms = {};
+  TERMS_FIELDS.forEach(function (f) { terms[f] = null; });
+  const signatory = {};
+  SIGNATORY_FIELDS.forEach(function (f) { signatory[f] = optional(body[f], MAX[f]); });
 
   if (priced) {
     lineItems = validateLineItems(body.line_items);
@@ -322,13 +346,14 @@ async function handleCreate(event, sql, actor) {
     if (!/^[A-Z]{3}$/.test(currency)) return json(400, { ok: false, error: 'Validation failed', fields: ['currency'] });
 
     incoterm = optional(body.incoterm, MAX.incoterm);
+    TERMS_FIELDS.forEach(function (f) { terms[f] = optional(body[f], MAX[f]); });
   } else {
     /*
      * A letter with nothing written in it is the letter equivalent of an
      * invoice addressed to nobody -- it would issue, take a number, and
      * print blank. Subject is optional; plenty of letters do not carry one.
      *
-     * Line items, currency and incoterm are ignored rather than rejected if
+     * Line items, currency, incoterm and terms are ignored rather than rejected if
      * sent: the compose form hides those fields for a letter, so anything
      * arriving here would be a stale draft rather than intent.
      */
@@ -353,14 +378,16 @@ async function handleCreate(event, sql, actor) {
       buyer_company_name, buyer_contact_name, buyer_country, buyer_address,
       currency, incoterm, valid_until, due_date, notes, subject, body, language,
       salutation, closing, signatory_name, signatory_title, enclosures, cc,
+      payment_terms, lead_time,
       line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
       ${companyName}, ${contactName},
       ${country}, ${buyerAddress},
       ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody}, ${language},
-      ${letterParts.salutation}, ${letterParts.closing}, ${letterParts.signatory_name},
-      ${letterParts.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
+      ${letterParts.salutation}, ${letterParts.closing}, ${signatory.signatory_name},
+      ${signatory.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
+      ${terms.payment_terms}, ${terms.lead_time},
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )
     RETURNING id, created_at

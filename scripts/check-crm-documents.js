@@ -363,8 +363,38 @@ function create(body, { cookie = COOKIE } = {}) {
     });
     const doc = db.documents[db.documents.length - 1];
     t('a quotation ignores letter parts', res.statusCode === 200 &&
-      doc.salutation === null && doc.signatory_name === null && doc.enclosures === null,
-      JSON.stringify([doc.salutation, doc.signatory_name, doc.enclosures]));
+      doc.salutation === null && doc.enclosures === null,
+      JSON.stringify([doc.salutation, doc.enclosures]));
+    // ...but keeps who signs it: the 2026-10-19 sheet has a signature block
+    // and a sales-representative card on every type.
+    t('   but keeps the signatory', doc.signatory_name === 'Someone', JSON.stringify(doc.signatory_name));
+  }
+
+  {
+    // payment terms and lead time: fill-in fields on priced documents, no defaults
+    let res = await create({
+      doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS,
+      payment_terms: '30% advance, 70% against documents', lead_time: '4-6 weeks from order',
+    });
+    let doc = db.documents[db.documents.length - 1];
+    t('an invoice stores payment terms and lead time', res.statusCode === 200 &&
+      doc.payment_terms === '30% advance, 70% against documents' && doc.lead_time === '4-6 weeks from order',
+      JSON.stringify([doc.payment_terms, doc.lead_time]));
+
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    doc = db.documents[db.documents.length - 1];
+    t('   left blank, they stay empty -- nothing is filled in for the writer',
+      res.statusCode === 200 && doc.payment_terms === null && doc.lead_time === null,
+      JSON.stringify([doc.payment_terms, doc.lead_time]));
+
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS, payment_terms: 'P'.repeat(500) });
+    doc = db.documents[db.documents.length - 1];
+    t('   long values are capped', res.statusCode === 200 && doc.payment_terms.length === 200, String(doc.payment_terms && doc.payment_terms.length));
+
+    res = await create({ doc_type: 'letter', buyer_company_name: 'X', body: 'Hello.', payment_terms: 'Cash', lead_time: 'Now' });
+    doc = db.documents[db.documents.length - 1];
+    t('   a letter ignores them', res.statusCode === 200 && doc.payment_terms === null && doc.lead_time === null,
+      JSON.stringify([doc.payment_terms, doc.lead_time]));
   }
 
   {
