@@ -77,6 +77,9 @@
       .doc-table td:first-child { font-weight: 700; }
       .doc-table .num { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
       .doc-table td.amount { font-weight: 700; color: var(--doc-green); }
+      /* A packing list's column totals. */
+      .doc-table tfoot td { background: var(--doc-green); color: #fff; font-weight: 800; padding: 10px; }
+      .doc-table tfoot td:first-child { text-align: end; }
       /* A row is never split across two printed pages. */
       .doc-table tr { break-inside: avoid; }
 
@@ -229,6 +232,7 @@
                live quotation (proforma, invoice) and a live proforma (invoice). -->
           <a id="make-proforma" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;" href="#">Create proforma</a>
           <a id="make-invoice" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;" href="#">Create invoice</a>
+          <a id="make-packing" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;" href="#">Create packing list</a>
           <button id="void-btn" class="text-sm px-3 py-1.5 rounded-md border border-border" style="display:none;">Void</button>
           <button id="print-btn" onclick="window.print()" class="text-sm px-4 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold">Print / Save as PDF</button>
         </div>
@@ -309,6 +313,7 @@
             </tr>
           </thead>
           <tbody id="li-tbody"></tbody>
+          <tfoot id="li-tfoot" style="display:none;"></tfoot>
         </table>
 
         <div class="doc-totals" id="doc-totals">
@@ -392,7 +397,12 @@
             voidConfirm: 'Void this document? This is permanent and cannot be undone (the record stays for your records, marked VOID).',
             backBuyer: '← Back to buyer',
             backDocs: '← Back to documents',
-            titles: { quotation: 'Quotation', proforma: 'Proforma Invoice', invoice: 'Invoice' },
+            titles: { quotation: 'Quotation', proforma: 'Proforma Invoice', invoice: 'Invoice', packing: 'Packing List' },
+            pk: {
+              th: ['Description', 'Packing', 'Packages', 'Net weight (kg)', 'Gross weight (kg)'],
+              shipment: 'Shipment', container: 'Container no.', seal: 'Seal no.', vessel: 'Vessel / voyage',
+              pol: 'Port of loading', pod: 'Port of discharge', marks: 'Shipping marks',
+            },
             kindFallback: 'Document',
             numberPrefix: 'No. ',
             billTo: 'Bill To / Buyer',
@@ -431,7 +441,12 @@
             voidConfirm: 'إلغاء هذا المستند؟ لا يمكن التراجع عن ذلك (يبقى السجل محفوظًا ومؤشرًا عليه بـ ملغى).',
             backBuyer: '→ العودة إلى المشتري',
             backDocs: '→ العودة إلى المستندات',
-            titles: { quotation: 'عرض سعر', proforma: 'فاتورة مبدئية', invoice: 'فاتورة' },
+            titles: { quotation: 'عرض سعر', proforma: 'فاتورة مبدئية', invoice: 'فاتورة', packing: 'قائمة التعبئة' },
+            pk: {
+              th: ['البيان', 'التعبئة', 'عدد الطرود', 'الوزن الصافي (كجم)', 'الوزن القائم (كجم)'],
+              shipment: 'بيانات الشحنة', container: 'رقم الحاوية', seal: 'رقم الختم', vessel: 'السفينة / الرحلة',
+              pol: 'ميناء الشحن', pod: 'ميناء التفريغ', marks: 'علامات الشحن',
+            },
             kindFallback: 'مستند',
             numberPrefix: 'رقم ',
             billTo: 'إلى السادة',
@@ -683,6 +698,56 @@
             if (enc) { setText('letter-enclosures', d.enclosures); document.getElementById('letter-enc-row').style.display = ''; }
             if (cc) { setText('letter-cc', d.cc); document.getElementById('letter-cc-row').style.display = ''; }
             if (enc || cc) document.getElementById('letter-annex').style.display = '';
+          } else if (d.doc_type === 'packing') {
+            /*
+             * A packing list: the goods, how they are packed and what they
+             * weigh, with the column totals a customs officer adds up first.
+             * No prices, so no totals bar; the shipment details take the place
+             * of the terms.
+             */
+            ['th-description', 'th-unit', 'th-qty', 'th-price', 'th-amount'].forEach(function (id, i) { setText(id, t.pk.th[i]); });
+            document.getElementById('doc-totals').style.display = 'none';
+            var ptbody = document.getElementById('li-tbody');
+            ptbody.innerHTML = '';
+            var sum = { p: 0, n: 0, g: 0 };
+            var items = Array.isArray(d.packing_items) ? d.packing_items : [];
+            items.forEach(function (li) {
+              var tr = document.createElement('tr');
+              ['description', 'packing'].forEach(function (k) {
+                var td = document.createElement('td'); td.textContent = li[k] || ''; td.dir = 'auto'; tr.appendChild(td);
+              });
+              [String(li.packages), fmtAmount(li.net_kg), fmtAmount(li.gross_kg)].forEach(function (v, i) {
+                var td = document.createElement('td'); td.className = 'num' + (i === 2 ? ' amount' : ''); ltrInto(td, v); tr.appendChild(td);
+              });
+              sum.p += Number(li.packages) || 0; sum.n += Number(li.net_kg) || 0; sum.g += Number(li.gross_kg) || 0;
+              ptbody.appendChild(tr);
+            });
+            var tfoot = document.getElementById('li-tfoot');
+            tfoot.innerHTML = '';
+            var ftr = document.createElement('tr');
+            var lab = document.createElement('td'); lab.colSpan = 2; lab.textContent = t.total; ftr.appendChild(lab);
+            [sum.p.toLocaleString('en-US'), fmtAmount(sum.n), fmtAmount(sum.g)].forEach(function (v) {
+              var td = document.createElement('td'); td.className = 'num'; ltrInto(td, v); ftr.appendChild(td);
+            });
+            tfoot.appendChild(ftr);
+            tfoot.style.display = '';
+
+            var ship = d.shipment || {};
+            var rows = [[t.pk.container, ship.container_no, true], [t.pk.seal, ship.seal_no, true], [t.pk.vessel, ship.vessel],
+              [t.pk.pol, ship.port_loading], [t.pk.pod, ship.port_discharge], [t.pk.marks, ship.shipping_marks]].filter(function (r) { return r[1]; });
+            if (rows.length) {
+              setText('label-terms', t.pk.shipment);
+              var sgrid = document.getElementById('doc-terms-grid');
+              sgrid.innerHTML = '';
+              rows.forEach(function (r) {
+                var dt = document.createElement('dt'); dt.textContent = r[0];
+                var dd = document.createElement('dd');
+                if (r[2]) ltrInto(dd, r[1]); else { dd.textContent = r[1]; dd.dir = 'auto'; }
+                dd.style.whiteSpace = 'pre-wrap';
+                sgrid.appendChild(dt); sgrid.appendChild(dd);
+              });
+              document.getElementById('doc-terms').style.display = '';
+            }
           } else {
             var tbody = document.getElementById('li-tbody');
             tbody.innerHTML = '';
@@ -750,6 +815,12 @@
               mp.href = '/crm/document/?type=proforma&from=' + encodeURIComponent(d.id);
               mp.style.display = '';
             }
+          }
+
+          if (!d.voided_at && d.doc_type === 'invoice') {
+            var mk = document.getElementById('make-packing');
+            mk.href = '/crm/document/?type=packing&from=' + encodeURIComponent(d.id);
+            mk.style.display = '';
           }
 
           var voidBtn = document.getElementById('void-btn');

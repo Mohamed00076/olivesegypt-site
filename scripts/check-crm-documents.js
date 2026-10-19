@@ -555,6 +555,40 @@ function create(body, { cookie = COOKIE } = {}) {
   }
 
   {
+    // packing list: items and shipment, no prices
+    const ITEMS = [{ description: 'Green olives, whole', packing: 'carton, 12 x 720 ml', packages: 1200, net_kg: 10368, gross_kg: 13200 }];
+    await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    const inv = db.documents[db.documents.length - 1];
+    let res = await create({ doc_type: 'packing', buyer_company_name: 'X', packing_items: ITEMS, source_doc_id: inv.id,
+      container_no: 'MSKU 123456-7', seal_no: 'S-001', port_loading: 'Alexandria', line_items: LINE_ITEMS, currency: 'EUR', bank_details: 'X' });
+    let doc = db.documents[db.documents.length - 1];
+    t('a packing list is issued with a PL- number', res.statusCode === 200 && /^PL-\d{4}-\d{6}$/.test(JSON.parse(res.body).doc_number), res.body);
+    t('   it stores its items and shipment details', JSON.parse(doc.packing_items)[0].packages === 1200 &&
+      JSON.parse(doc.shipment).container_no === 'MSKU 123456-7' && JSON.parse(doc.shipment).vessel === null, doc.packing_items + ' ' + doc.shipment);
+    t('   and no prices, line items or bank details', doc.line_items === '[]' && doc.total === 0 && doc.bank_details === null,
+      JSON.stringify([doc.line_items, doc.total, doc.bank_details]));
+    t('   it can be made from an invoice', doc.source_doc_number === inv.doc_number, String(doc.source_doc_number));
+
+    const bad = async (items, name) => {
+      const r = await create({ doc_type: 'packing', buyer_company_name: 'X', packing_items: items });
+      t('   refused: ' + name, r.statusCode === 400 && /packing_items/.test(r.body), r.body);
+    };
+    await bad([], 'no items');
+    await bad([{ ...ITEMS[0], description: '' }], 'an item without a description');
+    await bad([{ ...ITEMS[0], packages: 0 }], 'zero packages');
+    await bad([{ ...ITEMS[0], packages: 2.5 }], 'half a package');
+    await bad([{ ...ITEMS[0], net_kg: 0 }], 'no net weight');
+    await bad([{ ...ITEMS[0], gross_kg: 100 }], 'gross weight below net');
+    await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    res = await create({ doc_type: 'packing', buyer_company_name: 'X', packing_items: ITEMS, source_doc_id: db.documents[db.documents.length - 1].id });
+    t('   a packing list is not made from a quotation', res.statusCode === 400 && /source_doc_id/.test(res.body), res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, packing_items: ITEMS, container_no: 'X' });
+    doc = db.documents[db.documents.length - 1];
+    t('   an invoice ignores packing fields', res.statusCode === 200 && doc.packing_items === null && doc.shipment === null,
+      JSON.stringify([doc.packing_items, doc.shipment]));
+  }
+
+  {
     const res = await create({ doc_type: 'receipt', buyer_company_name: 'X', line_items: LINE_ITEMS });
     t('an unknown doc_type is refused', res.statusCode === 400 && /doc_type/.test(res.body), res.body);
   }

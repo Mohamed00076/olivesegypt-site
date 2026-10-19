@@ -346,8 +346,9 @@
             tr.appendChild(numTd);
             // Every type by name: this said "Quotation" for anything not an
             // invoice, letters included (fixed 2026-10-20).
-            [({ quotation: 'Quotation', proforma: 'Proforma', invoice: 'Invoice', letter: 'Letter' })[d.doc_type] || d.doc_type,
-             (Number(d.total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + d.currency,
+            [({ quotation: 'Quotation', proforma: 'Proforma', invoice: 'Invoice', packing: 'Packing list', letter: 'Letter' })[d.doc_type] || d.doc_type,
+             // Letters and packing lists carry no price.
+             (d.doc_type === 'letter' || d.doc_type === 'packing') ? '' : (Number(d.total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + d.currency,
              CRM.fmtDate(d.created_at)].forEach(function (v) {
               var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
             });
