@@ -54,9 +54,11 @@ const EXPECTED_FOOTER_COLS = 5;
 // are the forms that were actually found in use, so a partial revert is
 // caught rather than merely a missing footer line.
 const ADDRESS = {
-  en: 'Ouroba Square (\u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629), 5th Settlement, New Cairo, Cairo, Egypt',
+  // English only since 2026-10-18 (owner decision): the Arabic street name
+  // in brackets is now a stale form.
+  en: 'Ouroba Square, 5th Settlement, New Cairo, Cairo, Egypt',
   ar: '\u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629\u060c \u0627\u0644\u062a\u062c\u0645\u0639 \u0627\u0644\u062e\u0627\u0645\u0633\u060c \u0627\u0644\u0642\u0627\u0647\u0631\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629\u060c \u0627\u0644\u0642\u0627\u0647\u0631\u0629\u060c \u0645\u0635\u0631',
-  staleEn: ['5th Settlement, Ouroba Square', '5th Settlement, Cairo<br/>'],
+  staleEn: ['5th Settlement, Ouroba Square', '5th Settlement, Cairo<br/>', 'Ouroba Square (\u0645'],
   staleAr: ['\u0627\u0644\u062a\u062c\u0645\u0639 \u0627\u0644\u062e\u0627\u0645\u0633\u060c \u0645\u064a\u062f\u0627\u0646 \u0627\u0644\u0639\u0631\u0648\u0628\u0629'],
 };
 // The tint classes the stylesheet actually defines. Read from the CSS rather
