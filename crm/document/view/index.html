@@ -34,7 +34,7 @@
         background: #fff; box-shadow: 0 2px 24px rgba(24, 32, 16, 0.10);
         display: flex; flex-direction: column; position: relative;
         font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-        font-size: 11.5px; line-height: 1.5; color: var(--doc-ink);
+        font-size: 12px; line-height: 1.55; color: var(--doc-ink);
       }
 
       /* masthead band ---------------------------------------------------- */
@@ -64,15 +64,15 @@
       /* cards -------------------------------------------------------------- */
       .doc-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
       .doc-cards.single { grid-template-columns: 1fr 1fr; }
-      .doc-card { background: var(--doc-cream); border-top: 3px solid var(--doc-gold); padding: 11px 14px 12px; }
+      .doc-card { background: var(--doc-cream); border-top: 3px solid var(--doc-gold); padding: 13px 16px 14px; }
       .doc-card-label { font-size: 7.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--doc-green); margin-bottom: 6px; }
-      .doc-card-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-      .doc-card-line { font-size: 10px; color: #4a4d40; }
+      .doc-card-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+      .doc-card-line { font-size: 10.5px; color: #4a4d40; line-height: 1.6; }
 
       /* line items --------------------------------------------------------- */
-      .doc-table { width: 100%; border-collapse: collapse; font-size: 10.5px; margin-bottom: 14px; border-bottom: 2px solid var(--doc-gold); }
+      .doc-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 16px; border-bottom: 2px solid var(--doc-gold); }
       .doc-table th { background: var(--doc-green); color: #fff; text-align: start; font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 10px; }
-      .doc-table td { padding: 10px 10px; vertical-align: top; }
+      .doc-table td { padding: 12px 10px; vertical-align: top; }
       .doc-table tbody tr:nth-child(even) td { background: var(--doc-cream); }
       .doc-table td:first-child { font-weight: 700; }
       .doc-table .num { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -82,35 +82,37 @@
 
       /* totals ------------------------------------------------------------- */
       .doc-totals { margin-inline-start: auto; width: 7.6cm; margin-bottom: 20px; break-inside: avoid; }
-      .doc-totals .doc-sub-row { display: flex; justify-content: space-between; gap: 1rem; padding: 4px 10px; font-size: 10.5px; }
-      .doc-totals .doc-grand { display: flex; justify-content: space-between; gap: 1rem; background: var(--doc-green); color: #fff; padding: 8px 10px; margin-top: 6px; font-size: 14px; font-weight: 800; }
+      .doc-totals .doc-sub-row { display: flex; justify-content: space-between; gap: 1rem; padding: 5px 10px; font-size: 11.5px; }
+      .doc-totals .doc-grand { display: flex; justify-content: space-between; gap: 1rem; background: var(--doc-green); color: #fff; padding: 10px 12px; margin-top: 6px; font-size: 15px; font-weight: 800; }
       .doc-totals .num { font-variant-numeric: tabular-nums; }
 
       /* terms -------------------------------------------------------------- */
-      .doc-terms { margin-bottom: 14px; break-inside: avoid; }
+      .doc-terms { margin-top: 6px; margin-bottom: 16px; break-inside: avoid; }
       .doc-section-label { font-size: 7.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--doc-green); padding-bottom: 6px; border-bottom: 1px solid #e3dccb; margin-bottom: 8px; }
-      .doc-terms-grid { display: grid; grid-template-columns: 2.6cm 1fr 2.6cm 1fr; gap: 6px 12px; margin: 0; font-size: 10px; }
+      .doc-terms-grid { display: grid; grid-template-columns: 2.6cm 1fr 2.6cm 1fr; gap: 8px 12px; margin: 0; font-size: 11px; }
       .doc-terms-grid dt { color: var(--doc-muted); }
       .doc-terms-grid dd { margin: 0; font-weight: 700; }
 
       /* letter ------------------------------------------------------------- */
-      .doc-letter-subject { font-size: 12.5px; font-weight: 700; margin-bottom: 14px; }
-      .doc-letter-salutation { margin-bottom: 12px; }
-      .doc-letter-body { white-space: pre-wrap; line-height: 1.8; max-width: 16cm; }
-      .doc-letter-closing { margin-top: 20px; }
+      .doc-letter-subject { font-size: 14px; font-weight: 700; margin-bottom: 18px; }
+      .doc-letter-salutation { margin-bottom: 14px; }
+      .doc-letter-body { white-space: pre-wrap; font-size: 13px; line-height: 1.85; max-width: 16.5cm; }
+      .doc-letter-closing { margin-top: 24px; font-size: 13px; }
       .doc-letter-annex { margin-top: 22px; padding-top: 10px; border-top: 1px solid #e3dccb; font-size: 9.5px; }
       .doc-letter-annex > div { display: flex; gap: 12px; margin-bottom: 3px; }
       .doc-letter-annex dt { min-width: 44px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 7.5px; color: var(--doc-muted); padding-top: 1px; }
       .doc-letter-annex dd { margin: 0; }
 
       /* notes, signature, stamp ------------------------------------------- */
-      .doc-notes { font-size: 9.5px; line-height: 1.6; white-space: pre-wrap; color: #4a4d40; margin-bottom: 18px; }
+      .doc-notes { font-size: 10.5px; line-height: 1.6; white-space: pre-wrap; color: #4a4d40; margin-bottom: 18px; }
       .doc-notes b { color: var(--doc-ink); }
       .doc-sign { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-top: 8px; break-inside: avoid; }
+      .doc-close { display: flex; flex-direction: column; flex: 1; break-inside: avoid; }
+      .sheet.is-priced .doc-sign { margin-top: auto; padding-top: 28px; }
       .doc-sign-for { font-size: 9.5px; color: var(--doc-muted); margin-bottom: 38px; }
       .doc-sign-line { width: 6.5cm; border-top: 1px solid var(--doc-ink); padding-top: 6px; }
-      .doc-sign-name { font-size: 11px; font-weight: 700; }
-      .doc-sign-title { font-size: 9.5px; color: var(--doc-muted); }
+      .doc-sign-name { font-size: 12px; font-weight: 700; }
+      .doc-sign-title { font-size: 10px; color: var(--doc-muted); }
       .doc-stamp { width: 3.8cm; height: 2.5cm; border: 1.5px dashed var(--doc-gold); border-radius: 10px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-muted); }
 
       /* footer band (on screen; in print it is the page's own footer) ----- */
@@ -124,6 +126,15 @@
          capitals for uppercase to act on.
          ------------------------------------------------------------------ */
       [dir="rtl"] .sheet { font-family: 'Noto Naskh Arabic', 'Plus Jakarta Sans', sans-serif; line-height: 1.75; }
+      /* Naskh sets visibly smaller than Plus Jakarta Sans at the same size,
+         which is most of why the first Arabic samples looked empty. */
+      [dir="rtl"] .doc-table { font-size: 12.5px; }
+      [dir="rtl"] .doc-card-line, [dir="rtl"] .doc-terms-grid { font-size: 12px; }
+      [dir="rtl"] .doc-card-name { font-size: 15px; }
+      [dir="rtl"] .doc-dates, [dir="rtl"] .doc-notes, [dir="rtl"] .doc-sign-for, [dir="rtl"] .doc-sign-title { font-size: 11.5px; }
+      [dir="rtl"] .doc-sign-name { font-size: 13px; }
+      [dir="rtl"] .doc-letter-body, [dir="rtl"] .doc-letter-closing, [dir="rtl"] .doc-letter-salutation { font-size: 14.5px; }
+      [dir="rtl"] .doc-letter-subject { font-size: 15.5px; }
       [dir="rtl"] .doc-trade, [dir="rtl"] .doc-contact dt, [dir="rtl"] .doc-card-label,
       [dir="rtl"] .doc-table th, [dir="rtl"] .doc-section-label, [dir="rtl"] .doc-stamp,
       [dir="rtl"] .doc-letter-annex dt, [dir="rtl"] .void-stamp, [dir="rtl"] .doc-kind, [dir="rtl"] .doc-wordmark {
@@ -170,6 +181,17 @@
          */
         html, body { background: #fff !important; }
         .sheet { box-shadow: none; margin: 0; max-width: none; min-height: 0; }
+        /*
+         * A one-page quotation or invoice fills its page: the sheet is the
+         * page's height (281mm of printable area, less a little so rounding
+         * never spills onto a blank second page) and the signature and stamp
+         * sit at the foot, where they are signed, instead of leaving a fifth
+         * of the page empty under them. A longer document is unaffected --
+         * min-height only ever adds space. A letter keeps its signature under
+         * the closing, as letters do.
+         */
+        .sheet.is-priced { min-height: 276mm; }
+
         .doc-foot { display: none; }
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         @page { size: A4; margin: 14mm 0 16mm 0; }
@@ -277,6 +299,9 @@
           <div class="doc-grand"><span id="label-total">Total</span><span class="num" id="doc-total"></span></div>
         </div>
 
+        <!-- Terms, notes and signature move as one block, so a long
+             document never ends with a page holding only the signature. -->
+        <div class="doc-close">
         <div class="doc-terms" id="doc-terms" style="display:none;">
           <div class="doc-section-label" id="label-terms">Terms</div>
           <dl class="doc-terms-grid" id="doc-terms-grid"></dl>
@@ -293,6 +318,7 @@
             </div>
           </div>
           <div class="doc-stamp" id="doc-stamp">Company Stamp</div>
+        </div>
         </div>
 
         <dl class="doc-letter-annex" id="letter-annex" style="display:none;">
@@ -471,6 +497,19 @@
             ' background: #4b5a23; color: #ffffff; font-size: 7.5px; line-height: 1.6;' +
             ' font-family: ' + (t.lang === 'ar' ? "'Noto Naskh Arabic', " : '') + "'Plus Jakarta Sans', sans-serif;" +
             ' direction: ' + t.dir + '; } } }';
+          /*
+           * Pages after the first have no masthead, so they would start
+           * straight into the table with nothing saying whose document it
+           * is. A slim green band at the top of each continuation page names
+           * the company and the document number. @page :first has no top
+           * margin, so the band never appears over the masthead.
+           */
+          rule += '@media print { @page { @top-center {' +
+            ' content: "' + css(t.company) + ' · ' + LRI + css(docNumber) + PDI + '";' +
+            ' text-align: center; vertical-align: middle; background: #4b5a23; color: #ffffff;' +
+            ' font-size: 8.5px; font-weight: 700; height: 9mm; margin-bottom: 5mm;' +
+            ' font-family: ' + (t.lang === 'ar' ? "'Noto Naskh Arabic', " : '') + "'Plus Jakarta Sans', sans-serif;" +
+            ' direction: ' + t.dir + '; } } }';
           var el = document.getElementById('print-footer-style');
           if (!el) { el = document.createElement('style'); el.id = 'print-footer-style'; document.head.appendChild(el); }
           el.textContent = rule;
@@ -530,6 +569,7 @@
           }
           var isLetter = d.doc_type === 'letter';
           var isQuote = d.doc_type === 'quotation';
+          document.getElementById('sheet').classList.add(isLetter ? 'is-letter' : 'is-priced');
 
           /*
            * A quotation says QUOTATION because the reader needs to know what
