@@ -14,7 +14,9 @@
  *     for word (C-137, C-138), and the Manufacturer page also says the
  *     partner facility is not ours (C-36), so the two cannot drift apart
  *   - the confirmed Local card copy is on both homepages and both hubs, and
- *     the old flat "10-metric-ton minimum" card wording (C-133) is gone
+ *     the old flat "10-metric-ton minimum" card wording (C-133) is gone;
+ *     since 2026-10-19 no minimum on these pages carries a figure (owner:
+ *     a container's weight depends on the packing)
  *   - every enquiry button goes to the shared /contact form with ?from=
  *     naming its own page, which assets/inquiry-form.js records
  *   - the hub links every buyer page, and private label to
@@ -82,11 +84,11 @@ const CONFIRMED = {
   'ar manufacturer': ['هذه خدمة فعلية نقدّمها حاليًا، وليست قدرة نظرية.', 'نحن لا نمتلك مصنع معالجة ولا نُشغّله'],
   'en local-egypt': [
     'We can supply local Egyptian buyers without export logistics.',
-    'For bulk orders in 220kg barrels, the minimum order is 10 metric tons (approximately 45 barrels).',
-    'For retail-ready formats — glass jar, tin, or bucket — the standard minimum applies, the same as our export container minimum of 16–18 metric tons.',
+    'For bulk orders in 220kg barrels, the minimum order is confirmed during quotation.',
+    'For retail-ready formats — glass jar, tin, or bucket — the standard minimum applies, the same as for export: a full container load (FCL).',
     'Pricing and delivery arrangements within Egypt are confirmed during quotation.',
   ],
-  'ar local-egypt': ['الحد الأدنى للطلب 10 أطنان مترية (نحو 45 برميلًا)', '16–18 طنًا متريًا'],
+  'ar local-egypt': ['يُؤكَّد الحد الأدنى للطلب أثناء عرض السعر', 'حاوية كاملة (FCL)'],
 };
 for (const [key, sentences] of Object.entries(CONFIRMED)) {
   const [loc, slug] = key.split(' ');
@@ -98,8 +100,8 @@ for (const [key, sentences] of Object.entries(CONFIRMED)) {
 }
 
 const CARD = {
-  en: 'Local delivery-within-Egypt orders: 10-metric-ton minimum for bulk 220kg barrel orders; other packaging formats follow the standard 16–18 MT container minimum. Pricing confirmed during quotation.',
-  ar: 'طلبات التسليم داخل مصر: حد أدنى 10 أطنان مترية لطلبات البراميل سعة 220 كجم بالجملة؛ وتتبع صيغ التغليف الأخرى الحد الأدنى القياسي للحاوية 16–18 طنًا متريًا. ويُؤكَّد التسعير أثناء عرض السعر.',
+  en: 'Local delivery-within-Egypt orders: bulk 220kg barrel orders, with the minimum confirmed during quotation; other packaging formats follow the standard full container load (FCL) minimum. Pricing confirmed during quotation.',
+  ar: 'طلبات التسليم داخل مصر: طلبات البراميل سعة 220 كجم بالجملة بحد أدنى يُؤكَّد أثناء عرض السعر؛ وتتبع صيغ التغليف الأخرى الحد الأدنى القياسي: حاوية كاملة (FCL). ويُؤكَّد التسعير أثناء عرض السعر.',
 };
 const cardMissing = [];
 for (const [f, loc] of [['index.html', 'en'], ['ar/index.html', 'ar'], ['solutions/index.html', 'en'], ['ar/solutions/index.html', 'ar']]) {
