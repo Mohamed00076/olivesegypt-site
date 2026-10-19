@@ -186,6 +186,13 @@
           <div class="crm-field" id="bank-field" style="display:none;">
             <label for="bank-details">Bank details for payment <span class="crm-muted">(optional)</span></label>
             <textarea id="bank-details" rows="4" maxlength="600" dir="auto" placeholder="Beneficiary, bank, account / IBAN, SWIFT"></textarea>
+            <!-- A deliberate copy of the last details used, never a default:
+                 the writer sees which document they came from and checks
+                 them before issuing. -->
+            <div style="display:flex; gap:10px; align-items:center; margin-top:6px; flex-wrap:wrap;">
+              <button type="button" class="crm-btn crm-btn-secondary" id="bank-copy-btn">Copy from last invoice</button>
+              <span class="crm-muted" id="bank-copy-note" style="font-size:12px;"></span>
+            </div>
           </div>
           <div class="crm-field">
             <label for="notes">Notes (packaging, shipping details, etc.)</label>
@@ -235,16 +242,29 @@
         'use strict';
         var qs = new URLSearchParams(window.location.search);
         var buyerId = qs.get('buyer_id');
-        var TYPES = { invoice: 'invoice', letter: 'letter', quotation: 'quotation' };
+        var TYPES = { invoice: 'invoice', proforma: 'proforma', letter: 'letter', quotation: 'quotation' };
         var docType = TYPES[qs.get('type')] || 'quotation';
         var isLetter = docType === 'letter';
-        var TITLE = { quotation: 'New Quotation', invoice: 'New Invoice', letter: 'New Letter' };
+        var TITLE = { quotation: 'New Quotation', proforma: 'New Proforma Invoice', invoice: 'New Invoice', letter: 'New Letter' };
+        // Paid against: these carry bank details. Offered: these carry a validity date.
+        var hasBank = docType === 'invoice' || docType === 'proforma';
+        var hasValidity = docType === 'quotation' || docType === 'proforma';
+        /*
+         * ?from=<id>: start from an existing quotation (or proforma) instead
+         * of a blank form (2026-10-20). Everything is copied into the form,
+         * where the writer checks it; the server re-validates all of it and
+         * checks the source itself. Only an invoice or a proforma can be made
+         * this way, which the server enforces too.
+         */
+        var fromId = (docType === 'invoice' || docType === 'proforma') ? qs.get('from') : null;
+        var source = null;
 
         function fmt2(n) {
           n = Number(n) || 0;
           return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        // prefill: a product name (a new document) or a whole line (copied from another document).
         function addLine(prefill) {
           var tr = document.createElement('tr');
           tr.innerHTML =
@@ -254,7 +274,12 @@
             '<td class="price"><input type="number" class="li-price" min="0" step="any" required /></td>' +
             '<td class="line-total"><span class="li-line-total">0.00</span></td>' +
             '<td><button type="button" class="remove-btn" title="Remove line">&times;</button></td>';
-          if (prefill) {
+          if (prefill && typeof prefill === 'object') {
+            tr.querySelector('.li-desc').value = prefill.description || '';
+            tr.querySelector('.li-unit').value = prefill.unit || '';
+            tr.querySelector('.li-qty').value = prefill.quantity != null ? prefill.quantity : '';
+            tr.querySelector('.li-price').value = prefill.unit_price != null ? prefill.unit_price : '';
+          } else if (prefill) {
             tr.querySelector('.li-desc').value = prefill;
           }
           document.getElementById('li-tbody').appendChild(tr);
@@ -301,6 +326,21 @@
 
         document.getElementById('add-line-btn').addEventListener('click', function () { addLine(); });
 
+        document.getElementById('bank-copy-btn').addEventListener('click', function () {
+          var note = document.getElementById('bank-copy-note');
+          var box = document.getElementById('bank-details');
+          note.textContent = 'Looking…';
+          CRM.fetchJson('/api/crm/documents?last_bank_details=1').then(function (result) {
+            if (!result.ok) { note.textContent = (result.data && result.data.error) || 'Could not look up the last bank details.'; return; }
+            if (!result.data.bank_details) { note.textContent = 'No earlier invoice or proforma has bank details yet.'; return; }
+            box.value = result.data.bank_details;
+            note.textContent = 'Copied from ' + result.data.doc_number + '. Check they are still current.';
+          }).catch(function (e) {
+            var msg = CRM.noReplyMessage(e, 'Looking up the last bank details', 'Try again, or type them in.');
+            note.textContent = msg || '';
+          });
+        });
+
         document.getElementById('doc-form').addEventListener('submit', function (e) {
           e.preventDefault();
           var lines = [];
@@ -342,7 +382,8 @@
             payload.incoterm = document.getElementById('incoterm').value.trim();
             payload.payment_terms = document.getElementById('payment-terms').value.trim();
             payload.lead_time = document.getElementById('lead-time').value.trim();
-            if (docType === 'invoice') payload.bank_details = document.getElementById('bank-details').value.trim();
+            if (hasBank) payload.bank_details = document.getElementById('bank-details').value.trim();
+            if (source) payload.source_doc_id = source.id;
             payload.line_items = lines;
           }
           payload.signatory_name = document.getElementById('l-signatory').value.trim();
@@ -366,7 +407,7 @@
             payload.buyer_address = document.getElementById('r-address').value.trim();
           }
 
-          if (docType === 'quotation') payload.valid_until = document.getElementById('date-input').value || null;
+          if (hasValidity) payload.valid_until = document.getElementById('date-input').value || null;
           else if (docType === 'invoice') payload.due_date = document.getElementById('date-input').value || null;
 
           var saveBtn = document.getElementById('save-btn');
@@ -410,7 +451,7 @@
             document.getElementById('line-items-card').style.display = 'none';
           } else {
             document.getElementById('date-label').textContent = docType === 'invoice' ? 'Due Date' : 'Valid Until';
-            if (docType === 'invoice') document.getElementById('bank-field').style.display = '';
+            if (hasBank) document.getElementById('bank-field').style.display = '';
           }
 
           var langSelect = document.getElementById('doc-language');
@@ -430,11 +471,59 @@
             var o = document.createElement('option'); o.value = p[1]; suggestions.appendChild(o);
           });
 
+          if (!fromId) { loadRecipient(); return; }
+          CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(fromId)).then(function (result) {
+            if (!result.ok) { showStatus((result.data && result.data.error) || 'Could not load the document to start from.', false); return; }
+            var src = result.data;
+            if (src.voided_at) { showStatus(src.doc_number + ' is void, so nothing can be issued from it.', false); return; }
+            source = src;
+            // A linked buyer stays linked; an unlinked one is copied as typed.
+            buyerId = src.buyer_id ? String(src.buyer_id) : null;
+            loadRecipient();
+          }).catch(function (e) {
+            var msg = CRM.noReplyMessage(e, 'Loading the document to start from', 'Reload the page to try again.');
+            if (msg) showStatus(msg, false);
+          });
+        }
+
+        /*
+         * Copy everything a priced document says into this form: the writer
+         * reviews it all before issuing, so nothing is carried over silently.
+         * Dates are not copied -- a quotation's validity is not a proforma's,
+         * and an invoice's due date is new.
+         */
+        function applySource() {
+          var src = source;
+          document.getElementById('page-title').textContent = TITLE[docType] + ' from ' + src.doc_number;
+          var lang = document.getElementById('doc-language');
+          if (src.language) { lang.value = src.language; applyLetterLanguage(lang.value); }
+          document.getElementById('currency').value = src.currency || 'USD';
+          document.getElementById('incoterm').value = src.incoterm || '';
+          document.getElementById('payment-terms').value = src.payment_terms || '';
+          document.getElementById('lead-time').value = src.lead_time || '';
+          document.getElementById('notes').value = src.notes || '';
+          if (hasBank && src.bank_details) document.getElementById('bank-details').value = src.bank_details;
+          if (src.signatory_name) document.getElementById('l-signatory').value = src.signatory_name;
+          document.getElementById('l-signatory-title').value = src.signatory_title || '';
+          if (!buyerId) {
+            document.getElementById('r-company').value = src.buyer_company_name || '';
+            document.getElementById('r-contact').value = src.buyer_contact_name || '';
+            document.getElementById('r-country').value = src.buyer_country || '';
+            document.getElementById('r-address').value = src.buyer_address || '';
+          }
+          document.getElementById('li-tbody').innerHTML = '';
+          (src.line_items || []).forEach(function (li) { addLine(li); });
+          recalc();
+          showStatus('Filled in from ' + src.doc_number + '. Check every line, the terms and the date before creating it: it gets its own number.', true);
+        }
+
+        function loadRecipient() {
           if (!buyerId) {
             // Standalone: nothing to fetch, so the form is usable immediately.
             document.getElementById('recipient-card').style.display = '';
             document.getElementById('doc-form').style.display = '';
-            if (!isLetter) { addLine(null); recalc(); }
+            if (source) applySource();
+            else if (!isLetter) { addLine(null); recalc(); }
             document.getElementById('r-company').focus();
             return;
           }
@@ -456,7 +545,9 @@
             if (b.incoterm) document.getElementById('incoterm').value = b.incoterm;
             document.getElementById('buyer-card').style.display = '';
             document.getElementById('doc-form').style.display = '';
-            if (!isLetter) {
+            if (source) {
+              applySource();
+            } else if (!isLetter) {
               // The first product of interest that is still sold: a withdrawn
               // one is never put on a new document.
               var interests = Array.isArray(b.product_interest) ? b.product_interest : [];
