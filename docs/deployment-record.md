@@ -10806,6 +10806,93 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 270 to 273 — The live check retries a dropped connection once; optional bank details on CRM invoices; the letterhead in the new design (PRs #394, #395, #396, #397)
+
+**Previous recorded deploy:** `836c1af` (Deploy 269, PR #391)
+**Approvals:**
+- "merge" (#394).
+- The owner asked "what else". The reply listed six options, and the owner answered "do all". Then "merge 395 396 397" (#395, #396, #397).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 270 | #394 | `88af9d0` | 2026-10-20 02:03:33 | 1 | +70 / −1 | Notes only |
+| 271 | #395 | `3ed04a4` | 2026-10-20 02:25:55 | 1 | +22 / −4 | Live-check script |
+| 272 | #396 | `4caaedc` | 2026-10-20 02:26:01 | 4 | +76 / −3 | CRM invoice form and view, documents function, its check |
+| 273 | #397 | `1c7182f` | 2026-10-20 02:26:07 | 2 | +173 / −117 | Letterhead (EN, AR) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 270** recorded Deploys 268 and 269.
+
+### What the deploys did
+
+- **Deploy 271 — The live check (#395).**
+  - **Retry:** `scripts/check-live.js` now tries a request a second time, after 2 seconds, when the connection itself fails with no reply. A second failure is reported as before, and any HTTP status is judged on the first answer.
+  - **Why:** three runs in a row (Deploys 267 to 269) each failed one random page with "fetch failed", and every one passed when fetched again.
+  - **Visible:** the report states how many requests were retried.
+  - **Checks:** an offline test with a stand-in for the network confirmed it: a connection dropped once is retried and passes, one dropped twice fails, and a normal request is made once.
+- **Deploy 272 — Bank details on CRM invoices (#396).**
+  - **The field:** "Bank details for payment (optional)" on the invoice form. It is free text over several lines, printed under "Bank Details" / «البيانات المصرفية» only when typed.
+  - **No defaults:** the details are stored only with that invoice. No account number is in the site's code, and an old account can never print by default.
+  - **Invoices only:** quotations and letters ignore the field.
+  - **Database:** a new nullable column, `bank_details`, up to 600 characters. `ensureSchema` adds it with `ADD COLUMN IF NOT EXISTS` on the first documents request. No migration was run by hand.
+  - **Layout:** stacked under the terms, the bank details pushed a three-line invoice's signature onto a second page. Side by side, it stays on one page. On a phone screen they stack.
+  - **Checks:** `check-crm-documents.js` gained 5 checks (71 in all). Bank details are stored with their line breaks, left empty when blank, ignored on a quotation and on a letter, and capped at 600 characters.
+- **Deploy 273 — The letterhead (#397).**
+  - **The design:** `/letterhead/` and `/ar/letterhead/` take the owner's 2026-10-19 letterhead design, with the same masthead, gold rule and green footer band as the CRM documents (Deploy 267).
+  - **Printing:** the footer band is the page's own `@bottom-center` box, at the foot of every printed page. A long letter gets a slim company band at the top of each later page, and a gap above the footer.
+  - **Unchanged:** a blank letterhead prints blank, on one A4 page. The toolbar, the back link to the CRM, Clear, and Print are as before.
+  - **Address:** the owner's design PDF still showed the bracketed English address. The page uses the current one (C-22).
+- **Before merging:** the three branches were merged together on the `main` that carried Deploy 270, and `npm test` passed on the combination. `check-function-bundles.js` (copied temporarily from #383) reported 43 packaged and 0 problems on #396.
+
+### Owner material outside the repository (2026-10-20)
+
+None of this was committed.
+- **Arabic review page:** the existing Arabic Wording Review page gained nine minimum-order phrases (Deploy 268) and the invoice heading «البيانات المصرفية».
+  - The owner's earlier 24 answers are kept. The one correction among them, the glass-jar row, was confirmed applied.
+  - Two groups were marked live: the preview-forms message (#377) and the PET pail row (#367).
+- **Buyer message:** a message in English and Arabic for buyers holding documents with the old "16–18 tons", with a checklist of places outside the site to update. The Arabic was flagged for the owner's review.
+- **Correction to Deploy 267:** the CRM Arabic labels listed there as awaiting review come from the owner's own design PDFs. The Arabic written here is limited to «حاوية كاملة (FCL)» and, from this entry, «البيانات المصرفية».
+- **Scheduled check:** the HTTPS certificate renewal is to be checked on 2026-11-01. The owner is told only if it has not renewed.
+
+### Verified on the live site (2026-10-20)
+
+- **Deployed commit:** `deployed-commit.txt` reads `1c7182fd977308d6eee889f64eec84c3f1218371`.
+- **Pages:**
+  - `/letterhead/` and `/ar/letterhead/` serve the new masthead;
+  - `/crm/document/` serves the bank-details field;
+  - `/crm/document/view/` serves the bank-details layout.
+- **Live check:** 21 OK, 0 FAIL, with "1 request retried once after a dropped connection." That is the case Deploy 271 is for.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 273:** `git revert -m 1 1c7182f`.
+- **Deploy 272:** `git revert -m 1 4caaedc`. The column stays in place; it is nullable, and the earlier code never reads it.
+- **Deploy 271:** `git revert -m 1 3ed04a4`.
+- **Deploy 270** is documentation only.
+
+### Known limitations shipped with Deploys 270 to 273
+
+- **Browser support.** The letterhead's every-page footer and continuation band use `@page` margin boxes, as the CRM documents do. Chrome and Edge (131 and later) print them; another browser prints the sheet without them.
+- **Arabic awaiting the owner's review:** the minimum-order wording, «البيانات المصرفية», and the older unanswered items on the review page (cookie banner and privacy page, 2026-10-16).
+- **Unchanged from Deploys 268 and 269:**
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244;
+  - #359 waits for four product photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10824,7 +10911,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 269 (2026-10-20).**
+**Unchanged since U4, through Deploy 273 (2026-10-20).**
 
 ## Outstanding, unresolved by this document
 
