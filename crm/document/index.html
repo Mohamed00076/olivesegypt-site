@@ -216,6 +216,41 @@
           </div>
         </div>
 
+        <!-- Packing lists only (2026-10-20): what is in the container, packed
+             how, weighing what. No prices. Every figure is typed per shipment;
+             a carton's weight depends on its packing. -->
+        <div class="crm-card" id="packing-card" style="display:none;">
+          <h2>Shipment</h2>
+          <div class="crm-grid crm-grid-3">
+            <div class="crm-field"><label for="pk-container">Container no. <span class="crm-muted">(optional)</span></label><input id="pk-container" maxlength="40" placeholder="e.g. MSKU 123456-7" /></div>
+            <div class="crm-field"><label for="pk-seal">Seal no. <span class="crm-muted">(optional)</span></label><input id="pk-seal" maxlength="40" /></div>
+            <div class="crm-field"><label for="pk-vessel">Vessel / voyage <span class="crm-muted">(optional)</span></label><input id="pk-vessel" maxlength="100" dir="auto" /></div>
+            <div class="crm-field"><label for="pk-pol">Port of loading <span class="crm-muted">(optional)</span></label><input id="pk-pol" maxlength="100" dir="auto" placeholder="e.g. Alexandria" /></div>
+            <div class="crm-field"><label for="pk-pod">Port of discharge <span class="crm-muted">(optional)</span></label><input id="pk-pod" maxlength="100" dir="auto" /></div>
+          </div>
+          <div class="crm-field">
+            <label for="pk-marks">Shipping marks <span class="crm-muted">(optional)</span></label>
+            <textarea id="pk-marks" rows="2" maxlength="500" dir="auto"></textarea>
+          </div>
+
+          <h2 style="margin-top:18px;">Packing</h2>
+          <table class="li-table">
+            <thead>
+              <tr><th>Description</th><th class="unit">Packing</th><th class="qty">Packages</th><th class="price">Net kg</th><th class="price">Gross kg</th><th></th></tr>
+            </thead>
+            <tbody id="pk-tbody"></tbody>
+            <tfoot>
+              <tr class="totals-row grand"><td style="text-align:right;" colspan="2">Total</td><td id="pk-total-packages">0</td><td id="pk-total-net">0.00</td><td id="pk-total-gross">0.00</td><td></td></tr>
+            </tfoot>
+          </table>
+          <button type="button" class="crm-btn crm-btn-secondary" id="pk-add-btn" style="margin-top:10px;">+ Add Line</button>
+
+          <div class="crm-field" style="margin-top:14px;">
+            <label for="pk-notes">Notes <span class="crm-muted">(optional)</span></label>
+            <textarea id="pk-notes" rows="2" maxlength="2000" dir="auto"></textarea>
+          </div>
+        </div>
+
         <div class="crm-card" id="line-items-card">
           <h2>Line Items</h2>
           <datalist id="product-suggestions"></datalist>
@@ -242,10 +277,12 @@
         'use strict';
         var qs = new URLSearchParams(window.location.search);
         var buyerId = qs.get('buyer_id');
-        var TYPES = { invoice: 'invoice', proforma: 'proforma', letter: 'letter', quotation: 'quotation' };
+        var TYPES = { invoice: 'invoice', proforma: 'proforma', packing: 'packing', letter: 'letter', quotation: 'quotation' };
         var docType = TYPES[qs.get('type')] || 'quotation';
         var isLetter = docType === 'letter';
-        var TITLE = { quotation: 'New Quotation', proforma: 'New Proforma Invoice', invoice: 'New Invoice', letter: 'New Letter' };
+        var isPacking = docType === 'packing';
+        var isPriced = !isLetter && !isPacking;
+        var TITLE = { quotation: 'New Quotation', proforma: 'New Proforma Invoice', invoice: 'New Invoice', packing: 'New Packing List', letter: 'New Letter' };
         // Paid against: these carry bank details. Offered: these carry a validity date.
         var hasBank = docType === 'invoice' || docType === 'proforma';
         var hasValidity = docType === 'quotation' || docType === 'proforma';
@@ -256,7 +293,7 @@
          * checks the source itself. Only an invoice or a proforma can be made
          * this way, which the server enforces too.
          */
-        var fromId = (docType === 'invoice' || docType === 'proforma') ? qs.get('from') : null;
+        var fromId = (docType === 'invoice' || docType === 'proforma' || isPacking) ? qs.get('from') : null;
         var source = null;
 
         function fmt2(n) {
@@ -326,6 +363,44 @@
 
         document.getElementById('add-line-btn').addEventListener('click', function () { addLine(); });
 
+        function addPackLine(prefill) {
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td><input type="text" class="pk-desc" list="product-suggestions" maxlength="300" required /></td>' +
+            '<td class="unit"><input type="text" class="pk-packing" maxlength="60" placeholder="carton, 12 x 720 ml" /></td>' +
+            '<td class="qty"><input type="number" class="pk-packages" min="1" step="1" required /></td>' +
+            '<td class="price"><input type="number" class="pk-net" min="0" step="any" required /></td>' +
+            '<td class="price"><input type="number" class="pk-gross" min="0" step="any" required /></td>' +
+            '<td><button type="button" class="remove-btn" title="Remove line">&times;</button></td>';
+          if (prefill) {
+            tr.querySelector('.pk-desc').value = prefill.description || '';
+            tr.querySelector('.pk-packing').value = prefill.packing || '';
+          }
+          document.getElementById('pk-tbody').appendChild(tr);
+          tr.querySelector('.remove-btn').addEventListener('click', function () { tr.remove(); packTotals(); });
+          ['pk-packages', 'pk-net', 'pk-gross'].forEach(function (c) { tr.querySelector('.' + c).addEventListener('input', packTotals); });
+          return tr;
+        }
+        function collectPackLines() {
+          return Array.prototype.map.call(document.querySelectorAll('#pk-tbody tr'), function (tr) {
+            return {
+              description: tr.querySelector('.pk-desc').value.trim(),
+              packing: tr.querySelector('.pk-packing').value.trim(),
+              packages: Number(tr.querySelector('.pk-packages').value),
+              net_kg: Number(tr.querySelector('.pk-net').value),
+              gross_kg: Number(tr.querySelector('.pk-gross').value),
+            };
+          });
+        }
+        function packTotals() {
+          var t = { p: 0, n: 0, g: 0 };
+          collectPackLines().forEach(function (l) { t.p += l.packages || 0; t.n += l.net_kg || 0; t.g += l.gross_kg || 0; });
+          document.getElementById('pk-total-packages').textContent = t.p.toLocaleString('en-US');
+          document.getElementById('pk-total-net').textContent = fmt2(t.n);
+          document.getElementById('pk-total-gross').textContent = fmt2(t.g);
+        }
+        document.getElementById('pk-add-btn').addEventListener('click', function () { addPackLine(); });
+
         document.getElementById('bank-copy-btn').addEventListener('click', function () {
           var note = document.getElementById('bank-copy-note');
           var box = document.getElementById('bank-details');
@@ -344,7 +419,19 @@
         document.getElementById('doc-form').addEventListener('submit', function (e) {
           e.preventDefault();
           var lines = [];
-          if (!isLetter) {
+          var packLines = [];
+          if (isPacking) {
+            packLines = collectPackLines();
+            if (!packLines.length) { showStatus('Add at least one packing line.', false); return; }
+            for (var j = 0; j < packLines.length; j++) {
+              var pl = packLines[j];
+              if (!pl.description) { showStatus('Every packing line needs a description.', false); return; }
+              if (!(pl.packages > 0) || Math.floor(pl.packages) !== pl.packages) { showStatus('Every packing line needs a whole number of packages.', false); return; }
+              if (!(pl.net_kg > 0)) { showStatus('Every packing line needs a net weight.', false); return; }
+              if (!(pl.gross_kg >= pl.net_kg)) { showStatus('Gross weight cannot be less than net weight.', false); return; }
+            }
+          }
+          if (isPriced) {
             lines = collectLines();
             if (!lines.length) { showStatus('Add at least one line item.', false); return; }
             for (var i = 0; i < lines.length; i++) {
@@ -361,7 +448,7 @@
           var payload = {
             doc_type: docType,
             language: document.getElementById('doc-language').value,
-            notes: document.getElementById('notes').value.trim(),
+            notes: document.getElementById(isPacking ? 'pk-notes' : 'notes').value.trim(),
           };
 
           if (isLetter) {
@@ -377,6 +464,15 @@
             payload.closing = document.getElementById('l-closing').value;
             payload.enclosures = document.getElementById('l-enclosures').value.trim();
             payload.cc = document.getElementById('l-cc').value.trim();
+          } else if (isPacking) {
+            payload.packing_items = packLines;
+            payload.container_no = document.getElementById('pk-container').value.trim();
+            payload.seal_no = document.getElementById('pk-seal').value.trim();
+            payload.vessel = document.getElementById('pk-vessel').value.trim();
+            payload.port_loading = document.getElementById('pk-pol').value.trim();
+            payload.port_discharge = document.getElementById('pk-pod').value.trim();
+            payload.shipping_marks = document.getElementById('pk-marks').value.trim();
+            if (source) payload.source_doc_id = source.id;
           } else {
             payload.currency = document.getElementById('currency').value.trim().toUpperCase() || 'USD';
             payload.incoterm = document.getElementById('incoterm').value.trim();
@@ -449,6 +545,10 @@
 
             document.getElementById('details-card').style.display = 'none';
             document.getElementById('line-items-card').style.display = 'none';
+          } else if (isPacking) {
+            document.getElementById('packing-card').style.display = '';
+            document.getElementById('details-card').style.display = 'none';
+            document.getElementById('line-items-card').style.display = 'none';
           } else {
             document.getElementById('date-label').textContent = docType === 'invoice' ? 'Due Date' : 'Valid Until';
             if (hasBank) document.getElementById('bank-field').style.display = '';
@@ -497,6 +597,27 @@
           document.getElementById('page-title').textContent = TITLE[docType] + ' from ' + src.doc_number;
           var lang = document.getElementById('doc-language');
           if (src.language) { lang.value = src.language; applyLetterLanguage(lang.value); }
+          if (isPacking) {
+            /*
+             * From an invoice: who it is for, the goods and how they are
+             * packed. Packages and weights are left empty on purpose -- they
+             * come from the loading, and a copied quantity in tons or cartons
+             * would look right while meaning something else.
+             */
+            if (src.signatory_name) document.getElementById('l-signatory').value = src.signatory_name;
+            document.getElementById('l-signatory-title').value = src.signatory_title || '';
+            if (!buyerId) {
+              document.getElementById('r-company').value = src.buyer_company_name || '';
+              document.getElementById('r-contact').value = src.buyer_contact_name || '';
+              document.getElementById('r-country').value = src.buyer_country || '';
+              document.getElementById('r-address').value = src.buyer_address || '';
+            }
+            document.getElementById('pk-tbody').innerHTML = '';
+            (src.line_items || []).forEach(function (li) { addPackLine({ description: li.description, packing: li.unit }); });
+            packTotals();
+            showStatus('Filled in from ' + src.doc_number + ': buyer and goods. Enter the packages and weights from the loading.', true);
+            return;
+          }
           document.getElementById('currency').value = src.currency || 'USD';
           document.getElementById('incoterm').value = src.incoterm || '';
           document.getElementById('payment-terms').value = src.payment_terms || '';
@@ -523,7 +644,8 @@
             document.getElementById('recipient-card').style.display = '';
             document.getElementById('doc-form').style.display = '';
             if (source) applySource();
-            else if (!isLetter) { addLine(null); recalc(); }
+            else if (isPacking) { addPackLine(); packTotals(); }
+            else if (isPriced) { addLine(null); recalc(); }
             document.getElementById('r-company').focus();
             return;
           }
@@ -547,7 +669,9 @@
             document.getElementById('doc-form').style.display = '';
             if (source) {
               applySource();
-            } else if (!isLetter) {
+            } else if (isPacking) {
+              addPackLine(); packTotals();
+            } else if (isPriced) {
               // The first product of interest that is still sold: a withdrawn
               // one is never put on a new document.
               var interests = Array.isArray(b.product_interest) ? b.product_interest : [];

@@ -57,8 +57,8 @@ function connectionString() {
   );
 }
 
-const DOC_TYPES = new Set(['quotation', 'proforma', 'invoice', 'letter']);
-const DOC_PREFIX = { quotation: 'Q', proforma: 'PI', invoice: 'INV', letter: 'L' };
+const DOC_TYPES = new Set(['quotation', 'proforma', 'invoice', 'packing', 'letter']);
+const DOC_PREFIX = { quotation: 'Q', proforma: 'PI', invoice: 'INV', packing: 'PL', letter: 'L' };
 
 /*
  * A letter is priced-document-shaped in every way that matters for the
@@ -88,7 +88,40 @@ const VALIDITY_TYPES = new Set(['quotation', 'proforma']);
  * new document is a new document -- its own number, everything re-sent and
  * re-validated by the form -- and records only which one it came from.
  */
-const SOURCE_FOR = { proforma: new Set(['quotation']), invoice: new Set(['quotation', 'proforma']) };
+const SOURCE_FOR = { proforma: new Set(['quotation']), invoice: new Set(['quotation', 'proforma']), packing: new Set(['invoice']) };
+
+/*
+ * The packing list (2026-10-20): one of the export documents the site says
+ * goes with every shipment, and the one the CRM could not produce. It has no
+ * prices -- what is in the container, packed how, weighing what -- so it is
+ * neither a priced document nor a letter. Every figure is typed per shipment:
+ * a carton's net weight depends on the packing, which is the reason the
+ * minimum order carries no tonnage either.
+ *
+ * Items: description, packing (e.g. "carton, 12 x 720 ml"), number of
+ * packages, net and gross weight in kilograms. Gross below net is refused:
+ * the packaging cannot weigh less than nothing. Totals are added up on the
+ * sheet from the stored items, never sent by the client.
+ */
+const PACKING_SHIPMENT = ['container_no', 'seal_no', 'vessel', 'port_loading', 'port_discharge', 'shipping_marks'];
+function validatePackingItems(raw) {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > MAX_LINE_ITEMS) return null;
+  const items = [];
+  for (const li of raw) {
+    if (!li || typeof li !== 'object') return null;
+    const description = clean(li.description, MAX.line_description);
+    const packing = optional(li.packing, MAX.packing);
+    const packages = Number(li.packages);
+    const net = Number(li.net_kg);
+    const gross = Number(li.gross_kg);
+    if (!description) return null;
+    if (!Number.isInteger(packages) || packages <= 0 || packages > 1e6) return null;
+    if (!Number.isFinite(net) || net <= 0 || net > 1e7) return null;
+    if (!Number.isFinite(gross) || gross < net || gross > 1e7) return null;
+    items.push({ description, packing, packages, net_kg: Math.round(net * 100) / 100, gross_kg: Math.round(gross * 100) / 100 });
+  }
+  return items;
+}
 
 /*
  * The language a document is written in (2026-09-07).
@@ -118,6 +151,7 @@ const MAX = {
   salutation: 120, closing: 80, signatory_name: 200, signatory_title: 200,
   enclosures: 500, cc: 500,
   payment_terms: 200, lead_time: 200, bank_details: 600,
+  packing: 60, container_no: 40, seal_no: 40, vessel: 100, port_loading: 100, port_discharge: 100, shipping_marks: 500,
 };
 
 /*
@@ -231,6 +265,11 @@ async function ensureSchema(sql) {
   // was then (2026-10-20). Both nullable: most documents start from nothing.
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS source_doc_id bigint`;
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS source_doc_number text`;
+
+  // A packing list's items and shipment details (2026-10-20), nullable: no
+  // other document type has them.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS packing_items jsonb`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS shipment jsonb`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
@@ -388,7 +427,15 @@ async function handleCreate(event, sql, actor) {
   const signatory = {};
   SIGNATORY_FIELDS.forEach(function (f) { signatory[f] = optional(body[f], MAX[f]); });
 
-  if (priced) {
+  let packingItems = null;
+  let shipment = null;
+
+  if (docType === 'packing') {
+    packingItems = validatePackingItems(body.packing_items);
+    if (!packingItems) return json(400, { ok: false, error: 'Validation failed', fields: ['packing_items'] });
+    shipment = {};
+    PACKING_SHIPMENT.forEach(function (f) { shipment[f] = optional(body[f], MAX[f]); });
+  } else if (priced) {
     lineItems = validateLineItems(body.line_items);
     if (!lineItems) return json(400, { ok: false, error: 'Validation failed', fields: ['line_items'] });
 
@@ -446,6 +493,7 @@ async function handleCreate(event, sql, actor) {
       currency, incoterm, valid_until, due_date, notes, subject, body, language,
       salutation, closing, signatory_name, signatory_title, enclosures, cc,
       payment_terms, lead_time, bank_details, source_doc_id, source_doc_number,
+      packing_items, shipment,
       line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
@@ -455,6 +503,7 @@ async function handleCreate(event, sql, actor) {
       ${letterParts.salutation}, ${letterParts.closing}, ${signatory.signatory_name},
       ${signatory.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
       ${terms.payment_terms}, ${terms.lead_time}, ${terms.bank_details}, ${sourceId}, ${sourceNumber},
+      ${packingItems ? JSON.stringify(packingItems) : null}::jsonb, ${shipment ? JSON.stringify(shipment) : null}::jsonb,
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )
     RETURNING id, created_at
