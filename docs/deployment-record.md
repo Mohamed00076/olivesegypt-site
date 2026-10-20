@@ -10893,6 +10893,108 @@ None of this was committed.
 
 ---
 
+## Deploys 274 to 278 — Proforma invoices, invoices and packing lists made from earlier documents, uploaded buyer documents, and clearer live-check wording (PRs #398, #399, #400, #401, #402)
+
+**Previous recorded deploy:** `1c7182f` (Deploy 273, PR #397)
+**Approvals:**
+- "merge" (#398).
+- The owner asked "what else". The reply offered proforma invoices, quotation-to-invoice, packing lists, copying the last bank details and the live-check wording. The owner answered "do all 1 to 5", and added: "i have quatations and other document that i would like to add to my existing buyers that are not issued by me, so i want you to make an upload doc in crm buyer details with the add quatation and add invoice".
+- "merge 399 400 401 402".
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 274 | #398 | `8b2fdf4` | 2026-10-20 02:33:29 | 1 | +88 / −1 | Notes only |
+| 275 | #399 | `2000bd7` | 2026-10-20 02:59:07 | 1 | +5 / −1 | Live-check script |
+| 276 | #400 | `00232f0` | 2026-10-20 02:59:13 | 6 | +267 / −24 | CRM: proforma, documents made from others, last bank details |
+| 277 | #401 | `a1f6966` | 2026-10-20 02:59:31 | 6 | +297 / −17 | CRM: packing lists |
+| 278 | #402 | `7676c6b` | 2026-10-20 02:59:51 | 9 | +699 / −4 | CRM: uploaded buyer documents, new function |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 274** recorded Deploys 270 to 273.
+
+### What the deploys did
+
+- **Deploy 275 — The live check's wording (#399).** When the check has no commit to compare against, it compares the live sitemap instead. It used to say "no deploy marker yet"; it now says which reason applies. The logic is unchanged.
+- **Deploy 276 — Proforma invoices, documents made from others, and the last bank details (#400).**
+  - **Proforma invoice:** a new CRM document type, numbered `PI-`. It carries a validity date and bank details, and appears on the Documents page and each buyer's page.
+  - **From one document to the next:** a live quotation offers Create proforma and Create invoice; a live proforma offers Create invoice.
+    - The form opens filled in from the source: buyer, language, lines, currency, terms, bank details and signatory. Dates are not copied.
+    - The new document takes its own number, records `source_doc_id` and `source_doc_number`, and prints "Ref: Q-…".
+    - The server checks that the source exists, is a kind the new document can come from, and is not void.
+  - **"Copy from last invoice":** fills the bank details from the newest live invoice or proforma, on a click only. A void document is skipped.
+  - **Fixed, pre-existing:** the buyer page listed every letter as a "Quotation".
+  - **Checks:** `check-crm-documents.js` reached 86 checks.
+- **Deploy 277 — Packing lists (#401).**
+  - **The document:** a new type, numbered `PL-`. Each line has a description, packing, packages, and net and gross weight in kg, with column totals. Shipment details (container, seal, vessel, ports, shipping marks) are optional. It has no prices.
+  - **From an invoice:** a live invoice offers Create packing list. The buyer and goods are copied; packages and weights are left empty to be entered from the loading.
+  - **Validation:** gross weight below net is refused, in the form and on the server.
+  - **Lists:** letters and packing lists no longer show "0.00 USD" in the Documents and buyer lists.
+  - **Checks:** 98 checks.
+  - **Merge order:** #401 was opened against #400's branch. It was moved to `main` after #400 merged, then merged.
+- **Deploy 278 — Uploaded buyer documents (#402).**
+  - **The card:** each buyer's page has an "Uploaded documents" card with Upload quotation, Upload invoice and Upload other. Each upload carries the file and, optionally, their number, date, issuer, total and a note, and can be opened or deleted.
+  - **The function:** `crm-buyer-files.js` (`/api/crm/buyer-files`) checks a CRM session on every request.
+    - Files are stored in Neon as bytea, in the new table `crm_buyer_files`. They pass through SQL as base64.
+    - 4 MB per file.
+    - The type is decided from the file's own bytes: PDF, PNG, JPEG, WebP, .docx and .xlsx.
+    - Files are served with nosniff, a sandboxing CSP and no-store.
+    - Delete needs `confirmed=1`.
+    - Uploads, opens and deletes are audited with the kind and size, never the content.
+  - **Erasure:** an erased buyer's files are kept, like the documents the CRM issued.
+  - **Checks:** a new `check-crm-buyer-files.js` (45 checks) runs in `npm test`. The schema, strict-id, session and deleted-buyer checks cover the new function and card.
+- **Before merging:** #399 to #402 were merged together on the `main` that carried Deploy 274. `npm test` passed on the combination, and `check-function-bundles.js` (copied temporarily from #383) reported 44 packaged and 0 problems.
+- **Database:** the new columns (`source_doc_id`, `source_doc_number`, `packing_items`, `shipment`) and the `crm_buyer_files` table are added by each function's `ensureSchema` on first use. No migration was run by hand.
+
+### Verified on the live site (2026-10-20)
+
+- **Deployed commit:** `deployed-commit.txt` reads `7676c6b12f1d64cda8be6af031238d5363504888`.
+- **Pages:**
+  - `/crm/document/` serves the proforma and packing types and the copy button;
+  - `/crm/document/view/` serves Create packing list;
+  - `/crm/buyer/` serves the Uploaded documents card;
+  - `/crm/documents/` offers New Packing List.
+- **Upload route:** `/api/crm/buyer-files` answers 401 without a session.
+- **Live check:** 21 OK and **1 FAIL**: "Every API route is checked for private data — not in check-live.js: /api/crm/buyer-files". The check fails any API route it does not probe, and #402 did not add the new one. The route itself refuses visitors without a session (401, above). The fix is #403, which adds the route; with it the check reads 21 OK, 0 FAIL.
+- **Certificates:** valid to 2026-11-18. A renewal check is scheduled for 2026-11-01.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 278:** `git revert -m 1 7676c6b`. The table stays and nothing reads it; uploaded files remain until removed.
+- **Deploy 277:** `git revert -m 1 a1f6966`.
+- **Deploy 276:** `git revert -m 1 00232f0`. Proformas already issued would show as "Document" on the old sheet.
+- **Deploy 275:** `git revert -m 1 2000bd7`.
+- **Deploy 274** is documentation only.
+- **Order:** revert 277 before 276, because it is built on 276.
+
+### Known limitations shipped with Deploys 274 to 278
+
+- **Live check:** fails until #403 merges (see above).
+- **Arabic awaiting the owner's review:**
+  - «فاتورة مبدئية»;
+  - «قائمة التعبئة» and the packing-list column and shipment labels;
+  - the minimum-order wording;
+  - «البيانات المصرفية».
+- **Storage:** uploads use the Neon free tier (0.5 GB), at 4 MB per file at most.
+- **Password reset:** Release 2 (#383) must add `crm-buyer-files.js` to its session check when it is next brought up to date with `main`.
+- **Unchanged from Deploys 270 to 273:**
+  - the browser support of `@page` margin boxes;
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244;
+  - #359 waits for four product photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -10911,7 +11013,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 273 (2026-10-20).**
+**Unchanged since U4, through Deploy 278 (2026-10-20).**
 
 ## Outstanding, unresolved by this document
 
