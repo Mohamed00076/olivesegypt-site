@@ -1,0 +1,81 @@
+/*
+ * CRM interface additions, 2026-10-20 onward (the owner's CRM audit).
+ *
+ * A separate file, loaded only by the CRM's working pages -- never by the
+ * sign-in, forgot-password, reset-password or change-password pages, which
+ * the password-reset pull requests are changing. Every rule here is scoped
+ * to a .crm-ui-* class, so nothing here can restyle what those pages share
+ * from crm.css.
+ */
+
+/* ---- banners: a failure or a notice, in the page --------------------- */
+.crm-ui-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+  border-radius: 8px; padding: 12px 14px; margin: 0 0 16px;
+  font-size: 14px; line-height: 1.5;
+}
+.crm-ui-banner p { margin: 0; flex: 1 1 240px; min-width: 0; }
+.crm-ui-banner-error { background: var(--crm-danger-bg, #fbeceb); color: var(--crm-danger, #a3312a); border: 1px solid #ecc5c1; }
+.crm-ui-banner-notice { background: var(--crm-success-bg, #eaf5ec); color: var(--crm-success, #2f6b3a); border: 1px solid #c6e0ca; }
+.crm-ui-banner-retry {
+  font: inherit; font-weight: 700; cursor: pointer; min-height: 44px; padding: 0 18px;
+  border-radius: 8px; border: 1px solid currentColor; background: #fff; color: var(--crm-danger, #a3312a);
+}
+.crm-ui-banner-retry:focus-visible { outline: 3px solid var(--crm-secondary, #c9a84c); outline-offset: 2px; }
+
+/* ---- the in-page "Are you sure?" -------------------------------------- */
+.crm-ui-dialog-back {
+  position: fixed; inset: 0; z-index: 1000; background: rgba(28, 33, 20, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
+           max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.crm-ui-dialog {
+  background: var(--crm-card, #ffffff); color: var(--crm-text, #26301a); border-radius: 12px; width: 100%; max-width: 460px;
+  padding: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25); display: grid; gap: 12px;
+}
+.crm-ui-dialog h2 { margin: 0; font-size: 18px; }
+.crm-ui-dialog p { margin: 0; font-size: 14px; line-height: 1.55; white-space: pre-line; }
+.crm-ui-dialog label { font-size: 13px; font-weight: 700; color: var(--crm-text, #26301a); }
+.crm-ui-dialog input { width: 100%; min-height: 44px; font-size: 16px; padding: 8px 10px; border: 1px solid var(--crm-border, #e2ddd0); border-radius: 8px; }
+.crm-ui-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.crm-ui-dialog-actions .crm-btn { min-height: 44px; }
+.crm-ui-btn-danger { background: var(--crm-danger, #a3312a); color: #fff; border-color: var(--crm-danger, #a3312a); }
+.crm-ui-btn-danger:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---- tables that become cards on a phone ------------------------------
+ * Under 640px a .crm-ui-cards table drops its header row and shows each row
+ * as a card, each cell labelled from its data-label. Nothing is hidden, and
+ * nothing sits off the right edge: the Open button is part of the card. */
+@media (max-width: 640px) {
+  table.crm-ui-cards, table.crm-ui-cards tbody, table.crm-ui-cards tr, table.crm-ui-cards td { display: block; width: 100%; }
+  table.crm-ui-cards thead { display: none; }
+  table.crm-ui-cards tr {
+    border: 1px solid var(--crm-border, #e2ddd0); border-radius: 10px; background: var(--crm-card, #ffffff);
+    padding: 10px 12px; margin: 0 0 10px;
+  }
+  table.crm-ui-cards td { border: 0; padding: 4px 0; display: flex; gap: 10px; align-items: baseline; font-size: 14px; }
+  table.crm-ui-cards td[data-label]::before {
+    content: attr(data-label); flex: 0 0 96px; font-size: 12px; font-weight: 700; color: var(--crm-muted, #5f6654);
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  table.crm-ui-cards td.crm-ui-card-title { font-size: 16px; font-weight: 700; display: block; padding-bottom: 6px; }
+  table.crm-ui-cards td.crm-ui-card-title::before { content: none; }
+  table.crm-ui-cards td.crm-ui-card-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 8px; }
+  table.crm-ui-cards td.crm-ui-card-actions::before { content: none; }
+  table.crm-ui-cards td.crm-ui-card-actions .crm-btn,
+  table.crm-ui-cards td.crm-ui-card-actions a { min-height: 44px; display: inline-flex; align-items: center; }
+  table.crm-ui-cards td:empty { display: none; }
+  /* An opened row's details: stacked, so nothing is pushed off the edge. */
+  table.crm-ui-cards td.crm-ui-card-detail { display: block; }
+  table.crm-ui-cards td.crm-ui-card-detail .crm-btn { min-height: 44px; display: inline-flex; align-items: center; margin: 8px 8px 0 0; }
+  /* A card's own link to the record: big enough for a thumb. */
+  table.crm-ui-cards a.crm-ui-card-link { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* The dialog's own buttons, so it looks the same on the printed-document
+   page, which does not load crm.css. */
+.crm-ui-dialog .crm-btn { font: inherit; font-size: 14px; font-weight: 700; padding: 0 16px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; }
+.crm-ui-dialog .crm-btn-secondary { background: #fff; color: var(--crm-text, #26301a); border-color: var(--crm-border, #e2ddd0); }
+.crm-ui-dialog .crm-btn-primary { background: var(--crm-primary, #3f4f2b); color: #fff; }
+.crm-ui-dialog .crm-btn:focus-visible { outline: 3px solid var(--crm-secondary, #c9a84c); outline-offset: 2px; }

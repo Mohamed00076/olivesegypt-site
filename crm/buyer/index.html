@@ -6,6 +6,7 @@
     <title>Buyer | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -25,7 +26,8 @@
         </div>
       </div>
 
-      <div id="save-status" class="crm-status" style="display:none;"></div>
+      <div id="save-status" class="crm-status" style="display:none;" role="status" aria-live="polite"></div>
+      <div id="buyer-messages"></div>
 
       <div class="crm-card">
         <h2>Buyer Details</h2>
@@ -147,6 +149,7 @@
             <a class="crm-btn crm-btn-secondary" id="new-invoice-link" href="#">New Invoice</a>
           </div>
         </div>
+        <div id="documents-messages" style="margin-top:12px;"></div>
         <table style="margin-top:12px;">
           <thead><tr><th>Number</th><th>Type</th><th>Total</th><th>Date</th><th></th></tr></thead>
           <tbody id="documents-tbody"></tbody>
@@ -167,7 +170,8 @@
           </div>
         </div>
         <p class="crm-muted" style="margin:8px 0 0;">Quotations, invoices and other documents you have from outside the CRM: PDF, PNG, JPEG, WebP, Word or Excel, up to 4 MB each.</p>
-        <div id="file-status" class="crm-status" style="display:none; margin-top:12px;"></div>
+        <div id="file-status" class="crm-status" style="display:none; margin-top:12px;" role="status" aria-live="polite"></div>
+        <div id="files-messages" style="margin-top:12px;"></div>
 
         <form id="file-form" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--crm-border, #e5e2d9);">
           <h3 id="file-form-title" style="margin:0 0 10px;">Upload quotation</h3>
@@ -416,8 +420,15 @@
           document.getElementById('new-quotation-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=quotation';
           document.getElementById('new-invoice-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=invoice';
           document.getElementById('new-proforma-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=proforma';
+          var messages = document.getElementById('documents-messages');
+          CRM.clearBanner(messages);
+          // A failed load said nothing and left "No quotations or invoices yet." showing.
+          document.getElementById('documents-empty').style.display = 'none';
           CRM.fetchJson('/api/crm/documents?buyer_id=' + encodeURIComponent(buyerId)).then(function (result) {
-            if (result.ok) renderDocuments(result.data);
+            if (result.ok && Array.isArray(result.data)) { renderDocuments(result.data); return; }
+            CRM.loadError(messages, { what: "this buyer's documents", key: 'buyer-documents', error: result, retry: loadDocuments });
+          }).catch(function (e) {
+            CRM.loadError(messages, { what: "this buyer's documents", key: 'buyer-documents', error: e, retry: loadDocuments });
           });
         }
 
@@ -473,12 +484,14 @@
 
         function loadFiles() {
           document.getElementById('files-card').style.display = '';
+          var messages = document.getElementById('files-messages');
+          CRM.clearBanner(messages);
+          document.getElementById('files-empty').style.display = 'none';
           CRM.fetchJson('/api/crm/buyer-files?buyer_id=' + encodeURIComponent(buyerId)).then(function (result) {
-            if (result.ok) renderFiles(result.data);
-            else fileStatus((result.data && result.data.error) || 'Could not load the uploaded documents.', false);
+            if (result.ok && Array.isArray(result.data)) { renderFiles(result.data); return; }
+            CRM.loadError(messages, { what: 'the uploaded documents', key: 'buyer-files', error: result, retry: loadFiles });
           }).catch(function (e) {
-            var msg = CRM.noReplyMessage(e, 'Loading the uploaded documents', 'Reload the page to try again.');
-            if (msg) fileStatus(msg, false);
+            CRM.loadError(messages, { what: 'the uploaded documents', key: 'buyer-files', error: e, retry: loadFiles });
           });
         }
 
@@ -532,7 +545,7 @@
             }
             CRM.fetchJson('/api/crm/buyer-files', { method: 'POST', body: payload }).then(function (result) {
               btn.disabled = false;
-              if (!result.ok) { fileStatus((result.data && result.data.error) || 'Could not upload the file.', false); return; }
+              if (!result.ok) { fileStatus(file.name + ' was not uploaded. ' + CRM.plainError(result, 'The server did not accept it.'), false); return; }
               document.getElementById('file-form').style.display = 'none';
               fileStatus('Uploaded ' + file.name + '.', true);
               loadFiles();
@@ -547,21 +560,27 @@
         });
 
         function deleteFile(f) {
-          if (!window.confirm('Delete ' + f.filename + ' from this buyer? The file is removed for good.')) return;
+          CRM.ask({ title: 'Delete this file?', message: 'Delete ' + f.filename + ' from this buyer? The file is removed for good.', confirm: 'Delete file', danger: true }).then(function (yes) {
+          if (!yes) return;
           CRM.fetchJson('/api/crm/buyer-files?id=' + encodeURIComponent(f.id) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
-            if (!result.ok) { fileStatus((result.data && result.data.error) || 'Could not delete the file.', false); return; }
+            if (!result.ok) { fileStatus(f.filename + ' was not deleted. ' + CRM.plainError(result, 'Nothing was changed.'), false); return; }
             fileStatus('Deleted ' + f.filename + '.', true);
             loadFiles();
           }).catch(function (e) {
             var msg = CRM.noReplyMessage(e, 'Deleting ' + f.filename, 'Reload the page to see whether it is gone.');
             if (msg) fileStatus(msg, false);
           });
+          });
         }
 
         function loadExisting() {
           return CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
             if (!result.ok && result.data.deleted) { showDeletedBuyer(result.data); return; }
-            if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
+            if (!result.ok) {
+              CRM.loadError(document.getElementById('buyer-messages'), { what: 'this buyer', key: 'buyer', error: result, retry: loadExisting });
+              return;
+            }
+            CRM.clearBanner(document.getElementById('buyer-messages'));
             var b = result.data;
             document.getElementById('activity-card').style.display = '';
             document.getElementById('page-title').textContent = b.company_name;
@@ -586,6 +605,8 @@
             renderActivity(b.activity_log || []);
             loadDocuments();
             loadFiles();
+          }).catch(function (e) {
+            CRM.loadError(document.getElementById('buyer-messages'), { what: 'this buyer', key: 'buyer', error: e, retry: loadExisting });
           });
         }
 
@@ -620,7 +641,8 @@
          * The field is named by its own label on this form.
          */
         function saveErrorText(d) {
-          if (!d.fields || !d.fields.length) return d.error || 'Could not save.';
+          // No field named: the server's own sentence if it wrote one, never a bare code (2026-10-20).
+          if (!d.fields || !d.fields.length) return 'Not saved. ' + CRM.plainError({ ok: false, status: 0, data: d }, 'The server did not accept the change, and nothing was changed.');
           return d.fields.map(function (f) {
             var label = document.querySelector('label[for="' + f + '"]');
             var name = label ? label.textContent.replace(/\s*\*\s*$/, '').trim() : f;
@@ -665,7 +687,7 @@
           var entry = entryEl.value.trim();
           if (!entry) return;
           CRM.fetchJson('/api/crm/activity', { method: 'POST', body: { buyer_id: Number(buyerId), entry: entry } }).then(function (result) {
-            if (!result.ok) { showStatus(result.data.error || 'Could not add entry.', false); return; }
+            if (!result.ok) { showStatus('The note was not added. ' + CRM.plainError(result, 'The server did not accept it.'), false); return; }
             entryEl.value = '';
             return loadExisting();
           }).catch(function (e) {
@@ -678,12 +700,15 @@
         });
 
         document.getElementById('delete-btn').addEventListener('click', function () {
-          if (!window.confirm('Delete this buyer record?\n\nIt will no longer appear anywhere in the CRM, but it is kept in the database and can be recalled if needed.\n\n' +
-            'If the buyer asked for their data to be deleted, cancel and use \u201cErase (deletion request)\u201d instead.')) return;
           var name = document.getElementById('company_name').value;
+          CRM.ask({ title: 'Delete ' + (name || 'this buyer') + '?',
+            message: 'It will no longer appear anywhere in the CRM, but it is kept in the database and can be recalled if needed.\n\n' +
+              'If the buyer asked for their data to be deleted, cancel and use \u201cErase (deletion request)\u201d instead.',
+            confirm: 'Delete buyer', danger: true }).then(function (yes) {
+          if (!yes) return;
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
             if (!result.ok) {
-              showStatus(result.data.error || 'Could not delete.', false);
+              showStatus((name || 'The buyer') + ' was not deleted. ' + CRM.plainError(result, 'Nothing was changed.'), false);
               // Already deleted (e.g. by an earlier click): show it as such.
               if (result.data.already_deleted) loadExisting();
               return;
@@ -695,6 +720,7 @@
             if (e && e.message === 'unauthorized') return;
             showStatus('The delete request did not complete, so it is not known whether it worked. ' +
               'Check the buyer list before trying again.', false);
+          });
           });
         });
 
@@ -709,14 +735,23 @@
             'Kept: quotations, invoices and letters already issued, and the opt-out list (an unsubscribed address stays unsubscribed). ' +
             'Any other requests from them, such as downloads or a Market Brief signup, are not linked to the buyer: delete those from the Enquiries page.\n\n' +
             'This cannot be undone, not even from the database.';
-          if (!window.confirm(msg)) return;
-          var name = document.getElementById('company_name').value;
+          var name = document.getElementById('company_name').value.trim();
+          /*
+           * The stronger step the owner asked for: type the buyer's name. A
+           * buyer that was already deleted shows no details, its name
+           * included, so for one of those the word to type is ERASE.
+           */
+          CRM.ask({ title: 'Erase ' + (name || 'this buyer') + ' permanently?', message: msg, confirm: 'Erase for good', danger: true,
+            typeToConfirm: name || 'ERASE',
+            typeLabel: name ? 'Type the buyer\u2019s name, ' + name + ', to confirm' : 'Type ERASE to confirm' }).then(function (yes) {
+          if (!yes) return;
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&erase=1&confirmed=1', { method: 'DELETE' }).then(function (result) {
-            if (!result.ok) { showStatus(result.data.error || 'Could not erase.', false); return; }
+            if (!result.ok) { showStatus('The buyer was not erased. ' + CRM.plainError(result, 'Nothing was changed.'), false); return; }
             window.location.href = '/crm/buyers/?erased=' + encodeURIComponent(name || ('buyer #' + buyerId));
           }).catch(function (e) {
             var m = CRM.noReplyMessage(e, 'Erasing the buyer', 'Reload this page: if it says Not found, the erase went through.');
             if (m) showStatus(m, false);
+          });
           });
         });
 
@@ -730,7 +765,7 @@
             return loadExisting();
           }
         }).catch(function (e) {
-          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+          CRM.loadError(document.getElementById('buyer-messages'), { what: 'this page', key: 'buyer', error: e, retry: function () { window.location.reload(); } });
         });
       })();
     </script>

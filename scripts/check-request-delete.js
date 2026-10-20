@@ -122,7 +122,9 @@ const ENDPOINTS = [
   // ---- the page -------------------------------------------------------------------------
   const page = read('crm/inquiries/index.html');
   const fn = (page.match(/function deleteRow\(r\) \{[\s\S]*?\n        \}/) || [''])[0];
-  t('the Enquiries page asks first, and says it cannot be undone', /window\.confirm\(msg\)/.test(fn) && /This cannot be undone\./.test(fn));
+  // Asked in the page since 2026-10-20 (CRM.ask), going ahead only on an explicit yes.
+  t('the Enquiries page asks first, and says it cannot be undone',
+    /CRM\.ask\(\{ title: 'Delete for good\?', message: msg, confirm: 'Delete', danger: true \}\)\.then\(function \(yes\) \{\s*if \(!yes\) return;/.test(fn) && /This cannot be undone\./.test(fn));
   t('   says a linked buyer is NOT deleted, and an opted-out address stays opted out',
     /The buyer record is NOT deleted/.test(fn) && /stays opted out/.test(fn));
   t('   sends the delete to the right endpoint, confirmed', /\(r\.kind === 'lead' \? '\/api\/leads' : '\/api\/inquiries'\) \+ '\?id=' \+ encodeURIComponent\(r\.id\) \+ '&confirmed=1'/.test(fn));

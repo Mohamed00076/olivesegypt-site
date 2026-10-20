@@ -185,10 +185,15 @@ const call = async (h, method, qs, body) => {
   t('Delete says it hides but keeps for recall, and points a deletion request to Erase',
     /kept in the database and can be recalled/.test(del) && /Erase \(deletion request\)/.test(del));
   const ers = (page.match(/getElementById\('erase-btn'\)\.addEventListener[\s\S]*?\n        \}\);/) || [''])[0];
+  // Since 2026-10-20 the question is asked in the page (CRM.ask), and Erase
+  // takes a stronger step than Delete: typing the buyer's name, or ERASE for
+  // a buyer already deleted, whose name is no longer shown.
   t('Erase asks first, says what is removed, what is kept, and that it cannot be undone',
-    /window\.confirm\(msg\)/.test(ers) && /Removed for good/.test(ers) && /Kept: quotations, invoices and letters/.test(ers) &&
+    /CRM\.ask\(\{[^]*?message: msg/.test(ers) && /if \(!yes\) return;/.test(ers) && /Removed for good/.test(ers) && /Kept: quotations, invoices and letters/.test(ers) &&
     /opt-out list/.test(ers) && /cannot be undone, not even from the database/.test(ers));
   t('   and sends the erase, confirmed', /'&erase=1&confirmed=1', \{ method: 'DELETE' \}/.test(ers));
+  t('   only after the buyer\'s name (or ERASE) is typed', /typeToConfirm: name \|\| 'ERASE'/.test(ers));
+  t('   Delete asks in the page too, and goes ahead only on yes', /CRM\.ask\(/.test(del) && /if \(!yes\) return;/.test(del) && !/window\.confirm/.test(page));
   t('   and says so on the Buyers list afterwards', /\/crm\/buyers\/\?erased=/.test(ers));
   t('a successful delete leads to a confirmation, not a bare redirect',
     /window\.location\.href = '\/crm\/buyers\/\?deleted=' \+ encodeURIComponent\(name\)/.test(page));

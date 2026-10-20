@@ -6,6 +6,7 @@
     <title>Documents | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -29,6 +30,7 @@
       </div>
 
       <div id="status" class="crm-status" style="display:none;"></div>
+      <div id="list-messages"></div>
 
       <div class="crm-card">
         <div class="crm-flex" style="margin-bottom:12px;">
@@ -118,18 +120,28 @@
           CRM.renderNav('Documents');
           document.getElementById('filter').addEventListener('input', applyFilter);
 
+          load();
+        }).catch(function (e) {
+          CRM.loadError(document.getElementById('list-messages'), { what: 'this page', key: 'documents-list', error: e, retry: function () { window.location.reload(); } });
+        });
+
+        function load() {
+          var messages = document.getElementById('list-messages');
+          CRM.clearBanner(messages);
+          document.getElementById('list').innerHTML = '<p class="crm-muted" role="status">Loading…</p>';
           CRM.fetchJson('/api/crm/documents').then(function (result) {
-            if (!result.ok) {
+            if (!result.ok || !Array.isArray(result.data)) {
               document.getElementById('list').innerHTML = '';
-              showStatus((result.data && result.data.error) || 'Could not load documents.', false);
+              CRM.loadError(messages, { what: 'the documents', key: 'documents-list', error: result, retry: load });
               return;
             }
-            rows = Array.isArray(result.data) ? result.data : [];
+            rows = result.data;
             applyFilter();
+          }).catch(function (e) {
+            document.getElementById('list').innerHTML = '';
+            CRM.loadError(messages, { what: 'the documents', key: 'documents-list', error: e, retry: load });
           });
-        }).catch(function (e) {
-          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
-        });
+        }
       })();
     </script>
   </body>

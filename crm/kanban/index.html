@@ -6,6 +6,7 @@
     <title>Kanban | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -25,7 +26,8 @@
         <a href="/crm/buyer/?new=1" class="crm-btn crm-btn-primary">+ Add Buyer</a>
       </div>
       <p class="crm-muted">Drag a card to a new column to move that buyer's pipeline stage. "Exported/Completed" is a future stage — no record occupies it yet unless one has genuinely completed export.</p>
-      <div id="kanban-status" class="crm-muted">Loading…</div>
+      <div id="kanban-messages"></div>
+      <div id="kanban-status" class="crm-muted" role="status">Loading…</div>
       <div id="kanban-board" class="crm-kanban" style="display:none;"></div>
     </div>
     <script src="/assets/crm.js"></script>
@@ -93,7 +95,8 @@
             if (!result.ok) {
               buyer.current_stage = previousStage; // revert on failure
               renderBoard();
-              window.alert((result.data && result.data.error) || 'Could not move buyer.');
+              CRM.showError(messages, buyer.company_name + ' was not moved to ' + newStage + '. ' +
+                CRM.plainError(result, 'The server did not accept the move. The card is back where it was.'));
             }
           }).catch(function (e) {
             /*
@@ -105,13 +108,15 @@
             var msg = CRM.noReplyMessage(e, 'Moving ' + buyer.company_name + ' to ' + newStage,
               'The board has been reloaded to show where it really is.');
             if (!msg) return;
-            reloadBoard().then(function () { window.alert(msg); }, function () {
+            reloadBoard().then(function () { CRM.showError(messages, msg); }, function (err) {
               buyer.current_stage = previousStage;
               renderBoard();
-              window.alert(msg + ' (The board could not be reloaded either -- refresh the page.)');
+              CRM.showError(messages, msg + ' The board could not be reloaded either.', function () { load(); });
             });
           });
         }
+
+        var messages = document.getElementById('kanban-messages');
 
         function reloadBoard() {
           return CRM.fetchJson('/api/crm/buyers').then(function (result) {
@@ -121,18 +126,38 @@
           });
         }
 
+        /*
+         * The board, or a banner saying it could not be loaded -- never an
+         * empty page. It used to hide its "Loading…" line before checking the
+         * reply, so a failed load put "Could not load buyers." into a hidden
+         * element and showed nothing at all.
+         */
+        function load() {
+          var status = document.getElementById('kanban-status');
+          status.textContent = 'Loading…';
+          status.style.display = '';
+          CRM.clearBanner(messages);
+          CRM.fetchJson('/api/crm/buyers').then(function (result) {
+            if (!result.ok || !Array.isArray(result.data)) {
+              status.style.display = 'none';
+              CRM.loadError(messages, { what: 'the buyer list', key: 'kanban', error: result, retry: load });
+              return;
+            }
+            allRows = result.data;
+            status.style.display = 'none';
+            document.getElementById('kanban-board').style.display = '';
+            renderBoard();
+          }).catch(function (e) {
+            status.style.display = 'none';
+            CRM.loadError(messages, { what: 'the buyer list', key: 'kanban', error: e, retry: load });
+          });
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Buyers');
-          return CRM.fetchJson('/api/crm/buyers');
-        }).then(function (result) {
-          allRows = result.data;
-          document.getElementById('kanban-status').style.display = 'none';
-          document.getElementById('kanban-board').style.display = '';
-          renderBoard();
+          load();
         }).catch(function (e) {
-          if (e.message !== 'unauthorized') {
-            document.getElementById('kanban-status').textContent = 'Could not load buyers.';
-          }
+          CRM.loadError(messages, { what: 'this page', key: 'kanban', error: e, retry: function () { window.location.reload(); } });
         });
       })();
     </script>

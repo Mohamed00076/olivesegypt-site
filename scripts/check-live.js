@@ -209,6 +209,7 @@ async function main() {
   // logged into. A route added to netlify.toml and to neither list fails.
   const PROTECTED = ['/api/inquiries', '/api/leads', '/api/consent', '/api/analytics',
     '/api/analytics-report', '/api/analytics-settings', '/api/analytics-privacy', '/api/crm/auth/me',
+    '/api/crm/client-failure',
     '/api/crm/buyers', '/api/crm/activity', '/api/crm/dashboard', '/api/crm/csv', '/api/crm/data-quality',
     '/api/crm/documents', '/api/kpi-definitions', '/api/kpi-values', '/api/kpi-dashboard'];
   const NOT_PROBED = {

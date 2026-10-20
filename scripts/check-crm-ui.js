@@ -1,0 +1,176 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+ * The CRM says when something failed, in the page, and records it
+ * (Batch 1 of the owner's CRM audit, 2026-10-20).
+ *
+ *   node scripts/check-crm-ui.js        (part of `npm test`)
+ *
+ * What the owner asked for, and what this holds every CRM page to:
+ *   - a failed load is a banner in the page, in plain words, read out by
+ *     screen readers (role=alert, aria-live), with Retry -- never an empty
+ *     page, never "Nothing received yet", never a bare "Server error";
+ *   - every failed load is recorded server-side and alerted like other
+ *     failures, exactly once: the page reports what the server never saw
+ *     (no reply, a refusal), and leaves a 5xx to the function that already
+ *     recorded it;
+ *   - dates read "20 Oct 2026", the stored values untouched;
+ *   - the sign-in, forgot, reset and change-password pages are not touched:
+ *     they do not load the new stylesheet or script, and every new style is
+ *     scoped to a .crm-ui- class.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+const Module = require('module');
+
+const ROOT = path.join(__dirname, '..');
+const FN = path.join(ROOT, 'netlify', 'functions');
+const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
+
+let pass = 0, fail = 0;
+const t = (name, cond, extra) => {
+  cond ? pass++ : fail++;
+  console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '   <-- ' + (extra === undefined ? '' : extra)}`);
+};
+
+// ---- the helpers, run against a stand-in page -------------------------------
+const posted = [];
+function el(tag) {
+  const node = {
+    tagName: tag, children: [], attrs: {}, className: '', textContent: '', type: '', listeners: {},
+    setAttribute(k, v) { this.attrs[k] = String(v); }, getAttribute(k) { return this.attrs[k]; },
+    appendChild(c) { c.parentNode = this; this.children.push(c); return c; },
+    insertBefore(c, ref) { c.parentNode = this; const i = this.children.indexOf(ref); i < 0 ? this.children.push(c) : this.children.splice(i, 0, c); return c; },
+    remove() { if (this.parentNode) this.parentNode.children = this.parentNode.children.filter((x) => x !== this); },
+    addEventListener(ev, fn) { (this.listeners[ev] = this.listeners[ev] || []).push(fn); },
+    click() { (this.listeners.click || []).forEach((f) => f({})); },
+    querySelectorAll() { return this.children.filter((c) => /crm-ui-banner/.test(c.className)); },
+    get firstChild() { return this.children[0] || null; },
+  };
+  return node;
+}
+const box = {
+  window: { location: { pathname: '/crm/buyers/' } },
+  document: { createElement: el, addEventListener() {}, readyState: 'complete' },
+  fetch: (url, opts) => { posted.push({ url, body: JSON.parse(opts.body) }); return Promise.resolve({}); },
+  console,
+};
+box.window.document = box.document;
+vm.createContext(box);
+try { vm.runInContext(read('assets/crm.js'), box); } catch (e) { /* DOM wiring at the bottom */ }
+const CRM = box.window.CRM;
+
+// dates
+t('"20 Oct 2026" for a calendar date', CRM.fmtDate('2026-10-20') === '20 Oct 2026', CRM.fmtDate('2026-10-20'));
+t('   and for one sent as midnight UTC, without slipping a day', CRM.fmtDate('2026-10-17T00:00:00.000Z') === '17 Oct 2026', CRM.fmtDate('2026-10-17T00:00:00.000Z'));
+t('   a timestamp shows its day', /^\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}$/.test(CRM.fmtDate('2026-10-20T14:03:00Z')), CRM.fmtDate('2026-10-20T14:03:00Z'));
+t('   nothing for nothing, and an unreadable value as it was', CRM.fmtDate(null) === '' && CRM.fmtDate('soon') === 'soon');
+
+// plain words
+const res = (status, error) => ({ ok: false, status, data: error === undefined ? {} : { error } });
+t('a 5xx never shows the server\'s words', !/Server error/.test(CRM.plainError(res(500, 'Server error'))) && /recorded/.test(CRM.plainError(res(500, 'Server error'))));
+t('   nor does a code like "Validation failed" or "Not found"', CRM.plainError(res(400, 'Validation failed'), 'X.') === 'X.' && CRM.plainError(res(404, 'Not found'), 'Y.') === 'Y.');
+t('   a sentence the server wrote is kept', CRM.plainError(res(409, 'Q-2026-000041 is void, so nothing can be issued from it.')) === 'Q-2026-000041 is void, so nothing can be issued from it.');
+t('   no reply says so', /did not answer/.test(CRM.plainError(new TypeError('Failed to fetch'))));
+
+// recording, exactly once
+posted.length = 0;
+CRM.reportLoadFailure('buyers-list', new TypeError('Failed to fetch'));
+CRM.reportLoadFailure('buyers-list', res(500, 'Server error'));
+CRM.reportLoadFailure('buyers-list', res(401, 'Unauthorized'));
+CRM.reportLoadFailure('buyers-list', new Error('unauthorized'));
+CRM.reportLoadFailure('buyers-list', res(403, 'Forbidden'));
+t('a load with no reply is reported', posted[0] && posted[0].url === '/api/crm/client-failure' && posted[0].body.kind === 'no-reply' && posted[0].body.what === 'buyers-list' && posted[0].body.page === '/crm/buyers/', JSON.stringify(posted));
+t('   a refused load is reported with its status', posted[1] && posted[1].body.kind === 'refused' && posted[1].body.status === 403, JSON.stringify(posted));
+t('   a 5xx is not reported again (the function recorded it), nor is signing in', posted.length === 2, String(posted.length));
+
+// the banner
+const container = el('div');
+let retried = 0;
+const b = CRM.loadError(container, { what: 'the buyer list', key: 'buyers-list', error: res(500, 'Server error'), retry: () => { retried++; } });
+t('a failed load puts a banner in the page', b && container.children[0] === b && /crm-ui-banner-error/.test(b.className));
+t('   read out by screen readers', b.attrs.role === 'alert' && b.attrs['aria-live'] === 'assertive');
+t('   saying what failed, in plain words', /^The buyer list could not be loaded\. /.test(b.children[0].textContent) && !/Server error/.test(b.children[0].textContent), b.children[0].textContent);
+const retry = b.children.find((c) => c.tagName === 'button');
+t('   with a Retry button that retries', retry && retry.textContent === 'Retry' && (retry.click(), retried === 1) && container.children.length === 0);
+CRM.loadError(container, { what: 'a', error: res(500) }); CRM.loadError(container, { what: 'b', error: res(500) });
+t('   one banner at a time', container.children.length === 1);
+t('   and nothing for the sign-in redirect', CRM.loadError(el('div'), { error: new Error('unauthorized') }) === null);
+
+// ---- every working CRM page uses them -----------------------------------------
+const PAGES = {
+  'crm/index.html': ['dashboard', 'enquiries'], 'crm/inquiries/index.html': ['enquiries', 'leads'], 'crm/buyers/index.html': ['buyers-list'],
+  'crm/buyer/index.html': ['buyer', 'buyer-documents', 'buyer-files'], 'crm/kanban/index.html': ['kanban'],
+  'crm/documents/index.html': ['documents-list'], 'crm/document/index.html': ['document-source', 'buyer'],
+  'crm/document/view/index.html': ['document'], 'crm/data-quality/index.html': ['data-quality'],
+};
+const fnSrc = read('netlify/functions/crm-client-failure.js');
+for (const [p, keys] of Object.entries(PAGES)) {
+  const src = read(p);
+  t(`${p}: failed loads are banners, recorded as ${keys.join(', ')}`, keys.every((k) => new RegExp(`key: '${k}'|reportLoadFailure\\('${k}'`).test(src)) && keys.every((k) => fnSrc.includes(`'${k}'`)),
+    keys.filter((k) => !src.includes(`'${k}'`)).join(', '));
+  t(`   and loads the scoped stylesheet`, src.includes('/assets/crm-ui.css'));
+  const code = src.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
+  t(`   and never says "Could not load page." with no way forward`, !/Could not load (page|buyers|document)\./.test(code));
+}
+for (const p of ['crm/login/index.html', 'crm/forgot-password/index.html', 'crm/reset-password/index.html']) {
+  const src = read(p);
+  t(`${p} is untouched by this work (no crm-ui.css, no CRM script helpers)`, !src.includes('crm-ui.css') && !/CRM\.(ask|loadError|showError)/.test(src));
+}
+const css = read('assets/crm-ui.css').replace(/\/\*[\s\S]*?\*\//g, '');
+const selectors = css.replace(/@media[^{]+\{/g, '').split('}').map((r) => r.split('{')[0].trim()).filter(Boolean);
+const unscoped = selectors.filter((sel) => sel.split(',').some((one) => !/\.crm-ui-|table\.crm-ui-cards/.test(one)));
+t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 0, unscoped.join(' | '));
+
+// ---- the endpoint that records them -------------------------------------------
+(async () => {
+  const rows = [];
+  const fakeSql = (strings, ...vals) => { const q = strings.join('?'); if (/INSERT INTO crm_failures/.test(q)) rows.push(vals); return Promise.resolve([]); };
+  const neonId = require.resolve('@neondatabase/serverless');
+  require.cache[neonId] = new Module(neonId, null);
+  Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => fakeSql } });
+  process.env.DATABASE_URL = 'postgres://stub';
+  process.env.CRM_SESSION_SECRET = 'test-secret-not-a-real-one';
+  delete process.env.RESEND_API_KEY; delete process.env.NOTIFY_EMAIL;
+  const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
+  const { handler } = require(path.join(FN, 'crm-client-failure.js'));
+  const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
+  const quiet = async (fn) => { const e = console.error, l = console.log, w = console.warn; console.error = console.log = console.warn = () => {}; try { return await fn(); } finally { console.error = e; console.log = l; console.warn = w; } };
+  const send = (body, c = cookie, method = 'POST') => quiet(() => handler({ httpMethod: method, headers: c ? { cookie: c } : {}, queryStringParameters: {}, body: JSON.stringify(body) }));
+
+  let r = await send({ page: '/crm/buyers/', what: 'buyers-list', kind: 'no-reply', status: null }, null);
+  t('the endpoint needs a CRM session', r.statusCode === 401 && rows.length === 0);
+  r = await send({}, cookie, 'GET');
+  t('   and takes only POST', r.statusCode === 405);
+  r = await send({ page: '/crm/buyers/', what: 'buyers-list', kind: 'no-reply', status: null });
+  t('a failed load is recorded like any other failure (crm_failures)', r.statusCode === 200 && rows.length === 1 && rows[0][0] === 'crm-page' &&
+    rows[0][2] === '/crm/buyers/: buyers-list, no reply from the server' && rows[0][5] === 'staff', JSON.stringify(rows));
+  r = await send({ page: '/crm/kanban/', what: 'kanban', kind: 'refused', status: 403 });
+  t('   a refusal with its status', r.statusCode === 200 && /kanban, refused by the server \(HTTP 403\)/.test(rows[1] && rows[1][2]), JSON.stringify(rows[1]));
+  const before = rows.length;
+  const bad = [
+    [{ page: '/admin/', what: 'kanban', kind: 'no-reply', status: null }, 'a page outside the CRM'],
+    [{ page: '/crm/<script>/', what: 'kanban', kind: 'no-reply', status: null }, 'a path with markup'],
+    [{ page: '/crm/x/', what: 'anything I like', kind: 'no-reply', status: null }, 'free text as what failed'],
+    [{ page: '/crm/x/', what: 'kanban', kind: 'boom', status: null }, 'an unknown kind'],
+    [{ page: '/crm/x/', what: 'kanban', kind: 'refused', status: 500 }, 'a 5xx as a refusal'],
+    [{ page: '/crm/x/', what: 'kanban', kind: 'no-reply', status: 200 }, 'a status on no reply'],
+  ];
+  for (const [body, name] of bad) {
+    r = await send(body);
+    t('   refused: ' + name, r.statusCode === 400);
+  }
+  t('   and none of those was recorded', rows.length === before);
+  let limited = 0;
+  for (let i = 0; i < 40; i++) { r = await send({ page: '/crm/', what: 'dashboard', kind: 'no-reply', status: null }); if (r.statusCode === 429) limited++; }
+  t('   at most 30 a minute per instance', limited > 0 && rows.length <= before + 30, `${limited} limited, ${rows.length - before} recorded`);
+  t('the route is wired and probed by the live check', /from = "\/api\/crm\/client-failure"/.test(read('netlify.toml')) && read('scripts/check-live.js').includes("'/api/crm/client-failure'"));
+  t('the dashboard names it in "Something failed"', /'crm-page': 'A CRM page'/.test(read('crm/index.html')));
+
+  console.log(`\ncrm-ui ${fail ? 'FAILED' : 'OK'} -- a failure is said in the page, recorded once, and the sign-in pages are left alone.`);
+  console.log(`\n${pass} passed, ${fail} failed`);
+  process.exit(fail ? 1 : 0);
+})().catch((e) => { console.error('check-crm-ui CRASHED:', e && e.stack ? e.stack : e); process.exit(1); });

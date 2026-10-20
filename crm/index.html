@@ -6,6 +6,7 @@
     <title>Dashboard | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -92,7 +93,7 @@
          */
         var FAILURE_PLACES = {
           'crm-buyers': 'Buyers', 'crm-activity': 'Activity notes', 'crm-documents': 'Documents',
-          'crm-csv': 'CSV import/export', 'crm-dashboard': 'Dashboard', 'crm-data-quality': 'Review names',
+          'crm-csv': 'CSV import/export', 'crm-dashboard': 'Dashboard', 'crm-data-quality': 'Review names', 'crm-page': 'A CRM page',
           'crm-auth-login': 'Sign-in', 'crm-auth-forgot': 'Forgot password', 'crm-auth-reset': 'Password reset',
           'inquiries': 'Website enquiries', 'leads': 'Guide downloads'
         };
@@ -117,18 +118,53 @@
             '</tbody></table></div>';
         }
 
+        /*
+         * The enquiries box. A failed load said "Nothing received yet", which
+         * is exactly the wrong thing to tell someone waiting on a buyer: it
+         * now says it could not load them, with Retry.
+         */
+        function loadInbox() {
+          var card = document.getElementById('inbox-card');
+          card.innerHTML = '<div class="crm-card"><h2>Enquiries</h2><p class="crm-muted" role="status">Loading…</p></div>';
+          CRM.fetchJson('/api/inquiries').then(function (res) {
+            if (!res.ok || !Array.isArray(res.data)) {
+              card.innerHTML = '';
+              CRM.loadError(card, { what: 'the latest enquiries', key: 'enquiries', error: res, retry: loadInbox });
+              return;
+            }
+            renderInbox(res.data);
+          }).catch(function (e) {
+            card.innerHTML = '';
+            CRM.loadError(card, { what: 'the latest enquiries', key: 'enquiries', error: e, retry: loadInbox });
+          });
+        }
+
+        function loadDashboard() {
+          var content = document.getElementById('dashboard-content');
+          content.innerHTML = '<p class="crm-muted" role="status">Loading…</p>';
+          CRM.fetchJson('/api/crm/dashboard').then(function (result) {
+            if (!result.ok || !result.data || !Array.isArray(result.data.by_stage)) {
+              content.innerHTML = '';
+              CRM.loadError(content, { what: 'the pipeline figures', key: 'dashboard', error: result, retry: loadDashboard });
+              return;
+            }
+            renderDashboard(result.data);
+          }).catch(function (e) {
+            content.innerHTML = '';
+            CRM.loadError(content, { what: 'the pipeline figures', key: 'dashboard', error: e, retry: loadDashboard });
+          });
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Dashboard');
+          // Separately, deliberately not chained: if one fails, the other still shows.
+          loadInbox();
+          loadDashboard();
+        }).catch(function (e) {
+          CRM.loadError(document.getElementById('dashboard-content'), { what: 'this page', key: 'dashboard', error: e, retry: function () { window.location.reload(); } });
+        });
 
-          // Fetched separately and deliberately not chained: if the enquiries
-          // call fails, the pipeline below must still render, and vice versa.
-          CRM.fetchJson('/api/inquiries').then(function (res) {
-            renderInbox(res.ok && Array.isArray(res.data) ? res.data : []);
-          }).catch(function () { renderInbox([]); });
-
-          return CRM.fetchJson('/api/crm/dashboard');
-        }).then(function (result) {
-          var d = result.data;
+        function renderDashboard(d) {
           renderFailures(d && d.failures);
           var byStage = {};
           d.by_stage.forEach(function (s) { byStage[s.stage] = s.count; });
@@ -212,11 +248,7 @@
               '<p class="crm-muted">' + CRM.escapeHtml(cr.definition) + '</p>' +
             '</div>' +
             '<div class="crm-card"><h2>Average Time Spent in Each Stage</h2>' + avgStageHtml + '</div>';
-        }).catch(function (e) {
-          if (e.message !== 'unauthorized') {
-            document.getElementById('dashboard-content').innerHTML = '<div class="crm-status crm-status-error">Could not load dashboard data.</div>';
-          }
-        });
+        }
       })();
     </script>
   </body>
