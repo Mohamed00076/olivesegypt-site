@@ -30,6 +30,7 @@
       <section class="crm-card crm-ui-quick" id="quick-card" style="display:none;" aria-label="Quick actions">
         <div class="crm-ui-quick-row" id="quick-row"></div>
         <p class="crm-muted crm-ui-quick-missing" id="quick-missing" style="display:none;"></p>
+        <p class="crm-ui-optout" id="quick-optout" style="display:none;"></p>
         <form id="move-panel" class="crm-ui-move-panel" style="display:none;">
           <label for="move-stage">Move to</label>
           <select id="move-stage"></select>
@@ -429,7 +430,29 @@
           row.appendChild(tel.replace('+', '').length >= 6 ? quickLink('Call', 'tel:' + tel) : quickButton('Call', null, true));
           if (tel.replace('+', '').length < 6) missing.push('phone number');
           var email = String(b.contact_email || '').trim();
-          row.appendChild(email ? quickLink('Email', 'mailto:' + email) : quickButton('Email', null, true));
+          /*
+           * An address that used the website's unsubscribe page (2026-10-20).
+           * The page promised to stop contacting it "about our products,
+           * guides and market updates". Whether that also rules out a
+           * one-to-one business email -- a reply about their own order, say --
+           * is counsel question 20, so this warns and asks; it does not block.
+           */
+          var optedOut = !!(email && b.email_opted_out);
+          if (optedOut) {
+            row.appendChild(quickButton('Email', function () {
+              CRM.ask({ title: 'This address has unsubscribed',
+                message: email + ' used the website\u2019s unsubscribe page, which told them we would stop contacting them about our products, guides and market updates.\n\n' +
+                  'Email them only if this is about something they asked us for themselves, such as their own quotation or order.',
+                confirm: 'Write the email anyway' }).then(function (yes) {
+                if (yes) window.location.href = 'mailto:' + email;
+              });
+            }));
+          } else {
+            row.appendChild(email ? quickLink('Email', 'mailto:' + email) : quickButton('Email', null, true));
+          }
+          var warn = document.getElementById('quick-optout');
+          warn.textContent = optedOut ? 'Unsubscribed: ' + email + ' used the website\u2019s unsubscribe page. Do not send marketing; the Email button asks first.' : '';
+          warn.style.display = optedOut ? '' : 'none';
           if (!email) missing.push('email address');
           row.appendChild(quickButton('Add note', function () {
             var box = document.getElementById('activity-entry');
@@ -532,6 +555,10 @@
             if (!result.ok) return;
             renderStageHistory(result.data.stage_history || []);
             renderActivity(result.data.activity_log || []);
+            // A saved change of email address changes the answer to "has it unsubscribed?".
+            if (current && current.email_opted_out !== result.data.email_opted_out) {
+              renderQuick(Object.assign({}, current, { email_opted_out: result.data.email_opted_out }));
+            }
           }).catch(function () { /* the lists stay as they were; the action itself already said whether it worked */ });
         }
 
