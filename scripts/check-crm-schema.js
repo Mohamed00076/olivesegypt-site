@@ -58,6 +58,9 @@ const ALLOWED_FOREIGN_READS = {
   'crm-activity.js': {
     buyers: 'an activity entry is written against a buyer that exists, so the table does too',
   },
+  'crm-environment.js': {
+    deployment_marker: 'read only if to_regclass finds it; it is created by hand on the staging database alone (staging sheet N3), never by code',
+  },
   'crm-buyer-files.js': {
     buyers: 'a file is uploaded from an existing buyer\'s page, so the table exists too',
   },

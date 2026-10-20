@@ -6,6 +6,7 @@
     <title>New Document | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
     <style>
       .li-table input { padding: 6px 8px; font-size: 13px; }
       .li-table td { vertical-align: top; padding: 6px 8px; }
@@ -36,7 +37,8 @@
         <h1 id="page-title" style="margin:0;">New Document</h1>
       </div>
 
-      <div id="status" class="crm-status" style="display:none;"></div>
+      <div id="status" class="crm-status" style="display:none;" role="status" aria-live="polite"></div>
+      <div id="form-messages"></div>
       <form id="doc-form" style="display:none;">
         <!-- Language comes first because it is not a formatting switch applied
              at the end: it changes the closings offered, the direction you
@@ -406,7 +408,7 @@
           var box = document.getElementById('bank-details');
           note.textContent = 'Looking…';
           CRM.fetchJson('/api/crm/documents?last_bank_details=1').then(function (result) {
-            if (!result.ok) { note.textContent = (result.data && result.data.error) || 'Could not look up the last bank details.'; return; }
+            if (!result.ok) { CRM.reportLoadFailure('last-bank-details', result); note.textContent = 'The last bank details could not be looked up. ' + CRM.plainError(result, 'Type them in, or try again.'); return; }
             if (!result.data.bank_details) { note.textContent = 'No earlier invoice or proforma has bank details yet.'; return; }
             box.value = result.data.bank_details;
             note.textContent = 'Copied from ' + result.data.doc_number + '. Check they are still current.';
@@ -511,7 +513,13 @@
           CRM.fetchJson('/api/crm/documents', { method: 'POST', body: payload }).then(function (result) {
             saveBtn.disabled = false;
             if (!result.ok) {
-              showStatus(result.data.error || 'Could not create document.' + (result.data.fields ? ' (' + result.data.fields.join(', ') + ')' : ''), false);
+              // Name the fields the server refused, in words, rather than "Validation failed".
+              var FIELD_NAMES = { buyer_company_name: 'company name', line_items: 'line items', currency: 'currency', body: 'letter text',
+                packing_items: 'packing lines', source_doc_id: 'the document it is made from', doc_type: 'document type', language: 'language', valid_until: 'valid-until date', due_date: 'due date' };
+              var fields = (result.data && result.data.fields) || [];
+              showStatus('The document was not created. ' + (fields.length
+                ? 'Check: ' + fields.map(function (f) { return FIELD_NAMES[f] || f.replace(/_/g, ' '); }).join(', ') + '.'
+                : CRM.plainError(result, 'The server did not accept it.')), false);
               return;
             }
             window.location.href = '/crm/document/view/?id=' + result.data.id;
@@ -573,7 +581,10 @@
 
           if (!fromId) { loadRecipient(); return; }
           CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(fromId)).then(function (result) {
-            if (!result.ok) { showStatus((result.data && result.data.error) || 'Could not load the document to start from.', false); return; }
+            if (!result.ok) {
+              CRM.loadError(document.getElementById('form-messages'), { what: 'the document to start from', key: 'document-source', error: result, retry: function () { window.location.reload(); } });
+              return;
+            }
             var src = result.data;
             if (src.voided_at) { showStatus(src.doc_number + ' is void, so nothing can be issued from it.', false); return; }
             source = src;
@@ -581,8 +592,7 @@
             buyerId = src.buyer_id ? String(src.buyer_id) : null;
             loadRecipient();
           }).catch(function (e) {
-            var msg = CRM.noReplyMessage(e, 'Loading the document to start from', 'Reload the page to try again.');
-            if (msg) showStatus(msg, false);
+            CRM.loadError(document.getElementById('form-messages'), { what: 'the document to start from', key: 'document-source', error: e, retry: function () { window.location.reload(); } });
           });
         }
 
@@ -650,8 +660,15 @@
             return;
           }
 
+          var formMessages = document.getElementById('form-messages');
+          CRM.clearBanner(formMessages);
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
-            if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
+            if (!result.ok) {
+              // A deleted buyer is a fact, not a failure: say it as the server does.
+              if (result.status === 410 || (result.data && result.data.deleted)) { CRM.showError(formMessages, CRM.plainError(result)); return; }
+              CRM.loadError(formMessages, { what: 'this buyer', key: 'buyer', error: result, retry: loadRecipient });
+              return;
+            }
             var b = result.data;
             document.getElementById('page-title').textContent = TITLE[docType] + ' for ' + b.company_name;
             document.getElementById('buyer-summary').innerHTML =
@@ -682,6 +699,8 @@
               addLine(firstProduct);
               recalc();
             }
+          }).catch(function (e) {
+            CRM.loadError(formMessages, { what: 'this buyer', key: 'buyer', error: e, retry: loadRecipient });
           });
         }
 
@@ -799,7 +818,7 @@
           CRM.renderNav('Documents');
           init();
         }).catch(function (e) {
-          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+          CRM.loadError(document.getElementById('form-messages'), { what: 'this page', key: 'document', error: e, retry: function () { window.location.reload(); } });
         });
       })();
     </script>

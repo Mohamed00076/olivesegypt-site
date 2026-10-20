@@ -46,7 +46,7 @@ Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: 
 const crm = require(path.join(FN, '_crm_lib.js'));
 const load = (f) => require(path.join(FN, f)).handler;
 const ADMIN_ENDPOINTS = ['analytics-report.js', 'analytics-settings.js', 'analytics-privacy.js', 'kpi-definitions.js', 'kpi-values.js', 'kpi-dashboard.js', 'analytics.js', 'auth-me.js'];
-const CRM_ENDPOINTS = ['crm-buyers.js', 'crm-dashboard.js', 'crm-documents.js', 'crm-buyer-files.js', 'crm-data-quality.js', 'crm-csv.js', 'crm-auth-me.js'];
+const CRM_ENDPOINTS = ['crm-buyers.js', 'crm-dashboard.js', 'crm-documents.js', 'crm-buyer-files.js', 'crm-client-failure.js', 'crm-environment.js', 'crm-data-quality.js', 'crm-csv.js', 'crm-auth-me.js'];
 
 const quiet = async (fn) => { const e = console.error, l = console.log; console.error = console.log = () => {}; try { return await fn(); } finally { console.error = e; console.log = l; } };
 const get = (file, cookie) => quiet(() => load(file)({ httpMethod: 'GET', headers: { cookie }, queryStringParameters: {} }, {}));

@@ -23,6 +23,12 @@ in the meantime.
 | 12 | Does a change of policy wording require asking everyone again, or only a change in what data is used? How long should a saved choice last before asking again? | Added 2026-10-16. The re-ask policy waits for this answer; `POLICY_VERSION` is unchanged meanwhile. |
 | 13 | Google Analytics sends visit data to Google's servers, possibly outside Egypt. Is the current wording enough under Law 151/2020 and, for EU buyers, the GDPR? Does the after-consent lookup of the network an IP address belongs to need its own line in the consent request? | Added 2026-10-16. Both are disclosed on the privacy pages; neither is gated separately. |
 
+### Added 2026-10-20 (numbered after 14–17, which arrive with the password-reset pull request #382)
+
+| # | Question for counsel | Implementation action taken now |
+|---|---|---|
+| 18 | **Erasure requests versus backups.** When a buyer asks for their data to be deleted, the CRM's Erase removes the record, notes, stage history and linked enquiries at once. Copies can remain outside the CRM: the database's restore history (Neon; at most 6 hours on the Free plan per Neon's plans page, set per project), and any manual database snapshot until it is deleted. Is that acceptable for an erasure request, should the person be told, and should snapshots be avoided or deleted on a schedule? Separately, Erase keeps issued documents and uploaded files as business records: is that the right line? | The Erase confirmation says exactly this ("cannot be undone from the CRM"; copies can remain in restore history and snapshots) and no longer says "not even from the database". No snapshot schedule exists; none is created. Nothing claims erasure from backups. |
+
 ## Additional items flagged for a legal/business decision (not technical questions)
 
 These came up directly while implementing G2 and G1 and need your call, not just counsel's:

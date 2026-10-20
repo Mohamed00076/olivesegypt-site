@@ -7,6 +7,7 @@
     <meta name="robots" content="noindex, nofollow" />
     <link href="/assets/fonts/fonts.css" rel="stylesheet">
     <link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
+    <link rel="stylesheet" href="/assets/crm-ui.css">
 
     <style>
       /* ------------------------------------------------------------------
@@ -239,7 +240,9 @@
       </div>
     </div>
 
-    <div id="load-status" class="container doc-toolbar mx-auto px-4 text-sm text-muted-foreground"></div>
+    <div id="load-status" class="container doc-toolbar mx-auto px-4 text-sm text-muted-foreground" role="status"></div>
+    <!-- Failures, in the page (assets/crm-ui.css). Not printed. -->
+    <div id="doc-messages" class="no-print container doc-toolbar mx-auto px-4" style="margin-top:12px;"></div>
 
     <div class="sheet" id="sheet" style="display:none;">
       <div class="void-stamp" id="void-stamp" style="display:none;">Void</div>
@@ -394,7 +397,6 @@
             print: 'Print / Save as PDF',
             voidBtn: 'Void',
             voidStamp: 'Void',
-            voidConfirm: 'Void this document? This is permanent and cannot be undone (the record stays for your records, marked VOID).',
             backBuyer: '← Back to buyer',
             backDocs: '← Back to documents',
             titles: { quotation: 'Quotation', proforma: 'Proforma Invoice', invoice: 'Invoice', packing: 'Packing List' },
@@ -438,7 +440,6 @@
             print: 'طباعة / حفظ كملف PDF',
             voidBtn: 'إلغاء المستند',
             voidStamp: 'ملغى',
-            voidConfirm: 'إلغاء هذا المستند؟ لا يمكن التراجع عن ذلك (يبقى السجل محفوظًا ومؤشرًا عليه بـ ملغى).',
             backBuyer: '→ العودة إلى المشتري',
             backDocs: '→ العودة إلى المستندات',
             titles: { quotation: 'عرض سعر', proforma: 'فاتورة مبدئية', invoice: 'فاتورة', packing: 'قائمة التعبئة' },
@@ -830,20 +831,22 @@
           } else {
             voidBtn.style.display = '';
             voidBtn.addEventListener('click', function () {
-              if (!window.confirm(t.voidConfirm)) return;
+              // Staff-facing, so in English whatever the document's language.
+              CRM.ask({ title: 'Void ' + d.doc_number + '?', message: 'This is permanent and cannot be undone. The document stays on record, marked VOID, and nothing can be issued from it.', confirm: 'Void document', danger: true }).then(function (yes) {
+              if (!yes) return;
               // This said nothing at all unless the void worked -- neither the
               // server's refusal nor a request that never got a reply. Staff-
               // facing, so in English like every other CRM message, whatever
               // the document's own language.
               CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(docId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
                 if (result.ok) { window.location.reload(); return; }
-                window.alert((result.data && result.data.error) || 'Could not void this document.');
+                CRM.showError(messages, d.doc_number + ' was not voided. ' + CRM.plainError(result, 'The server did not accept it, and nothing was changed.'));
               }).catch(function (e) {
                 var msg = CRM.noReplyMessage(e, 'Voiding this document',
-                  'The page will reload to show whether it is void.');
+                  'Reload the page to see whether it is void.');
                 if (!msg) return;
-                window.alert(msg);
-                window.location.reload();
+                CRM.showError(messages, msg, function () { window.location.reload(); });
+              });
               });
             });
           }
@@ -852,16 +855,27 @@
           document.getElementById('sheet').style.display = '';
         }
 
-        if (!docId) {
-          document.getElementById('load-status').textContent = 'No document specified.';
-        } else {
-          CRM.requireAuth().then(function () {
-            return CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(docId));
-          }).then(function (result) {
-            if (!result.ok) { document.getElementById('load-status').textContent = result.data.error || 'Could not load document.'; return; }
+        var messages = document.getElementById('doc-messages');
+        function load() {
+          var status = document.getElementById('load-status');
+          status.textContent = 'Loading…';
+          CRM.fetchJson('/api/crm/documents?id=' + encodeURIComponent(docId)).then(function (result) {
+            status.textContent = '';
+            if (result.status === 404) { CRM.showError(messages, 'There is no such document. It may have been opened from an old link.'); return; }
+            if (!result.ok) { CRM.loadError(messages, { what: 'this document', key: 'document', error: result, retry: load }); return; }
+            CRM.clearBanner(messages);
             render(result.data);
           }).catch(function (e) {
-            if (e.message !== 'unauthorized') document.getElementById('load-status').textContent = 'Could not load document.';
+            status.textContent = '';
+            CRM.loadError(messages, { what: 'this document', key: 'document', error: e, retry: load });
+          });
+        }
+
+        if (!docId) {
+          CRM.showError(messages, 'No document was named in the address. Open one from the Documents list.');
+        } else {
+          CRM.requireAuth().then(function () { CRM.envBadge(); load(); }).catch(function (e) {
+            CRM.loadError(messages, { what: 'this page', key: 'document', error: e, retry: function () { window.location.reload(); } });
           });
         }
       })();

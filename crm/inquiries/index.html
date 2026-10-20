@@ -6,6 +6,7 @@
     <title>Enquiries | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -30,13 +31,14 @@
         Contact and sample requests are also added to the pipeline automatically &mdash; the Pipeline column links to the buyer, or says why it was not added. Downloads and briefs are not added.
       </p>
 
-      <div id="status" class="crm-status" style="display:none;"></div>
+      <div id="status" class="crm-status" style="display:none;" role="status" aria-live="polite"></div>
+      <div id="list-messages"></div>
 
       <div class="crm-card">
         <div class="crm-flex" style="margin-bottom:12px;">
           <input type="search" id="filter" placeholder="Filter by name, company, country or message&hellip;" style="flex:1;min-width:0;" />
         </div>
-        <div id="list"><p class="crm-muted">Loading&hellip;</p></div>
+        <div id="list"><p class="crm-muted" role="status">Loading&hellip;</p></div>
       </div>
     </div>
 
@@ -172,10 +174,11 @@
             'This cannot be undone.' +
             (r.buyer_id && !r.buyer_deleted_on ? '\n\nIt was added to the pipeline. The buyer record is NOT deleted -- open it from the Pipeline column and delete it there if needed.' : '') +
             (r.opted_out ? '\n\nThis address has opted out, and stays opted out.' : '');
-          if (!window.confirm(msg)) return;
+          CRM.ask({ title: 'Delete for good?', message: msg, confirm: 'Delete', danger: true }).then(function (yes) {
+          if (!yes) return;
           var url = (r.kind === 'lead' ? '/api/leads' : '/api/inquiries') + '?id=' + encodeURIComponent(r.id) + '&confirmed=1';
           CRM.fetchJson(url, { method: 'DELETE' }).then(function (result) {
-            if (!result.ok) { showStatus((result.data && result.data.error) || 'Could not delete.', false); return; }
+            if (!result.ok) { showStatus(CRM.plainError(result, 'It was not deleted. Nothing was changed.'), false); return; }
             rows = rows.filter(function (x) { return x.key !== r.key; });
             updateCount();
             applyFilter();
@@ -184,17 +187,20 @@
             var m = CRM.noReplyMessage(e, 'Deleting it', 'Reload the page to see whether it is gone before trying again.');
             if (m) showStatus(m, false);
           });
+          });
         }
 
         function render(list) {
           var el = document.getElementById('list');
           if (!list.length) {
+            // Never "nothing received" when the list did not load: the banner says what happened.
             el.innerHTML = rows.length
               ? '<p class="crm-muted">Nothing matches that filter.</p>'
-              : '<p class="crm-muted">Nothing has been received yet.</p>';
+              : loadFailed ? '' : '<p class="crm-muted">Nothing has been received yet.</p>';
             return;
           }
-          var html = '<table><thead><tr>' +
+          // crm-ui-cards: one card per enquiry on a phone, Open always in reach (assets/crm-ui.css).
+          var html = '<table class="crm-ui-cards"><thead><tr>' +
             '<th>Received</th><th>From</th><th>Country</th><th>Asked for</th><th>Pipeline</th><th></th>' +
             '</tr></thead><tbody>';
           list.forEach(function (r) {
@@ -202,15 +208,15 @@
             var sub = r.company && r.name ? esc(r.name) : '';
             var optedOut = r.opted_out ? '<br/><span class="crm-badge crm-badge-danger">Opted out &mdash; do not contact</span>' : '';
             html += '<tr>' +
-              '<td>' + CRM.fmtDate(r.created_at) + '</td>' +
-              '<td><strong>' + who + '</strong>' + (sub ? '<br/><span class="crm-muted">' + sub + '</span>' : '') +
+              '<td data-label="Received">' + CRM.fmtDate(r.created_at) + '</td>' +
+              '<td class="crm-ui-card-title"><strong>' + who + '</strong>' + (sub ? '<br/><span class="crm-muted">' + sub + '</span>' : '') +
                 (r.email ? '<br/><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '') + optedOut + '</td>' +
-              '<td>' + esc(r.country) + '</td>' +
-              '<td>' + esc(r.request_type || 'Enquiry') + '</td>' +
-              '<td>' + pipelineCell(r) + '</td>' +
-              '<td><button type="button" class="crm-btn crm-btn-secondary detail-btn" data-id="' + esc(r.key) + '">Open</button></td>' +
+              '<td data-label="Country">' + esc(r.country) + '</td>' +
+              '<td data-label="Asked for">' + esc(r.request_type || 'Enquiry') + '</td>' +
+              '<td data-label="Pipeline">' + pipelineCell(r) + '</td>' +
+              '<td class="crm-ui-card-actions"><button type="button" class="crm-btn crm-btn-secondary detail-btn" data-id="' + esc(r.key) + '" aria-expanded="false">Open</button></td>' +
               '</tr>' +
-              '<tr class="detail-row" id="detail-' + esc(r.key) + '" style="display:none;"><td colspan="6">' +
+              '<tr class="detail-row" id="detail-' + esc(r.key) + '" style="display:none;"><td colspan="6" class="crm-ui-card-detail">' +
                 (r.kind === 'lead' ? leadDetail(r) : enquiryDetail(r)) +
               '</td></tr>';
           });
@@ -230,6 +236,7 @@
               var open = row.style.display !== 'none';
               row.style.display = open ? 'none' : '';
               b.textContent = open ? 'Open' : 'Close';
+              b.setAttribute('aria-expanded', open ? 'false' : 'true');
             });
           });
         }
@@ -254,11 +261,12 @@
 
         // Both lists, independently: one failing must not hide the other.
         function settle(p) {
-          return p.then(function (r) { return r; }, function (e) {
+          return p.then(function (r) { return { result: r }; }, function (e) {
             if (e && e.message === 'unauthorized') throw e;
-            return { ok: false, data: { error: 'no reply from the server' } };
+            return { result: e };
           });
         }
+        var loadFailed = false;
 
         /*
          * The quarterly-report mailing list, as a CSV. Fetched rather than
@@ -267,15 +275,16 @@
          * market-brief signups with consent, minus anyone who opted out.
          */
         function exportSubscribers() {
-          if (!window.confirm('Download the email addresses of everyone who signed up for the market brief? ' +
-            'Anyone who has opted out is left out. Use it only to send the quarterly market report.')) return;
+          CRM.ask({ title: 'Download the market-brief list?', message: 'This downloads the email addresses of everyone who signed up for the market brief. ' +
+            'Anyone who has opted out is left out. Use it only to send the quarterly market report.', confirm: 'Download' }).then(function (yes) {
+          if (!yes) return;
           var btn = document.getElementById('export-mb-btn');
           btn.disabled = true;
           fetch('/api/leads?export=market_report&confirmed=1', { credentials: 'same-origin' }).then(function (res) {
             if (res.status === 401) { window.location.href = '/crm/login/?next=' + encodeURIComponent(window.location.pathname); return; }
             if (!res.ok) {
               return res.json().catch(function () { return {}; }).then(function (d) {
-                showStatus('The export failed: ' + ((d && d.error) || 'HTTP ' + res.status) + '.', false);
+                showStatus('The list was not downloaded. ' + CRM.plainError({ ok: false, status: res.status, data: d }, 'The server could not prepare it.'), false);
               });
             }
             var name = (/filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '') || [])[1] || 'market-brief-subscribers.csv';
@@ -291,25 +300,46 @@
             var msg = CRM.noReplyMessage(e, 'The export', 'Try again; downloading it twice does no harm.');
             if (msg) showStatus(msg, false);
           }).then(function () { btn.disabled = false; });
+          });
+        }
+
+        var messages = document.getElementById('list-messages');
+        var ok = function (r) { return r && r.ok && Array.isArray(r.data); };
+
+        /*
+         * Both lists, independently: one failing must not hide the other, and
+         * each failure is a banner with Retry, never "Nothing received yet".
+         */
+        function load() {
+          CRM.clearBanner(messages);
+          Promise.all([settle(CRM.fetchJson('/api/inquiries')), settle(CRM.fetchJson('/api/leads'))]).then(function (res) {
+            var enq = res[0].result, leads = res[1].result;
+            loadFailed = !ok(enq) || !ok(leads);
+            if (!ok(enq) && !ok(leads)) {
+              CRM.reportLoadFailure('leads', leads);
+              CRM.loadError(messages, { what: 'the enquiries and guide downloads', key: 'enquiries', error: enq, retry: load });
+            } else if (!ok(enq)) {
+              CRM.loadError(messages, { what: 'contact and sample enquiries', key: 'enquiries', error: enq, retry: load });
+            } else if (!ok(leads)) {
+              CRM.loadError(messages, { what: 'guide downloads and briefs', key: 'leads', error: leads, retry: load });
+            }
+            rows = (ok(enq) ? enq.data.map(fromEnquiry) : [])
+              .concat(ok(leads) ? leads.data.map(fromLead) : [])
+              .sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); });
+            updateCount();
+            applyFilter();
+          }).catch(function (e) {
+            CRM.loadError(messages, { what: 'the enquiries', key: 'enquiries', error: e, retry: load });
+          });
         }
 
         CRM.requireAuth().then(function () {
           CRM.renderNav('Enquiries');
           document.getElementById('export-mb-btn').addEventListener('click', exportSubscribers);
           document.getElementById('filter').addEventListener('input', applyFilter);
-          return Promise.all([settle(CRM.fetchJson('/api/inquiries')), settle(CRM.fetchJson('/api/leads'))]);
-        }).then(function (res) {
-          var enq = res[0], leads = res[1], problems = [];
-          if (!enq.ok) problems.push('Contact and sample enquiries could not be loaded (' + ((enq.data && enq.data.error) || 'error') + ').');
-          if (!leads.ok) problems.push('Guide downloads and briefs could not be loaded (' + ((leads.data && leads.data.error) || 'error') + ').');
-          showStatus(problems.join(' '), false);
-          rows = (enq.ok && Array.isArray(enq.data) ? enq.data.map(fromEnquiry) : [])
-            .concat(leads.ok && Array.isArray(leads.data) ? leads.data.map(fromLead) : [])
-            .sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); });
-          updateCount();
-          applyFilter();
+          load();
         }).catch(function (e) {
-          if (e && e.message !== 'unauthorized') showStatus('Could not load page.', false);
+          CRM.loadError(messages, { what: 'this page', key: 'enquiries', error: e, retry: function () { window.location.reload(); } });
         });
       })();
     </script>

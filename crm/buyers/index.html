@@ -6,6 +6,7 @@
     <title>Buyers | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -68,10 +69,12 @@
         </div>
       </div>
 
+      <div id="list-messages"></div>
       <div class="crm-card">
-        <div id="list-status" class="crm-muted">Loading…</div>
+        <div id="list-status" class="crm-muted" role="status">Loading…</div>
         <div style="overflow-x:auto;">
-          <table id="buyers-table" style="display:none;">
+          <!-- crm-ui-cards: one card per buyer on a phone (assets/crm-ui.css). -->
+          <table id="buyers-table" class="crm-ui-cards" style="display:none;">
             <thead>
               <tr>
                 <th data-sort="company_name">Company</th>
@@ -109,17 +112,18 @@
         function render(rows) {
           var tbody = document.getElementById('buyers-tbody');
           if (!rows.length) {
-            tbody.innerHTML = '<tr><td colspan="6" class="crm-muted">No buyers match.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="crm-muted">' + (allRows.length ? 'No buyers match these filters.' : 'No buyers yet. Add your first with + Add Buyer.') + '</td></tr>';
             return;
           }
           tbody.innerHTML = rows.map(function (r) {
+            // data-label names each cell when the row is shown as a card on a phone.
             return '<tr>' +
-              '<td><a href="/crm/buyer/?id=' + r.id + '">' + CRM.escapeHtml(r.company_name) + '</a></td>' +
-              '<td>' + CRM.escapeHtml(r.country_region) + '</td>' +
-              '<td><span class="' + CRM.stageBadgeClass(r.current_stage) + '">' + CRM.escapeHtml(r.current_stage) + '</span></td>' +
-              '<td>' + CRM.escapeHtml(r.contact_name || '—') + '</td>' +
-              '<td>' + CRM.fmtDate(r.next_action_due) + '</td>' +
-              '<td>' + CRM.fmtDate(r.updated_at) + '</td>' +
+              '<td class="crm-ui-card-title"><a class="crm-ui-card-link" href="/crm/buyer/?id=' + r.id + '">' + CRM.escapeHtml(r.company_name) + '</a></td>' +
+              '<td data-label="Region">' + CRM.escapeHtml(r.country_region) + '</td>' +
+              '<td data-label="Stage"><span class="' + CRM.stageBadgeClass(r.current_stage) + '">' + CRM.escapeHtml(r.current_stage) + '</span></td>' +
+              '<td data-label="Contact">' + CRM.escapeHtml(r.contact_name || '—') + '</td>' +
+              '<td data-label="Next due">' + CRM.fmtDate(r.next_action_due) + '</td>' +
+              '<td data-label="Updated">' + CRM.fmtDate(r.updated_at) + '</td>' +
               '</tr>';
           }).join('');
         }
@@ -162,12 +166,14 @@
         });
 
         document.getElementById('export-btn').addEventListener('click', function () {
-          if (!window.confirm('Export all buyer records to CSV now?')) return;
-          window.location.href = '/api/crm/csv?confirmed=1';
+          CRM.ask({ title: 'Export all buyers?', message: 'This downloads every buyer record, with contact details, as a CSV file. Keep the file private.', confirm: 'Export CSV' }).then(function (yes) {
+            if (yes) window.location.href = '/api/crm/csv?confirmed=1';
+          });
         });
 
         function reloadList() {
           return CRM.fetchJson('/api/crm/buyers').then(function (result) {
+            if (!result.ok || !Array.isArray(result.data)) throw result;
             allRows = result.data;
             applyAndRender();
           });
@@ -192,12 +198,13 @@
               resultEl.innerHTML = '<div class="crm-status crm-status-error">Provide a CSV file or pasted CSV text.</div>';
               return;
             }
-            if (!window.confirm('Import these buyer records now? This will create new buyer rows.')) return;
+            CRM.ask({ title: 'Import these buyers?', message: 'Each valid row becomes a new buyer record. Rows that fail checks are skipped and listed.', confirm: 'Import' }).then(function (yes) {
+            if (!yes) return;
             runBtn.disabled = true;
             CRM.fetchJson('/api/crm/csv', { method: 'POST', body: { csv: csvText } }).then(function (result) {
               runBtn.disabled = false;
               if (!result.ok) {
-                resultEl.innerHTML = '<div class="crm-status crm-status-error">' + CRM.escapeHtml(result.data.error || 'Import failed.') + '</div>';
+                resultEl.innerHTML = '<div class="crm-status crm-status-error" role="alert">' + CRM.escapeHtml(CRM.plainError(result, 'The import did not go through. Nothing was added.')) + '</div>';
                 return;
               }
               var html = '<div class="crm-status crm-status-success">Imported ' + result.data.imported + ' buyer(s).</div>';
@@ -214,8 +221,9 @@
               var msg = CRM.noReplyMessage(e, 'The import',
                 'The list below has been reloaded -- check it before importing again, so rows are not added twice.');
               if (!msg) return;
-              resultEl.innerHTML = '<div class="crm-status crm-status-error">' + CRM.escapeHtml(msg) + '</div>';
+              resultEl.innerHTML = '<div class="crm-status crm-status-error" role="alert">' + CRM.escapeHtml(msg) + '</div>';
               reloadList().catch(function () {});
+            });
             });
           }
 
@@ -252,18 +260,35 @@
           if (window.history && window.history.replaceState) window.history.replaceState({}, '', '/crm/buyers/');
         })();
 
+        /*
+         * The list, or a banner saying it could not be loaded. A failed load
+         * used to leave empty column headings and no message at all.
+         */
+        var messages = document.getElementById('list-messages');
+        function load() {
+          var status = document.getElementById('list-status');
+          status.textContent = 'Loading…'; status.style.display = '';
+          CRM.clearBanner(messages);
+          CRM.fetchJson('/api/crm/buyers').then(function (result) {
+            status.style.display = 'none';
+            if (!result.ok || !Array.isArray(result.data)) {
+              CRM.loadError(messages, { what: 'the buyer list', key: 'buyers-list', error: result, retry: load });
+              return;
+            }
+            allRows = result.data;
+            document.getElementById('buyers-table').style.display = '';
+            applyAndRender();
+          }).catch(function (e) {
+            status.style.display = 'none';
+            CRM.loadError(messages, { what: 'the buyer list', key: 'buyers-list', error: e, retry: load });
+          });
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Buyers');
-          return CRM.fetchJson('/api/crm/buyers');
-        }).then(function (result) {
-          allRows = result.data;
-          document.getElementById('list-status').style.display = 'none';
-          document.getElementById('buyers-table').style.display = '';
-          applyAndRender();
+          load();
         }).catch(function (e) {
-          if (e.message !== 'unauthorized') {
-            document.getElementById('list-status').textContent = 'Could not load buyers.';
-          }
+          CRM.loadError(messages, { what: 'this page', key: 'buyers-list', error: e, retry: function () { window.location.reload(); } });
         });
       })();
     </script>
