@@ -210,7 +210,7 @@ async function main() {
   const PROTECTED = ['/api/inquiries', '/api/leads', '/api/consent', '/api/analytics',
     '/api/analytics-report', '/api/analytics-settings', '/api/analytics-privacy', '/api/crm/auth/me',
     '/api/crm/buyers', '/api/crm/activity', '/api/crm/dashboard', '/api/crm/csv', '/api/crm/data-quality',
-    '/api/crm/documents', '/api/kpi-definitions', '/api/kpi-values', '/api/kpi-dashboard'];
+    '/api/crm/documents', '/api/crm/buyer-files', '/api/kpi-definitions', '/api/kpi-values', '/api/kpi-dashboard'];
   const NOT_PROBED = {
     '/api/auth/me': 'answers {"authenticated":false} to anyone not signed in, by design',
     '/api/unsubscribe': 'public by design; its admin list (?list=1) is probed below',
