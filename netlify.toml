@@ -294,6 +294,14 @@
   status = 200
   force = true
 
+# A CRM page that could not load something reports it here, so it is recorded
+# and alerted like any other failure. See netlify/functions/crm-client-failure.js.
+[[redirects]]
+  from = "/api/crm/client-failure"
+  to = "/.netlify/functions/crm-client-failure"
+  status = 200
+  force = true
+
 # Files a buyer has that the CRM did not issue (uploaded quotations, invoices
 # and other documents). See netlify/functions/crm-buyer-files.js.
 [[redirects]]
