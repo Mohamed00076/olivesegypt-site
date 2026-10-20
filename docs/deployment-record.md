@@ -10980,13 +10980,114 @@ Files and lines are each merge against the `main` it landed on.
   - «قائمة التعبئة» and the packing-list column and shipment labels;
   - the minimum-order wording;
   - «البيانات المصرفية».
-- **Storage:** uploads use the Neon free tier (0.5 GB), at 4 MB per file at most.
+- **Storage:** uploads use the Neon free tier (0.5 GB), at 4 MB per file at most. **Corrected at Deploys 279 to 281: the Free plan's limit is 1 GB per project, not 0.5 GB.**
 - **Password reset:** Release 2 (#383) must add `crm-buyer-files.js` to its session check when it is next brought up to date with `main`.
 - **Unchanged from Deploys 270 to 273:**
   - the browser support of `@page` margin boxes;
   - listings outside this repository;
   - the three old sign-in functions until #382;
   - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244;
+  - #359 waits for four product photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 279 to 281 — The live check probes the upload route; the record of 274 to 278; CRM Batch 1: failures said in the page and recorded, phone cards, dates (PRs #403, #404, #405)
+
+**Previous recorded deploy:** `7676c6b` (Deploy 278, PR #402)
+**Approvals:**
+- The owner wrote, after reviewing Batch 1, "Update #405 with 1, 2, 3, 4 and 6… I am merging #403 and #404 now."
+- Then "merge 403, 404 and 405".
+- Then "#405 approved; I am merging #403, #404 and #405."
+- **The owner merged all three themselves** (GitHub shows `Mohamed00076` as the merger).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 279 | #403 | `e0b51bf` | 2026-10-21 02:13:52 | 1 | +1 / −1 | Live-check script |
+| 280 | #404 | `dbf3543` | 2026-10-21 02:13:59 | 1 | +103 / −1 | Notes only |
+| 281 | #405 | `a8d8d19` | 2026-10-21 02:14:21 | 25 | +1136 / −159 | CRM: Batch 1 of the owner's CRM audit; two new functions |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 280** recorded Deploys 274 to 278.
+
+### What the deploys did
+
+- **Deploy 279 — The live check probes the upload route (#403).**
+  - `/api/crm/buyer-files` was added to the check's list of private routes.
+  - #402 had added the route but not the probe, so the check failed on it (see Deploys 274 to 278).
+- **Deploy 281 — CRM Batch 1 (#405).** This is the first of the three batches the owner approved after the read-only CRM visual audit.
+  - **Failures said in the page.**
+    - A failed load shows a banner in plain words, with Retry. Banners use role=alert and aria-live.
+    - Before, a failed load left an empty page, said "Nothing received yet", or showed a raw code.
+    - Raw server codes and anything from a 5xx are never shown.
+    - Fixed, pre-existing: the Kanban hid its "Loading…" line before checking the reply, so a failed load showed nothing at all.
+  - **Failures recorded.**
+    - A new function, `crm-client-failure.js` (`/api/crm/client-failure`), takes POST only and needs a CRM session. It allows 30 reports a minute.
+    - It records what the server never saw (no reply, or a 4xx other than 401) through `reportFailure`. That puts the failure on the dashboard's failure card and sends the throttled alert.
+    - A 5xx is not reported twice, because the function that failed has already recorded it.
+  - **Pop-ups replaced.**
+    - The 5 browser alerts and 8 browser confirmations are now in-page dialogs (`CRM.ask`): Cancel is focused, and Escape or a click outside cancels.
+    - Erase needs the buyer's name typed, or ERASE for a buyer already deleted.
+  - **The Erase wording** no longer claims removal from backups. It names the restore history and backup branches or snapshots, and counsel question 18 was added.
+  - **Phones:** the Enquiries and Buyers tables become one card per row under 640 px.
+  - **Dates** read "20 Oct 2026". A date-only value keeps its calendar day.
+  - **STAGING / PREVIEW badge.**
+    - A new function, `crm-environment.js` (`/api/crm/environment`), needs a session and only reads. It reports "staging" when the `deployment_marker` label exists.
+    - On any address other than the live site, the CRM shows an amber STAGING bar, or a red PREVIEW bar ("connected to the LIVE database").
+  - **Not touched:**
+    - the sign-in, forgot, reset and change-password pages, which still load only `crm.css`;
+    - headers, permissions and the audit log.
+    New styles are in `assets/crm-ui.css`, scoped to `.crm-ui-`, and loaded by the 9 working CRM pages only.
+  - **Checks:** a new `check-crm-ui.js` (74 checks) runs in `npm test`. Seven existing checks were updated, including the write-failure check, which now fails on any browser pop-up.
+- **Before merging:**
+  - `npm test` passed.
+  - `check-function-bundles.js` (copied temporarily from #383) reported 46 packaged and 0 problems.
+  - Both new routes are in `netlify.toml` and in the live check's private-route list.
+- **Database:** nothing new. `crm-environment.js` reads `deployment_marker` only if `to_regclass` finds it, and never creates it.
+
+### Verified on the live site (2026-10-21)
+
+- **Deployed commit:** `deployed-commit.txt` reads `a8d8d191299ed24c0148802ed9aa1e3ff287381c`.
+- **Live check: 21 OK, 0 FAIL, 0 PENDING.** "Private data refuses visitors who are not signed in" now covers 44 addresses, the two new routes among them.
+- **New files and routes:**
+  - `/assets/crm-ui.css` is served with the dialog styles;
+  - `/assets/crm.js` carries `CRM.ask` and the environment badge;
+  - `/api/crm/environment` and `/api/crm/client-failure` answer 401 without a session.
+- **Certificates:** valid to 2026-11-19 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Correction: Neon storage
+
+The entry for Deploys 274 to 278, and the description of #402, said the Neon Free plan gives **0.5 GB**. **Neon's plans page gives 1 GB of storage per project on the Free plan.** At that limit, inserts, updates and deletes fail. The figure is corrected in place above, with a note. Uploads are now capped by #406, which is not yet merged: 300 MB in total by default, with a warning at 80 %.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 281:** `git revert -m 1 a8d8d19`. The pop-ups and blank failures would return. Nothing is stored that needs undoing: failures already recorded stay in `crm_failures` and age out after 90 days.
+- **Deploy 279:** `git revert -m 1 e0b51bf`. The live check would fail again on the upload route.
+- **Deploy 280** is documentation only.
+
+### Known limitations shipped with Deploys 279 to 281
+
+- **Password reset:** Release 2 (#383) must add `crm-buyer-files.js`, `crm-client-failure.js` and `crm-environment.js` to its session check when it is next brought up to date with `main`.
+- **PREVIEW bar:** a deploy preview still uses the live database until step L1 of the staging sheet is done. The red bar says so; it does not change it.
+- **Open PRs, not deployed:**
+  - #406: upload cap and Erase with files;
+  - #407: Batch 2;
+  - #408: the Email warning for an unsubscribed address;
+  - #382 and #383: password reset, still drafts.
+- **Unchanged from Deploys 274 to 278:**
+  - the Arabic awaiting the owner's review («فاتورة مبدئية», «قائمة التعبئة» and the packing-list labels, the minimum-order wording, «البيانات المصرفية»);
+  - the browser support of `@page` margin boxes;
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
   - the visitor-ID questions with counsel;
   - the owner items listed at Deploys 242 to 244;
   - #359 waits for four product photographs.
@@ -11013,7 +11114,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 278 (2026-10-20).**
+**Unchanged since U4, through Deploy 281 (2026-10-21).**
 
 ## Outstanding, unresolved by this document
 
