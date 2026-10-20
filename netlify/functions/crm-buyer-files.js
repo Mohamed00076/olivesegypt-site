@@ -45,6 +45,32 @@ function connectionString() {
 }
 
 const MAX_BYTES = 4 * 1024 * 1024;
+
+/*
+ * All uploaded files together (2026-10-20, owner: "a total-size cap with a
+ * visible usage line and a warning at 80 percent").
+ *
+ * The files share the CRM's Neon database, and Neon's Free plan holds 1 GB
+ * per project; at that limit inserts, updates and deletes fail -- every CRM
+ * save, not only uploads. So uploads stop well short of it. The default is
+ * 300 MB, under a third of the database; CRM_FILES_TOTAL_MB in Netlify's
+ * environment changes it without a code change. Checked before each upload;
+ * two uploads at the same moment can pass the check together, so the cap
+ * can be exceeded by at most one file (4 MB).
+ */
+const DEFAULT_TOTAL_MB = 300;
+function totalCapBytes() {
+  const mb = Number(process.env.CRM_FILES_TOTAL_MB);
+  return Math.round((Number.isFinite(mb) && mb > 0 ? mb : DEFAULT_TOTAL_MB) * 1024 * 1024);
+}
+const WARN_AT = 0.8;
+
+async function usage(sql) {
+  const row = (await sql`SELECT COUNT(*)::int AS files, COALESCE(SUM(size_bytes), 0)::bigint AS used FROM crm_buyer_files`)[0] || {};
+  const cap = totalCapBytes();
+  const used = Number(row.used) || 0;
+  return { files: Number(row.files) || 0, used_bytes: used, cap_bytes: cap, share: cap ? used / cap : 0, warn: cap ? used / cap >= WARN_AT : false };
+}
 const KINDS = new Set(['quotation', 'invoice', 'other']);
 const MAX = { title: 200, reference: 100, issued_by: 200, note: 1000, filename: 200 };
 
@@ -202,6 +228,14 @@ async function handleUpload(event, sql, actor) {
     if (!/^[A-Z]{3}$/.test(currency)) return json(400, { ok: false, error: 'Validation failed', fields: ['currency'] });
   }
 
+  // Room left under the total cap.
+  const u = await usage(sql);
+  if (u.used_bytes + buf.length > u.cap_bytes) {
+    const capMb = Math.round(u.cap_bytes / 1048576);
+    return json(413, { ok: false, usage: u, error: `Uploaded files have reached their ${capMb} MB limit, so this one was not stored. ` +
+      'Delete files that are no longer needed, or raise the limit (CRM_FILES_TOTAL_MB in Netlify).' });
+  }
+
   // The buyer must exist and not be deleted: a file is never filed against nobody.
   const buyer = (await sql`SELECT id, deleted_at FROM buyers WHERE id = ${buyerId} LIMIT 1`)[0];
   if (!buyer || buyer.deleted_at) return json(404, { ok: false, error: 'Buyer not found' });
@@ -255,6 +289,7 @@ exports.handler = async (event) => {
   try {
     await ensureSchema(sql);
 
+    if (event.httpMethod === 'GET' && qs.usage === '1') return json(200, { ok: true, usage: await usage(sql) }, { 'Cache-Control': 'no-store, private' });
     if (event.httpMethod === 'GET' && id) return await handleDownload(sql, id, actor);
     if (event.httpMethod === 'GET' && buyerId) return await handleList(sql, buyerId);
     if (event.httpMethod === 'GET') return json(400, { ok: false, error: INVALID_ID_ERROR });

@@ -192,7 +192,7 @@ const call = async (h, method, qs, body) => {
     /CRM\.ask\(\{[^]*?message: msg/.test(ers) && /if \(!yes\) return;/.test(ers) && /Removed for good/.test(ers) && /Kept: documents already issued \(quotations, proformas, invoices, packing lists and letters\)/.test(ers) &&
     /opt-out list/.test(ers) && /This cannot be undone from the CRM\./.test(ers) && /files uploaded to this buyer/.test(ers));
   // Never a claim the CRM cannot keep (2026-10-20): erasing does not reach backups.
-  t('   and does not claim to remove database backups', !/not even from the database/.test(ers) && /restore history/.test(ers) && /snapshot/.test(ers));
+  t('   and does not claim to remove database backups', !/not even from the database/.test(ers) && /restore history/.test(ers) && /backup branch or snapshot/.test(ers));
   t('   and sends the erase, confirmed', /'&erase=1&confirmed=1', \{ method: 'DELETE' \}/.test(ers));
   t('   only after the buyer\'s name (or ERASE) is typed', /typeToConfirm: name \|\| 'ERASE'/.test(ers));
   t('   Delete asks in the page too, and goes ahead only on yes', /CRM\.ask\(/.test(del) && /if \(!yes\) return;/.test(del) && !/window\.confirm/.test(page));

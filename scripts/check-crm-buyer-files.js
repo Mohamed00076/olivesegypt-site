@@ -57,6 +57,9 @@ function fakeSql(strings, ...vals) {
     db.files.push(row);
     return Promise.resolve([{ id: row.id }]);
   }
+  if (/SUM\(size_bytes\)/i.test(q)) {
+    return Promise.resolve([{ files: db.files.length, used: String(db.files.reduce((n, f) => n + (f.size_bytes || 0), 0)) }]);
+  }
   if (/FROM crm_buyer_files WHERE buyer_id/i.test(q)) {
     return Promise.resolve(db.files.filter((f) => f.buyer_id === vals[0]).map((f) => { const { data, ...rest } = f; return rest; }));
   }
@@ -195,6 +198,45 @@ const up = (over = {}) => call('POST', {}, { buyer_id: 7, kind: 'quotation', fil
   t('   and is audited', db.audit.some((a) => a[1] === 'delete' && a[2] === pdfRow.id && /quotation for buyer 7/.test(a[3])));
   r = await call('DELETE', { id: String(pdfRow.id), confirmed: '1' });
   t('   a second delete finds nothing', r.statusCode === 404);
+
+  // ---- the total cap and the usage line (2026-10-20) -------------------------
+  {
+    db.files.length = 0;
+    delete process.env.CRM_FILES_TOTAL_MB;
+    let r = await call('GET', { usage: '1' }, undefined, null);
+    t('usage needs a CRM session', r.statusCode === 401);
+    r = await up();
+    r = await call('GET', { usage: '1' });
+    let u = JSON.parse(r.body).usage;
+    t('usage reports files, bytes used and the cap (300 MB by default)', r.statusCode === 200 && u.files === 1 && u.used_bytes === PDF.length &&
+      u.cap_bytes === 300 * 1024 * 1024 && u.warn === false, JSON.stringify(u));
+    t('   not cached', r.headers['Cache-Control'] === 'no-store, private');
+    // A cap of a little over four of these PDFs: the 80% warning, then a refusal.
+    process.env.CRM_FILES_TOTAL_MB = String((PDF.length * 4.2) / 1048576);
+    await up(); await up(); await up();
+    r = await call('GET', { usage: '1' }); u = JSON.parse(r.body).usage;
+    t('from 80 percent of the cap, usage says to warn', u.files === 4 && u.share >= 0.8 && u.share < 1 && u.warn === true, JSON.stringify(u));
+    const before = db.files.length;
+    r = await up();
+    t('an upload that would pass the cap is refused, and says how to make room', r.statusCode === 413 && /reached their \d+ MB limit/.test(r.body) && /Delete files/.test(r.body), r.body);
+    t('   and nothing is stored', db.files.length === before);
+    process.env.CRM_FILES_TOTAL_MB = 'nonsense';
+    r = await call('GET', { usage: '1' });
+    t('a cap that is not a number falls back to 300 MB', JSON.parse(r.body).usage.cap_bytes === 300 * 1024 * 1024);
+    delete process.env.CRM_FILES_TOTAL_MB;
+
+    // What Netlify's 6 MB buffered limit (request and response) really allows.
+    const LIMIT = 6 * 1000 * 1000; // the smaller reading of "6 MB"
+    const biggest = Buffer.concat([Buffer.from('%PDF-1.7\n'), Buffer.alloc(4 * 1024 * 1024 - 9, 0x20)]);
+    const reqBody = JSON.stringify({ buyer_id: 7, kind: 'quotation', title: '', filename: 'x'.repeat(200) + '.pdf', reference: 'R'.repeat(100),
+      doc_date: '2026-10-20', issued_by: 'I'.repeat(200), note: 'N'.repeat(1000), amount: 123456.78, currency: 'USD', data_base64: biggest.toString('base64') });
+    t('the largest file allowed (4 MB) fits Netlify\'s 6 MB request limit even with every field full', Buffer.byteLength(reqBody) < LIMIT, String(Buffer.byteLength(reqBody)));
+    r = await up({ data_base64: biggest.toString('base64') });
+    const stored = db.files[db.files.length - 1];
+    r = await call('GET', { id: String(stored.id) });
+    t('   and opening it fits the 6 MB response limit', r.statusCode === 200 && Buffer.byteLength(r.body) + 1000 < LIMIT, String(Buffer.byteLength(r.body)));
+    t('   4 MB is below the practical ceiling of about 4.5 MB (6 MB less base64\'s third)', 4 * 1024 * 1024 < (LIMIT * 3) / 4 - 2000);
+  }
 
   console.log(`\nbuyer-files ${fail ? 'FAILED' : 'OK'} -- uploads are checked by their bytes, capped, served safely and audited.`);
   console.log(`\n${pass} passed, ${fail} failed`);

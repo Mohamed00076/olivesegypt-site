@@ -171,6 +171,7 @@
         </div>
         <p class="crm-muted" style="margin:8px 0 0;">Quotations, invoices and other documents you have from outside the CRM: PDF, PNG, JPEG, WebP, Word or Excel, up to 4 MB each.</p>
         <div id="file-status" class="crm-status" style="display:none; margin-top:12px;" role="status" aria-live="polite"></div>
+        <p class="crm-ui-usage" id="files-usage" role="status"></p>
         <div id="files-messages" style="margin-top:12px;"></div>
 
         <form id="file-form" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--crm-border, #e5e2d9);">
@@ -482,8 +483,35 @@
           });
         }
 
+        /*
+         * How much of the allowance all uploaded files use, across every
+         * buyer (the cap is shared), with a warning from 80 percent. Owner,
+         * 2026-10-20. A failure here is not a failed load of this buyer's
+         * files, so it only leaves the line empty.
+         */
+        function fmtMb(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(0, Math.round(n / 1024)) + ' KB'; }
+        function loadUsage() {
+          var line = document.getElementById('files-usage');
+          CRM.fetchJson('/api/crm/buyer-files?usage=1').then(function (result) {
+            if (!result.ok || !result.data || !result.data.usage) { line.textContent = ''; return; }
+            showUsage(result.data.usage);
+          }).catch(function () { line.textContent = ''; });
+        }
+        function showUsage(u) {
+          var line = document.getElementById('files-usage');
+          var pct = Math.min(100, Math.round(u.share * 100));
+          line.textContent = 'All uploaded files: ' + fmtMb(u.used_bytes) + ' of ' + Math.round(u.cap_bytes / 1048576) + ' MB (' + pct + '%), ' +
+            u.files + (u.files === 1 ? ' file' : ' files') + ' across all buyers.';
+          var bar = document.createElement('span'); bar.className = 'crm-ui-usage-bar' + (u.warn ? ' warn' : '');
+          var fill = document.createElement('span'); fill.style.width = pct + '%'; bar.appendChild(fill); line.appendChild(bar);
+          var messages = document.getElementById('files-messages');
+          if (u.share >= 1) CRM.showError(messages, 'Uploaded files have reached their ' + Math.round(u.cap_bytes / 1048576) + ' MB limit. New uploads are refused until files are deleted or the limit is raised.');
+          else if (u.warn) CRM.showWarning(messages, 'Uploaded files are at ' + pct + '% of their ' + Math.round(u.cap_bytes / 1048576) + ' MB limit. Delete files that are no longer needed, or ask for the limit to be raised.');
+        }
+
         function loadFiles() {
           document.getElementById('files-card').style.display = '';
+          loadUsage();
           var messages = document.getElementById('files-messages');
           CRM.clearBanner(messages);
           document.getElementById('files-empty').style.display = 'none';
@@ -739,12 +767,12 @@
              * What erasing does NOT reach (owner, 2026-10-20). The database
              * keeps a restore history: on Neon's Free plan at most 6 hours,
              * per Neon's plans page; the window is set per project in Neon.
-             * A manual Neon snapshot keeps its copy until it is deleted.
+             * A Neon backup branch or snapshot keeps its copy until it is deleted.
              * Erasing removes neither, so the message does not claim to.
              * Counsel question 18 (docs/g0-counsel-questions.md).
              */
             'This cannot be undone from the CRM. Copies can remain for a while outside it: in the database\u2019s restore history until it expires ' +
-            '(at most 6 hours on Neon\u2019s Free plan; your project\u2019s window is shown in Neon), and in any manual database snapshot until that snapshot is deleted.';
+            '(at most 6 hours on Neon\u2019s Free plan; your project\u2019s window is shown in Neon), and in any database backup branch or snapshot until it is deleted.';
           var name = document.getElementById('company_name').value.trim();
           /*
            * The stronger step the owner asked for: type the buyer's name. A

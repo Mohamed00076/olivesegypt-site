@@ -327,6 +327,14 @@
     container.insertBefore(el, container.firstChild);
     return el;
   };
+  // Something needs attention soon but nothing failed (amber).
+  CRM.showWarning = function (container, message) {
+    if (!container) return null;
+    CRM.clearBanner(container);
+    var el = banner('warning', message, null);
+    container.insertBefore(el, container.firstChild);
+    return el;
+  };
   CRM.showNotice = function (container, message) {
     if (!container) return null;
     CRM.clearBanner(container);
