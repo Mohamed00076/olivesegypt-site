@@ -171,7 +171,25 @@
           });
         }
 
+        /*
+         * Every move, dragged or chosen from "Move to", passes the same rules
+         * first (CRM.stageMoveCheck: a reason for Lost/Stalled, a confirmation
+         * for Exported/Completed). Cancelled, nothing is sent and the card's
+         * menu goes back to the stage it is in.
+         */
         function moveBuyer(buyer, newStage, fromMenu) {
+          CRM.stageMoveCheck(buyer.company_name, newStage).then(function (extra) {
+            if (!extra) {
+              renderBoard();
+              var sel = document.getElementById('move-' + buyer.id);
+              if (fromMenu && sel && sel.offsetParent) sel.focus();
+              return;
+            }
+            sendMove(buyer, newStage, fromMenu, extra);
+          });
+        }
+
+        function sendMove(buyer, newStage, fromMenu, extra) {
           var previousStage = buyer.current_stage;
           buyer.current_stage = newStage; // optimistic
           renderBoard();
@@ -182,7 +200,8 @@
             (again && again.offsetParent ? again : document.getElementById('stage-pick')).focus();
           }
           CRM.clearBanner(messages);
-          CRM.fetchJson('/api/crm/buyers?id=' + buyer.id, { method: 'PATCH', body: { current_stage: newStage } }).then(function (result) {
+          var body = Object.assign({ current_stage: newStage }, extra);
+          CRM.fetchJson('/api/crm/buyers?id=' + buyer.id, { method: 'PATCH', body: body }).then(function (result) {
             if (result.ok) {
               // Said in words: on a phone the card has just left the stage on screen.
               CRM.showNotice(messages, buyer.company_name + ' moved to ' + newStage + '.');

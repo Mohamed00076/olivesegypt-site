@@ -87,9 +87,13 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   // ---- the pages all send the same request --------------------------------
   const kanban = read('crm/kanban/index.html');
   const move = (kanban.match(/function moveBuyer\(buyer, newStage(?:, fromMenu)?\) \{[\s\S]*?\n        \}\n/) || [''])[0];
-  t('the Kanban has one function that moves a buyer', !!move);
-  t('   and it sends PATCH /api/crm/buyers?id=N with current_stage alone',
-    /CRM\.fetchJson\('\/api\/crm\/buyers\?id=' \+ buyer\.id, \{ method: 'PATCH', body: \{ current_stage: newStage \} \}\)/.test(move));
+  const send = (kanban.match(/function sendMove\(buyer, newStage, fromMenu, extra\) \{[\s\S]*?\n        \}\n/) || [''])[0];
+  t('the Kanban has one function that moves a buyer', !!move && !!send);
+  t('   which applies the stage rules first, and sends nothing if they are cancelled',
+    /CRM\.stageMoveCheck\(buyer\.company_name, newStage\)/.test(move) && /if \(!extra\) \{[\s\S]*?return;/.test(move) && /sendMove\(buyer, newStage, fromMenu, extra\)/.test(move) && !/fetchJson/.test(move));
+  t('   then sends PATCH /api/crm/buyers?id=N with current_stage (and only what the rules add)',
+    /var body = Object\.assign\(\{ current_stage: newStage \}, extra\);/.test(send) &&
+    /CRM\.fetchJson\('\/api\/crm\/buyers\?id=' \+ buyer\.id, \{ method: 'PATCH', body: body \}\)/.test(send));
   t('   a drop on a column calls it', /addEventListener\('drop'[\s\S]*?moveBuyer\(buyer, stage\);/.test(kanban));
   const menu = (kanban.match(/function moveMenu\(r\) \{[\s\S]*?\n        \}\n/) || [''])[0];
   t('   and so does each card\'s "Move to" menu -- the same function, not a copy', /moveBuyer\(r, sel\.value, true\)/.test(menu) && !/fetchJson/.test(menu));
@@ -99,8 +103,40 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
 
   const page = read('crm/buyer/index.html');
   const panel = (page.match(/getElementById\('move-panel'\)\.addEventListener\('submit'[\s\S]*?\n        \}\);/) || [''])[0];
-  t('the buyer page\'s "Move stage" sends the same request, current_stage alone',
-    /CRM\.fetchJson\('\/api\/crm\/buyers\?id=' \+ encodeURIComponent\(buyerId\), \{ method: 'PATCH', body: \{ current_stage: to \} \}\)/.test(panel));
+  t('the buyer page\'s "Move stage" applies the same rules, then sends the same request',
+    /CRM\.stageMoveCheck\(current\.company_name, to\)/.test(panel) && /if \(!extra\)/.test(panel) &&
+    /var body = Object\.assign\(\{ current_stage: to \}, extra\);/.test(panel) &&
+    /CRM\.fetchJson\('\/api\/crm\/buyers\?id=' \+ encodeURIComponent\(buyerId\), \{ method: 'PATCH', body: body \}\)/.test(panel));
+  t('   its menu starts on the current stage, "(now)", with Move off until another is chosen',
+    /id="move-btn" disabled/.test(page) && /' \(now\)'/.test(page) && /getElementById\('move-btn'\)\.disabled = !e\.target\.value/.test(page));
+
+  // ---- the rules themselves, run with a stand-in for the in-page question ----
+  {
+    const crmSrc = read('assets/crm.js');
+    const m = crmSrc.match(/CRM\.stageMoveCheck = function \(companyName, toStage\) \{[\s\S]*?\n  \};/);
+    t('one set of stage rules, in assets/crm.js', !!m);
+    const asked = [];
+    let answer = null;
+    const CRM = { ask: (o) => { asked.push(o); return Promise.resolve(answer); } };
+    const check = m ? require('vm').runInNewContext('(function (CRM) { ' + m[0] + ' return CRM.stageMoveCheck; })', { Promise })(CRM) : null;
+    if (check) {
+      let r = await check('Test Co (fake)', 'Contacted');
+      t('   an ordinary stage asks nothing and adds nothing', asked.length === 0 && JSON.stringify(r) === '{}');
+      answer = { reason: 'Chose a cheaper supplier (test)' };
+      r = await check('Test Co (fake)', 'Lost/Stalled');
+      t('   Lost/Stalled asks for a reason, required, and sends it as lost_reason',
+        asked.length === 1 && asked[0].reason && asked[0].reason.maxlength === 300 && r && r.lost_reason === 'Chose a cheaper supplier (test)', JSON.stringify(r));
+      answer = false;
+      r = await check('Test Co (fake)', 'Lost/Stalled');
+      t('   cancelling it moves nothing', r === null);
+      answer = true;
+      r = await check('Test Co (fake)', 'Exported/Completed');
+      t('   Exported/Completed asks to confirm', asked.length === 3 && !asked[2].reason && /genuinely been completed/.test(asked[2].message) && JSON.stringify(r) === '{}');
+      answer = false;
+      r = await check('Test Co (fake)', 'Exported/Completed');
+      t('   and cancelling it moves nothing', r === null);
+    }
+  }
   t('   so unsaved edits in the details form are not sent with it', !/collectForm/.test(panel));
   t('   and afterwards it reloads the logs, not the form', /refreshLogs\(\)/.test(panel) && !/loadExisting\(\)/.test(panel));
 
@@ -126,8 +162,13 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   r = await patch({ current_stage: 'Not a stage' });
   t('an unknown stage is refused and adds no row', r.status === 400 && history.length === 3 && !r.statements.some(touchesHistory), JSON.stringify(r.data));
 
+  r = await patch({ current_stage: 'Lost/Stalled', lost_reason: 'Chose a cheaper supplier (test)' });
+  t('a move to Lost/Stalled with its reason is one request, one new history row',
+    r.status === 200 && history.length === 4 && history[3].to_stage === 'Lost/Stalled' && r.statements.filter(touchesHistory).length === 1 &&
+    r.statements.some((x) => /^UPDATE buyers SET/.test(x.q) && /lost_reason = \$/.test(x.q)), JSON.stringify(r.data));
+
   const unsigned = await buyers({ httpMethod: 'PATCH', headers: {}, queryStringParameters: { id: '7' }, body: JSON.stringify({ current_stage: 'Lead' }) });
-  t('a move without a CRM session is refused', unsigned.statusCode === 401 && history.length === 3);
+  t('a move without a CRM session is refused', unsigned.statusCode === 401 && history.length === 4);
 
   // ---- nothing in the code rewrites history -------------------------------
   const fns = fs.readdirSync(FN).filter((f) => f.endsWith('.js'));

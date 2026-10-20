@@ -33,7 +33,7 @@
         <form id="move-panel" class="crm-ui-move-panel" style="display:none;">
           <label for="move-stage">Move to</label>
           <select id="move-stage"></select>
-          <button type="submit" class="crm-btn crm-btn-primary" id="move-btn">Move</button>
+          <button type="submit" class="crm-btn crm-btn-primary" id="move-btn" disabled>Move</button>
           <button type="button" class="crm-btn crm-btn-secondary" id="move-cancel">Cancel</button>
         </form>
       </section>
@@ -462,17 +462,26 @@
           var btn = document.getElementById('qa-move');
           if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
           if (open) {
+            // As on the Kanban card: the current stage first, marked "(now)", and Move off until another is chosen.
             sel.innerHTML = '';
+            var here = document.createElement('option');
+            here.value = ''; here.textContent = (current ? current.current_stage : '') + ' (now)';
+            sel.appendChild(here);
             CRM.STAGES.forEach(function (st) {
               if (current && st === current.current_stage) return;
               var o = document.createElement('option'); o.value = st; o.textContent = st; sel.appendChild(o);
             });
+            sel.value = '';
+            document.getElementById('move-btn').disabled = true;
             sel.focus();
           } else if (btn) {
             btn.focus();
           }
         }
         document.getElementById('move-cancel').addEventListener('click', function () { toggleMovePanel(false); });
+        document.getElementById('move-stage').addEventListener('change', function (e) {
+          document.getElementById('move-btn').disabled = !e.target.value;
+        });
 
         /*
          * Move stage: the same request as the Kanban board's drag and its
@@ -486,8 +495,12 @@
           var to = document.getElementById('move-stage').value;
           if (!to || !current) return;
           var btn = document.getElementById('move-btn');
+          // The same rules as the Kanban (CRM.stageMoveCheck): a reason for Lost/Stalled, a confirmation for Exported/Completed.
+          CRM.stageMoveCheck(current.company_name, to).then(function (extra) {
+          if (!extra) { document.getElementById('move-stage').focus(); return; }
           btn.disabled = true;
-          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId), { method: 'PATCH', body: { current_stage: to } }).then(function (result) {
+          var body = Object.assign({ current_stage: to }, extra);
+          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId), { method: 'PATCH', body: body }).then(function (result) {
             btn.disabled = false;
             if (!result.ok) {
               showStatus(current.company_name + ' was not moved to ' + to + '. ' + CRM.plainError(result, 'The server did not accept the move, and nothing was changed.'), false);
@@ -495,6 +508,7 @@
             }
             current.current_stage = to;
             document.getElementById('current_stage').value = to;
+            if (extra.lost_reason) { current.lost_reason = extra.lost_reason; document.getElementById('lost_reason').value = extra.lost_reason; }
             toggleLostReason();
             renderSummary(current);
             toggleMovePanel(false);
@@ -504,6 +518,7 @@
             btn.disabled = false;
             var msg = CRM.noReplyMessage(err, 'Moving the buyer to ' + to, 'Reload the page to see which stage it is in before trying again.');
             if (msg) showStatus(msg, false);
+          });
           });
         });
 

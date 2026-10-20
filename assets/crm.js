@@ -403,6 +403,21 @@
           cd.textContent = o.checkbox.detail; box.appendChild(cd);
         }
       }
+      /*
+       * reason: { label, maxlength } -- a short required answer (moving a
+       * buyer to Lost/Stalled asks why). Confirm stays disabled until it is
+       * filled in, and a Confirm resolves { reason: '...' }.
+       */
+      var reasonInput = null;
+      if (o.reason) {
+        var rl = document.createElement('label');
+        rl.setAttribute('for', id + '-r');
+        rl.textContent = o.reason.label || 'Reason';
+        reasonInput = document.createElement('input');
+        reasonInput.id = id + '-r'; reasonInput.type = 'text'; reasonInput.setAttribute('dir', 'auto');
+        reasonInput.maxLength = o.reason.maxlength || 300;
+        box.appendChild(rl); box.appendChild(reasonInput);
+      }
       var input = null;
       if (o.typeToConfirm) {
         var lab = document.createElement('label');
@@ -422,7 +437,9 @@
       back.appendChild(box);
       var before = document.activeElement && document.activeElement !== document.body ? document.activeElement : lastPressed;
       function norm(v) { return String(v || '').trim().replace(/\s+/g, ' ').toLowerCase(); }
-      function sync() { if (input) ok.disabled = norm(input.value) !== norm(o.typeToConfirm); }
+      function sync() {
+        ok.disabled = (input ? norm(input.value) !== norm(o.typeToConfirm) : false) || (reasonInput ? !reasonInput.value.trim() : false);
+      }
       function done(v) {
         document.removeEventListener('keydown', onKey, true);
         back.remove();
@@ -441,14 +458,52 @@
         }
       }
       cancel.addEventListener('click', function () { done(false); });
-      function yes() { return check ? { checked: !!check.checked } : true; }
+      function yes() {
+        if (!check && !reasonInput) return true;
+        var v = {};
+        if (check) v.checked = !!check.checked;
+        if (reasonInput) v.reason = reasonInput.value.trim();
+        return v;
+      }
       ok.addEventListener('click', function () { if (!ok.disabled) done(yes()); });
       back.addEventListener('click', function (e) { if (e.target === back) done(false); });
+      if (reasonInput) {
+        reasonInput.addEventListener('input', sync);
+        reasonInput.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !ok.disabled) done(yes()); });
+      }
       if (input) { input.addEventListener('input', sync); input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !ok.disabled) done(yes()); }); }
       document.addEventListener('keydown', onKey, true);
       sync();
       document.body.appendChild(back);
-      (input || cancel).focus();
+      (reasonInput || input || cancel).focus();
     });
+  };
+
+  /*
+   * The rules for moving a buyer to a stage, the same whichever way it is
+   * moved: dragging a Kanban card, a card's "Move to" menu, or the buyer
+   * page's "Move stage" (2026-10-20). Until now none of them had a rule.
+   *   Lost/Stalled        asks why; the answer is saved as the buyer's
+   *                       Lost / Stalled Reason, in the same request.
+   *   Exported/Completed  asks to confirm, since the stage is only for an
+   *                       export that has genuinely been completed.
+   * Resolves the extra fields to send with current_stage ({} for none),
+   * or null if the move was cancelled.
+   */
+  CRM.stageMoveCheck = function (companyName, toStage) {
+    var who = companyName || 'this buyer';
+    if (toStage === 'Lost/Stalled') {
+      return CRM.ask({ title: 'Move ' + who + ' to Lost/Stalled?',
+        message: 'Say why. The reason is kept with the buyer, as their Lost / Stalled Reason.',
+        reason: { label: 'Reason', maxlength: 300 }, confirm: 'Move to Lost/Stalled' }).then(function (v) {
+        return v && v.reason ? { lost_reason: v.reason } : null;
+      });
+    }
+    if (toStage === 'Exported/Completed') {
+      return CRM.ask({ title: 'Move ' + who + ' to Exported/Completed?',
+        message: 'Use this stage only once this buyer\u2019s export has genuinely been completed.',
+        confirm: 'Move to Exported/Completed' }).then(function (v) { return v ? {} : null; });
+    }
+    return Promise.resolve({});
   };
 })(window);
