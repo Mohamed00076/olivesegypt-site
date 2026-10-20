@@ -98,3 +98,63 @@
 .crm-ui-dialog .crm-btn-secondary { background: #fff; color: var(--crm-text, #26301a); border-color: var(--crm-border, #e2ddd0); }
 .crm-ui-dialog .crm-btn-primary { background: var(--crm-primary, #3f4f2b); color: #fff; }
 .crm-ui-dialog .crm-btn:focus-visible { outline: 3px solid var(--crm-secondary, #c9a84c); outline-offset: 2px; }
+
+/* ---- Kanban: "Move to" on each card, one stage at a time on a phone --- */
+.crm-ui-kanban .crm-ui-card-open { display: inline-block; font-size: 13px; padding: 6px 0; }
+.crm-ui-move { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.crm-ui-move label { font-size: 12px; font-weight: 700; color: var(--crm-muted, #5f6654); white-space: nowrap; margin: 0; }
+.crm-ui-move select { flex: 1 1 auto; min-width: 0; min-height: 36px; font-size: 13px; padding: 4px 6px; }
+.crm-ui-col-empty { font-size: 13px; margin: 4px 0; }
+.crm-ui-stage-pick { display: none !important; }
+@media (max-width: 640px) {
+  .crm-ui-stage-pick { display: flex !important; align-items: center; gap: 10px; margin: 0 0 12px; }
+  .crm-ui-stage-pick label { font-weight: 700; margin: 0; }
+  .crm-ui-stage-pick select { flex: 1 1 auto; min-height: 44px; font-size: 16px; }
+  .crm-kanban.crm-ui-kanban { display: block; overflow: visible; }
+  .crm-ui-kanban .crm-kanban-col { display: none; min-width: 0; width: 100%; }
+  .crm-ui-kanban .crm-kanban-col.crm-ui-shown { display: block; }
+  .crm-ui-kanban .crm-kanban-card { padding: 12px; }
+  .crm-ui-kanban .crm-ui-card-open { min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; }
+  .crm-ui-move select { min-height: 44px; font-size: 16px; }
+}
+
+/* ---- buyer page: quick actions, folded details, delete/erase last ---- */
+.crm-ui-buyer-summary { margin: 0 0 14px; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.crm-ui-quick-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.crm-ui-quick-btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.crm-ui-quick-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.crm-ui-quick-missing { font-size: 13px; margin: 10px 0 0; }
+.crm-ui-move-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--crm-border, #e2ddd0); }
+.crm-ui-move-panel label { font-weight: 700; margin: 0; }
+.crm-ui-move-panel select { flex: 1 1 200px; min-height: 44px; font-size: 16px; }
+.crm-ui-move-panel .crm-btn { min-height: 44px; }
+.crm-ui-fold > summary { cursor: pointer; list-style: none; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; min-height: 44px; }
+.crm-ui-fold > summary::-webkit-details-marker { display: none; }
+.crm-ui-fold > summary h2 { margin: 0; display: inline; }
+.crm-ui-fold > summary h2::before { content: '\25B8\00a0'; color: var(--crm-muted, #5f6654); }
+.crm-ui-fold[open] > summary h2::before { content: '\25BE\00a0'; }
+.crm-ui-fold[open] > summary { margin-bottom: 14px; }
+.crm-ui-fold-hint { font-size: 13px; }
+.crm-ui-fold > summary:focus-visible { outline: 3px solid var(--crm-secondary, #c9a84c); outline-offset: 4px; border-radius: 4px; }
+.crm-ui-danger { border: 1px solid #ecc5c1; }
+.crm-ui-danger h2 { color: var(--crm-danger, #a3312a); }
+.crm-ui-danger .crm-btn { min-height: 44px; }
+@media (max-width: 640px) {
+  .crm-ui-quick-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .crm-ui-quick-btn { padding-left: 6px; padding-right: 6px; font-size: 14px; text-align: center; }
+}
+
+/* ---- dashboard: Today, first ----------------------------------------- */
+.crm-ui-today { border-left: 4px solid var(--crm-primary, #4b5a23); }
+.crm-ui-today h2 { margin: 0 0 12px; }
+.crm-ui-today-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px 24px; }
+.crm-ui-today-part h3 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--crm-muted, #5f6654); }
+.crm-ui-today-n { margin: 0 0 8px; font-size: 15px; }
+.crm-ui-today-n strong { font-size: 22px; }
+.crm-ui-today-line { margin: 0 0 10px; font-size: 14px; }
+.crm-ui-today-btn { min-height: 44px; display: inline-flex; align-items: center; }
+.crm-ui-today-list { margin: 0 0 8px; padding: 0; list-style: none; }
+.crm-ui-today-list li { padding: 8px 0; border-top: 1px solid var(--crm-border, #e2ddd0); font-size: 14px; }
+.crm-ui-today-list a { font-weight: 700; display: block; padding: 4px 0; }
+.crm-ui-today-meta { display: block; font-size: 13px; color: var(--crm-muted, #5f6654); }
+.crm-ui-today-late { color: var(--crm-danger, #a3312a); }

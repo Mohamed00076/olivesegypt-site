@@ -25,10 +25,15 @@
         </div>
         <a href="/crm/buyer/?new=1" class="crm-btn crm-btn-primary">+ Add Buyer</a>
       </div>
-      <p class="crm-muted">Drag a card to a new column to move that buyer's pipeline stage. "Exported/Completed" is a future stage — no record occupies it yet unless one has genuinely completed export.</p>
+      <p class="crm-muted">Drag a card to a new column, or use its &ldquo;Move to&rdquo; menu, to move that buyer's pipeline stage. "Exported/Completed" is a future stage — no record occupies it yet unless one has genuinely completed export.</p>
       <div id="kanban-messages"></div>
       <div id="kanban-status" class="crm-muted" role="status">Loading…</div>
-      <div id="kanban-board" class="crm-kanban" style="display:none;"></div>
+      <!-- On a phone the board shows one stage at a time, chosen here. -->
+      <div class="crm-ui-stage-pick" id="stage-pick-wrap" style="display:none;">
+        <label for="stage-pick">Stage</label>
+        <select id="stage-pick"></select>
+      </div>
+      <div id="kanban-board" class="crm-kanban crm-ui-kanban" style="display:none;"></div>
     </div>
     <script src="/assets/crm.js"></script>
     <script>
@@ -36,12 +41,83 @@
         'use strict';
         var allRows = [];
 
+        /*
+         * One stage at a time on a phone (2026-10-20). Ten columns side by
+         * side are a long sideways scroll on a small screen, and dragging a
+         * card across them is not possible with a finger. Under 640px the
+         * board shows only the stage chosen in the Stage menu
+         * (assets/crm-ui.css); wider screens show every column as before.
+         * The choice is remembered for this browser tab only.
+         */
+        var shownStage = null;
+        try { shownStage = window.sessionStorage.getItem('crm-kanban-stage'); } catch (e) { /* private mode: no memory */ }
+        if (CRM.STAGES.indexOf(shownStage) === -1) shownStage = null;
+
+        function pickStage(stage) {
+          shownStage = stage;
+          try { window.sessionStorage.setItem('crm-kanban-stage', stage); } catch (e) { /* not remembered */ }
+          Array.prototype.forEach.call(document.querySelectorAll('.crm-kanban-col'), function (col) {
+            col.classList.toggle('crm-ui-shown', col.getAttribute('data-stage') === stage);
+          });
+        }
+
+        function renderStagePick() {
+          var sel = document.getElementById('stage-pick');
+          if (!shownStage) {
+            // The first stage anyone is in, so the phone does not open on an empty column.
+            shownStage = CRM.STAGES.filter(function (s) { return allRows.some(function (r) { return r.current_stage === s; }); })[0] || CRM.STAGES[0];
+          }
+          sel.innerHTML = '';
+          CRM.STAGES.forEach(function (stage) {
+            var n = allRows.filter(function (r) { return r.current_stage === stage; }).length;
+            var o = document.createElement('option');
+            o.value = stage; o.textContent = stage + ' (' + n + ')';
+            sel.appendChild(o);
+          });
+          sel.value = shownStage;
+          document.getElementById('stage-pick-wrap').style.display = '';
+        }
+        document.getElementById('stage-pick').addEventListener('change', function (e) { pickStage(e.target.value); });
+
+        /*
+         * "Move to" on every card (2026-10-20): the same move as dragging,
+         * for a phone, a keyboard, or anyone who cannot drag. It calls
+         * moveBuyer, exactly as a drop does -- one PATCH of current_stage --
+         * so the server records the change in the stage history the same
+         * way, as a new row, whichever was used.
+         */
+        function moveMenu(r) {
+          var wrap = document.createElement('div');
+          wrap.className = 'crm-ui-move';
+          var label = document.createElement('label');
+          var selId = 'move-' + r.id;
+          label.setAttribute('for', selId);
+          label.textContent = 'Move to';
+          var sel = document.createElement('select');
+          sel.id = selId;
+          sel.setAttribute('aria-label', 'Move ' + (r.company_name || 'this buyer') + ' to another stage');
+          var here = document.createElement('option');
+          here.value = ''; here.textContent = r.current_stage + ' (now)';
+          sel.appendChild(here);
+          CRM.STAGES.forEach(function (stage) {
+            if (stage === r.current_stage) return;
+            var o = document.createElement('option'); o.value = stage; o.textContent = stage; sel.appendChild(o);
+          });
+          sel.addEventListener('change', function () {
+            if (sel.value) moveBuyer(r, sel.value, true);
+          });
+          wrap.appendChild(label);
+          wrap.appendChild(sel);
+          return wrap;
+        }
+
         function renderBoard() {
           var board = document.getElementById('kanban-board');
           board.innerHTML = '';
+          renderStagePick();
           CRM.STAGES.forEach(function (stage) {
             var col = document.createElement('div');
-            col.className = 'crm-kanban-col';
+            col.className = 'crm-kanban-col' + (stage === shownStage ? ' crm-ui-shown' : '');
             col.setAttribute('data-stage', stage);
 
             var rows = allRows.filter(function (r) { return r.current_stage === stage; });
@@ -49,6 +125,13 @@
             var heading = document.createElement('h3');
             heading.textContent = stage + ' (' + rows.length + ')';
             col.appendChild(heading);
+
+            if (!rows.length) {
+              var none = document.createElement('p');
+              none.className = 'crm-muted crm-ui-col-empty';
+              none.textContent = 'No buyers in this stage.';
+              col.appendChild(none);
+            }
 
             rows.forEach(function (r) {
               var card = document.createElement('div');
@@ -58,7 +141,8 @@
               card.innerHTML = '<div class="company">' + CRM.escapeHtml(r.company_name) + '</div>' +
                 '<div class="crm-muted">' + CRM.escapeHtml(r.country_region) + '</div>' +
                 '<div class="crm-muted">' + (r.next_action_due ? 'Due ' + CRM.fmtDate(r.next_action_due) : '') + '</div>' +
-                '<a href="/crm/buyer/?id=' + r.id + '" style="font-size:11px;">View →</a>';
+                '<a href="/crm/buyer/?id=' + r.id + '" class="crm-ui-card-open">View →</a>';
+              card.appendChild(moveMenu(r));
 
               card.addEventListener('dragstart', function (e) {
                 e.dataTransfer.setData('text/plain', String(r.id));
@@ -87,11 +171,23 @@
           });
         }
 
-        function moveBuyer(buyer, newStage) {
+        function moveBuyer(buyer, newStage, fromMenu) {
           var previousStage = buyer.current_stage;
           buyer.current_stage = newStage; // optimistic
           renderBoard();
+          if (fromMenu) {
+            // The menu that was used has been redrawn: keep the keyboard on the
+            // card where it now is, or on the Stage menu if that column is not shown.
+            var again = document.getElementById('move-' + buyer.id);
+            (again && again.offsetParent ? again : document.getElementById('stage-pick')).focus();
+          }
+          CRM.clearBanner(messages);
           CRM.fetchJson('/api/crm/buyers?id=' + buyer.id, { method: 'PATCH', body: { current_stage: newStage } }).then(function (result) {
+            if (result.ok) {
+              // Said in words: on a phone the card has just left the stage on screen.
+              CRM.showNotice(messages, buyer.company_name + ' moved to ' + newStage + '.');
+              return;
+            }
             if (!result.ok) {
               buyer.current_stage = previousStage; // revert on failure
               renderBoard();

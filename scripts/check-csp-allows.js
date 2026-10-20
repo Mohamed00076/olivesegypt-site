@@ -39,6 +39,8 @@ const HOSTS = {
   'www.googletagmanager.com': { needs: ['script-src', 'connect-src', 'img-src'], why: 'Google Analytics gtag.js (consent.js, after analytics consent)' },
   'connect.facebook.net': { needs: ['script-src'], why: 'Facebook SDK for the homepage Follow widget, loaded on click' },
   'www.facebook.com': { needs: ['frame-src'], why: 'the Facebook page plugin iframe, on click' },
+  // A link the user follows, in a new tab: no script, frame or request from our page, so no directive.
+  'wa.me': { needs: [], why: 'the CRM buyer page\'s WhatsApp link (a plain link, opened in a new tab)' },
 };
 
 const csp = (read('netlify.toml').match(/Content-Security-Policy = "([^"]+)"/) || [])[1] || '';
@@ -67,7 +69,7 @@ t(`every third-party host in client code is classified (${seen.size} seen)`, unc
   `${unclassified.join(', ')} -- add it to HOSTS with the directives it needs, and to the CSP`);
 
 for (const [host, { needs, why }] of Object.entries(HOSTS)) {
-  if (!seen.has(host)) continue;
+  if (!seen.has(host) || !needs.length) continue;
   const missing = needs.filter((d) => !(directives[d] || []).includes(`https://${host}`));
   t(`${host} is allowed for ${needs.join(' and ')} (${why})`, missing.length === 0, `missing from: ${missing.join(', ')}`);
 }
