@@ -8,6 +8,16 @@
  * from crm.css.
  */
 
+/* ---- not the live site: STAGING or PREVIEW, above everything --------- */
+.crm-ui-env {
+  display: block; width: 100%; text-align: center; font: 800 13px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.04em; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
+  position: sticky; top: 0; z-index: 999;
+}
+.crm-ui-env-staging { background: #f2c94c; color: #2b2200; border-bottom: 3px solid #b8923a; }
+.crm-ui-env-live { background: #a3312a; color: #ffffff; border-bottom: 3px solid #6e1d18; }
+@media print { .crm-ui-env { display: none !important; } }
+
 /* ---- banners: a failure or a notice, in the page --------------------- */
 .crm-ui-banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
@@ -33,6 +43,9 @@
 .crm-ui-dialog {
   background: var(--crm-card, #ffffff); color: var(--crm-text, #26301a); border-radius: 12px; width: 100%; max-width: 460px;
   padding: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25); display: grid; gap: 12px;
+  /* A long question (Erase) on a short phone scrolls inside the panel, so
+     Cancel and the confirm button can always be reached. */
+  max-height: 100%; overflow-y: auto; overscroll-behavior: contain;
 }
 .crm-ui-dialog h2 { margin: 0; font-size: 18px; }
 .crm-ui-dialog p { margin: 0; font-size: 14px; line-height: 1.55; white-space: pre-line; }

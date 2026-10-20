@@ -170,6 +170,57 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
   t('the route is wired and probed by the live check', /from = "\/api\/crm\/client-failure"/.test(read('netlify.toml')) && read('scripts/check-live.js').includes("'/api/crm/client-failure'"));
   t('the dashboard names it in "Something failed"', /'crm-page': 'A CRM page'/.test(read('crm/index.html')));
 
+  // ---- the STAGING / PREVIEW badge -------------------------------------------
+  {
+    const env = (marker, cookieOk = true) => {
+      const seen = [];
+      const envSql = (strings, ...vals) => { const q = strings.join('?'); seen.push(q);
+        if (/to_regclass\('public\.deployment_marker'\)/.test(q)) return Promise.resolve([{ present: marker !== null }]);
+        if (/FROM deployment_marker/.test(q)) return Promise.resolve(marker === 'staging' ? [{ environment: 'staging' }] : []);
+        return Promise.resolve([]); };
+      require.cache[neonId].exports = { neon: () => envSql };
+      delete require.cache[require.resolve(path.join(FN, 'crm-environment.js'))];
+      const h = require(path.join(FN, 'crm-environment.js')).handler;
+      return quiet(() => h({ httpMethod: 'GET', headers: cookieOk ? { cookie } : {}, queryStringParameters: {} })).then((r) => ({ r, seen }));
+    };
+    let x = await env('staging');
+    t('the staging database (labelled) reads as staging', x.r.statusCode === 200 && JSON.parse(x.r.body).database === 'staging', x.r.body);
+    x = await env(null);
+    t('   a database without the label reads as unlabelled, i.e. treat as live', JSON.parse(x.r.body).database === 'unlabelled', x.r.body);
+    x = await env('other');
+    t('   a marker table without a staging row is not staging', JSON.parse(x.r.body).database === 'unlabelled', x.r.body);
+    t('   it never creates the label or writes anything', !x.seen.some((q) => /CREATE|INSERT|UPDATE|DELETE/i.test(q)), x.seen.join(' | '));
+    x = await env('staging', false);
+    t('   and needs a CRM session', x.r.statusCode === 401);
+    t('   wired, and probed by the live check', /from = "\/api\/crm\/environment"/.test(read('netlify.toml')) && read('scripts/check-live.js').includes("'/api/crm/environment'"));
+
+    // the badge, in a stand-in page
+    const badge = async (host, reply) => {
+      const fetched = [];
+      const body = el('body');
+      const b2 = { window: { location: { hostname: host, pathname: '/crm/' } }, console,
+        document: { createElement: el, addEventListener() {}, readyState: 'complete', body, getElementById: (id) => body.children.find((c) => c.id === id) || null },
+        fetch: (u) => { fetched.push(u); return reply ? Promise.resolve({ ok: reply.ok, json: () => Promise.resolve(reply.body) }) : Promise.reject(new TypeError('Failed to fetch')); } };
+      b2.window.document = b2.document;
+      vm.createContext(b2);
+      try { vm.runInContext(read('assets/crm.js'), b2); } catch (e) { /* DOM wiring */ }
+      const out = b2.window.CRM.envBadge();
+      await new Promise((r) => setTimeout(r, 0)); await new Promise((r) => setTimeout(r, 0));
+      return { out, fetched, el: body.children[0] };
+    };
+    let bg = await badge('olivesegypt.com', { ok: true, body: { database: 'staging' } });
+    t('no badge on the live site, and no extra request', bg.out === null && bg.fetched.length === 0);
+    bg = await badge('www.olivesegypt.com', null);
+    t('   nor on www', bg.out === null && bg.fetched.length === 0);
+    bg = await badge('deploy-preview-405--stirring-manatee-ca2643.netlify.app', { ok: true, body: { ok: true, database: 'staging' } });
+    t('a preview on the staging database says STAGING, at the top of the page', bg.el && bg.el.id === 'crm-env-badge' && /^STAGING/.test(bg.el.textContent) && /crm-ui-env-staging/.test(bg.el.className), bg.el && bg.el.textContent);
+    bg = await badge('deploy-preview-405--stirring-manatee-ca2643.netlify.app', { ok: true, body: { ok: true, database: 'unlabelled' } });
+    t('   a preview on an unlabelled database warns it is the LIVE database', /^PREVIEW · connected to the LIVE database/.test(bg.el.textContent) && /crm-ui-env-live/.test(bg.el.className), bg.el.textContent);
+    bg = await badge('127.0.0.1', null);
+    t('   and when it cannot check, says to treat it as live', /treat it as live/.test(bg.el.textContent) && /crm-ui-env-live/.test(bg.el.className), bg.el.textContent);
+    t('the badge is shown by every page with the CRM menu, and by the document sheet', /CRM\.envBadge\(\);\s*\};/.test(read('assets/crm.js')) && /CRM\.envBadge\(\); load\(\);/.test(read('crm/document/view/index.html')));
+  }
+
   console.log(`\ncrm-ui ${fail ? 'FAILED' : 'OK'} -- a failure is said in the page, recorded once, and the sign-in pages are left alone.`);
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

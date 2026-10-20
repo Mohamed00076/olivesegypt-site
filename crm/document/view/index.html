@@ -874,7 +874,7 @@
         if (!docId) {
           CRM.showError(messages, 'No document was named in the address. Open one from the Documents list.');
         } else {
-          CRM.requireAuth().then(load).catch(function (e) {
+          CRM.requireAuth().then(function () { CRM.envBadge(); load(); }).catch(function (e) {
             CRM.loadError(messages, { what: 'this page', key: 'document', error: e, retry: function () { window.location.reload(); } });
           });
         }

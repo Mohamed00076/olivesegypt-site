@@ -154,6 +154,43 @@
     document.body.insertAdjacentHTML('afterbegin', html);
     var btn = document.getElementById('crm-logout-btn');
     if (btn) btn.addEventListener('click', CRM.logout);
+    CRM.envBadge();
+  };
+
+  /*
+   * Not the live site? Say so, above everything (owner, 2026-10-20).
+   *
+   * The address says whether this is olivesegypt.com; only the server can
+   * say which database the copy is using, because a deploy preview stays on
+   * the LIVE database until Netlify's variables are set for previews (step
+   * L1 of the staging sheet). So the badge asks crm-environment.js, which
+   * looks for the 'staging' label the staging database carries:
+   *   label found  -> STAGING, test database (amber);
+   *   no label     -> PREVIEW connected to the LIVE database (red);
+   *   no answer    -> PREVIEW, database unknown, treat it as live (red).
+   * Never shown on the live site, which makes no extra request for it.
+   */
+  CRM.LIVE_HOSTS = ['olivesegypt.com', 'www.olivesegypt.com'];
+  CRM.envBadge = function () {
+    if (CRM.LIVE_HOSTS.indexOf(window.location.hostname) !== -1) return null;
+    if (document.getElementById('crm-env-badge')) return document.getElementById('crm-env-badge');
+    var el = document.createElement('div');
+    el.id = 'crm-env-badge';
+    el.className = 'crm-ui-env crm-ui-env-live';
+    el.setAttribute('role', 'status');
+    el.textContent = 'PREVIEW \u00b7 not the live site \u00b7 checking which database it uses\u2026';
+    document.body.insertBefore(el, document.body.firstChild);
+    function say(kind, text) { el.className = 'crm-ui-env crm-ui-env-' + kind; el.textContent = text; }
+    fetch('/api/crm/environment', { credentials: 'same-origin' }).then(function (res) {
+      return res.json().then(function (d) { return { ok: res.ok, d: d }; });
+    }).then(function (r) {
+      if (r.ok && r.d && r.d.database === 'staging') say('staging', 'STAGING \u00b7 test database \u00b7 not the live site');
+      else if (r.ok) say('live', 'PREVIEW \u00b7 connected to the LIVE database \u00b7 changes here change real records');
+      else say('live', 'PREVIEW \u00b7 not the live site \u00b7 its database could not be checked: treat it as live');
+    }).catch(function () {
+      say('live', 'PREVIEW \u00b7 not the live site \u00b7 its database could not be checked: treat it as live');
+    });
+    return el;
   };
 
   CRM.stageBadgeClass = function (stage) {
@@ -313,6 +350,20 @@
    *         typeToConfirm: 'Example Foods GmbH' }  -- the last for Erase:
    *         Confirm stays disabled until the name is typed exactly.
    */
+  /*
+   * The control that was last pressed. Focus goes back to it when a dialog
+   * closes. document.activeElement is not enough: Safari on an iPhone does
+   * not focus a button when it is tapped, so a dialog opened by a tap would
+   * hand focus back to the page instead of the button.
+   */
+  var lastPressed = null;
+  function notePressed(e) {
+    var t = e.target && e.target.closest ? e.target.closest('button, a[href], input, select, textarea, [tabindex]') : null;
+    if (t) lastPressed = t;
+  }
+  document.addEventListener('pointerdown', notePressed, true);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') notePressed(e); }, true);
+
   CRM.ask = function (opts) {
     var o = opts || {};
     return new Promise(function (resolve) {
@@ -345,13 +396,13 @@
       ok.textContent = o.confirm || 'Confirm';
       row.appendChild(cancel); row.appendChild(ok); box.appendChild(row);
       back.appendChild(box);
-      var before = document.activeElement;
+      var before = document.activeElement && document.activeElement !== document.body ? document.activeElement : lastPressed;
       function norm(v) { return String(v || '').trim().replace(/\s+/g, ' ').toLowerCase(); }
       function sync() { if (input) ok.disabled = norm(input.value) !== norm(o.typeToConfirm); }
       function done(v) {
         document.removeEventListener('keydown', onKey, true);
         back.remove();
-        if (before && before.focus) { try { before.focus(); } catch (e) { /* gone */ } }
+        if (before && before.focus && document.contains(before)) { try { before.focus(); } catch (e) { /* gone */ } }
         resolve(v);
       }
       function onKey(e) {

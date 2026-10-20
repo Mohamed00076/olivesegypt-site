@@ -732,9 +732,19 @@
           var msg = 'Erase this buyer permanently? Use this when the person asked for their data to be deleted.\n\n' +
             'Removed for good: the buyer record, its notes (including the copy of their original message), its stage history, ' +
             'and the website enquiries linked to it.\n\n' +
-            'Kept: quotations, invoices and letters already issued, and the opt-out list (an unsubscribed address stays unsubscribed). ' +
+            'Kept: documents already issued (quotations, proformas, invoices, packing lists and letters), files uploaded to this buyer, ' +
+            'and the opt-out list (an unsubscribed address stays unsubscribed). ' +
             'Any other requests from them, such as downloads or a Market Brief signup, are not linked to the buyer: delete those from the Enquiries page.\n\n' +
-            'This cannot be undone, not even from the database.';
+            /*
+             * What erasing does NOT reach (owner, 2026-10-20). The database
+             * keeps a restore history: on Neon's Free plan at most 6 hours,
+             * per Neon's plans page; the window is set per project in Neon.
+             * A manual Neon snapshot keeps its copy until it is deleted.
+             * Erasing removes neither, so the message does not claim to.
+             * Counsel question 18 (docs/g0-counsel-questions.md).
+             */
+            'This cannot be undone from the CRM. Copies can remain for a while outside it: in the database\u2019s restore history until it expires ' +
+            '(at most 6 hours on Neon\u2019s Free plan; your project\u2019s window is shown in Neon), and in any manual database snapshot until that snapshot is deleted.';
           var name = document.getElementById('company_name').value.trim();
           /*
            * The stronger step the owner asked for: type the buyer's name. A
