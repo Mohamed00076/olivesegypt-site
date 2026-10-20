@@ -98,3 +98,6 @@
 .crm-ui-dialog .crm-btn-secondary { background: #fff; color: var(--crm-text, #26301a); border-color: var(--crm-border, #e2ddd0); }
 .crm-ui-dialog .crm-btn-primary { background: var(--crm-primary, #3f4f2b); color: #fff; }
 .crm-ui-dialog .crm-btn:focus-visible { outline: 3px solid var(--crm-secondary, #c9a84c); outline-offset: 2px; }
+.crm-ui-dialog label.crm-ui-dialog-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; cursor: pointer; padding: 10px 12px; border: 1px solid var(--crm-border, #e2ddd0); border-radius: 8px; }
+.crm-ui-dialog label.crm-ui-dialog-check input { width: 22px; height: 22px; min-height: 0; flex: 0 0 auto; margin: 0; padding: 0; }
+.crm-ui-dialog-check-detail { font-size: 13px; line-height: 1.5; color: var(--crm-muted, #5f6654); white-space: pre-line; margin-top: -4px; }
