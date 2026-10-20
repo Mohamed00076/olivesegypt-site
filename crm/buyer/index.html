@@ -597,7 +597,11 @@
         }
         function fmtSize(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
 
+        // What the Erase dialog lists; null until (and unless) the list has loaded.
+        var loadedFiles = null;
+
         function renderFiles(rows) {
+          loadedFiles = rows;
           var tbody = document.getElementById('files-tbody');
           tbody.innerHTML = '';
           document.getElementById('files-empty').style.display = rows.length ? 'none' : '';
@@ -922,7 +926,7 @@
           var msg = 'Erase this buyer permanently? Use this when the person asked for their data to be deleted.\n\n' +
             'Removed for good: the buyer record, its notes (including the copy of their original message), its stage history, ' +
             'and the website enquiries linked to it.\n\n' +
-            'Kept: documents already issued (quotations, proformas, invoices, packing lists and letters), files uploaded to this buyer, ' +
+            'Kept: documents already issued (quotations, proformas, invoices, packing lists and letters), ' +
             'and the opt-out list (an unsubscribed address stays unsubscribed). ' +
             'Any other requests from them, such as downloads or a Market Brief signup, are not linked to the buyer: delete those from the Enquiries page.\n\n' +
             /*
@@ -941,11 +945,32 @@
            * buyer that was already deleted shows no details, its name
            * included, so for one of those the word to type is ERASE.
            */
+          /*
+           * Uploaded files (owner decision 2026-10-20, option (b) of counsel
+           * question 19): a box, ticked, to delete them with the buyer. Unticked,
+           * they are kept -- in the database, but no CRM page leads to them once
+           * the buyer is gone, so the box says so. The audit entry records how
+           * many were deleted or kept. Without a loaded list (a deleted buyer
+           * shows no details) the box speaks of "any" files rather than a number.
+           */
+          var files = loadedFiles;
+          var checkbox = null;
+          if (files === null) {
+            checkbox = { label: 'Also delete any files uploaded to this buyer', checked: true,
+              detail: 'Untick to keep them. Kept files stay in the database but can no longer be opened from the CRM.' };
+          } else if (files.length) {
+            checkbox = { label: 'Also delete the ' + (files.length === 1 ? 'file' : files.length + ' files') + ' uploaded to this buyer', checked: true,
+              detail: files.map(function (f) { return '\u2022 ' + f.filename; }).join('\n') +
+                '\nUntick to keep ' + (files.length === 1 ? 'it' : 'them') + '. Kept files stay in the database but can no longer be opened from the CRM.' };
+          }
           CRM.ask({ title: 'Erase ' + (name || 'this buyer') + ' permanently?', message: msg, confirm: 'Erase for good', danger: true,
+            checkbox: checkbox,
             typeToConfirm: name || 'ERASE',
             typeLabel: name ? 'Type the buyer\u2019s name, ' + name + ', to confirm' : 'Type ERASE to confirm' }).then(function (yes) {
           if (!yes) return;
-          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&erase=1&confirmed=1', { method: 'DELETE' }).then(function (result) {
+          // No box (no files) is the same as ticked: nothing is kept that the dialog did not mention.
+          var filesParam = !checkbox || yes.checked ? 'delete' : 'keep';
+          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&erase=1&confirmed=1&files=' + filesParam, { method: 'DELETE' }).then(function (result) {
             if (!result.ok) { showStatus('The buyer was not erased. ' + CRM.plainError(result, 'Nothing was changed.'), false); return; }
             window.location.href = '/crm/buyers/?erased=' + encodeURIComponent(name || ('buyer #' + buyerId));
           }).catch(function (e) {

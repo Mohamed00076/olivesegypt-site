@@ -387,6 +387,22 @@
       var h = document.createElement('h2'); h.id = id + '-t'; h.textContent = o.title || 'Are you sure?';
       var p = document.createElement('p'); p.id = id + '-m'; p.textContent = o.message || '';
       box.appendChild(h); box.appendChild(p);
+      /*
+       * checkbox: { label, detail, checked } -- a choice made as part of the
+       * confirmation (Erase: "Also delete the files uploaded to this buyer").
+       * With one, a Confirm resolves { checked: true|false } instead of true.
+       */
+      var check = null;
+      if (o.checkbox) {
+        var cl = document.createElement('label'); cl.className = 'crm-ui-dialog-check';
+        check = document.createElement('input'); check.type = 'checkbox'; check.checked = o.checkbox.checked !== false;
+        var ct = document.createElement('span'); ct.textContent = o.checkbox.label || '';
+        cl.appendChild(check); cl.appendChild(ct); box.appendChild(cl);
+        if (o.checkbox.detail) {
+          var cd = document.createElement('div'); cd.className = 'crm-ui-dialog-check-detail'; cd.setAttribute('dir', 'auto');
+          cd.textContent = o.checkbox.detail; box.appendChild(cd);
+        }
+      }
       var input = null;
       if (o.typeToConfirm) {
         var lab = document.createElement('label');
@@ -425,9 +441,10 @@
         }
       }
       cancel.addEventListener('click', function () { done(false); });
-      ok.addEventListener('click', function () { if (!ok.disabled) done(true); });
+      function yes() { return check ? { checked: !!check.checked } : true; }
+      ok.addEventListener('click', function () { if (!ok.disabled) done(yes()); });
       back.addEventListener('click', function (e) { if (e.target === back) done(false); });
-      if (input) { input.addEventListener('input', sync); input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !ok.disabled) done(true); }); }
+      if (input) { input.addEventListener('input', sync); input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !ok.disabled) done(yes()); }); }
       document.addEventListener('keydown', onKey, true);
       sync();
       document.body.appendChild(back);

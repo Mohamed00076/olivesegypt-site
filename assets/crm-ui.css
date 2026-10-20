@@ -158,3 +158,6 @@
 .crm-ui-today-list a { font-weight: 700; display: block; padding: 4px 0; }
 .crm-ui-today-meta { display: block; font-size: 13px; color: var(--crm-muted, #5f6654); }
 .crm-ui-today-late { color: var(--crm-danger, #a3312a); }
+.crm-ui-dialog label.crm-ui-dialog-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; cursor: pointer; padding: 10px 12px; border: 1px solid var(--crm-border, #e2ddd0); border-radius: 8px; }
+.crm-ui-dialog label.crm-ui-dialog-check input { width: 22px; height: 22px; min-height: 0; flex: 0 0 auto; margin: 0; padding: 0; }
+.crm-ui-dialog-check-detail { font-size: 13px; line-height: 1.5; color: var(--crm-muted, #5f6654); white-space: pre-line; margin-top: -4px; }

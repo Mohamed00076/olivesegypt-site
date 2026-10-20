@@ -332,6 +332,11 @@ async function handleDelete(event, sql, id, actor) {
  *   - its activity log, which holds a copy of the original message
  *   - its stage history
  *   - the website enquiries linked to it, which hold the message itself
+ *   - the files uploaded to the buyer (crm_buyer_files), unless staff untick
+ *     "Also delete the files uploaded to this buyer" in the Erase dialog
+ *     (owner decision 2026-10-20, option (b) of counsel question 19). The
+ *     page sends files=delete or files=keep; without either, files are kept,
+ *     as before. The audit entry says how many were deleted or kept.
  * Kept:
  *   - quotations, invoices and letters already issued (crm_documents): business
  *     records, which /privacy says are kept for a quotation or order placed
@@ -349,17 +354,27 @@ async function handleErase(event, sql, id, actor) {
   const enquiriesCte = hasInquiries
     ? 'q AS (DELETE FROM inquiries WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),'
     : 'q AS (SELECT 1 WHERE false),';
+  // Uploaded files: deleted only when the box was ticked; otherwise counted, so the audit says how many stayed.
+  const deleteFiles = qs.files === 'delete';
+  const hasFiles = (await sql`SELECT to_regclass('public.crm_buyer_files') IS NOT NULL AS present`)[0].present;
+  const filesCte = !hasFiles
+    ? 'f AS (SELECT 1 WHERE false),'
+    : deleteFiles
+      ? 'f AS (DELETE FROM crm_buyer_files WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),'
+      : 'f AS (SELECT 1 FROM crm_buyer_files WHERE buyer_id = $1),';
+  const filesWord = deleteFiles ? "' uploaded file(s) deleted'" : "' uploaded file(s) kept (box not ticked)'";
   const rows = await sql.query(
     `WITH b AS (DELETE FROM buyers WHERE id = $1 RETURNING id),
      a AS (DELETE FROM buyer_activity_log WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),
      h AS (DELETE FROM buyer_stage_history WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),
      ${enquiriesCte}
+     ${filesCte}
      counts AS (SELECT (SELECT count(*) FROM a) AS notes, (SELECT count(*) FROM h) AS stage_changes,
-                       (SELECT count(*) FROM q) AS enquiries)
+                       (SELECT count(*) FROM q) AS enquiries, (SELECT count(*) FROM f) AS files)
      INSERT INTO crm_audit_log (actor, action, record_type, record_id, details)
      SELECT $2, 'erase', 'buyer', b.id,
             'deletion request: removed ' || counts.notes || ' note(s), ' || counts.stage_changes ||
-            ' stage change(s), ' || counts.enquiries || ' linked enquiry(ies)'
+            ' stage change(s), ' || counts.enquiries || ' linked enquiry(ies); ' || counts.files || ${filesWord}
      FROM b, counts
      RETURNING details`,
     [id, actor || 'unknown']

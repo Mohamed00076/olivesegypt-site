@@ -25,9 +25,11 @@
  * Every request needs a CRM session. Uploading, opening and deleting are each
  * written to crm_audit_log, with the file's kind and size, never its content.
  *
- * A buyer's erasure (crm-buyers.js handleErase) keeps these, as it keeps the
- * quotations and invoices the CRM issued: they are business records, which
- * /privacy says are kept for a quotation or order placed.
+ * A buyer's erasure (crm-buyers.js handleErase) deletes these too, unless
+ * staff untick "Also delete the files uploaded to this buyer" in the Erase
+ * dialog (owner decision 2026-10-20, option (b) of counsel question 19). A
+ * file kept that way stays in the database, but no CRM page leads to it any
+ * more: its buyer is gone.
  */
 
 const { neon } = require('@neondatabase/serverless');

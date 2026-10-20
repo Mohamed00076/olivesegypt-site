@@ -54,7 +54,7 @@ const sql = (strings, ...vals) => {
   const q = Array.isArray(strings) ? strings.join('?') : String(strings);
   const params = Array.isArray(strings) ? vals : (vals[0] || []);
   queries.push({ q, params });
-  if (/to_regclass\('public\.inquiries'\)/.test(q)) return Promise.resolve([{ present: true }]);
+  if (/to_regclass\('public\.(inquiries|crm_buyer_files)'\)/.test(q)) return Promise.resolve([{ present: true }]);
   if (/^\s*WITH b AS \(DELETE FROM buyers/i.test(q)) {
     writes.push('ERASE');
     return Promise.resolve(BUYERS[params[0]] ? [{ details: 'deletion request: removed 1 note(s), 1 stage change(s), 1 linked enquiry(ies)' }] : []);
@@ -152,6 +152,20 @@ const call = async (h, method, qs, body) => {
     /INSERT INTO crm_audit_log[\s\S]*'erase', 'buyer'/.test(erase.q) && erase.params[0] === 2 && erase.params[1] === 'staff' &&
     !/company_name|contact_|email|entry/.test(erase.q.split('INSERT INTO crm_audit_log')[1] || 'x'), JSON.stringify(erase.params));
   t('   and never touching issued documents or the opt-out list', !/crm_documents|contact_opt_outs/.test(erase.q));
+  // Uploaded files (owner decision 2026-10-20, counsel question 19 option (b)).
+  {
+    const q = (rr) => (rr.queries.find((x) => /WITH b AS \(DELETE FROM buyers/.test(x.q)) || { q: '' }).q;
+    let rr = await call(buyers, 'DELETE', { id: '1', erase: '1', confirmed: '1', files: 'delete' });
+    t('Erase with the box ticked deletes the buyer\'s uploaded files in the same statement',
+      rr.status === 200 && /DELETE FROM crm_buyer_files WHERE buyer_id IN \(SELECT id FROM b\)/.test(q(rr)), q(rr));
+    t('   and the audit entry counts them as deleted', /\|\| counts\.files \|\| ' uploaded file\(s\) deleted'/.test(q(rr)));
+    rr = await call(buyers, 'DELETE', { id: '1', erase: '1', confirmed: '1', files: 'keep' });
+    t('Erase with the box unticked deletes no file', rr.status === 200 && !/DELETE FROM crm_buyer_files/.test(q(rr)), q(rr));
+    t('   but counts them, and the audit entry says they were kept', /f AS \(SELECT 1 FROM crm_buyer_files WHERE buyer_id = \$1\)/.test(q(rr)) &&
+      /' uploaded file\(s\) kept \(box not ticked\)'/.test(q(rr)));
+    rr = await call(buyers, 'DELETE', { id: '1', erase: '1', confirmed: '1' });
+    t('Erase that says nothing about files keeps them (the old behaviour), and says so', !/DELETE FROM crm_buyer_files/.test(q(rr)) && /kept \(box not ticked\)/.test(q(rr)));
+  }
   r = await call(buyers, 'DELETE', { id: '1', erase: '1', confirmed: '1' });
   t('a live buyer can be erased directly, without deleting it first', r.status === 200 && r.writes.includes('ERASE'), JSON.stringify(r));
   r = await call(buyers, 'DELETE', { id: '99', erase: '1', confirmed: '1' });
@@ -192,10 +206,14 @@ const call = async (h, method, qs, body) => {
   // a buyer already deleted, whose name is no longer shown.
   t('Erase asks first, says what is removed, what is kept, and that it cannot be undone',
     /CRM\.ask\(\{[^]*?message: msg/.test(ers) && /if \(!yes\) return;/.test(ers) && /Removed for good/.test(ers) && /Kept: documents already issued \(quotations, proformas, invoices, packing lists and letters\)/.test(ers) &&
-    /opt-out list/.test(ers) && /This cannot be undone from the CRM\./.test(ers) && /files uploaded to this buyer/.test(ers));
+    /opt-out list/.test(ers) && /This cannot be undone from the CRM\./.test(ers));
+  t('   with a box, ticked, to delete the uploaded files too, naming them; unticked keeps them',
+    /checkbox: checkbox/.test(ers) && /'Also delete the ' \+/.test(ers) && /checked: true/.test(ers) && /f\.filename/.test(ers) &&
+    /yes\.checked \? 'delete' : 'keep'/.test(ers) && /Kept files stay in the database but can no longer be opened from the CRM/.test(ers));
+  t('   and the Kept list no longer claims the files are kept', !/Kept: [^']*files uploaded/.test(ers));
   // Never a claim the CRM cannot keep (2026-10-20): erasing does not reach backups.
   t('   and does not claim to remove database backups', !/not even from the database/.test(ers) && /restore history/.test(ers) && /backup branch or snapshot/.test(ers));
-  t('   and sends the erase, confirmed', /'&erase=1&confirmed=1', \{ method: 'DELETE' \}/.test(ers));
+  t('   and sends the erase, confirmed', /'&erase=1&confirmed=1&files=' \+ filesParam, \{ method: 'DELETE' \}/.test(ers));
   t('   only after the buyer\'s name (or ERASE) is typed', /typeToConfirm: name \|\| 'ERASE'/.test(ers));
   t('   Delete asks in the page too, and goes ahead only on yes', /CRM\.ask\(/.test(del) && /if \(!yes\) return;/.test(del) && !/window\.confirm/.test(page));
   t('   and says so on the Buyers list afterwards', /\/crm\/buyers\/\?erased=/.test(ers));
