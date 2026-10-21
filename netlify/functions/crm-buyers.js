@@ -4,6 +4,7 @@ const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const { normaliseEmail } = require('./_optout_lib');
 const {
+  stageRuleError,
   requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
   STAGES, REGIONS: REGION_LIST, ensureBuyerTables, parseId, INVALID_ID_ERROR,
 } = require('./_crm_lib');
@@ -199,13 +200,16 @@ async function handleCreate(event, sql, actor) {
   const body = readJsonBody(event) || {};
   const { errors, fieldReasons, companyName, countryRegion, currentStage, productInterest } = validateBuyerInput(body, true);
   if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors, reasons: fieldReasons });
+  // A buyer created straight into Lost/Stalled or Exported/Completed meets the same rules as a move there.
+  const rule = stageRuleError(currentStage, body);
+  if (rule) return json(400, { ok: false, error: 'Validation failed', stage_rule: true, fields: [rule.field], reasons: { [rule.field]: rule.reason } });
 
   const rows = await sql`
     INSERT INTO buyers (
       created_by, assigned_to, company_name, country_region, contact_name, contact_title,
       contact_email, contact_phone, contact_whatsapp, lead_source, current_stage,
       product_interest, packaging_format, estimated_volume, target_price, quoted_price,
-      incoterm, certifications_required, certification_gap, next_action, next_action_due, notes
+      incoterm, certifications_required, certification_gap, next_action, next_action_due, notes, lost_reason
     ) VALUES (
       ${actor}, ${optional(body.assigned_to, 100) || actor}, ${companyName}, ${countryRegion},
       ${optional(body.contact_name, MAX.contact_name)}, ${optional(body.contact_title, MAX.contact_title)},
@@ -216,7 +220,8 @@ async function handleCreate(event, sql, actor) {
       ${optional(body.target_price, MAX.target_price)}, ${optional(body.quoted_price, MAX.quoted_price)},
       ${optional(body.incoterm, MAX.incoterm)}, ${optional(body.certifications_required, MAX.certifications_required)},
       ${body.certification_gap === true}, ${optional(body.next_action, MAX.next_action)},
-      ${body.next_action_due ? clean(body.next_action_due, 10) : null}, ${optional(body.notes, MAX.notes)}
+      ${body.next_action_due ? clean(body.next_action_due, 10) : null}, ${optional(body.notes, MAX.notes)},
+      ${optional(body.lost_reason, MAX.lost_reason)}
     )
     RETURNING id
   `;
@@ -240,8 +245,17 @@ async function handleUpdate(event, sql, id, actor) {
   const previousStage = existingRows[0].current_stage;
 
   const body = readJsonBody(event) || {};
-  const { errors, fieldReasons, productInterest } = validateBuyerInput(body, false);
+  const { errors, fieldReasons, productInterest, currentStage } = validateBuyerInput(body, false);
   if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors, reasons: fieldReasons });
+  /*
+   * The stage rules (_crm_lib.js stageRuleError), checked before anything is
+   * written, for a move only: the stage actually changing. A refusal writes
+   * nothing -- no UPDATE, no stage-history row, no audit entry.
+   */
+  if (body.current_stage !== undefined && currentStage !== previousStage) {
+    const rule = stageRuleError(currentStage, body);
+    if (rule) return json(400, { ok: false, error: 'Validation failed', stage_rule: true, fields: [rule.field], reasons: { [rule.field]: rule.reason } });
+  }
 
   const fields = [
     'assigned_to', 'company_name', 'country_region', 'contact_name', 'contact_title',

@@ -488,7 +488,9 @@
    *   Exported/Completed  asks to confirm, since the stage is only for an
    *                       export that has genuinely been completed.
    * Resolves the extra fields to send with current_stage ({} for none),
-   * or null if the move was cancelled.
+   * or null if the move was cancelled. Since 2026-10-21 the server enforces
+   * the same two rules (_crm_lib.js stageRuleError), so a request that
+   * skipped this question is refused there.
    */
   CRM.stageMoveCheck = function (companyName, toStage) {
     var who = companyName || 'this buyer';
@@ -502,7 +504,10 @@
     if (toStage === 'Exported/Completed') {
       return CRM.ask({ title: 'Move ' + who + ' to Exported/Completed?',
         message: 'Use this stage only once this buyer\u2019s export has genuinely been completed.',
-        confirm: 'Move to Exported/Completed' }).then(function (v) { return v ? {} : null; });
+        confirm: 'Move to Exported/Completed' }).then(function (v) {
+        // The server refuses this move without it (_crm_lib.js stageRuleError).
+        return v ? { confirm_stage: 'Exported/Completed' } : null;
+      });
     }
     return Promise.resolve({});
   };

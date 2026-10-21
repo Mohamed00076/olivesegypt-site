@@ -885,6 +885,21 @@
           e.preventDefault();
           var payload = collectForm();
           var saveBtn = document.getElementById('save-btn');
+          /*
+           * The stage rules apply to this form too (2026-10-21): the server
+           * refuses a move to Lost/Stalled without a reason, or to
+           * Exported/Completed without confirmation. So a change of stage here
+           * asks the same questions as the Move menus -- except that a
+           * Lost/Stalled reason already typed in the form is used as it is.
+           */
+          var fromStage = isNew ? null : (current ? current.current_stage : null);
+          var toStage = payload.current_stage;
+          var needsAsk = toStage !== fromStage &&
+            (toStage === 'Exported/Completed' || (toStage === 'Lost/Stalled' && !String(payload.lost_reason || '').trim()));
+          (needsAsk ? CRM.stageMoveCheck(document.getElementById('company_name').value.trim(), toStage) : Promise.resolve({})).then(function (extra) {
+          if (!extra) { document.getElementById('current_stage').focus(); return; }
+          Object.assign(payload, extra);
+          if (extra.lost_reason) document.getElementById('lost_reason').value = extra.lost_reason;
           saveBtn.disabled = true;
 
           var req = isNew
@@ -912,6 +927,7 @@
               ? CRM.noReplyMessage(e, 'Adding this buyer', 'Check the Buyers list before trying again, so it is not added twice.')
               : CRM.noReplyMessage(e, 'Saving', 'Your changes are still on this page, and saving them again does no harm.');
             if (msg) showStatus(msg, false, 'form-status');
+          });
           });
         });
 
