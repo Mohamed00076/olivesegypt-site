@@ -221,6 +221,36 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
     t('the badge is shown by every page with the CRM menu, and by the document sheet', /CRM\.envBadge\(\);\s*\};/.test(read('assets/crm.js')) && /CRM\.envBadge\(\); load\(\);/.test(read('crm/document/view/index.html')));
   }
 
+  // ---- Batch 3 (owner, 2026-10-20): bottom bar, larger text, colours ------
+  {
+    const js = read('assets/crm.js');
+    const css = read('assets/crm-ui.css');
+    const bar = (js.match(/CRM\.tabBar = function \(active\) \{[\s\S]*?\n  \};/) || [''])[0];
+    t('the phone bar has Dashboard, Enquiries, Buyers, Documents, and More',
+      /CRM\.TABS = \['Dashboard', 'Enquiries', 'Buyers', 'Documents'\]/.test(js) && /<span>More<\/span>/.test(bar));
+    t('   More holds the rest of the menu (the letterheads) and Log out',
+      /if \(CRM\.TABS\.indexOf\(l\[1\]\) !== -1\) return;/.test(bar) && /id="crm-ui-more-logout">Log out</.test(bar) && /addEventListener\('click', CRM\.logout\)/.test(bar));
+    t('   the current page is marked for screen readers, and More says whether it is open',
+      /aria-current="page"/.test(bar) && /aria-expanded/.test(bar) && /aria-controls="crm-ui-more"/.test(bar) && /e\.key === 'Escape'/.test(bar));
+    t('   drawn by every page with the CRM menu, which also marks the page crm-ui-app',
+      /document\.body\.classList\.add\('crm-ui-app'\);\s*CRM\.tabBar\(active\);/.test(js));
+    t('   shown under 640px only, replacing the top-bar links there, never printed',
+      /\.crm-ui-tabbar \{ display: none; \}/.test(css) && /@media \(max-width: 640px\) \{\s*body\.crm-ui-app \{ padding-bottom/.test(css) &&
+      /body\.crm-ui-app \.crm-header \.crm-nav \{ display: none; \}/.test(css) && /@media print \{ \.crm-ui-tabbar \{ display: none !important; \} \}/.test(css));
+    t('the document colours: olive #4b5a23, gold #b8923a, cream #f7f2e4, on the working pages only',
+      /body\.crm-ui-app \{\s*--crm-primary: #4b5a23;[\s\S]*?--crm-secondary: #b8923a;[\s\S]*?--crm-bg: #f7f2e4;/.test(css) && !/#4b5a23/.test(read('assets/crm.css')));
+    t('   with the grey for secondary text darkened to #5f6654, readable on cream (5.3:1)', /--crm-muted: #5f6654;/.test(css));
+    t('larger text and 44px targets: buttons, fields and menus at least 44px, fields at 16px',
+      /body\.crm-ui-app \.crm-btn \{ min-height: 44px;/.test(css) && /body\.crm-ui-app select \{ min-height: 44px; font-size: 16px; \}/.test(css) && /body\.crm-ui-app \{ font-size: 15px; \}/.test(css));
+    const buyer = read('crm/buyer/index.html');
+    t('Buyer details says "Tap to edit" while folded, and Save stays in view on a phone',
+      /class="crm-ui-fold-open-hint"[^>]*>Tap to edit</.test(buyer) && /<div class="crm-ui-savebar"><button type="submit" class="crm-btn crm-btn-primary" id="save-btn">/.test(buyer) &&
+      /\.crm-ui-savebar \{\s*position: sticky;/.test(css) && /\.crm-ui-fold \{ overflow: visible; \}/.test(css));
+    const signIn = ['crm/login/index.html', 'crm/forgot/index.html', 'crm/reset/index.html', 'crm/change-password/index.html'].filter((f) => fs.existsSync(path.join(ROOT, f)));
+    t(`the sign-in pages (${signIn.length}) still load neither crm-ui.css nor crm.js, so none of this reaches them`,
+      signIn.length > 0 && signIn.every((f) => !/crm-ui\.css|assets\/crm\.js/.test(read(f))));
+  }
+
   console.log(`\ncrm-ui ${fail ? 'FAILED' : 'OK'} -- a failure is said in the page, recorded once, and the sign-in pages are left alone.`);
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

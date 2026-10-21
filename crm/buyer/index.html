@@ -129,7 +129,7 @@
       <!-- The edit form, folded (2026-10-20): most visits are to call, note
            or quote, not to retype the record. Open for a new buyer. -->
       <details class="crm-card crm-ui-fold" id="details-fold">
-        <summary><h2>Buyer details</h2><span class="crm-muted crm-ui-fold-hint">Contact, products, prices, next action, notes</span></summary>
+        <summary><h2>Buyer details</h2><span class="crm-muted crm-ui-fold-hint">Contact, products, prices, next action, notes</span><span class="crm-ui-fold-open-hint" aria-hidden="true">Tap to edit</span></summary>
         <form id="buyer-form">
           <div class="crm-grid crm-grid-2">
             <div class="crm-field">
@@ -235,8 +235,9 @@
             <textarea id="notes" rows="4" maxlength="8000"></textarea>
           </div>
 
-          <button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Save Buyer</button>
           <div id="form-status" class="crm-status" style="display:none; margin-top:12px;" role="status" aria-live="polite"></div>
+          <!-- On a phone this bar stays on screen while the form does (Batch 3). -->
+          <div class="crm-ui-savebar"><button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Save Buyer</button></div>
         </form>
       </details>
 

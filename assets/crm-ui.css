@@ -170,3 +170,104 @@
 .crm-ui-btn-confirm-export { background: #b8923a; border-color: #8a6b25; color: #1f1800; }
 .crm-ui-btn-confirm-export:hover { background: #a6832f; }
 .crm-ui-btn-confirm-export:focus-visible { outline: 3px solid #4b5a23; outline-offset: 2px; }
+
+/* =======================================================================
+ * Batch 3 (owner, 2026-10-20): the colours of the new document design,
+ * larger text, 44px tap targets, and a bottom bar on a phone.
+ *
+ * Everything here hangs off body.crm-ui-app, which CRM.renderNav sets --
+ * so only the working CRM pages change. The sign-in, forgot, reset and
+ * change-password pages never load this file or crm.js, and keep crm.css's
+ * colours as they are.
+ * ===================================================================== */
+
+/* ---- colours: olive #4b5a23, gold #b8923a, cream #f7f2e4 ------------- */
+body.crm-ui-app {
+  --crm-primary: #4b5a23;        /* white on it: 7.5:1 */
+  --crm-primary-dark: #3a461b;   /* the top bar; its text: 8.2:1 */
+  --crm-secondary: #b8923a;      /* gold: active tab, focus rings */
+  --crm-bg: #f7f2e4;             /* cream page */
+  --crm-border: #e2d9c2;
+  --crm-muted: #5f6654;          /* 5.3:1 on cream (the old grey was 4.5) */
+  background: var(--crm-bg);
+}
+body.crm-ui-app .crm-nav a.active { background: var(--crm-secondary); color: #1f1800; }  /* 6.1:1 */
+body.crm-ui-app .crm-kanban-col { background: #efe8d4; }
+body.crm-ui-app tr:hover td { background: #fbf8ef; }
+
+/* ---- larger text, 44px targets --------------------------------------- */
+body.crm-ui-app { font-size: 15px; }
+body.crm-ui-app .crm-muted { font-size: 13px; }
+body.crm-ui-app table { font-size: 14px; }
+body.crm-ui-app th { font-size: 12px; }
+body.crm-ui-app label { font-size: 13px; }
+body.crm-ui-app .crm-btn { min-height: 44px; font-size: 14px; padding: 10px 16px; }
+body.crm-ui-app input:not([type=checkbox]):not([type=radio]):not([type=file]),
+body.crm-ui-app select { min-height: 44px; font-size: 16px; }   /* 16px: phones do not zoom in on focus */
+body.crm-ui-app textarea { font-size: 16px; }
+body.crm-ui-app input[type=checkbox] { width: 22px; height: 22px; }
+body.crm-ui-app .crm-nav a, body.crm-ui-app .crm-nav button { min-height: 44px; display: inline-flex; align-items: center; font-size: 14px; }
+body.crm-ui-app .crm-viewlink { color: var(--crm-primary); display: inline-flex; align-items: center; min-height: 44px; }
+body.crm-ui-app .crm-kanban-card { font-size: 14px; }
+body.crm-ui-app .crm-activity-meta { font-size: 12px; }
+body.crm-ui-app :focus-visible { outline: 3px solid var(--crm-secondary); outline-offset: 2px; }
+
+/* ---- the bottom bar (phones only) ------------------------------------ */
+.crm-ui-tabbar { display: none; }
+@media (max-width: 640px) {
+  body.crm-ui-app { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+  body.crm-ui-app .crm-header .crm-nav { display: none; }   /* the bar below takes their place */
+  body.crm-ui-app .crm-header { min-height: 48px; }
+  .crm-ui-tabbar {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+    background: #ffffff; border-top: 1px solid var(--crm-border);
+    box-shadow: 0 -2px 10px rgba(40, 45, 25, 0.08);
+    padding: 4px max(4px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(4px, env(safe-area-inset-left, 0px));
+  }
+  .crm-ui-tab {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    min-height: 56px; padding: 4px 2px; border: 0; background: none; border-radius: 10px;
+    color: var(--crm-muted); font: 600 12px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .crm-ui-tab span { white-space: nowrap; }
+  .crm-ui-tab-active { color: var(--crm-primary); background: #f3ecd6; }
+  .crm-ui-tab-active svg { stroke-width: 2.2; }
+  .crm-ui-tab[aria-expanded="true"] { color: var(--crm-primary); background: #f3ecd6; }
+  .crm-ui-more {
+    position: absolute; right: 8px; bottom: calc(100% + 8px); min-width: 220px;
+    background: #ffffff; border: 1px solid var(--crm-border); border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(40, 45, 25, 0.18); padding: 6px; display: grid;
+  }
+  .crm-ui-more[hidden] { display: none; }
+  .crm-ui-more a, .crm-ui-more button {
+    display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 8px;
+    font: 600 15px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--crm-text); text-decoration: none; background: none; border: 0; text-align: left; cursor: pointer;
+  }
+  .crm-ui-more a:hover, .crm-ui-more button:hover { background: #f7f2e4; }
+  .crm-ui-more button { color: var(--crm-danger); border-top: 1px solid var(--crm-border); border-radius: 0 0 8px 8px; }
+}
+@media print { .crm-ui-tabbar { display: none !important; } }
+
+/* ---- buyer page: Buyer details you can find, Save you can reach ------- */
+.crm-ui-fold > summary {
+  border: 1px solid var(--crm-border); border-radius: 10px; padding: 10px 14px; background: #fbf8ef;
+}
+.crm-ui-fold[open] > summary { background: none; border-color: transparent; padding-left: 0; }
+.crm-ui-fold-open-hint { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--crm-primary); }
+.crm-ui-fold[open] .crm-ui-fold-open-hint { display: none; }
+.crm-ui-savebar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+@media (max-width: 640px) {
+  /* Save stays on screen while the form is: above the bottom bar, not at the
+     foot of a form many screens long. */
+  .crm-ui-savebar {
+    position: sticky; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); z-index: 5;
+    background: var(--crm-card, #ffffff); margin: 0 -20px -20px; padding: 10px 20px;
+    border-top: 1px solid var(--crm-border); box-shadow: 0 -4px 12px rgba(40, 45, 25, 0.06);
+  }
+  .crm-ui-savebar .crm-btn { flex: 1 1 auto; justify-content: center; }
+}
+/* The <details> box must not scroll inside itself, or the Save bar inside it cannot stick. */
+.crm-ui-fold { overflow: visible; }

@@ -154,7 +154,62 @@
     document.body.insertAdjacentHTML('afterbegin', html);
     var btn = document.getElementById('crm-logout-btn');
     if (btn) btn.addEventListener('click', CRM.logout);
+    // The working pages' look (assets/crm-ui.css, Batch 3): only pages that
+    // draw this bar get the class, so the sign-in pages are untouched.
+    document.body.classList.add('crm-ui-app');
+    CRM.tabBar(active);
     CRM.envBadge();
+  };
+
+  /*
+   * The phone's bottom bar (Batch 3, owner 2026-10-20): Dashboard,
+   * Enquiries, Buyers, Documents, and More -- which holds the two
+   * letterheads and Log out. Under 640px it replaces the links in the top
+   * bar (assets/crm-ui.css); wider screens keep the top bar as it was. Plain
+   * links and one button: no script is needed to reach a page.
+   */
+  var TAB_ICONS = {
+    Dashboard: '<path d="M3 12l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/>',
+    Enquiries: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
+    Buyers: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-4 3.2-6 6.5-6s5.9 2 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c3 0 5 1.8 5.5 5"/>',
+    Documents: '<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M9 13h7M9 17h7"/>',
+    More: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+  };
+  CRM.TABS = ['Dashboard', 'Enquiries', 'Buyers', 'Documents'];
+  CRM.tabBar = function (active) {
+    if (document.getElementById('crm-ui-tabbar')) return;
+    function icon(name) {
+      return '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + TAB_ICONS[name] + '</svg>';
+    }
+    var html = '<nav class="crm-ui-tabbar" id="crm-ui-tabbar" aria-label="Main">';
+    CRM.NAV.forEach(function (l) {
+      if (CRM.TABS.indexOf(l[1]) === -1) return;
+      html += '<a href="' + l[0] + '"' + (active === l[1] ? ' aria-current="page" class="crm-ui-tab crm-ui-tab-active"' : ' class="crm-ui-tab"') + '>' +
+        icon(l[1]) + '<span>' + l[1] + '</span></a>';
+    });
+    html += '<button type="button" class="crm-ui-tab" id="crm-ui-more-btn" aria-expanded="false" aria-controls="crm-ui-more">' + icon('More') + '<span>More</span></button>';
+    html += '<div class="crm-ui-more" id="crm-ui-more" hidden>';
+    CRM.NAV.forEach(function (l) {
+      if (CRM.TABS.indexOf(l[1]) !== -1) return;
+      html += '<a href="' + l[0] + '">' + l[1] + '</a>';
+    });
+    html += '<button type="button" id="crm-ui-more-logout">Log out</button></div></nav>';
+    document.body.insertAdjacentHTML('beforeend', html);
+    var more = document.getElementById('crm-ui-more');
+    var moreBtn = document.getElementById('crm-ui-more-btn');
+    function setOpen(open) {
+      more.hidden = !open;
+      moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) { var first = more.querySelector('a, button'); if (first) first.focus(); }
+    }
+    moreBtn.addEventListener('click', function () { setOpen(more.hidden); });
+    document.getElementById('crm-ui-more-logout').addEventListener('click', CRM.logout);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !more.hidden) { setOpen(false); moreBtn.focus(); }
+    });
+    document.addEventListener('click', function (e) {
+      if (!more.hidden && !more.contains(e.target) && !moreBtn.contains(e.target)) setOpen(false);
+    });
   };
 
   /*
