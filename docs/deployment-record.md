@@ -11096,6 +11096,137 @@ The entry for Deploys 274 to 278, and the description of #402, said the Neon Fre
 
 ---
 
+## Deploys 282 to 286 — Upload cap and Erase with files; CRM Batch 2; the Email warning; stage rules enforced by the server; the record of 279 to 281 (PRs #406, #407, #408, #410, #409)
+
+**Previous recorded deploy:** `a8d8d19` (Deploy 281, PR #405)
+**Approvals:**
+- **#406:**
+  - "#406: implement Erase option (b)… Then #406 is ready to merge."
+  - "Approved: #406 is being merged now".
+- **#407 and #408:**
+  - "Approved: I will merge #406, #407, #408 in order, then #409 (point each at main as I go). The Email warning wording is approved as staff guidance pending counsel question 20."
+- **#410:**
+  - "Approve the refusal messages and CSV notes as listed, with these requests for #410: (1) keep any text I have typed… (2) the CSV import result must list skipped rows and the reason for each."
+  - Both requests were added before merging.
+- **#409:** "Merge #409 any time."
+- **All five:**
+  - The owner then wrote "merge all in order". The merges were made in this session on that instruction, in the order #406, #407, #408, #410, #409. GitHub shows the owner's account as the merger.
+  - Before each merge, `npm test` and the bundle check were run on the PR merged onto the current `main`. Each merge waited for the previous one to be live with the live check green.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 282 | #406 | `afcd1b2` | 2026-10-21 11:12:19 | 8 | +216 / −16 | CRM: upload cap and usage line; Erase deletes uploaded files unless unticked |
+| 283 | #407 | `efbdba7` | 2026-10-21 11:13:53 | 11 | +803 / −114 | CRM: Batch 2 (Kanban Move to, one stage on a phone, buyer quick actions, Today) and browser stage rules |
+| 284 | #408 | `0fc7869` | 2026-10-21 11:15:22 | 7 | +176 / −3 | CRM: Email warns for an unsubscribed address (read-only check) |
+| 285 | #410 | `1dd8b54` | 2026-10-21 11:16:47 | 10 | +222 / −17 | CRM: the server enforces the stage rules |
+| 286 | #409 | `be1772e` | 2026-10-21 11:23:42 | 1 | +103 / −2 | Notes only |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 286** recorded Deploys 279 to 281, with the Neon storage correction.
+
+### What the deploys did
+
+- **Deploy 282 — Upload cap; Erase and uploaded files (#406).**
+  - **Cap:** uploaded files have a total cap, 300 MB by default, which can be changed with `CRM_FILES_TOTAL_MB` in Netlify.
+    - The buyer page shows a usage line with a bar.
+    - It shows an amber warning from 80 % and a red one at 100 %.
+    - An upload over the cap is refused (413) and nothing is stored.
+    - A new `GET /api/crm/buyer-files?usage=1` needs a session and is not cached.
+  - **Erase wording** now names "database backup branch or snapshot".
+  - **Erase and files, owner's option (b):**
+    - The dialog has a ticked box, "Also delete the N files uploaded to this buyer", with the file names listed. Unticking keeps them.
+    - Ticked deletes the files in the same single statement as the rest of the erasure.
+    - The audit row records "N uploaded file(s) deleted" or "N uploaded file(s) kept (box not ticked)".
+    - A kept file can no longer be opened from the CRM.
+    - Counsel questions 18 and 19 were updated.
+- **Deploy 283 — CRM Batch 2 (#407).**
+  - **Kanban:**
+    - A "Move to" menu on every card sends the same request as a drag.
+    - On a phone, one stage is shown at a time, with a Stage menu.
+  - **Buyer page:**
+    - Quick actions come first: WhatsApp, Call, Email, Add note, Move stage, New quotation.
+    - Then activity, documents, uploads and stage history.
+    - The details form is folded below, and Delete/Erase are last.
+  - **Dashboard:** a Today section comes first. It shows new enquiries with "Open newest enquiry", and follow-ups due today and overdue.
+  - **Stage rules in the browser**, for drag and both menus: Lost/Stalled asks for a reason; Exported/Completed asks to confirm.
+  - **Fixed, pre-existing:** adding a note reloaded the record and lost unsaved form edits.
+  - **Checks:** `check-crm-stage-moves.js` (30 checks at this deploy).
+- **Deploy 284 — The Email warning (#408).**
+  - The buyer read returns `email_opted_out`: one yes/no for the buyer's own address. It is a one-row SELECT, run only if the table exists. It never writes and never lists anything.
+  - The page shows a red line, and Email asks before opening the mail app.
+  - The wording was approved by the owner as staff guidance pending counsel question 20, which was added.
+  - **Checks:** `check-buyer-optout-flag.js` (17 checks).
+- **Deploy 285 — The server enforces the stage rules (#410).**
+  - `_crm_lib.js` `stageRuleError` refuses a move to Lost/Stalled without a non-blank `lost_reason`, and a move to Exported/Completed without `confirm_stage: 'Exported/Completed'`.
+    - **Where it applies:** PATCH, POST (a buyer created into either stage) and CSV import.
+    - **What a refusal does:** it is a 400 that names the field, and it writes nothing.
+  - **The folded details form** asks the same questions before saving.
+  - **Nothing typed is lost on a refusal:**
+    - a reason is kept and offered again for that buyer;
+    - the form is never refilled or cleared;
+    - the server's own reason is shown.
+  - **CSV import:**
+    - a Lost/Stalled row needs a `lost_reason` column;
+    - an Exported/Completed row is skipped with the reason;
+    - every skipped row is listed with its line and reason.
+  - **Fixed, pre-existing:** creating a buyer never saved `lost_reason`.
+  - **Counsel question 19** gained the owner's addition about files kept by an unticked Erase.
+  - **Checks:** `check-crm-stage-moves.js` reached 59 checks.
+- **Database:** nothing new. No table or column was added, and no migration was run.
+
+### Verified on the live site (2026-10-21)
+
+- **Deployed commit:** `deployed-commit.txt` reads `be1772ece2ce03e28ea73683e96ec19f3bb8b790`.
+- **Live check after each merge:** 21 OK, 0 FAIL, 0 PENDING, after Deploys 282, 283, 284, 285 and 286.
+  - After 285, the first run was stopped by its own time limit, so it was run again. That rerun was green, with one request retried once after a dropped connection.
+- **Served as expected:**
+  - **282:** the usage line and the Erase files box on `/crm/buyer/`. The usage route answers 401 without a session.
+  - **283:** the Kanban Stage menu, the buyer quick actions, the dashboard Today card, and `stageMoveCheck` in `crm.js`.
+  - **284:** the opt-out line on `/crm/buyer/`.
+  - **285:** `refusalText` in `crm.js` and the CSV hint on `/crm/buyers/`. A PATCH without a session answers 401.
+- **Certificates:** valid to 2026-11-20 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+Revert in reverse order, because each was built on the one before:
+- **Deploy 285:** `git revert -m 1 1dd8b54`. The rules would be in the browser only again.
+- **Deploy 284:** `git revert -m 1 0fc7869`.
+- **Deploy 283:** `git revert -m 1 efbdba7`.
+- **Deploy 282:** `git revert -m 1 afcd1b2`.
+  - The cap would be lifted.
+  - Erase would keep files again.
+  - Files already deleted by an erasure cannot be restored from the CRM.
+- **Deploy 286** is documentation only.
+
+### Known limitations shipped with Deploys 282 to 286
+
+- **Counsel, open:**
+  - 18: erasure versus backups;
+  - 19: uploaded files and Erase, including files kept by an unticked box;
+  - 20: whether an unsubscribe covers one-to-one business email.
+- **Unsubscribe page:** it offers no Market Brief-only choice. That is a question for counsel (20); nothing was changed.
+- **Password reset:** Release 2 (#383) must add `crm-buyer-files.js`, `crm-client-failure.js` and `crm-environment.js` to its session check when it is next brought up to date.
+- **Next:** CRM Batch 3 (phone bottom bar, larger text and 44 px targets, the document colours), after this record.
+- **Unchanged from Deploys 279 to 281:**
+  - the PREVIEW bar and step L1;
+  - the Arabic awaiting review;
+  - `@page` margin boxes;
+  - listings outside this repository;
+  - the old sign-in functions until #382;
+  - the visitor-ID questions;
+  - the owner items at Deploys 242 to 244;
+  - #359's photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11114,7 +11245,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 281 (2026-10-21).**
+**Unchanged since U4, through Deploy 286 (2026-10-21).**
 
 ## Outstanding, unresolved by this document
 
