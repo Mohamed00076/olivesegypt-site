@@ -26,11 +26,17 @@
 }
 .crm-ui-banner p { margin: 0; flex: 1 1 240px; min-width: 0; }
 .crm-ui-banner-error { background: var(--crm-danger-bg, #fbeceb); color: var(--crm-danger, #a3312a); border: 1px solid #ecc5c1; }
+.crm-ui-banner-warning { background: #fdf3d8; color: #5c4300; border: 1px solid #e8cf8a; }
 .crm-ui-banner-notice { background: var(--crm-success-bg, #eaf5ec); color: var(--crm-success, #2f6b3a); border: 1px solid #c6e0ca; }
 .crm-ui-banner-retry {
   font: inherit; font-weight: 700; cursor: pointer; min-height: 44px; padding: 0 18px;
   border-radius: 8px; border: 1px solid currentColor; background: #fff; color: var(--crm-danger, #a3312a);
 }
+/* How much of the upload allowance is used, under the Uploaded documents heading. */
+.crm-ui-usage { margin: 8px 0 0; font-size: 13px; color: var(--crm-muted, #5f6654); }
+.crm-ui-usage-bar { display: block; height: 6px; margin-top: 4px; max-width: 320px; border-radius: 3px; background: var(--crm-border, #e2ddd0); overflow: hidden; }
+.crm-ui-usage-bar > span { display: block; height: 100%; background: var(--crm-primary, #3f4f2b); }
+.crm-ui-usage-bar.warn > span { background: #b8923a; }
 .crm-ui-banner-retry:focus-visible { outline: 3px solid var(--crm-secondary, #c9a84c); outline-offset: 2px; }
 
 /* ---- the in-page "Are you sure?" -------------------------------------- */
@@ -92,3 +98,6 @@
 .crm-ui-dialog .crm-btn-secondary { background: #fff; color: var(--crm-text, #26301a); border-color: var(--crm-border, #e2ddd0); }
 .crm-ui-dialog .crm-btn-primary { background: var(--crm-primary, #3f4f2b); color: #fff; }
 .crm-ui-dialog .crm-btn:focus-visible { outline: 3px solid var(--crm-secondary, #c9a84c); outline-offset: 2px; }
+.crm-ui-dialog label.crm-ui-dialog-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; cursor: pointer; padding: 10px 12px; border: 1px solid var(--crm-border, #e2ddd0); border-radius: 8px; }
+.crm-ui-dialog label.crm-ui-dialog-check input { width: 22px; height: 22px; min-height: 0; flex: 0 0 auto; margin: 0; padding: 0; }
+.crm-ui-dialog-check-detail { font-size: 13px; line-height: 1.5; color: var(--crm-muted, #5f6654); white-space: pre-line; margin-top: -4px; }
