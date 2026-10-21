@@ -11227,6 +11227,86 @@ Revert in reverse order, because each was built on the one before:
 
 ---
 
+## Deploys 287 to 289 — The record of 282 to 286; the Lost/Stalled reason shown and a plain Exported/Completed question; the live check's certificate WARN and request time limit (PRs #411, #412, #413)
+
+**Previous recorded deploy:** `be1772e` (Deploy 286, PR #409)
+**Approvals:**
+- **#411:** "Then I will merge #411 and you can start Batch 3."
+- **#412:**
+  - "The small PR for the visible Lost/Stalled reason and the clearer Exported/Completed confirmation goes next, then Batch 3."
+  - Then, after review: "#412: make 'Yes, mark as exported' a distinct colour… add the line 'Use this only after a shipment has actually left Egypt.'; label the history reason clearly as the buyer's current reason… Then it is ready to merge after #411."
+- **#413:** "Live check: add a non-failing WARN at 21 days of certificate validity (keep FAIL under 14). Approved: small PR giving each request a 30-second time limit with one retry."
+- **All three:** the owner then wrote "merge". The merges were made in this session in the order #411, #412, #413. Each was tested on the current `main` first, and each waited for the one before to be live with the live check green.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 287 | #411 | `97a4577` | 2026-10-21 12:21:41 | 1 | +132 / −1 | Notes only |
+| 288 | #412 | `1668a86` | 2026-10-21 12:22:39 | 6 | +52 / −8 | CRM: the Lost/Stalled reason shown; a plain Exported/Completed question |
+| 289 | #413 | `e9fbdfa` | 2026-10-21 12:23:52 | 1 | +22 / −9 | Live-check script |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 287** recorded Deploys 282 to 286.
+
+### What the deploys did
+
+- **Deploy 288 — The Lost/Stalled reason shown; a plain Exported/Completed question (#412).** Both came from the owner's phone check of Deploys 282 to 285.
+  - **Step 7 of that check:** the reason was saved but could be seen nowhere once the folded form's field was hidden. It is now shown:
+    - under the buyer's name, as "Lost/Stalled: …";
+    - beside the latest move to Lost/Stalled in Stage History, as "Buyer's current Lost/Stalled reason: …". This is a label only; the history is not changed;
+    - on the Kanban card in the Lost/Stalled column. For this, the buyer list now returns `lost_reason`, which is a read only.
+  - **Step 8 of that check:** the confirmation's "Move to Exported/Completed" read like the panel's Move button. The box now asks:
+    - "Has <Company>'s export been completed?";
+    - adds "Use this only after a shipment has actually left Egypt.";
+    - offers **No, go back** (focused) and a **gold** "Yes, mark as exported" (#b8923a, dark text, 6.1:1), distinct from the olive Move button.
+  - **Checks:** `check-crm-stage-moves.js` (63 checks).
+- **Deploy 289 — Live check (#413).**
+  - **Certificates:** OK from 21 days. A non-failing **WARN** from 14 to 20 days. **FAIL** under 14, unchanged.
+  - **Requests:** each has a 30-second limit and is tried once more on no reply. Before this, requests had no time limit, which is how one run on 2026-10-21 outlasted its own five-minute limit.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-21)
+
+- **Deployed commit:** `deployed-commit.txt` reads `e9fbdfa5a3304986126ffac5b3cf045b6a68e9b6`.
+- **Live check after each merge:**
+  - 21 OK, 0 FAIL, 0 PENDING after Deploys 287 and 288;
+  - after Deploy 289, with the new script: 21 OK, 0 WARN, 0 FAIL, 0 PENDING, in 9 s.
+- **`/assets/crm.js`** carries the gold confirm button and the line about leaving Egypt.
+- **Certificates:** valid to 2026-11-20 (29 days). The new WARN would begin from 2026-10-31 if the certificate has not been renewed by then. The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 289:** `git revert -m 1 e9fbdfa`.
+- **Deploy 288:** `git revert -m 1 1668a86`.
+- **Deploy 287** is documentation only.
+
+### Known limitations shipped with Deploys 287 to 289
+
+- **Owner choices, offered and not yet decided:**
+  - **Stage History label once a buyer has moved on:** it still reads "Buyer's current Lost/Stalled reason". An alternative wording for that case was offered.
+  - **Storing the reason on each history row:** feasible as one small PR. New moves would carry their own reason; old rows would stay without one, because history is add-only.
+- **Folded Buyer details form:** it is easy to miss on a phone, and Save Buyer is far down the page. Both are planned for Batch 3.
+- **Unchanged from Deploys 282 to 286:**
+  - counsel questions 18 to 20;
+  - #383's session-check wiring;
+  - the PREVIEW bar and step L1;
+  - the Arabic awaiting review;
+  - `@page` margin boxes;
+  - listings outside this repository;
+  - the old sign-in functions until #382;
+  - the visitor-ID questions;
+  - the owner items at Deploys 242 to 244;
+  - #359's photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11245,7 +11325,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 286 (2026-10-21).**
+**Unchanged since U4, through Deploy 289 (2026-10-21).**
 
 ## Outstanding, unresolved by this document
 
