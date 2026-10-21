@@ -432,7 +432,8 @@
       var row = document.createElement('div'); row.className = 'crm-ui-dialog-actions';
       var cancel = document.createElement('button'); cancel.type = 'button'; cancel.className = 'crm-btn crm-btn-secondary'; cancel.textContent = o.cancel || 'Cancel';
       var ok = document.createElement('button'); ok.type = 'button';
-      ok.className = 'crm-btn ' + (o.danger ? 'crm-ui-btn-danger' : 'crm-btn-primary');
+      // confirmClass: a confirm button that must not look like the button that opened the box.
+      ok.className = 'crm-btn ' + (o.danger ? 'crm-ui-btn-danger' : (o.confirmClass || 'crm-btn-primary'));
       ok.textContent = o.confirm || 'Confirm';
       row.appendChild(cancel); row.appendChild(ok); box.appendChild(row);
       back.appendChild(box);
@@ -523,9 +524,13 @@
       });
     }
     if (toStage === 'Exported/Completed') {
-      return CRM.ask({ title: 'Move ' + who + ' to Exported/Completed?',
-        message: 'Use this stage only once this buyer\u2019s export has genuinely been completed.',
-        confirm: 'Move to Exported/Completed' }).then(function (v) {
+      // Worded as a question with a plain yes or no (owner, 2026-10-21): "Move to
+      // Exported/Completed" read like the Move button that opened it.
+      return CRM.ask({ title: 'Has ' + who + '\u2019s export been completed?',
+        message: 'Use this stage only once this buyer\u2019s export has genuinely been completed.\n' +
+          'Use this only after a shipment has actually left Egypt.',
+        // Gold, not the olive of the Move button underneath (owner, 2026-10-21).
+        cancel: 'No, go back', confirm: 'Yes, mark as exported', confirmClass: 'crm-ui-btn-confirm-export' }).then(function (v) {
         // The server refuses this move without it (_crm_lib.js stageRuleError).
         return v ? { confirm_stage: 'Exported/Completed' } : null;
       });
