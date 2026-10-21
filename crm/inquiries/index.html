@@ -241,6 +241,21 @@
           });
         }
 
+        /*
+         * ?open=e123 (the dashboard's "Open newest enquiry"): open that one
+         * enquiry's details and bring it into view, once, on arrival.
+         */
+        var openKey = new URLSearchParams(window.location.search).get('open');
+        function openFromLink() {
+          if (!openKey) return;
+          var key = openKey; openKey = null;
+          var btn = Array.prototype.filter.call(document.querySelectorAll('.detail-btn'), function (b) { return b.getAttribute('data-id') === key; })[0];
+          if (!btn) return;
+          if (btn.getAttribute('aria-expanded') !== 'true') btn.click();
+          btn.closest('tr').scrollIntoView({ block: 'start' });
+          btn.focus({ preventScroll: true });
+        }
+
         function updateCount() {
           var nEnq = rows.filter(function (r) { return r.kind === 'enquiry'; }).length;
           var nLead = rows.length - nEnq;
@@ -328,6 +343,7 @@
               .sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); });
             updateCount();
             applyFilter();
+            openFromLink();
           }).catch(function (e) {
             CRM.loadError(messages, { what: 'the enquiries', key: 'enquiries', error: e, retry: load });
           });
