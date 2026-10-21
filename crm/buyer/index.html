@@ -587,7 +587,7 @@
           rows.forEach(function (r, i) { if (r.to_stage === 'Lost/Stalled') lastLost = i; });
           document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r, i) {
             return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) +
-              (i === lastLost && reason ? '<div class="crm-ui-lost-reason-row" dir="auto">Reason: ' + CRM.escapeHtml(reason) + '</div>' : '') + '</td>' +
+              (i === lastLost && reason ? '<div class="crm-ui-lost-reason-row" dir="auto">Buyer\u2019s current Lost/Stalled reason: ' + CRM.escapeHtml(reason) + '</div>' : '') + '</td>' +
               '<td>' + CRM.fmtDate(r.changed_at) + '</td><td>' + CRM.escapeHtml(r.changed_by || '') + '</td></tr>';
           }).join('');
         }
