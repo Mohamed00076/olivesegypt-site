@@ -58,6 +58,7 @@ const sql = (strings, ...vals) => {
     if (m) buyer.current_stage = params[Number(m[1]) - 1];
     return Promise.resolve([]);
   }
+  if (/^\s*INSERT INTO buyers\b/i.test(q)) return Promise.resolve([{ id: 900 + statements.length }]);
   if (/^\s*INSERT INTO buyer_stage_history/i.test(q)) {
     history.push({ id: history.length + 1, from_stage: params[1], to_stage: params[2], changed_by: params[3] });
     return Promise.resolve([]);
@@ -74,6 +75,7 @@ require.cache[neonId].exports = { neon: () => sql };
 const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
 const buyers = require(path.join(FN, 'crm-buyers.js')).handler;
+const csv = require(path.join(FN, 'crm-csv.js')).handler;
 
 const patch = async (body) => {
   statements = [];
@@ -113,7 +115,7 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   // ---- the rules themselves, run with a stand-in for the in-page question ----
   {
     const crmSrc = read('assets/crm.js');
-    const m = crmSrc.match(/CRM\.stageMoveCheck = function \(companyName, toStage\) \{[\s\S]*?\n  \};/);
+    const m = crmSrc.match(/  var typedReasons = \{\};[\s\S]*?CRM\.stageMoveCheck = function \(companyName, toStage\) \{[\s\S]*?\n  \};/);
     t('one set of stage rules, in assets/crm.js', !!m);
     const asked = [];
     let answer = null;
@@ -131,14 +133,32 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
       t('   cancelling it moves nothing', r === null);
       answer = true;
       r = await check('Test Co (fake)', 'Exported/Completed');
-      t('   Exported/Completed asks to confirm', asked.length === 3 && !asked[2].reason && /genuinely been completed/.test(asked[2].message) && JSON.stringify(r) === '{}');
+      t('   Exported/Completed asks to confirm', asked.length === 3 && !asked[2].reason && /genuinely been completed/.test(asked[2].message) && JSON.stringify(r) === '{"confirm_stage":"Exported/Completed"}', JSON.stringify(r));
       answer = false;
       r = await check('Test Co (fake)', 'Exported/Completed');
       t('   and cancelling it moves nothing', r === null);
+      // Nothing typed is lost (owner, 2026-10-21): a reason for a move that did not go through is offered again.
+      asked.length = 0;
+      answer = { reason: 'Typed once (test)' };
+      await check('Keep Co (fake)', 'Lost/Stalled');
+      answer = false;
+      await check('Keep Co (fake)', 'Lost/Stalled');
+      t('a reason typed for a move that was not saved is offered again next time', asked[1].reason.value === 'Typed once (test)', JSON.stringify(asked[1].reason));
+      CRM.stageMoveSaved('Keep Co (fake)');
+      await check('Keep Co (fake)', 'Lost/Stalled');
+      t('   and forgotten once a move is saved', asked[2].reason.value === '');
+      await check('Other Co (fake)', 'Lost/Stalled');
+      t('   and never offered for a different buyer', asked[3].reason.value === '');
     }
   }
   t('   so unsaved edits in the details form are not sent with it', !/collectForm/.test(panel));
   t('   and afterwards it reloads the logs, not the form', /refreshLogs\(\)/.test(panel) && !/loadExisting\(\)/.test(panel));
+  t('a refusal shows the server\'s own reason, on the Kanban and the buyer page',
+    /CRM\.refusalText\(result, /.test(send) && /CRM\.refusalText\(result, /.test(panel));
+  t('   a saved move forgets the kept reason (Kanban, Move stage, details form)',
+    /CRM\.stageMoveSaved\(buyer\.company_name\)/.test(send) && /CRM\.stageMoveSaved\(current\.company_name\)/.test(panel) && (page.match(/CRM\.stageMoveSaved\(/g) || []).length === 2);
+  t('   and the details form is never refilled or cleared on a refusal',
+    /saveErrorText\(result\.data \|\| \{\}\) \+ ' Your changes are still in the form\.'/.test(page));
 
   // ---- the server: one new row per move, nothing rewritten ----------------
   let r = await patch({ current_stage: 'Contacted' });
@@ -167,8 +187,81 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
     r.status === 200 && history.length === 4 && history[3].to_stage === 'Lost/Stalled' && r.statements.filter(touchesHistory).length === 1 &&
     r.statements.some((x) => /^UPDATE buyers SET/.test(x.q) && /lost_reason = \$/.test(x.q)), JSON.stringify(r.data));
 
+  // ---- the server enforces the rules, whatever sends the request (2026-10-21) ----
+  const writes = (st) => st.filter((x) => /^(INSERT|UPDATE|DELETE)\b/i.test(x.q));
+  const refused = (rr, field) => rr.status === 400 && rr.data.stage_rule === true && rr.data.fields && rr.data.fields[0] === field &&
+    typeof rr.data.reasons[field] === 'string' && writes(rr.statements).length === 0;
+  buyer.current_stage = 'Negotiation';
+  const rowsBefore = history.length;
+  r = await patch({ current_stage: 'Lost/Stalled' });
+  t('server refuses a move to Lost/Stalled with no reason', refused(r, 'lost_reason'), JSON.stringify(r.data) + ' ' + JSON.stringify(writes(r.statements)));
+  t('   and writes nothing: no UPDATE, no history row, no audit entry', writes(r.statements).length === 0 && history.length === rowsBefore && buyer.current_stage === 'Negotiation');
+  r = await patch({ current_stage: 'Lost/Stalled', lost_reason: '   ' });
+  t('   a blank reason is no reason', refused(r, 'lost_reason'));
+  r = await patch({ current_stage: 'Lost/Stalled', lost_reason: 42 });
+  t('   nor is a number', refused(r, 'lost_reason'));
+  r = await patch({ current_stage: 'Exported/Completed' });
+  t('server refuses a move to Exported/Completed with no confirmation', refused(r, 'current_stage'), JSON.stringify(r.data));
+  r = await patch({ current_stage: 'Exported/Completed', confirm_stage: true });
+  t('   "true" is not the confirmation; it must name the stage', refused(r, 'current_stage'));
+  r = await patch({ current_stage: 'Exported/Completed', confirm_stage: 'Lost/Stalled' });
+  t('   nor is another stage\'s name', refused(r, 'current_stage'));
+  t('   none of those refused moves added a history row', history.length === rowsBefore && buyer.current_stage === 'Negotiation');
+  // A whole-form save, as the folded details form sends it.
+  const form = { company_name: 'Test Olive Importers (fake)', country_region: 'EU', notes: 'edited', lost_reason: '' };
+  r = await patch({ ...form, current_stage: 'Lost/Stalled' });
+  t('the details form is held to it too: Lost/Stalled with the reason box empty is refused', refused(r, 'lost_reason'));
+  r = await patch({ ...form, current_stage: 'Lost/Stalled', lost_reason: 'Went with a local packer (test)' });
+  t('   and saves with a reason: one new history row', r.status === 200 && history.length === rowsBefore + 1 && history[history.length - 1].to_stage === 'Lost/Stalled', JSON.stringify(r.data));
+  r = await patch({ ...form, current_stage: 'Lost/Stalled', notes: 'edited again', lost_reason: '' });
+  t('editing other fields of a buyer already in Lost/Stalled is not a move, so is not refused', r.status === 200 && history.length === rowsBefore + 1, JSON.stringify(r.data));
+  r = await patch({ current_stage: 'Exported/Completed', confirm_stage: 'Exported/Completed' });
+  t('a confirmed move to Exported/Completed is accepted: one new history row', r.status === 200 && history.length === rowsBefore + 2 && history[history.length - 1].to_stage === 'Exported/Completed', JSON.stringify(r.data));
+  r = await patch({ current_stage: 'Contacted' });
+  t('an ordinary move needs nothing extra', r.status === 200 && history.length === rowsBefore + 3);
+  t('   every row before these is exactly as it was', JSON.stringify(history.slice(0, 2)) === before);
+
+  // Creating a buyer straight into one of those stages.
+  const create = async (b) => {
+    statements = [];
+    const rr = await buyers({ httpMethod: 'POST', headers: { cookie }, queryStringParameters: {}, body: JSON.stringify(b) });
+    return { status: rr.statusCode, data: JSON.parse(rr.body || '{}'), statements: statements.slice() };
+  };
+  const base = { company_name: 'New Test Buyer (fake)', country_region: 'EU' };
+  r = await create({ ...base, current_stage: 'Lost/Stalled' });
+  t('creating a buyer in Lost/Stalled without a reason is refused, nothing written', refused(r, 'lost_reason'), JSON.stringify(r.data));
+  r = await create({ ...base, current_stage: 'Exported/Completed' });
+  t('creating one in Exported/Completed without confirmation is refused', refused(r, 'current_stage'));
+  r = await create({ ...base, current_stage: 'Lost/Stalled', lost_reason: 'Old contact, no longer trading (test)' });
+  const ins = r.statements.find((x) => /^INSERT INTO buyers/.test(x.q));
+  t('   with a reason it is created, and the reason is saved (it was dropped before)',
+    r.status === 200 && ins && /lost_reason/.test(ins.q) && ins.params.includes('Old contact, no longer trading (test)'), JSON.stringify(r.data));
+  r = await create({ ...base });
+  t('   an ordinary new buyer (Lead) needs nothing extra', r.status === 200);
+
+  // CSV import.
+  statements = [];
+  const imp = await csv({ httpMethod: 'POST', headers: { cookie }, queryStringParameters: { action: 'import' }, body: JSON.stringify({ csv:
+    'company_name,country_region,current_stage,lost_reason\n' +
+    'Csv Lead Co (fake),EU,Lead,\n' +
+    'Csv Lost No Reason (fake),EU,Lost/Stalled,\n' +
+    'Csv Lost With Reason (fake),EU,Lost/Stalled,Stopped importing (test)\n' +
+    'Csv Exported (fake),EU,Exported/Completed,\n' }) });
+  const ib = JSON.parse(imp.body || '{}');
+  t('CSV import: the Lead row and the Lost/Stalled row with a reason are imported', ib.ok && ib.imported === 2, imp.body);
+  t('   a Lost/Stalled row without a reason is skipped, saying why', (ib.skipped || []).some((x) => x.line === 3 && /needs a reason: add a lost_reason column/.test(x.reason)));
+  t('   an Exported/Completed row is skipped, saying how to do it instead', (ib.skipped || []).some((x) => x.line === 5 && /needs confirming by a person/.test(x.reason)));
+  t('   and the imported reason is saved', statements.some((x) => /^INSERT INTO buyers/.test(x.q) && x.params.includes('Stopped importing (test)')));
+
+  // The automatic website-enquiry intake never puts a buyer in either stage.
+  const intake = require(path.join(FN, '_crm_intake.js'));
+  t('the website-enquiry intake never moves a buyer to Lost/Stalled or Exported/Completed',
+    Object.values(intake.PLAN).every((pl) => !['Lost/Stalled', 'Exported/Completed'].includes(pl.stage)) &&
+    intake.forwardMove('Shipment Prepared', 'Lead') === null && intake.forwardMove('Lost/Stalled', 'Sample Requested') === null);
+
+  const rowsNow = history.length;
   const unsigned = await buyers({ httpMethod: 'PATCH', headers: {}, queryStringParameters: { id: '7' }, body: JSON.stringify({ current_stage: 'Lead' }) });
-  t('a move without a CRM session is refused', unsigned.statusCode === 401 && history.length === 4);
+  t('a move without a CRM session is refused', unsigned.statusCode === 401 && history.length === rowsNow);
 
   // ---- nothing in the code rewrites history -------------------------------
   const fns = fs.readdirSync(FN).filter((f) => f.endsWith('.js'));

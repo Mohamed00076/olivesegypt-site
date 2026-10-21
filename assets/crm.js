@@ -416,6 +416,7 @@
         reasonInput = document.createElement('input');
         reasonInput.id = id + '-r'; reasonInput.type = 'text'; reasonInput.setAttribute('dir', 'auto');
         reasonInput.maxLength = o.reason.maxlength || 300;
+        if (o.reason.value) reasonInput.value = o.reason.value;
         box.appendChild(rl); box.appendChild(reasonInput);
       }
       var input = null;
@@ -488,21 +489,46 @@
    *   Exported/Completed  asks to confirm, since the stage is only for an
    *                       export that has genuinely been completed.
    * Resolves the extra fields to send with current_stage ({} for none),
-   * or null if the move was cancelled.
+   * or null if the move was cancelled. Since 2026-10-21 the server enforces
+   * the same two rules (_crm_lib.js stageRuleError), so a request that
+   * skipped this question is refused there.
    */
+  /*
+   * A reason typed for a move that then did not go through -- refused by the
+   * server, or no reply -- is kept for this page view and offered again the
+   * next time that buyer is moved to Lost/Stalled, so nothing typed is lost
+   * (owner, 2026-10-21). CRM.stageMoveSaved forgets it once a move is saved.
+   */
+  var typedReasons = {};
+  CRM.stageMoveSaved = function (companyName) { delete typedReasons[companyName || 'this buyer']; };
+
+  /*
+   * The server's own words for a refusal it explained field by field (the
+   * stage rules, a validation failure); otherwise CRM.plainError.
+   */
+  CRM.refusalText = function (result, fallback) {
+    var d = (result && result.data) || {};
+    if (d.reasons && d.fields && d.fields.length && d.reasons[d.fields[0]]) return d.reasons[d.fields[0]];
+    return CRM.plainError(result, fallback);
+  };
+
   CRM.stageMoveCheck = function (companyName, toStage) {
     var who = companyName || 'this buyer';
     if (toStage === 'Lost/Stalled') {
       return CRM.ask({ title: 'Move ' + who + ' to Lost/Stalled?',
         message: 'Say why. The reason is kept with the buyer, as their Lost / Stalled Reason.',
-        reason: { label: 'Reason', maxlength: 300 }, confirm: 'Move to Lost/Stalled' }).then(function (v) {
+        reason: { label: 'Reason', maxlength: 300, value: typedReasons[who] || '' }, confirm: 'Move to Lost/Stalled' }).then(function (v) {
+        if (v && v.reason) typedReasons[who] = v.reason;
         return v && v.reason ? { lost_reason: v.reason } : null;
       });
     }
     if (toStage === 'Exported/Completed') {
       return CRM.ask({ title: 'Move ' + who + ' to Exported/Completed?',
         message: 'Use this stage only once this buyer\u2019s export has genuinely been completed.',
-        confirm: 'Move to Exported/Completed' }).then(function (v) { return v ? {} : null; });
+        confirm: 'Move to Exported/Completed' }).then(function (v) {
+        // The server refuses this move without it (_crm_lib.js stageRuleError).
+        return v ? { confirm_stage: 'Exported/Completed' } : null;
+      });
     }
     return Promise.resolve({});
   };
