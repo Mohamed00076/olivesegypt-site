@@ -162,3 +162,7 @@
 .crm-ui-dialog label.crm-ui-dialog-check input { width: 22px; height: 22px; min-height: 0; flex: 0 0 auto; margin: 0; padding: 0; }
 .crm-ui-dialog-check-detail { font-size: 13px; line-height: 1.5; color: var(--crm-muted, #5f6654); white-space: pre-line; margin-top: -4px; }
 .crm-ui-optout { margin: 10px 0 0; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; background: var(--crm-danger-bg, #fbeceb); color: var(--crm-danger, #a3312a); border: 1px solid #ecc5c1; }
+
+/* ---- the Lost/Stalled reason, where it is seen ------------------------ */
+.crm-ui-lost-reason { flex-basis: 100%; margin-top: 4px; font-size: 13px; color: var(--crm-danger, #a3312a); }
+.crm-ui-lost-reason-row { font-size: 12px; color: var(--crm-danger, #a3312a); margin-top: 2px; }

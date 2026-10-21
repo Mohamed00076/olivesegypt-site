@@ -141,6 +141,8 @@
               card.innerHTML = '<div class="company">' + CRM.escapeHtml(r.company_name) + '</div>' +
                 '<div class="crm-muted">' + CRM.escapeHtml(r.country_region) + '</div>' +
                 '<div class="crm-muted">' + (r.next_action_due ? 'Due ' + CRM.fmtDate(r.next_action_due) : '') + '</div>' +
+                // The reason given, on a Lost/Stalled card (2026-10-21).
+                (r.current_stage === 'Lost/Stalled' && r.lost_reason ? '<div class="crm-ui-lost-reason-row" dir="auto">Reason: ' + CRM.escapeHtml(r.lost_reason) + '</div>' : '') +
                 '<a href="/crm/buyer/?id=' + r.id + '" class="crm-ui-card-open">View →</a>';
               card.appendChild(moveMenu(r));
 
@@ -204,6 +206,7 @@
           CRM.fetchJson('/api/crm/buyers?id=' + buyer.id, { method: 'PATCH', body: body }).then(function (result) {
             if (result.ok) {
               CRM.stageMoveSaved(buyer.company_name);
+              if (extra && extra.lost_reason) { buyer.lost_reason = extra.lost_reason; renderBoard(); }
               // Said in words: on a phone the card has just left the stage on screen.
               CRM.showNotice(messages, buyer.company_name + ' moved to ' + newStage + '.');
               return;

@@ -127,7 +127,7 @@ async function handleList(event, sql) {
   const rows = await sql`
     SELECT id, created_at, updated_at, created_by, assigned_to, company_name, country_region,
            contact_name, contact_email, current_stage, product_interest, next_action,
-           next_action_due, certification_gap, deleted_at
+           next_action_due, certification_gap, lost_reason, deleted_at
     FROM buyers
     WHERE deleted_at IS NULL
       AND (${stage}::text IS NULL OR current_stage = ${stage})

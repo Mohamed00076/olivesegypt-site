@@ -474,7 +474,14 @@
         function renderSummary(b) {
           var el = document.getElementById('buyer-summary');
           el.innerHTML = '<span class="' + CRM.stageBadgeClass(b.current_stage) + '">' + CRM.escapeHtml(b.current_stage || '') + '</span>' +
-            [b.contact_name, b.country_region].filter(Boolean).map(function (v) { return ' <span class="crm-muted">\u00b7 ' + CRM.escapeHtml(v) + '</span>'; }).join('');
+            [b.contact_name, b.country_region].filter(Boolean).map(function (v) { return ' <span class="crm-muted">\u00b7 ' + CRM.escapeHtml(v) + '</span>'; }).join('') +
+            /*
+             * The reason given for Lost/Stalled, where it is seen (owner,
+             * 2026-10-21): it was only in the folded form's Lost / Stalled
+             * Reason field, which shows only while the stage is Lost/Stalled.
+             */
+            (b.current_stage === 'Lost/Stalled' && b.lost_reason
+              ? '<span class="crm-ui-lost-reason" dir="auto">Lost/Stalled: ' + CRM.escapeHtml(b.lost_reason) + '</span>' : '');
           el.style.display = '';
         }
 
@@ -569,8 +576,18 @@
           var card = document.getElementById('stage-history-card');
           if (!rows.length) { card.style.display = 'none'; return; }
           card.style.display = '';
-          document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r) {
-            return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) + '</td>' +
+          /*
+           * The reason, beside the latest move to Lost/Stalled. Only the latest:
+           * the record keeps one reason, the one given last, so an earlier
+           * Lost/Stalled row may have had another. A label on the page only --
+           * the history itself is never changed.
+           */
+          var reason = current && current.lost_reason;
+          var lastLost = -1;
+          rows.forEach(function (r, i) { if (r.to_stage === 'Lost/Stalled') lastLost = i; });
+          document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r, i) {
+            return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) +
+              (i === lastLost && reason ? '<div class="crm-ui-lost-reason-row" dir="auto">Reason: ' + CRM.escapeHtml(reason) + '</div>' : '') + '</td>' +
               '<td>' + CRM.fmtDate(r.changed_at) + '</td><td>' + CRM.escapeHtml(r.changed_by || '') + '</td></tr>';
           }).join('');
         }

@@ -112,6 +112,16 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   t('   its menu starts on the current stage, "(now)", with Move off until another is chosen',
     /id="move-btn" disabled/.test(page) && /' \(now\)'/.test(page) && /getElementById\('move-btn'\)\.disabled = !e\.target\.value/.test(page));
 
+  // The reason given for Lost/Stalled is shown where it is seen (owner, 2026-10-21).
+  t('the buyer page shows "Lost/Stalled: <reason>" under the name', /Lost\/Stalled: ' \+ CRM\.escapeHtml\(b\.lost_reason\)/.test(page));
+  t('   and "Reason: …" beside the latest move to Lost/Stalled in Stage History, as a label only',
+    /i === lastLost && reason/.test(page) && !/(UPDATE|DELETE FROM) buyer_stage_history/.test(page));
+  t('   and the Kanban card in Lost/Stalled shows it too, from the list, which now carries lost_reason',
+    /r\.current_stage === 'Lost\/Stalled' && r\.lost_reason/.test(kanban) &&
+    /next_action_due, certification_gap, lost_reason, deleted_at/.test(read('netlify/functions/crm-buyers.js')));
+  t('Exported/Completed asks a plain yes-or-no question',
+    /'Has ' \+ who \+ '\\u2019s export been completed\?'/.test(read('assets/crm.js')) && /cancel: 'No, go back', confirm: 'Yes, mark as exported'/.test(read('assets/crm.js')));
+
   // ---- the rules themselves, run with a stand-in for the in-page question ----
   {
     const crmSrc = read('assets/crm.js');

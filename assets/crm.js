@@ -523,9 +523,11 @@
       });
     }
     if (toStage === 'Exported/Completed') {
-      return CRM.ask({ title: 'Move ' + who + ' to Exported/Completed?',
+      // Worded as a question with a plain yes or no (owner, 2026-10-21): "Move to
+      // Exported/Completed" read like the Move button that opened it.
+      return CRM.ask({ title: 'Has ' + who + '\u2019s export been completed?',
         message: 'Use this stage only once this buyer\u2019s export has genuinely been completed.',
-        confirm: 'Move to Exported/Completed' }).then(function (v) {
+        cancel: 'No, go back', confirm: 'Yes, mark as exported' }).then(function (v) {
         // The server refuses this move without it (_crm_lib.js stageRuleError).
         return v ? { confirm_stage: 'Exported/Completed' } : null;
       });
