@@ -61,6 +61,9 @@ const ALLOWED_FOREIGN_READS = {
   'crm-environment.js': {
     deployment_marker: 'read only if to_regclass finds it; it is created by hand on the staging database alone (staging sheet N3), never by code',
   },
+  'crm-buyers.js': {
+    contact_opt_outs: 'read only if to_regclass finds it (one row, the buyer\'s own address); created by the unsubscribe page, never here, so a CRM read cannot write to it',
+  },
   'crm-buyer-files.js': {
     buyers: 'a file is uploaded from an existing buyer\'s page, so the table exists too',
   },

@@ -2,6 +2,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
+const { normaliseEmail } = require('./_optout_lib');
 const {
   requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
   STAGES, REGIONS: REGION_LIST, ensureBuyerTables, parseId, INVALID_ID_ERROR,
@@ -170,11 +171,28 @@ async function handleGet(event, sql, id, actor) {
   const stageHistory = await dbStep('reading the stage history',
     () => sql`SELECT id, from_stage, to_stage, changed_at, changed_by FROM buyer_stage_history WHERE buyer_id = ${id} ORDER BY changed_at ASC`);
 
+  /*
+   * Has this buyer's own email address used the website's unsubscribe page?
+   * (Owner, 2026-10-20: the Email button warns.) A read of one row, for the
+   * address already on this record -- it answers yes or no and nothing
+   * else, so it cannot be used to see who else is on the list. It never
+   * writes: the table is not created here, and if it does not exist yet
+   * (nobody has ever unsubscribed) the answer is simply no.
+   */
+  const emailOptedOut = await dbStep('checking the email against the unsubscribe list', async () => {
+    const e = normaliseEmail(rows[0].contact_email);
+    if (!e) return false;
+    const present = (await sql`SELECT to_regclass('public.contact_opt_outs') IS NOT NULL AS present`)[0].present;
+    if (!present) return false;
+    const o = await sql`SELECT status FROM contact_opt_outs WHERE email = ${e} LIMIT 1`;
+    return !!o[0] && o[0].status === 'unsubscribed';
+  });
+
   // Rule 22: audit log of access to sensitive records -- reads included, not just writes.
   await dbStep('writing the audit entry',
     () => audit(sql, actor, 'read', 'buyer', id, null));
 
-  return json(200, { ...rows[0], activity_log: activity, stage_history: stageHistory });
+  return json(200, { ...rows[0], activity_log: activity, stage_history: stageHistory, email_opted_out: emailOptedOut });
 }
 
 async function handleCreate(event, sql, actor) {
