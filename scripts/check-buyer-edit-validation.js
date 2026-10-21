@@ -85,7 +85,7 @@ const patch = async (body) => {
   const page = fs.readFileSync(path.join(ROOT, 'crm/buyer/index.html'), 'utf8');
   const m = page.match(/function saveErrorText\(d\) \{[\s\S]*?\n        \}/);
   t('the buyer page has a function that words a refused save', !!m, 'saveErrorText is missing');
-  t('   and uses it when a save is refused', /showStatus\(saveErrorText\(result\.data \|\| \{\}\), false(, 'form-status')?\)/.test(page));
+  t('   and uses it when a save is refused', /showStatus\(saveErrorText\(result\.data \|\| \{\}\)( \+ ' Your changes are still in the form\.')?, false(, 'form-status')?\)/.test(page));
   if (m) {
     const labels = { company_name: 'Company Name *', country_region: 'Region *' };
     // The page's own CRM helpers, for CRM.plainError.

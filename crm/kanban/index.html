@@ -203,6 +203,7 @@
           var body = Object.assign({ current_stage: newStage }, extra);
           CRM.fetchJson('/api/crm/buyers?id=' + buyer.id, { method: 'PATCH', body: body }).then(function (result) {
             if (result.ok) {
+              CRM.stageMoveSaved(buyer.company_name);
               // Said in words: on a phone the card has just left the stage on screen.
               CRM.showNotice(messages, buyer.company_name + ' moved to ' + newStage + '.');
               return;
@@ -211,7 +212,8 @@
               buyer.current_stage = previousStage; // revert on failure
               renderBoard();
               CRM.showError(messages, buyer.company_name + ' was not moved to ' + newStage + '. ' +
-                CRM.plainError(result, 'The server did not accept the move. The card is back where it was.'));
+                CRM.refusalText(result, 'The server did not accept the move.') + ' The card is back where it was.' +
+                (extra && extra.lost_reason ? ' The reason you typed is kept: choose Lost/Stalled again to send it.' : ''));
             }
           }).catch(function (e) {
             /*

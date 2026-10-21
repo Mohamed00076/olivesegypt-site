@@ -526,7 +526,9 @@
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId), { method: 'PATCH', body: body }).then(function (result) {
             btn.disabled = false;
             if (!result.ok) {
-              showStatus(current.company_name + ' was not moved to ' + to + '. ' + CRM.plainError(result, 'The server did not accept the move, and nothing was changed.'), false);
+              // The panel stays open on the chosen stage, and a typed reason is offered again (CRM.stageMoveCheck).
+              showStatus(current.company_name + ' was not moved to ' + to + '. ' + CRM.refusalText(result, 'The server did not accept the move.') +
+                ' Nothing was changed.' + (extra.lost_reason ? ' The reason you typed is kept: press Move to send it again.' : ''), false);
               return;
             }
             current.current_stage = to;
@@ -535,6 +537,7 @@
             toggleLostReason();
             renderSummary(current);
             toggleMovePanel(false);
+            CRM.stageMoveSaved(current.company_name);
             showStatus('Moved to ' + to + '.', true);
             refreshLogs();
           }).catch(function (err) {
@@ -909,12 +912,14 @@
           req.then(function (result) {
             saveBtn.disabled = false;
             if (!result.ok) {
-              showStatus(saveErrorText(result.data || {}), false, 'form-status');
+              // Nothing in the form is refilled or cleared on a refusal: what was typed stays, to correct and save again.
+              showStatus(saveErrorText(result.data || {}) + ' Your changes are still in the form.', false, 'form-status');
               return;
             }
             if (isNew) {
               window.location.href = '/crm/buyer/?id=' + result.data.id + '&saved=1';
             } else {
+              CRM.stageMoveSaved(document.getElementById('company_name').value.trim());
               showStatus('Saved.', true, 'form-status');
               checkCertificationGap(payload);
               // The quick actions use the saved number and address, so they follow the save.

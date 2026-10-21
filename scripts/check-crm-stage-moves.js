@@ -115,7 +115,7 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   // ---- the rules themselves, run with a stand-in for the in-page question ----
   {
     const crmSrc = read('assets/crm.js');
-    const m = crmSrc.match(/CRM\.stageMoveCheck = function \(companyName, toStage\) \{[\s\S]*?\n  \};/);
+    const m = crmSrc.match(/  var typedReasons = \{\};[\s\S]*?CRM\.stageMoveCheck = function \(companyName, toStage\) \{[\s\S]*?\n  \};/);
     t('one set of stage rules, in assets/crm.js', !!m);
     const asked = [];
     let answer = null;
@@ -137,10 +137,28 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
       answer = false;
       r = await check('Test Co (fake)', 'Exported/Completed');
       t('   and cancelling it moves nothing', r === null);
+      // Nothing typed is lost (owner, 2026-10-21): a reason for a move that did not go through is offered again.
+      asked.length = 0;
+      answer = { reason: 'Typed once (test)' };
+      await check('Keep Co (fake)', 'Lost/Stalled');
+      answer = false;
+      await check('Keep Co (fake)', 'Lost/Stalled');
+      t('a reason typed for a move that was not saved is offered again next time', asked[1].reason.value === 'Typed once (test)', JSON.stringify(asked[1].reason));
+      CRM.stageMoveSaved('Keep Co (fake)');
+      await check('Keep Co (fake)', 'Lost/Stalled');
+      t('   and forgotten once a move is saved', asked[2].reason.value === '');
+      await check('Other Co (fake)', 'Lost/Stalled');
+      t('   and never offered for a different buyer', asked[3].reason.value === '');
     }
   }
   t('   so unsaved edits in the details form are not sent with it', !/collectForm/.test(panel));
   t('   and afterwards it reloads the logs, not the form', /refreshLogs\(\)/.test(panel) && !/loadExisting\(\)/.test(panel));
+  t('a refusal shows the server\'s own reason, on the Kanban and the buyer page',
+    /CRM\.refusalText\(result, /.test(send) && /CRM\.refusalText\(result, /.test(panel));
+  t('   a saved move forgets the kept reason (Kanban, Move stage, details form)',
+    /CRM\.stageMoveSaved\(buyer\.company_name\)/.test(send) && /CRM\.stageMoveSaved\(current\.company_name\)/.test(panel) && (page.match(/CRM\.stageMoveSaved\(/g) || []).length === 2);
+  t('   and the details form is never refilled or cleared on a refusal',
+    /saveErrorText\(result\.data \|\| \{\}\) \+ ' Your changes are still in the form\.'/.test(page));
 
   // ---- the server: one new row per move, nothing rewritten ----------------
   let r = await patch({ current_stage: 'Contacted' });
