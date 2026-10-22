@@ -233,7 +233,13 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
     t('   the current page is marked for screen readers, and More says whether it is open',
       /aria-current="page"/.test(bar) && /aria-expanded/.test(bar) && /aria-controls="crm-ui-more"/.test(bar) && /e\.key === 'Escape'/.test(bar));
     t('   drawn by every page with the CRM menu, which also marks the page crm-ui-app',
-      /document\.body\.classList\.add\('crm-ui-app'\);\s*CRM\.tabBar\(active\);/.test(js));
+      /document\.body\.classList\.add\('crm-ui-app'\);[\s\S]{0,160}CRM\.tabBar\(active\);/.test(js));
+    t('   a tap outside More closes it and puts focus back on More unless the tap went to a field or link',
+      /if \(!a \|\| a === document\.body \|\| more\.contains\(a\)\) moreBtn\.focus\(\);/.test(bar));
+    t('   Log out is set apart: red, below a rule, with space above',
+      /\.crm-ui-more button \{ color: var\(--crm-danger\); border-top: 1px solid var\(--crm-border\);[^}]*margin-top: 6px;/.test(css));
+    t('   nothing scrolled into view stops under the bars (scroll padding on the page)',
+      /html\.crm-ui-app \{ scroll-padding-bottom: calc\(150px/.test(css) && /document\.documentElement\.classList\.add\('crm-ui-app'\)/.test(js));
     t('   shown under 640px only, replacing the top-bar links there, never printed',
       /\.crm-ui-tabbar \{ display: none; \}/.test(css) && /@media \(max-width: 640px\) \{\s*body\.crm-ui-app \{ padding-bottom/.test(css) &&
       /body\.crm-ui-app \.crm-header \.crm-nav \{ display: none; \}/.test(css) && /@media print \{ \.crm-ui-tabbar \{ display: none !important; \} \}/.test(css));
@@ -244,8 +250,11 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
       /body\.crm-ui-app \.crm-btn \{ min-height: 44px;/.test(css) && /body\.crm-ui-app select \{ min-height: 44px; font-size: 16px; \}/.test(css) && /body\.crm-ui-app \{ font-size: 15px; \}/.test(css));
     const buyer = read('crm/buyer/index.html');
     t('Buyer details says "Tap to edit" while folded, and Save stays in view on a phone',
-      /class="crm-ui-fold-open-hint"[^>]*>Tap to edit</.test(buyer) && /<div class="crm-ui-savebar"><button type="submit" class="crm-btn crm-btn-primary" id="save-btn">/.test(buyer) &&
+      /class="crm-ui-fold-open-hint"[^>]*>Tap to edit</.test(buyer) && /<div class="crm-ui-savebar">\s*<button type="submit" class="crm-btn crm-btn-primary" id="save-btn">/.test(buyer) &&
       /\.crm-ui-savebar \{\s*position: sticky;/.test(css) && /\.crm-ui-fold \{ overflow: visible; \}/.test(css));
+    t('Buyer details has Cancel: it asks before discarding changes, then folds the form back to the saved record',
+      /id="details-cancel">Cancel</.test(buyer) && /confirm: 'Discard changes'/.test(buyer) && /fillForm\(current\); snapshotForm\(\);/.test(buyer) &&
+      /fold\.open = false;/.test(buyer) && /if \(isNew\) \{ window\.location\.href = '\/crm\/buyers\/'; return; \}/.test(buyer));
     const signIn = ['crm/login/index.html', 'crm/forgot/index.html', 'crm/reset/index.html', 'crm/change-password/index.html'].filter((f) => fs.existsSync(path.join(ROOT, f)));
     t(`the sign-in pages (${signIn.length}) still load neither crm-ui.css nor crm.js, so none of this reaches them`,
       signIn.length > 0 && signIn.every((f) => !/crm-ui\.css|assets\/crm\.js/.test(read(f))));

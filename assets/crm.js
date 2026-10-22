@@ -157,6 +157,7 @@
     // The working pages' look (assets/crm-ui.css, Batch 3): only pages that
     // draw this bar get the class, so the sign-in pages are untouched.
     document.body.classList.add('crm-ui-app');
+    document.documentElement.classList.add('crm-ui-app');   // for scroll-padding, which belongs on <html>
     CRM.tabBar(active);
     CRM.envBadge();
   };
@@ -207,8 +208,14 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !more.hidden) { setOpen(false); moreBtn.focus(); }
     });
+    // A tap anywhere else closes it. Focus goes back to More unless the tap
+    // itself put it somewhere (a field, a link), which is where the person wants it.
     document.addEventListener('click', function (e) {
-      if (!more.hidden && !more.contains(e.target) && !moreBtn.contains(e.target)) setOpen(false);
+      if (!more.hidden && !more.contains(e.target) && !moreBtn.contains(e.target)) {
+        setOpen(false);
+        var a = document.activeElement;
+        if (!a || a === document.body || more.contains(a)) moreBtn.focus();
+      }
     });
   };
 

@@ -247,7 +247,11 @@ body.crm-ui-app :focus-visible { outline: 3px solid var(--crm-secondary); outlin
     color: var(--crm-text); text-decoration: none; background: none; border: 0; text-align: left; cursor: pointer;
   }
   .crm-ui-more a:hover, .crm-ui-more button:hover { background: #f7f2e4; }
-  .crm-ui-more button { color: var(--crm-danger); border-top: 1px solid var(--crm-border); border-radius: 0 0 8px 8px; }
+  /* Log out: apart from the links, in red, below a rule. */
+  .crm-ui-more button { color: var(--crm-danger); border-top: 1px solid var(--crm-border); border-radius: 0 0 8px 8px; margin-top: 6px; padding-top: 4px; }
+  /* A field brought into view (tapped, tabbed to, or scrolled to by the browser)
+     stops above the bottom bar and the Save bar, never underneath them. */
+  html.crm-ui-app { scroll-padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
 }
 @media print { .crm-ui-tabbar { display: none !important; } }
 

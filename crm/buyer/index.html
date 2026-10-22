@@ -237,7 +237,10 @@
 
           <div id="form-status" class="crm-status" style="display:none; margin-top:12px;" role="status" aria-live="polite"></div>
           <!-- On a phone this bar stays on screen while the form does (Batch 3). -->
-          <div class="crm-ui-savebar"><button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Save Buyer</button></div>
+          <div class="crm-ui-savebar">
+            <button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Save Buyer</button>
+            <button type="button" class="crm-btn crm-btn-secondary" id="details-cancel">Cancel</button>
+          </div>
         </form>
       </details>
 
@@ -939,6 +942,7 @@
             } else {
               CRM.stageMoveSaved(document.getElementById('company_name').value.trim());
               showStatus('Saved.', true, 'form-status');
+              snapshotForm();
               checkCertificationGap(payload);
               // The quick actions use the saved number and address, so they follow the save.
               renderQuick(Object.assign({}, current, payload));
@@ -1061,6 +1065,34 @@
           });
         });
 
+        /*
+         * Cancel: close Buyer details without saving (owner, 2026-10-22).
+         * If anything was changed since the form was opened (or last saved),
+         * it asks first; on yes the form goes back to the saved record and
+         * folds. On Add Buyer, Cancel leaves for the Buyers list instead.
+         * Nothing is sent to the server either way.
+         */
+        var formSnapshot = null;
+        function snapshotForm() { formSnapshot = JSON.stringify(collectForm()); }
+        function formChanged() { return formSnapshot !== null && JSON.stringify(collectForm()) !== formSnapshot; }
+        document.getElementById('details-fold').addEventListener('toggle', function (e) {
+          if (e.target.open) snapshotForm();
+        });
+        document.getElementById('details-cancel').addEventListener('click', function () {
+          var changed = formChanged();
+          (changed ? CRM.ask({ title: 'Discard your changes?', message: 'The changes you made in Buyer details have not been saved.',
+            cancel: 'Keep editing', confirm: 'Discard changes', danger: true }) : Promise.resolve(true)).then(function (yes) {
+            if (!yes) return;
+            if (isNew) { window.location.href = '/crm/buyers/'; return; }
+            if (changed && current) { fillForm(current); snapshotForm(); }
+            showStatus('', true, 'form-status');
+            document.getElementById('form-status').style.display = 'none';
+            var fold = document.getElementById('details-fold');
+            fold.open = false;
+            fold.querySelector('summary').focus();
+          });
+        });
+
         populateSelects();
         CRM.requireAuth().then(function () {
           CRM.renderNav('Buyers');
@@ -1068,6 +1100,7 @@
             document.getElementById('page-title').textContent = 'Add Buyer';
             document.getElementById('details-fold').open = true;
             toggleLostReason();
+            snapshotForm();
           } else {
             return loadExisting();
           }
