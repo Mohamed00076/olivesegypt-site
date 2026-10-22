@@ -255,7 +255,7 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
     t('Buyer details has Cancel: it asks before discarding changes, then folds the form back to the saved record',
       /id="details-cancel">Cancel</.test(buyer) && /confirm: 'Discard changes'/.test(buyer) && /fillForm\(current\); snapshotForm\(\);/.test(buyer) &&
       /fold\.open = false;/.test(buyer) && /if \(isNew\) \{ window\.location\.href = '\/crm\/buyers\/'; return; \}/.test(buyer));
-    const signIn = ['crm/login/index.html', 'crm/forgot/index.html', 'crm/reset/index.html', 'crm/change-password/index.html'].filter((f) => fs.existsSync(path.join(ROOT, f)));
+    const signIn = ['crm/login/index.html', 'crm/forgot-password/index.html', 'crm/reset-password/index.html', 'crm/change-password/index.html'].filter((f) => fs.existsSync(path.join(ROOT, f)));
     t(`the sign-in pages (${signIn.length}) still load neither crm-ui.css nor crm.js, so none of this reaches them`,
       signIn.length > 0 && signIn.every((f) => !/crm-ui\.css|assets\/crm\.js/.test(read(f))));
   }
