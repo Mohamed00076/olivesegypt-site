@@ -156,6 +156,7 @@
     if (btn) btn.addEventListener('click', CRM.logout);
     // The working pages' look (assets/crm-ui.css, Batch 3): only pages that
     // draw this bar get the class, so the sign-in pages are untouched.
+    CRM.dateTexts();
     document.body.classList.add('crm-ui-app');
     document.documentElement.classList.add('crm-ui-app');   // for scroll-padding, which belongs on <html>
     CRM.tabBar(active);
@@ -280,6 +281,43 @@
     var d = new Date(s);
     if (isNaN(d.getTime())) return s;
     return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+  };
+
+  /*
+   * The chosen date in words, under every date field (owner, 2026-10-22):
+   * a phone shows a date field in its own format (10/23/2026, or 23/10 in
+   * another country), which can be misread. Under each one, in the CRM's own
+   * format: "23 Oct 2026", or "No date chosen". The field itself is
+   * unchanged. Screen readers hear it with the field (aria-describedby) and
+   * when it changes (aria-live). A field filled in by code, not by typing,
+   * is caught by CRM.refreshDateTexts().
+   */
+  CRM.dateTexts = function () {
+    Array.prototype.forEach.call(document.querySelectorAll('input[type=date]'), function (input) {
+      if (input.getAttribute('data-crm-date-text')) return;
+      if (!input.id) return;
+      var p = document.createElement('p');
+      p.className = 'crm-ui-date-text';
+      p.id = input.id + '-text';
+      p.setAttribute('aria-live', 'polite');
+      input.insertAdjacentElement('afterend', p);
+      input.setAttribute('data-crm-date-text', p.id);
+      var by = input.getAttribute('aria-describedby');
+      input.setAttribute('aria-describedby', (by ? by + ' ' : '') + p.id);
+      var update = function () { CRM.refreshDateTexts(); };
+      input.addEventListener('input', update);
+      input.addEventListener('change', update);
+      if (input.form) input.form.addEventListener('reset', function () { setTimeout(update, 0); });
+    });
+    CRM.refreshDateTexts();
+  };
+  CRM.refreshDateTexts = function () {
+    Array.prototype.forEach.call(document.querySelectorAll('input[type=date][data-crm-date-text]'), function (input) {
+      var p = document.getElementById(input.getAttribute('data-crm-date-text'));
+      if (!p) return;
+      var text = input.value ? CRM.fmtDate(input.value) : 'No date chosen';
+      if (p.textContent !== text) p.textContent = text;
+    });
   };
 
   /* ---------------------------------------------------------------------

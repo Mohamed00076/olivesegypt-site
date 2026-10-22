@@ -275,3 +275,6 @@ body.crm-ui-app :focus-visible { outline: 3px solid var(--crm-secondary); outlin
 }
 /* The <details> box must not scroll inside itself, or the Save bar inside it cannot stick. */
 .crm-ui-fold { overflow: visible; }
+
+/* The chosen date in words, under each date field (CRM.dateTexts). */
+.crm-ui-date-text { margin: 4px 0 0; font-size: 13px; color: var(--crm-muted, #5f6654); }

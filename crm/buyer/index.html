@@ -340,6 +340,7 @@
           document.getElementById('certification_gap').checked = !!b.certification_gap;
           document.getElementById('next_action').value = b.next_action || '';
           document.getElementById('next_action_due').value = b.next_action_due ? String(b.next_action_due).slice(0, 10) : '';
+          CRM.refreshDateTexts();
           document.getElementById('lost_reason').value = b.lost_reason || '';
           document.getElementById('notes').value = b.notes || '';
           var interest = Array.isArray(b.product_interest) ? b.product_interest : [];
