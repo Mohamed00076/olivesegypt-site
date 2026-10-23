@@ -9,7 +9,8 @@
  * Holds the fixes from the forms and zoom checks:
  *   F1  after Send, keyboard focus comes back to the form (or to what comes
  *       next: the guide's link, or the confirmation), not the top of the page;
- *   F2  no field is named only by its placeholder: each has a visible label;
+ *   F2  no field is named only by its placeholder: each has a visible label,
+ *       and the placeholder that only repeated it is gone;
  *   F3  required fields carry a visible *;
  *   F4  name, email, company, country and phone carry autofill hints, and
  *       phone fields bring up the number pad;
@@ -53,6 +54,8 @@ for (const f of LEAD_PAGES) {
     JSON.stringify(fields.filter((x) => x.star !== x.required).map((x) => x.field)));
   t(`${f}:    email, company and country carry autofill hints (F4)`,
     fields.filter((x) => AUTO[x.field]).every((x) => x.tag.includes(`autocomplete="${AUTO[x.field]}"`)));
+  t(`${f}:    no labelled field repeats its label as grey placeholder text (owner, 2026-10-23)`, fields.every((x) => !/ placeholder=/.test(x.tag)),
+    JSON.stringify(fields.filter((x) => / placeholder=/.test(x.tag)).map((x) => x.field)));
   t(`${f}:    no select is named by an aria-label instead of its visible label`, fields.filter((x) => /^<select/.test(x.tag)).every((x) => !/aria-label=/.test(x.tag)));
 }
 for (const f of ['index.html', 'ar/index.html']) {
