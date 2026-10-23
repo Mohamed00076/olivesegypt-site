@@ -266,6 +266,20 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
       signIn.length > 0 && signIn.every((f) => !/crm-ui\.css|assets\/crm\.js/.test(read(f))));
   }
 
+  // ---- Accessibility scan (2026-10-23): what axe found, held here ----------
+  {
+    const docForm = read('crm/document/index.html');
+    t('the Buyers filters have names a screen reader can say',
+      /id="stage-filter" aria-label="Filter by stage"/.test(read('crm/buyers/index.html')) && /id="region-filter" aria-label="Filter by region"/.test(read('crm/buyers/index.html')));
+    t('every line-item field on a document form is named after its column',
+      ['li-desc', 'li-unit', 'li-qty', 'li-price', 'pk-desc', 'pk-packing', 'pk-packages', 'pk-net', 'pk-gross'].every((c) => new RegExp(`class="${c}" aria-label="[^"]+"`).test(docForm)));
+    t('the document view\'s sideways-scrolling body can be reached from the keyboard',
+      /<div class="doc-body" tabindex="0" role="region" aria-label="Document contents">/.test(read('crm/document/view/index.html')));
+    t('status messages on Buyers, Documents and Data quality are announced',
+      /id="deleted-status"[^>]*role="status" aria-live="polite"/.test(read('crm/buyers/index.html')) &&
+      ['crm/documents/index.html', 'crm/data-quality/index.html'].every((f) => /id="status"[^>]*role="status" aria-live="polite"/.test(read(f))));
+  }
+
   console.log(`\ncrm-ui ${fail ? 'FAILED' : 'OK'} -- a failure is said in the page, recorded once, and the sign-in pages are left alone.`);
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

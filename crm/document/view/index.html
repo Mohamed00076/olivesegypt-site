@@ -52,6 +52,8 @@
       .doc-goldbar { height: 5px; background: var(--doc-gold); }
 
       .doc-body { padding: 26px 1.5cm 18px; display: flex; flex-direction: column; flex: 1; }
+      .doc-body:focus { outline: none; }
+      .doc-body:focus-visible { outline: 2px solid var(--doc-green); outline-offset: -2px; }
 
       /* title row --------------------------------------------------------- */
       .doc-titlerow { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-bottom: 20px; }
@@ -268,7 +270,7 @@
       </header>
       <div class="doc-goldbar"></div>
 
-      <div class="doc-body">
+      <div class="doc-body" tabindex="0" role="region" aria-label="Document contents">
         <div class="doc-titlerow">
           <div>
             <div class="doc-kind" id="doc-title-type">Quotation</div>
