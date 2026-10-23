@@ -969,6 +969,13 @@
   query = {lang = "ar"}
 
 [[redirects]]
+  from = "/accessibility"
+  to = "/ar/accessibility"
+  status = 301
+  force = true
+  query = {lang = "ar"}
+
+[[redirects]]
   from = "/business-card"
   to = "/ar/business-card"
   status = 301
