@@ -112,7 +112,7 @@
     <meta name="theme-color" content="#3f4f2b" />
   </head>
   <body class="bg-muted/30">
-    <div class="no-print sticky top-0 z-10 bg-background border-b border-border py-3 mb-2">
+    <div class="no-print sticky top-0 z-10 bg-background border-b border-border py-3 mb-2" role="region" aria-label="شريط الأدوات">
       <div class="container doc-toolbar mx-auto px-4 flex items-center justify-between">
         <!--
           Back to the CRM, not to the public Arabic site, for the same reason
@@ -129,11 +129,11 @@
       </div>
     </div>
 
-    <div class="sheet">
+    <div class="sheet" role="main">
       <h1 class="sr-only">الشركة الثلاثية للتنمية الصناعية &mdash; نموذج الترويسة الرسمية</h1>
       <!-- One canonical address, per C-22. Email, phone and web address are
            isolated LTR so an RTL page cannot reorder their characters. -->
-      <header class="doc-head">
+      <header class="doc-head" role="none">
         <div class="doc-brand">
           <div class="doc-logo-tile"><img src="/assets/logo-BJ1TOn9V.png" alt="شعار الشركة الثلاثية للتنمية الصناعية" width="236" height="289"/></div>
           <div>
@@ -151,7 +151,7 @@
       </header>
       <div class="doc-goldbar"></div>
       <div class="lh-body" contenteditable="true" data-placeholder="اضغط هنا لكتابة خطابك..."></div>
-      <footer class="doc-foot">الشركة الثلاثية للتنمية الصناعية &middot; ميدان العروبة، التجمع الخامس، القاهرة الجديدة، القاهرة، مصر &middot; <span class="ltr">sales@olivesegypt.com</span> &middot; <span class="ltr">olivesegypt.com</span></footer>
+      <footer class="doc-foot" role="none">الشركة الثلاثية للتنمية الصناعية &middot; ميدان العروبة، التجمع الخامس، القاهرة الجديدة، القاهرة، مصر &middot; <span class="ltr">sales@olivesegypt.com</span> &middot; <span class="ltr">olivesegypt.com</span></footer>
     </div>
   </body>
 </html>
