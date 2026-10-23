@@ -72,8 +72,12 @@ require.cache[neonId].filename = neonId;
 require.cache[neonId].loaded = true;
 require.cache[neonId].exports = { neon: () => sql };
 
+const fx = require('./_session_fixtures');
+
+fx.install(FN);
+
 const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
-const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
+const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff', fx.crmClaims('staff'))}`;
 const buyers = require(path.join(FN, 'crm-buyers.js')).handler;
 const csv = require(path.join(FN, 'crm-csv.js')).handler;
 

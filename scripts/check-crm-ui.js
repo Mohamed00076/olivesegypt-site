@@ -135,9 +135,11 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
   process.env.DATABASE_URL = 'postgres://stub';
   process.env.CRM_SESSION_SECRET = 'test-secret-not-a-real-one';
   delete process.env.RESEND_API_KEY; delete process.env.NOTIFY_EMAIL;
+  const fx = require('./_session_fixtures');
+  fx.install(FN);
   const { signCrmSession, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
   const { handler } = require(path.join(FN, 'crm-client-failure.js'));
-  const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff')}`;
+  const cookie = `${CRM_COOKIE_NAME}=${signCrmSession('staff', fx.crmClaims('staff'))}`;
   const quiet = async (fn) => { const e = console.error, l = console.log, w = console.warn; console.error = console.log = console.warn = () => {}; try { return await fn(); } finally { console.error = e; console.log = l; console.warn = w; } };
   const send = (body, c = cookie, method = 'POST') => quiet(() => handler({ httpMethod: method, headers: c ? { cookie: c } : {}, queryStringParameters: {}, body: JSON.stringify(body) }));
 
