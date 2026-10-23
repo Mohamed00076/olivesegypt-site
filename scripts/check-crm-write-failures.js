@@ -112,14 +112,22 @@ t(`every write call on every CRM page was examined (${found} found)`, found >= 8
 // ---- the actions where the next step matters ----------------------------------
 {
   const kanban = fs.readFileSync(path.join(ROOT, 'crm/kanban/index.html'), 'utf8');
+  // In the page since 2026-10-20 (CRM.showError), not the browser's pop-up.
   t('a Kanban move with no reply reloads the board from the server instead of guessing',
-    /reloadBoard\(\)\.then\(function \(\) \{ window\.alert\(msg\); \}/.test(kanban));
+    /reloadBoard\(\)\.then\(function \(\) \{ CRM\.showError\(messages, msg\); \}/.test(kanban));
+  t('   a refused Kanban move says so in the page and puts the card back',
+    /buyer\.current_stage = previousStage; \/\/ revert on failure\s*renderBoard\(\);\s*CRM\.showError\(messages,/.test(kanban));
   const buyer = fs.readFileSync(path.join(ROOT, 'crm/buyer/index.html'), 'utf8');
   t('creating a buyer warns against adding it twice; editing says saving again is harmless',
     /so it is not added twice/.test(buyer) && /saving them again does no harm/.test(buyer));
   const view = fs.readFileSync(path.join(ROOT, 'crm/document/view/index.html'), 'utf8');
   t('voiding a document reports the server\'s refusal, not only success',
-    /if \(result\.ok\) \{ window\.location\.reload\(\); return; \}\s*window\.alert\(\(result\.data && result\.data\.error\)/.test(view));
+    /if \(result\.ok\) \{ window\.location\.reload\(\); return; \}\s*CRM\.showError\(messages, d\.doc_number \+ ' was not voided\. ' \+ CRM\.plainError\(result/.test(view));
+  // No CRM page uses the browser's pop-ups any more: failures are banners, questions are CRM.ask.
+  const pages = ['crm/index.html', 'crm/inquiries/index.html', 'crm/buyers/index.html', 'crm/buyer/index.html', 'crm/kanban/index.html',
+    'crm/documents/index.html', 'crm/document/index.html', 'crm/document/view/index.html', 'crm/data-quality/index.html'];
+  const popups = pages.filter((p) => /window\.(alert|confirm|prompt)\(|[^.\w](alert|confirm|prompt)\(/.test(fs.readFileSync(path.join(ROOT, p), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')));
+  t('no CRM page opens a browser pop-up (alert, confirm or prompt)', popups.length === 0, popups.join(', '));
 }
 
 const ok = fail === 0;

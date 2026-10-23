@@ -93,6 +93,9 @@ const { _resetThrottle } = require(path.join(FN, '_failure_lib.js'));
 const CRM = [
   ['crm-activity.js', 'GET'], ['crm-auth-me.js', 'GET'], ['crm-buyers.js', 'GET'], ['crm-csv.js', 'GET'],
   ['crm-dashboard.js', 'GET'], ['crm-data-quality.js', 'GET'], ['crm-documents.js', 'GET'],
+  // Added when this branch was brought up to date with main (2026-10-23):
+  ['crm-buyer-files.js', 'GET', null, { usage: '1' }], ['crm-client-failure.js', 'POST', { page: '/crm/', what: 'dashboard', kind: 'no-reply' }],
+  ['crm-environment.js', 'GET'],
   ['crm-auth-change.js', 'POST', { current_password: 'x', new_password: 'y', confirm_password: 'y' }],
   ['inquiries.js', 'DELETE', null, { id: '1' }], ['leads.js', 'DELETE', null, { id: '1' }],
 ];

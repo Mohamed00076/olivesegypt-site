@@ -3,7 +3,7 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const {
-  readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES, csvCell,
+  readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES, csvCell, stageRuleError,
 } = require('./_crm_lib');
 const { currentCrmSession } = require('./_sessions');
 
@@ -118,6 +118,20 @@ function validateImportRow(headerMap, rawRow) {
 
   let current_stage = get('current_stage') || 'Lead';
   if (!STAGES.has(current_stage)) current_stage = 'Lead';
+  /*
+   * The stage rules apply to an import too (_crm_lib.js stageRuleError,
+   * owner 2026-10-21). A Lost/Stalled row needs its reason in a lost_reason
+   * column. An Exported/Completed row needs a person's confirmation, which a
+   * file cannot give: it is skipped, with the reason, so it can be imported
+   * at an earlier stage and moved in the CRM, which asks.
+   */
+  const lost_reason = get('lost_reason').slice(0, 300);
+  if (current_stage === 'Exported/Completed') {
+    return { error: 'current_stage Exported/Completed needs confirming by a person: import this buyer at an earlier stage, then move it in the CRM' };
+  }
+  if (stageRuleError(current_stage, { lost_reason })) {
+    return { error: 'current_stage Lost/Stalled needs a reason: add a lost_reason column with one for this row' };
+  }
 
   const contact_email = get('contact_email');
   if (contact_email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) {
@@ -141,6 +155,7 @@ function validateImportRow(headerMap, rawRow) {
       certifications_required: get('certifications_required') || null,
       next_action: get('next_action') || null,
       notes: get('notes') || null,
+      lost_reason: lost_reason || null,
     },
   };
 }
@@ -171,12 +186,12 @@ async function handleImport(event, sql, actor) {
         created_by, assigned_to, company_name, country_region, contact_name, contact_title,
         contact_email, contact_phone, contact_whatsapp, lead_source, current_stage,
         packaging_format, estimated_volume, target_price, quoted_price, incoterm,
-        certifications_required, next_action, notes
+        certifications_required, next_action, notes, lost_reason
       ) VALUES (
         ${actor}, ${actor}, ${row.company_name}, ${row.country_region}, ${row.contact_name}, ${row.contact_title},
         ${row.contact_email}, ${row.contact_phone}, ${row.contact_whatsapp}, ${row.lead_source}, ${row.current_stage},
         ${row.packaging_format}, ${row.estimated_volume}, ${row.target_price}, ${row.quoted_price}, ${row.incoterm},
-        ${row.certifications_required}, ${row.next_action}, ${row.notes}
+        ${row.certifications_required}, ${row.next_action}, ${row.notes}, ${row.lost_reason}
       )
       RETURNING id
     `;

@@ -58,8 +58,8 @@ function connectionString() {
   );
 }
 
-const DOC_TYPES = new Set(['quotation', 'invoice', 'letter']);
-const DOC_PREFIX = { quotation: 'Q', invoice: 'INV', letter: 'L' };
+const DOC_TYPES = new Set(['quotation', 'proforma', 'invoice', 'packing', 'letter']);
+const DOC_PREFIX = { quotation: 'Q', proforma: 'PI', invoice: 'INV', packing: 'PL', letter: 'L' };
 
 /*
  * A letter is priced-document-shaped in every way that matters for the
@@ -71,7 +71,58 @@ const DOC_PREFIX = { quotation: 'Q', invoice: 'INV', letter: 'L' };
  * identical, and duplicating that for the sake of two different columns
  * would mean two of everything to keep in step.
  */
-const PRICED = new Set(['quotation', 'invoice']);
+const PRICED = new Set(['quotation', 'proforma', 'invoice']);
+
+/*
+ * A proforma invoice (2026-10-20) is what an export buyer pays an advance or
+ * opens a letter of credit against, before the goods ship. It is priced like
+ * a quotation and paid against like an invoice: it carries a validity date
+ * and the bank details, and takes its own PI- numbers so it is never mistaken
+ * for the commercial invoice that follows the shipment.
+ */
+const BANK_TYPES = new Set(['proforma', 'invoice']);
+const VALIDITY_TYPES = new Set(['quotation', 'proforma']);
+
+/*
+ * What a document may be made from (2026-10-20): an accepted quotation
+ * becomes a proforma or an invoice, and a proforma becomes the invoice. The
+ * new document is a new document -- its own number, everything re-sent and
+ * re-validated by the form -- and records only which one it came from.
+ */
+const SOURCE_FOR = { proforma: new Set(['quotation']), invoice: new Set(['quotation', 'proforma']), packing: new Set(['invoice']) };
+
+/*
+ * The packing list (2026-10-20): one of the export documents the site says
+ * goes with every shipment, and the one the CRM could not produce. It has no
+ * prices -- what is in the container, packed how, weighing what -- so it is
+ * neither a priced document nor a letter. Every figure is typed per shipment:
+ * a carton's net weight depends on the packing, which is the reason the
+ * minimum order carries no tonnage either.
+ *
+ * Items: description, packing (e.g. "carton, 12 x 720 ml"), number of
+ * packages, net and gross weight in kilograms. Gross below net is refused:
+ * the packaging cannot weigh less than nothing. Totals are added up on the
+ * sheet from the stored items, never sent by the client.
+ */
+const PACKING_SHIPMENT = ['container_no', 'seal_no', 'vessel', 'port_loading', 'port_discharge', 'shipping_marks'];
+function validatePackingItems(raw) {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > MAX_LINE_ITEMS) return null;
+  const items = [];
+  for (const li of raw) {
+    if (!li || typeof li !== 'object') return null;
+    const description = clean(li.description, MAX.line_description);
+    const packing = optional(li.packing, MAX.packing);
+    const packages = Number(li.packages);
+    const net = Number(li.net_kg);
+    const gross = Number(li.gross_kg);
+    if (!description) return null;
+    if (!Number.isInteger(packages) || packages <= 0 || packages > 1e6) return null;
+    if (!Number.isFinite(net) || net <= 0 || net > 1e7) return null;
+    if (!Number.isFinite(gross) || gross < net || gross > 1e7) return null;
+    items.push({ description, packing, packages, net_kg: Math.round(net * 100) / 100, gross_kg: Math.round(gross * 100) / 100 });
+  }
+  return items;
+}
 
 /*
  * The language a document is written in (2026-09-07).
@@ -100,6 +151,8 @@ const MAX = {
   subject: 300, body: 20000,
   salutation: 120, closing: 80, signatory_name: 200, signatory_title: 200,
   enclosures: 500, cc: 500,
+  payment_terms: 200, lead_time: 200, bank_details: 600,
+  packing: 60, container_no: 40, seal_no: 40, vessel: 100, port_loading: 100, port_discharge: 100, shipping_marks: 500,
 };
 
 /*
@@ -116,7 +169,30 @@ const MAX = {
  * close -- but each one now has a field asking for it rather than depending
  * on the writer to remember the convention.
  */
-const LETTER_FIELDS = ['salutation', 'closing', 'signatory_name', 'signatory_title', 'enclosures', 'cc'];
+const LETTER_FIELDS = ['salutation', 'closing', 'enclosures', 'cc'];
+
+/*
+ * Who signs. A letter always had a signature block; since the 2026-10-19
+ * design a quotation and an invoice carry one too, plus a "Sales
+ * Representative" card, so these two are taken for every type.
+ */
+const SIGNATORY_FIELDS = ['signatory_name', 'signatory_title'];
+
+/*
+ * The terms a priced document states. Fill-in fields with no default
+ * (owner, 2026-10-19): payment and lead time differ from deal to deal, and a
+ * printed default would quietly promise terms nobody agreed.
+ */
+const TERMS_FIELDS = ['payment_terms', 'lead_time'];
+
+/*
+ * Where an invoice is paid (2026-10-20). Typed on each invoice and kept only
+ * in that document's row: never a default, and never in the site's code, so
+ * account numbers are not published with the site and a changed account
+ * cannot be printed by an old default. Invoices only -- a quotation is not
+ * paid against.
+ */
+const INVOICE_FIELDS = ['bank_details']; // on BANK_TYPES: invoices and proformas
 const MAX_LINE_ITEMS = 50;
 
 function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v); }
@@ -180,6 +256,22 @@ async function ensureSchema(sql) {
    */
   await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'en'`;
 
+  // Payment terms and lead time (2026-10-19). Nullable: older documents
+  // simply did not state them, and the sheet prints only what is there.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS payment_terms text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS lead_time text`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS bank_details text`;
+
+  // Which document this one was made from, and that document's number as it
+  // was then (2026-10-20). Both nullable: most documents start from nothing.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS source_doc_id bigint`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS source_doc_number text`;
+
+  // A packing list's items and shipment details (2026-10-20), nullable: no
+  // other document type has them.
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS packing_items jsonb`;
+  await sql`ALTER TABLE crm_documents ADD COLUMN IF NOT EXISTS shipment jsonb`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
       id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -226,6 +318,22 @@ async function handleList(event, sql) {
     ? await sql`SELECT id, created_at, doc_type, doc_number, currency, total, language, voided_at FROM crm_documents WHERE buyer_id = ${buyerId} ORDER BY created_at DESC LIMIT 500`
     : await sql`SELECT id, created_at, doc_type, doc_number, buyer_company_name, currency, total, language, voided_at FROM crm_documents ORDER BY created_at DESC LIMIT 500`;
   return json(200, rows);
+}
+
+/*
+ * The bank details on the most recent invoice or proforma that has them
+ * (2026-10-20), for the form's "Copy from last invoice" button: account
+ * numbers are typed once and copied on a deliberate click, never filled in
+ * by default and never kept in the code. A void document is skipped -- it
+ * may have been voided for the wrong account.
+ */
+async function handleLastBank(sql) {
+  const row = (await sql`
+    SELECT doc_number, bank_details FROM crm_documents
+    WHERE doc_type IN ('invoice', 'proforma') AND voided_at IS NULL AND bank_details IS NOT NULL
+    ORDER BY created_at DESC LIMIT 1
+  `)[0];
+  return json(200, row ? { ok: true, doc_number: row.doc_number, bank_details: row.bank_details } : { ok: true, doc_number: null, bank_details: null });
 }
 
 async function handleGet(sql, id, actor) {
@@ -314,8 +422,21 @@ async function handleCreate(event, sql, actor) {
   let letterBody = null;
   const letterParts = {};
   LETTER_FIELDS.forEach(function (f) { letterParts[f] = null; });
+  const terms = {};
+  TERMS_FIELDS.forEach(function (f) { terms[f] = null; });
+  INVOICE_FIELDS.forEach(function (f) { terms[f] = BANK_TYPES.has(docType) ? optional(body[f], MAX[f]) : null; });
+  const signatory = {};
+  SIGNATORY_FIELDS.forEach(function (f) { signatory[f] = optional(body[f], MAX[f]); });
 
-  if (priced) {
+  let packingItems = null;
+  let shipment = null;
+
+  if (docType === 'packing') {
+    packingItems = validatePackingItems(body.packing_items);
+    if (!packingItems) return json(400, { ok: false, error: 'Validation failed', fields: ['packing_items'] });
+    shipment = {};
+    PACKING_SHIPMENT.forEach(function (f) { shipment[f] = optional(body[f], MAX[f]); });
+  } else if (priced) {
     lineItems = validateLineItems(body.line_items);
     if (!lineItems) return json(400, { ok: false, error: 'Validation failed', fields: ['line_items'] });
 
@@ -323,13 +444,14 @@ async function handleCreate(event, sql, actor) {
     if (!/^[A-Z]{3}$/.test(currency)) return json(400, { ok: false, error: 'Validation failed', fields: ['currency'] });
 
     incoterm = optional(body.incoterm, MAX.incoterm);
+    TERMS_FIELDS.forEach(function (f) { terms[f] = optional(body[f], MAX[f]); });
   } else {
     /*
      * A letter with nothing written in it is the letter equivalent of an
      * invoice addressed to nobody -- it would issue, take a number, and
      * print blank. Subject is optional; plenty of letters do not carry one.
      *
-     * Line items, currency and incoterm are ignored rather than rejected if
+     * Line items, currency, incoterm and terms are ignored rather than rejected if
      * sent: the compose form hides those fields for a letter, so anything
      * arriving here would be a stale draft rather than intent.
      */
@@ -340,8 +462,25 @@ async function handleCreate(event, sql, actor) {
   }
 
   const notes = optional(body.notes, MAX.notes);
-  const validUntil = docType === 'quotation' && body.valid_until ? clean(body.valid_until, 10) : null;
+  const validUntil = VALIDITY_TYPES.has(docType) && body.valid_until ? clean(body.valid_until, 10) : null;
   const dueDate = docType === 'invoice' && body.due_date ? clean(body.due_date, 10) : null;
+
+  /*
+   * The document this one is made from, checked here rather than trusted:
+   * it must exist, be a kind this type can come from, and not be void -- an
+   * invoice raised against a cancelled quotation is exactly the mistake the
+   * void exists to prevent.
+   */
+  let sourceId = null;
+  let sourceNumber = null;
+  if (body.source_doc_id != null && body.source_doc_id !== '') {
+    sourceId = parseId(String(body.source_doc_id));
+    if (!sourceId || !SOURCE_FOR[docType]) return json(400, { ok: false, error: 'Validation failed', fields: ['source_doc_id'] });
+    const src = (await sql`SELECT id, doc_type, doc_number, voided_at FROM crm_documents WHERE id = ${sourceId} LIMIT 1`)[0];
+    if (!src || !SOURCE_FOR[docType].has(src.doc_type)) return json(400, { ok: false, error: 'Validation failed', fields: ['source_doc_id'] });
+    if (src.voided_at) return json(409, { ok: false, error: `${src.doc_number} is void, so nothing can be issued from it.` });
+    sourceNumber = src.doc_number;
+  }
 
   // Recomputed here, never trusted from the client -- the client's
   // running total is a convenience preview only. A letter totals zero.
@@ -354,14 +493,18 @@ async function handleCreate(event, sql, actor) {
       buyer_company_name, buyer_contact_name, buyer_country, buyer_address,
       currency, incoterm, valid_until, due_date, notes, subject, body, language,
       salutation, closing, signatory_name, signatory_title, enclosures, cc,
+      payment_terms, lead_time, bank_details, source_doc_id, source_doc_number,
+      packing_items, shipment,
       line_items, subtotal, total
     ) VALUES (
       ${actor}, ${buyerId}, ${docType}, '',
       ${companyName}, ${contactName},
       ${country}, ${buyerAddress},
       ${currency}, ${incoterm}, ${validUntil}, ${dueDate}, ${notes}, ${subject}, ${letterBody}, ${language},
-      ${letterParts.salutation}, ${letterParts.closing}, ${letterParts.signatory_name},
-      ${letterParts.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
+      ${letterParts.salutation}, ${letterParts.closing}, ${signatory.signatory_name},
+      ${signatory.signatory_title}, ${letterParts.enclosures}, ${letterParts.cc},
+      ${terms.payment_terms}, ${terms.lead_time}, ${terms.bank_details}, ${sourceId}, ${sourceNumber},
+      ${packingItems ? JSON.stringify(packingItems) : null}::jsonb, ${shipment ? JSON.stringify(shipment) : null}::jsonb,
       ${JSON.stringify(lineItems)}::jsonb, ${subtotal}, ${total}
     )
     RETURNING id, created_at
@@ -371,7 +514,7 @@ async function handleCreate(event, sql, actor) {
   const docNumber = `${DOC_PREFIX[docType]}-${year}-${String(id).padStart(6, '0')}`;
   await sql`UPDATE crm_documents SET doc_number = ${docNumber} WHERE id = ${id}`;
 
-  await audit(sql, actor, 'create', id, docNumber);
+  await audit(sql, actor, 'create', id, sourceNumber ? `${docNumber} from ${sourceNumber}` : docNumber);
 
   return json(200, { ok: true, id, doc_number: docNumber });
 }
@@ -408,6 +551,7 @@ exports.handler = async (event) => {
   try {
     await ensureSchema(sql);
 
+    if (event.httpMethod === 'GET' && qs.last_bank_details) return await handleLastBank(sql);
     if (event.httpMethod === 'GET' && id) return await handleGet(sql, id, actor);
     if (event.httpMethod === 'GET') return await handleList(event, sql);
     if (event.httpMethod === 'POST') return await handleCreate(event, sql, actor);

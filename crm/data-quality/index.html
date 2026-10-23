@@ -6,6 +6,7 @@
     <title>Company name review | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -100,27 +101,35 @@
           return html + '</div>';
         }
 
+        function load() {
+          var content = document.getElementById('content');
+          content.innerHTML = '<p class="crm-muted" role="status">Loading…</p>';
+          CRM.fetchJson('/api/crm/data-quality').then(function (result) {
+            if (!result.ok || !result.data || !result.data.ok) {
+              content.innerHTML = '';
+              CRM.loadError(content, { what: 'the name review', key: 'data-quality', error: result, retry: load });
+              return;
+            }
+            render(result.data.data);
+          }).catch(function (e) {
+            content.innerHTML = '';
+            CRM.loadError(content, { what: 'the name review', key: 'data-quality', error: e, retry: load });
+          });
+        }
+
         CRM.requireAuth().then(function () {
           CRM.renderNav('Buyers');
-          return CRM.fetchJson('/api/crm/data-quality');
-        }).then(function (result) {
-          if (!result.ok || !result.data || !result.data.ok) {
-            document.getElementById('content').innerHTML =
-              '<div class="crm-status crm-status-error">' +
-              CRM.escapeHtml((result.data && result.data.error) || 'Could not run the review.') +
-              '</div>';
-            return;
-          }
-          var d = result.data.data;
+          load();
+        }).catch(function (e) {
+          CRM.loadError(document.getElementById('content'), { what: 'this page', key: 'data-quality', error: e, retry: function () { window.location.reload(); } });
+        });
+
+        function render(d) {
           renderSummary(d);
           var body = renderFlagged(d.flagged) + renderDuplicates(d.duplicates);
           document.getElementById('content').innerHTML = body ||
             '<div class="crm-card"><p class="crm-muted" style="margin-bottom:0;">Nothing to review.</p></div>';
-        }).catch(function (e) {
-          if (e && e.message === 'unauthorized') return;
-          document.getElementById('content').innerHTML =
-            '<div class="crm-status crm-status-error">Could not run the review.</div>';
-        });
+        }
       })();
     </script>
   </body>

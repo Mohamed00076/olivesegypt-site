@@ -166,8 +166,10 @@ const get = async (cookie) => {
   t('   leaves out every address that has opted out', /COALESCE\(o\.status, ''\) <> 'unsubscribed'/.test(eq) && /LEFT JOIN contact_opt_outs o ON o\.email = lower\(trim\(l\.email\)\)/.test(eq));
   t('   and lists each address once', /SELECT DISTINCT ON \(lower\(trim\(l\.email\)\)\)/.test(eq));
   t('the Enquiries page has the button, asks first, and reports failures',
-    /id="export-mb-btn"/.test(page) && /window\.confirm\('Download the email addresses/.test(page) &&
-    /fetch\('\/api\/leads\?export=market_report&confirmed=1'/.test(page) && /showStatus\('The export failed: '/.test(page) &&
+    // Asked in the page since 2026-10-20 (CRM.ask), and a failure said in plain words.
+    /id="export-mb-btn"/.test(page) && /CRM\.ask\(\{ title: 'Download the market-brief list\?', message: 'This downloads the email addresses/.test(page) &&
+    /if \(!yes\) return;\s*var btn = document\.getElementById\('export-mb-btn'\)/.test(page) &&
+    /fetch\('\/api\/leads\?export=market_report&confirmed=1'/.test(page) && /showStatus\('The list was not downloaded\. ' \+ CRM\.plainError\(/.test(page) &&
     /CRM\.noReplyMessage\(e, 'The export'/.test(page));
 
   const ok = fail === 0;

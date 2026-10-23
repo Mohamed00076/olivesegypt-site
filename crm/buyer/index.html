@@ -6,6 +6,7 @@
     <title>Buyer | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
 <link rel="stylesheet" href="/assets/crm.css" />
+  <link rel="stylesheet" href="/assets/crm-ui.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
@@ -17,18 +18,118 @@
   </head>
   <body>
     <div class="crm-container">
-      <div class="crm-flex-between" style="margin-bottom:16px;">
+      <div class="crm-flex-between" style="margin-bottom:8px;">
         <h1 id="page-title" style="margin:0;">Buyer</h1>
-        <div class="crm-flex">
-          <button type="button" class="crm-btn crm-btn-danger" id="delete-btn" style="display:none;">Delete</button>
-          <button type="button" class="crm-btn crm-btn-danger" id="erase-btn" style="display:none;">Erase (deletion request)</button>
-        </div>
+      </div>
+      <p class="crm-ui-buyer-summary" id="buyer-summary" style="display:none;"></p>
+
+      <div id="save-status" class="crm-status" style="display:none;" role="status" aria-live="polite"></div>
+      <div id="buyer-messages"></div>
+
+      <!-- Quick actions first (2026-10-20): what is done most from a phone. -->
+      <section class="crm-card crm-ui-quick" id="quick-card" style="display:none;" aria-label="Quick actions">
+        <div class="crm-ui-quick-row" id="quick-row"></div>
+        <p class="crm-muted crm-ui-quick-missing" id="quick-missing" style="display:none;"></p>
+        <p class="crm-ui-optout" id="quick-optout" style="display:none;"></p>
+        <form id="move-panel" class="crm-ui-move-panel" style="display:none;">
+          <label for="move-stage">Move to</label>
+          <select id="move-stage"></select>
+          <button type="submit" class="crm-btn crm-btn-primary" id="move-btn" disabled>Move</button>
+          <button type="button" class="crm-btn crm-btn-secondary" id="move-cancel">Cancel</button>
+        </form>
+      </section>
+
+      <div class="crm-card" id="activity-card" style="display:none;">
+        <h2>Activity Log</h2>
+        <form id="activity-form" class="crm-flex" style="align-items:flex-start;margin-bottom:16px;">
+          <textarea id="activity-entry" rows="2" maxlength="4000" placeholder="Log a call, email, sample sent, etc." style="flex:1;"></textarea>
+          <button type="submit" class="crm-btn crm-btn-secondary">Add Entry</button>
+        </form>
+        <div id="activity-list"></div>
       </div>
 
-      <div id="save-status" class="crm-status" style="display:none;"></div>
+      <div class="crm-card" id="documents-card" style="display:none;">
+        <div class="crm-flex-between">
+          <h2 style="margin:0;">Documents</h2>
+          <div class="crm-flex">
+            <a class="crm-btn crm-btn-secondary" id="new-quotation-link" href="#">New Quotation</a>
+            <a class="crm-btn crm-btn-secondary" id="new-proforma-link" href="#">New Proforma</a>
+            <a class="crm-btn crm-btn-secondary" id="new-invoice-link" href="#">New Invoice</a>
+          </div>
+        </div>
+        <div id="documents-messages" style="margin-top:12px;"></div>
+        <table style="margin-top:12px;">
+          <thead><tr><th>Number</th><th>Type</th><th>Total</th><th>Date</th><th></th></tr></thead>
+          <tbody id="documents-tbody"></tbody>
+        </table>
+        <p class="crm-muted" id="documents-empty" style="display:none;">No quotations or invoices yet.</p>
+      </div>
 
-      <div class="crm-card">
-        <h2>Buyer Details</h2>
+      <!-- Documents this buyer has that the CRM did not issue (2026-10-20):
+           an old quotation, an invoice from before the CRM, a contract. They
+           are kept as files, beside the documents above, never renumbered. -->
+      <div class="crm-card" id="files-card" style="display:none;">
+        <div class="crm-flex-between">
+          <h2 style="margin:0;">Uploaded documents</h2>
+          <div class="crm-flex">
+            <button type="button" class="crm-btn crm-btn-secondary" data-upload-kind="quotation">Upload quotation</button>
+            <button type="button" class="crm-btn crm-btn-secondary" data-upload-kind="invoice">Upload invoice</button>
+            <button type="button" class="crm-btn crm-btn-secondary" data-upload-kind="other">Upload other</button>
+          </div>
+        </div>
+        <p class="crm-muted" style="margin:8px 0 0;">Quotations, invoices and other documents you have from outside the CRM: PDF, PNG, JPEG, WebP, Word or Excel, up to 4 MB each.</p>
+        <div id="file-status" class="crm-status" style="display:none; margin-top:12px;" role="status" aria-live="polite"></div>
+        <p class="crm-ui-usage" id="files-usage" role="status"></p>
+        <div id="files-messages" style="margin-top:12px;"></div>
+
+        <form id="file-form" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--crm-border, #e5e2d9);">
+          <h3 id="file-form-title" style="margin:0 0 10px;">Upload quotation</h3>
+          <div class="crm-field">
+            <label for="f-file">File</label>
+            <input id="f-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,application/pdf,image/png,image/jpeg,image/webp" />
+          </div>
+          <div class="crm-field" id="f-title-field" style="display:none;">
+            <label for="f-title">What it is</label>
+            <input id="f-title" maxlength="200" dir="auto" placeholder="e.g. Signed sales contract, Certificate of analysis" />
+          </div>
+          <div class="crm-grid crm-grid-3">
+            <div class="crm-field"><label for="f-reference">Their number <span class="crm-muted">(optional)</span></label><input id="f-reference" maxlength="100" dir="auto" placeholder="e.g. Q-17/2025" /></div>
+            <div class="crm-field"><label for="f-date">Date on the document <span class="crm-muted">(optional)</span></label><input id="f-date" type="date" /></div>
+            <div class="crm-field"><label for="f-issued-by">Issued by <span class="crm-muted">(optional)</span></label><input id="f-issued-by" maxlength="200" dir="auto" placeholder="e.g. our previous agent" /></div>
+          </div>
+          <div class="crm-grid crm-grid-3" id="f-amount-row">
+            <div class="crm-field"><label for="f-amount">Total <span class="crm-muted">(optional)</span></label><input id="f-amount" type="number" min="0" step="any" /></div>
+            <div class="crm-field"><label for="f-currency">Currency</label><input id="f-currency" maxlength="3" value="USD" style="text-transform:uppercase;" /></div>
+          </div>
+          <div class="crm-field">
+            <label for="f-note">Note <span class="crm-muted">(optional)</span></label>
+            <textarea id="f-note" rows="2" maxlength="1000" dir="auto"></textarea>
+          </div>
+          <div class="crm-flex">
+            <button type="submit" class="crm-btn crm-btn-primary" id="f-upload-btn">Upload</button>
+            <button type="button" class="crm-btn crm-btn-secondary" id="f-cancel-btn">Cancel</button>
+          </div>
+        </form>
+
+        <table style="margin-top:12px;" id="files-table">
+          <thead><tr><th>Type</th><th>Their number</th><th>Issued by</th><th>Date</th><th>Total</th><th>File</th><th>Uploaded</th><th></th></tr></thead>
+          <tbody id="files-tbody"></tbody>
+        </table>
+        <p class="crm-muted" id="files-empty" style="display:none;">No uploaded documents yet.</p>
+      </div>
+
+      <div class="crm-card" id="stage-history-card" style="display:none;">
+        <h2>Stage History</h2>
+        <table>
+          <thead><tr><th>From</th><th>To</th><th>Changed</th><th>By</th></tr></thead>
+          <tbody id="stage-history-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- The edit form, folded (2026-10-20): most visits are to call, note
+           or quote, not to retype the record. Open for a new buyer. -->
+      <details class="crm-card crm-ui-fold" id="details-fold">
+        <summary><h2>Buyer details</h2><span class="crm-muted crm-ui-fold-hint">Contact, products, prices, next action, notes</span><span class="crm-ui-fold-open-hint" aria-hidden="true">Tap to edit</span></summary>
         <form id="buyer-form">
           <div class="crm-grid crm-grid-2">
             <div class="crm-field">
@@ -134,41 +235,24 @@
             <textarea id="notes" rows="4" maxlength="8000"></textarea>
           </div>
 
-          <button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Save Buyer</button>
-        </form>
-      </div>
-
-      <div class="crm-card" id="documents-card" style="display:none;">
-        <div class="crm-flex-between">
-          <h2 style="margin:0;">Documents</h2>
-          <div class="crm-flex">
-            <a class="crm-btn crm-btn-secondary" id="new-quotation-link" href="#">New Quotation</a>
-            <a class="crm-btn crm-btn-secondary" id="new-invoice-link" href="#">New Invoice</a>
+          <div id="form-status" class="crm-status" style="display:none; margin-top:12px;" role="status" aria-live="polite"></div>
+          <!-- On a phone this bar stays on screen while the form does (Batch 3). -->
+          <div class="crm-ui-savebar">
+            <button type="submit" class="crm-btn crm-btn-primary" id="save-btn">Save Buyer</button>
+            <button type="button" class="crm-btn crm-btn-secondary" id="details-cancel">Cancel</button>
           </div>
-        </div>
-        <table style="margin-top:12px;">
-          <thead><tr><th>Number</th><th>Type</th><th>Total</th><th>Date</th><th></th></tr></thead>
-          <tbody id="documents-tbody"></tbody>
-        </table>
-        <p class="crm-muted" id="documents-empty" style="display:none;">No quotations or invoices yet.</p>
-      </div>
-
-      <div class="crm-card" id="stage-history-card" style="display:none;">
-        <h2>Stage History</h2>
-        <table>
-          <thead><tr><th>From</th><th>To</th><th>Changed</th><th>By</th></tr></thead>
-          <tbody id="stage-history-tbody"></tbody>
-        </table>
-      </div>
-
-      <div class="crm-card" id="activity-card" style="display:none;">
-        <h2>Activity Log</h2>
-        <form id="activity-form" class="crm-flex" style="align-items:flex-start;margin-bottom:16px;">
-          <textarea id="activity-entry" rows="2" maxlength="4000" placeholder="Log a call, email, sample sent, etc." style="flex:1;"></textarea>
-          <button type="submit" class="crm-btn crm-btn-secondary">Add Entry</button>
         </form>
-        <div id="activity-list"></div>
-      </div>
+      </details>
+
+      <!-- Delete and Erase, last on the page and apart from everything else. -->
+      <section class="crm-card crm-ui-danger" id="danger-card" style="display:none;" aria-labelledby="danger-title">
+        <h2 id="danger-title">Delete or erase this buyer</h2>
+        <p class="crm-muted">Delete hides the buyer everywhere in the CRM but keeps the record, so it can be recalled. Erase is for when the person asked for their data to be deleted: it removes the record for good.</p>
+        <div class="crm-flex">
+          <button type="button" class="crm-btn crm-btn-danger" id="delete-btn" style="display:none;">Delete</button>
+          <button type="button" class="crm-btn crm-btn-danger" id="erase-btn" style="display:none;">Erase (deletion request)</button>
+        </div>
+      </section>
     </div>
 
     <script src="/assets/crm.js"></script>
@@ -256,6 +340,7 @@
           document.getElementById('certification_gap').checked = !!b.certification_gap;
           document.getElementById('next_action').value = b.next_action || '';
           document.getElementById('next_action_due').value = b.next_action_due ? String(b.next_action_due).slice(0, 10) : '';
+          CRM.refreshDateTexts();
           document.getElementById('lost_reason').value = b.lost_reason || '';
           document.getElementById('notes').value = b.notes || '';
           var interest = Array.isArray(b.product_interest) ? b.product_interest : [];
@@ -304,20 +389,210 @@
           };
         }
 
-        function showStatus(msg, ok) {
-          var el = document.getElementById('save-status');
+        function showStatus(msg, ok, where) {
+          var el = document.getElementById(where || 'save-status');
           el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
           el.textContent = msg;
           el.style.display = 'block';
           if (ok) setTimeout(function () { el.style.display = 'none'; }, 4000);
         }
 
+        /*
+         * Quick actions (2026-10-20): WhatsApp, Call, Email, Add note, Move
+         * stage, New quotation -- one row at the top, from the record as last
+         * saved. One the record has no number or address for is shown greyed
+         * and says what is missing, rather than disappearing.
+         */
+        var current = null;
+
+        // wa.me takes the number in international form, digits only: "+20 100 ..." or "0020 100 ..." -> "20100...".
+        function waNumber(v) { return String(v || '').replace(/[^\d]/g, '').replace(/^00/, ''); }
+        function telNumber(v) { return String(v || '').replace(/[^\d+]/g, ''); }
+
+        function quickLink(label, href, external) {
+          var a = document.createElement('a');
+          a.className = 'crm-btn crm-btn-secondary crm-ui-quick-btn';
+          a.href = href; a.textContent = label;
+          if (external) { a.target = '_blank'; a.rel = 'noopener'; }
+          return a;
+        }
+        function quickButton(label, onClick, disabled) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 'crm-btn crm-btn-secondary crm-ui-quick-btn'; b.textContent = label;
+          if (disabled) b.disabled = true; else b.addEventListener('click', onClick);
+          return b;
+        }
+
+        function renderQuick(b) {
+          current = b;
+          var row = document.getElementById('quick-row');
+          row.innerHTML = '';
+          var missing = [];
+          var wa = waNumber(b.contact_whatsapp);
+          row.appendChild(wa.length >= 8 ? quickLink('WhatsApp', 'https://wa.me/' + wa, true) : quickButton('WhatsApp', null, true));
+          if (wa.length < 8) missing.push('WhatsApp number');
+          var tel = telNumber(b.contact_phone);
+          row.appendChild(tel.replace('+', '').length >= 6 ? quickLink('Call', 'tel:' + tel) : quickButton('Call', null, true));
+          if (tel.replace('+', '').length < 6) missing.push('phone number');
+          var email = String(b.contact_email || '').trim();
+          /*
+           * An address that used the website's unsubscribe page (2026-10-20).
+           * The page promised to stop contacting it "about our products,
+           * guides and market updates". Whether that also rules out a
+           * one-to-one business email -- a reply about their own order, say --
+           * is counsel question 20, so this warns and asks; it does not block.
+           */
+          var optedOut = !!(email && b.email_opted_out);
+          if (optedOut) {
+            row.appendChild(quickButton('Email', function () {
+              CRM.ask({ title: 'This address has unsubscribed',
+                message: email + ' used the website\u2019s unsubscribe page, which told them we would stop contacting them about our products, guides and market updates.\n\n' +
+                  'Email them only if this is about something they asked us for themselves, such as their own quotation or order.',
+                confirm: 'Write the email anyway' }).then(function (yes) {
+                if (yes) window.location.href = 'mailto:' + email;
+              });
+            }));
+          } else {
+            row.appendChild(email ? quickLink('Email', 'mailto:' + email) : quickButton('Email', null, true));
+          }
+          var warn = document.getElementById('quick-optout');
+          warn.textContent = optedOut ? 'Unsubscribed: ' + email + ' used the website\u2019s unsubscribe page. Do not send marketing; the Email button asks first.' : '';
+          warn.style.display = optedOut ? '' : 'none';
+          if (!email) missing.push('email address');
+          row.appendChild(quickButton('Add note', function () {
+            var box = document.getElementById('activity-entry');
+            box.scrollIntoView({ block: 'center' });
+            box.focus();
+          }));
+          var moveBtn = quickButton('Move stage', function () { toggleMovePanel(true); });
+          moveBtn.id = 'qa-move';
+          moveBtn.setAttribute('aria-expanded', 'false');
+          moveBtn.setAttribute('aria-controls', 'move-panel');
+          row.appendChild(moveBtn);
+          row.appendChild(quickLink('New quotation', '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=quotation'));
+          var note = document.getElementById('quick-missing');
+          note.textContent = missing.length ? 'No ' + missing.join(', ').replace(/, ([^,]*)$/, ' or $1') + ' on record: add it under Buyer details below.' : '';
+          note.style.display = missing.length ? '' : 'none';
+          renderSummary(b);
+        }
+
+        function renderSummary(b) {
+          var el = document.getElementById('buyer-summary');
+          el.innerHTML = '<span class="' + CRM.stageBadgeClass(b.current_stage) + '">' + CRM.escapeHtml(b.current_stage || '') + '</span>' +
+            [b.contact_name, b.country_region].filter(Boolean).map(function (v) { return ' <span class="crm-muted">\u00b7 ' + CRM.escapeHtml(v) + '</span>'; }).join('') +
+            /*
+             * The reason given for Lost/Stalled, where it is seen (owner,
+             * 2026-10-21): it was only in the folded form's Lost / Stalled
+             * Reason field, which shows only while the stage is Lost/Stalled.
+             */
+            (b.current_stage === 'Lost/Stalled' && b.lost_reason
+              ? '<span class="crm-ui-lost-reason" dir="auto">Lost/Stalled: ' + CRM.escapeHtml(b.lost_reason) + '</span>' : '');
+          el.style.display = '';
+        }
+
+        function toggleMovePanel(open) {
+          var panel = document.getElementById('move-panel');
+          var sel = document.getElementById('move-stage');
+          panel.style.display = open ? '' : 'none';
+          var btn = document.getElementById('qa-move');
+          if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          if (open) {
+            // As on the Kanban card: the current stage first, marked "(now)", and Move off until another is chosen.
+            sel.innerHTML = '';
+            var here = document.createElement('option');
+            here.value = ''; here.textContent = (current ? current.current_stage : '') + ' (now)';
+            sel.appendChild(here);
+            CRM.STAGES.forEach(function (st) {
+              if (current && st === current.current_stage) return;
+              var o = document.createElement('option'); o.value = st; o.textContent = st; sel.appendChild(o);
+            });
+            sel.value = '';
+            document.getElementById('move-btn').disabled = true;
+            sel.focus();
+          } else if (btn) {
+            btn.focus();
+          }
+        }
+        document.getElementById('move-cancel').addEventListener('click', function () { toggleMovePanel(false); });
+        document.getElementById('move-stage').addEventListener('change', function (e) {
+          document.getElementById('move-btn').disabled = !e.target.value;
+        });
+
+        /*
+         * Move stage: the same request as the Kanban board's drag and its
+         * "Move to" menu -- a PATCH of current_stage alone -- so the server
+         * adds the change to the stage history in the same way. Nothing else
+         * in the record is sent, so unsaved edits in the details form below
+         * are neither saved nor lost.
+         */
+        document.getElementById('move-panel').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var to = document.getElementById('move-stage').value;
+          if (!to || !current) return;
+          var btn = document.getElementById('move-btn');
+          // The same rules as the Kanban (CRM.stageMoveCheck): a reason for Lost/Stalled, a confirmation for Exported/Completed.
+          CRM.stageMoveCheck(current.company_name, to).then(function (extra) {
+          if (!extra) { document.getElementById('move-stage').focus(); return; }
+          btn.disabled = true;
+          var body = Object.assign({ current_stage: to }, extra);
+          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId), { method: 'PATCH', body: body }).then(function (result) {
+            btn.disabled = false;
+            if (!result.ok) {
+              // The panel stays open on the chosen stage, and a typed reason is offered again (CRM.stageMoveCheck).
+              showStatus(current.company_name + ' was not moved to ' + to + '. ' + CRM.refusalText(result, 'The server did not accept the move.') +
+                ' Nothing was changed.' + (extra.lost_reason ? ' The reason you typed is kept: press Move to send it again.' : ''), false);
+              return;
+            }
+            current.current_stage = to;
+            document.getElementById('current_stage').value = to;
+            if (extra.lost_reason) { current.lost_reason = extra.lost_reason; document.getElementById('lost_reason').value = extra.lost_reason; }
+            toggleLostReason();
+            renderSummary(current);
+            toggleMovePanel(false);
+            CRM.stageMoveSaved(current.company_name);
+            showStatus('Moved to ' + to + '.', true);
+            refreshLogs();
+          }).catch(function (err) {
+            btn.disabled = false;
+            var msg = CRM.noReplyMessage(err, 'Moving the buyer to ' + to, 'Reload the page to see which stage it is in before trying again.');
+            if (msg) showStatus(msg, false);
+          });
+          });
+        });
+
+        /*
+         * The stage history and activity log again, without refilling the
+         * details form: a reload of the whole record put the server's copy
+         * back into the form and lost anything typed there and not saved.
+         */
+        function refreshLogs() {
+          return CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
+            if (!result.ok) return;
+            renderStageHistory(result.data.stage_history || []);
+            renderActivity(result.data.activity_log || []);
+            // A saved change of email address changes the answer to "has it unsubscribed?".
+            if (current && current.email_opted_out !== result.data.email_opted_out) {
+              renderQuick(Object.assign({}, current, { email_opted_out: result.data.email_opted_out }));
+            }
+          }).catch(function () { /* the lists stay as they were; the action itself already said whether it worked */ });
+        }
+
         function renderStageHistory(rows) {
           var card = document.getElementById('stage-history-card');
           if (!rows.length) { card.style.display = 'none'; return; }
           card.style.display = '';
-          document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r) {
-            return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) + '</td>' +
+          /*
+           * The reason, beside the latest move to Lost/Stalled. Only the latest:
+           * the record keeps one reason, the one given last, so an earlier
+           * Lost/Stalled row may have had another. A label on the page only --
+           * the history itself is never changed.
+           */
+          var reason = current && current.lost_reason;
+          var lastLost = -1;
+          rows.forEach(function (r, i) { if (r.to_stage === 'Lost/Stalled') lastLost = i; });
+          document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r, i) {
+            return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) +
+              (i === lastLost && reason ? '<div class="crm-ui-lost-reason-row" dir="auto">Buyer\u2019s current Lost/Stalled reason: ' + CRM.escapeHtml(reason) + '</div>' : '') + '</td>' +
               '<td>' + CRM.fmtDate(r.changed_at) + '</td><td>' + CRM.escapeHtml(r.changed_by || '') + '</td></tr>';
           }).join('');
         }
@@ -343,8 +618,11 @@
             link.textContent = d.doc_number + (d.voided_at ? ' (void)' : '');
             numTd.appendChild(link);
             tr.appendChild(numTd);
-            [d.doc_type === 'invoice' ? 'Invoice' : 'Quotation',
-             (Number(d.total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + d.currency,
+            // Every type by name: this said "Quotation" for anything not an
+            // invoice, letters included (fixed 2026-10-20).
+            [({ quotation: 'Quotation', proforma: 'Proforma', invoice: 'Invoice', packing: 'Packing list', letter: 'Letter' })[d.doc_type] || d.doc_type,
+             // Letters and packing lists carry no price.
+             (d.doc_type === 'letter' || d.doc_type === 'packing') ? '' : (Number(d.total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + d.currency,
              CRM.fmtDate(d.created_at)].forEach(function (v) {
               var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
             });
@@ -360,24 +638,211 @@
           document.getElementById('documents-card').style.display = '';
           document.getElementById('new-quotation-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=quotation';
           document.getElementById('new-invoice-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=invoice';
+          document.getElementById('new-proforma-link').href = '/crm/document/?buyer_id=' + encodeURIComponent(buyerId) + '&type=proforma';
+          var messages = document.getElementById('documents-messages');
+          CRM.clearBanner(messages);
+          // A failed load said nothing and left "No quotations or invoices yet." showing.
+          document.getElementById('documents-empty').style.display = 'none';
           CRM.fetchJson('/api/crm/documents?buyer_id=' + encodeURIComponent(buyerId)).then(function (result) {
-            if (result.ok) renderDocuments(result.data);
+            if (result.ok && Array.isArray(result.data)) { renderDocuments(result.data); return; }
+            CRM.loadError(messages, { what: "this buyer's documents", key: 'buyer-documents', error: result, retry: loadDocuments });
+          }).catch(function (e) {
+            CRM.loadError(messages, { what: "this buyer's documents", key: 'buyer-documents', error: e, retry: loadDocuments });
+          });
+        }
+
+        /* ---- Uploaded documents ------------------------------------------- */
+        var FILE_KIND = { quotation: 'Quotation', invoice: 'Invoice', other: 'Other' };
+        var FILE_MAX = 4 * 1024 * 1024;
+        var uploadKind = 'quotation';
+
+        function fileStatus(msg, ok) {
+          var el = document.getElementById('file-status');
+          el.className = 'crm-status ' + (ok ? 'crm-status-success' : 'crm-status-error');
+          el.textContent = msg;
+          el.style.display = msg ? 'block' : 'none';
+        }
+        function fmtSize(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+
+        // What the Erase dialog lists; null until (and unless) the list has loaded.
+        var loadedFiles = null;
+
+        function renderFiles(rows) {
+          loadedFiles = rows;
+          var tbody = document.getElementById('files-tbody');
+          tbody.innerHTML = '';
+          document.getElementById('files-empty').style.display = rows.length ? 'none' : '';
+          document.getElementById('files-table').style.display = rows.length ? '' : 'none';
+          rows.forEach(function (f) {
+            var tr = document.createElement('tr');
+            var kind = FILE_KIND[f.kind] || f.kind;
+            [f.kind === 'other' && f.title ? f.title : kind,
+             f.reference || '',
+             f.issued_by || '',
+             f.doc_date ? CRM.fmtDate(f.doc_date) : '',
+             f.amount != null ? Number(f.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + (f.currency || '') : ''].forEach(function (v) {
+              var td = document.createElement('td'); td.textContent = v; td.dir = 'auto'; tr.appendChild(td);
+            });
+            var fileTd = document.createElement('td');
+            var open = document.createElement('a');
+            open.href = '/api/crm/buyer-files?id=' + encodeURIComponent(f.id);
+            open.target = '_blank'; open.rel = 'noopener';
+            open.textContent = f.filename;
+            fileTd.appendChild(open);
+            fileTd.appendChild(document.createTextNode(' (' + fmtSize(f.size_bytes) + ')'));
+            if (f.note) { var n = document.createElement('div'); n.className = 'crm-muted'; n.style.fontSize = '12px'; n.textContent = f.note; n.dir = 'auto'; fileTd.appendChild(n); }
+            tr.appendChild(fileTd);
+            var upTd = document.createElement('td');
+            upTd.textContent = CRM.fmtDate(f.uploaded_at) + (f.uploaded_by ? ' \u00b7 ' + f.uploaded_by : '');
+            tr.appendChild(upTd);
+            var delTd = document.createElement('td');
+            var del = document.createElement('button');
+            del.type = 'button'; del.className = 'crm-btn crm-btn-secondary'; del.textContent = 'Delete';
+            del.addEventListener('click', function () { deleteFile(f); });
+            delTd.appendChild(del);
+            tr.appendChild(delTd);
+            tbody.appendChild(tr);
+          });
+        }
+
+        /*
+         * How much of the allowance all uploaded files use, across every
+         * buyer (the cap is shared), with a warning from 80 percent. Owner,
+         * 2026-10-20. A failure here is not a failed load of this buyer's
+         * files, so it only leaves the line empty.
+         */
+        function fmtMb(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(0, Math.round(n / 1024)) + ' KB'; }
+        function loadUsage() {
+          var line = document.getElementById('files-usage');
+          CRM.fetchJson('/api/crm/buyer-files?usage=1').then(function (result) {
+            if (!result.ok || !result.data || !result.data.usage) { line.textContent = ''; return; }
+            showUsage(result.data.usage);
+          }).catch(function () { line.textContent = ''; });
+        }
+        function showUsage(u) {
+          var line = document.getElementById('files-usage');
+          var pct = Math.min(100, Math.round(u.share * 100));
+          line.textContent = 'All uploaded files: ' + fmtMb(u.used_bytes) + ' of ' + Math.round(u.cap_bytes / 1048576) + ' MB (' + pct + '%), ' +
+            u.files + (u.files === 1 ? ' file' : ' files') + ' across all buyers.';
+          var bar = document.createElement('span'); bar.className = 'crm-ui-usage-bar' + (u.warn ? ' warn' : '');
+          var fill = document.createElement('span'); fill.style.width = pct + '%'; bar.appendChild(fill); line.appendChild(bar);
+          var messages = document.getElementById('files-messages');
+          if (u.share >= 1) CRM.showError(messages, 'Uploaded files have reached their ' + Math.round(u.cap_bytes / 1048576) + ' MB limit. New uploads are refused until files are deleted or the limit is raised.');
+          else if (u.warn) CRM.showWarning(messages, 'Uploaded files are at ' + pct + '% of their ' + Math.round(u.cap_bytes / 1048576) + ' MB limit. Delete files that are no longer needed, or ask for the limit to be raised.');
+        }
+
+        function loadFiles() {
+          document.getElementById('files-card').style.display = '';
+          loadUsage();
+          var messages = document.getElementById('files-messages');
+          CRM.clearBanner(messages);
+          document.getElementById('files-empty').style.display = 'none';
+          CRM.fetchJson('/api/crm/buyer-files?buyer_id=' + encodeURIComponent(buyerId)).then(function (result) {
+            if (result.ok && Array.isArray(result.data)) { renderFiles(result.data); return; }
+            CRM.loadError(messages, { what: 'the uploaded documents', key: 'buyer-files', error: result, retry: loadFiles });
+          }).catch(function (e) {
+            CRM.loadError(messages, { what: 'the uploaded documents', key: 'buyer-files', error: e, retry: loadFiles });
+          });
+        }
+
+        function openUpload(kind) {
+          uploadKind = kind;
+          var form = document.getElementById('file-form');
+          form.reset();
+          document.getElementById('f-currency').value = 'USD';
+          document.getElementById('file-form-title').textContent = kind === 'other' ? 'Upload another document' : 'Upload ' + FILE_KIND[kind].toLowerCase();
+          document.getElementById('f-title-field').style.display = kind === 'other' ? '' : 'none';
+          document.getElementById('f-amount-row').style.display = kind === 'other' ? 'none' : '';
+          form.style.display = '';
+          fileStatus('', true);
+          document.getElementById('f-file').focus();
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('[data-upload-kind]'), function (b) {
+          b.addEventListener('click', function () { openUpload(b.getAttribute('data-upload-kind')); });
+        });
+        document.getElementById('f-cancel-btn').addEventListener('click', function () {
+          document.getElementById('file-form').style.display = 'none';
+        });
+
+        document.getElementById('file-form').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var input = document.getElementById('f-file');
+          var file = input.files && input.files[0];
+          if (!file) { fileStatus('Choose the file to upload.', false); return; }
+          // Checked here to save a wasted upload; the server checks again, and decides the type from the file itself.
+          if (file.size > FILE_MAX) { fileStatus('The file is larger than 4 MB. Save a smaller copy (for example, export the PDF at a lower quality) and try again.', false); return; }
+          var title = document.getElementById('f-title').value.trim();
+          if (uploadKind === 'other' && !title) { fileStatus('Say what the document is.', false); document.getElementById('f-title').focus(); return; }
+          var btn = document.getElementById('f-upload-btn');
+          btn.disabled = true;
+          fileStatus('Uploading ' + file.name + '…', true);
+          var reader = new FileReader();
+          reader.onerror = function () { btn.disabled = false; fileStatus('The file could not be read. Try choosing it again.', false); };
+          reader.onload = function () {
+            var data = String(reader.result || '');
+            var payload = {
+              buyer_id: Number(buyerId), kind: uploadKind, title: title, filename: file.name,
+              data_base64: data.slice(data.indexOf(',') + 1),
+              reference: document.getElementById('f-reference').value.trim(),
+              doc_date: document.getElementById('f-date').value || null,
+              issued_by: document.getElementById('f-issued-by').value.trim(),
+              note: document.getElementById('f-note').value.trim(),
+            };
+            var amount = document.getElementById('f-amount').value;
+            if (uploadKind !== 'other' && amount !== '') {
+              payload.amount = Number(amount);
+              payload.currency = document.getElementById('f-currency').value.trim().toUpperCase();
+            }
+            CRM.fetchJson('/api/crm/buyer-files', { method: 'POST', body: payload }).then(function (result) {
+              btn.disabled = false;
+              if (!result.ok) { fileStatus(file.name + ' was not uploaded. ' + CRM.plainError(result, 'The server did not accept it.'), false); return; }
+              document.getElementById('file-form').style.display = 'none';
+              fileStatus('Uploaded ' + file.name + '.', true);
+              loadFiles();
+            }).catch(function (e) {
+              btn.disabled = false;
+              var msg = CRM.noReplyMessage(e, 'Uploading ' + file.name,
+                'Reload the page and check the list before uploading it again, so it is not there twice.');
+              if (msg) fileStatus(msg, false);
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+
+        function deleteFile(f) {
+          CRM.ask({ title: 'Delete this file?', message: 'Delete ' + f.filename + ' from this buyer? The file is removed for good.', confirm: 'Delete file', danger: true }).then(function (yes) {
+          if (!yes) return;
+          CRM.fetchJson('/api/crm/buyer-files?id=' + encodeURIComponent(f.id) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
+            if (!result.ok) { fileStatus(f.filename + ' was not deleted. ' + CRM.plainError(result, 'Nothing was changed.'), false); return; }
+            fileStatus('Deleted ' + f.filename + '.', true);
+            loadFiles();
+          }).catch(function (e) {
+            var msg = CRM.noReplyMessage(e, 'Deleting ' + f.filename, 'Reload the page to see whether it is gone.');
+            if (msg) fileStatus(msg, false);
+          });
           });
         }
 
         function loadExisting() {
           return CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId)).then(function (result) {
             if (!result.ok && result.data.deleted) { showDeletedBuyer(result.data); return; }
-            if (!result.ok) { showStatus(result.data.error || 'Could not load buyer.', false); return; }
+            if (!result.ok) {
+              CRM.loadError(document.getElementById('buyer-messages'), { what: 'this buyer', key: 'buyer', error: result, retry: loadExisting });
+              return;
+            }
+            CRM.clearBanner(document.getElementById('buyer-messages'));
             var b = result.data;
             document.getElementById('activity-card').style.display = '';
+            document.getElementById('quick-card').style.display = '';
             document.getElementById('page-title').textContent = b.company_name;
             // Hidden on the just-saved view only -- see justSaved above.
             if (!justSaved) {
+              document.getElementById('danger-card').style.display = '';
               document.getElementById('delete-btn').style.display = '';
               document.getElementById('erase-btn').style.display = '';
             }
             fillForm(b);
+            renderQuick(b);
             if (justSaved) {
               showStatus('Saved. ' + b.company_name + ' has been added to your buyers.', true);
               /*
@@ -392,6 +857,9 @@
             renderStageHistory(b.stage_history || []);
             renderActivity(b.activity_log || []);
             loadDocuments();
+            loadFiles();
+          }).catch(function (e) {
+            CRM.loadError(document.getElementById('buyer-messages'), { what: 'this buyer', key: 'buyer', error: e, retry: loadExisting });
           });
         }
 
@@ -410,6 +878,10 @@
           document.getElementById('buyer-form').parentNode.style.display = 'none';
           document.getElementById('activity-card').style.display = 'none';
           document.getElementById('documents-card').style.display = 'none';
+          document.getElementById('files-card').style.display = 'none';
+          document.getElementById('quick-card').style.display = 'none';
+          document.getElementById('buyer-summary').style.display = 'none';
+          document.getElementById('danger-card').style.display = '';
           document.getElementById('delete-btn').style.display = 'none';
           document.getElementById('erase-btn').style.display = '';
           document.getElementById('page-title').textContent = 'Deleted buyer';
@@ -425,7 +897,8 @@
          * The field is named by its own label on this form.
          */
         function saveErrorText(d) {
-          if (!d.fields || !d.fields.length) return d.error || 'Could not save.';
+          // No field named: the server's own sentence if it wrote one, never a bare code (2026-10-20).
+          if (!d.fields || !d.fields.length) return 'Not saved. ' + CRM.plainError({ ok: false, status: 0, data: d }, 'The server did not accept the change, and nothing was changed.');
           return d.fields.map(function (f) {
             var label = document.querySelector('label[for="' + f + '"]');
             var name = label ? label.textContent.replace(/\s*\*\s*$/, '').trim() : f;
@@ -437,6 +910,21 @@
           e.preventDefault();
           var payload = collectForm();
           var saveBtn = document.getElementById('save-btn');
+          /*
+           * The stage rules apply to this form too (2026-10-21): the server
+           * refuses a move to Lost/Stalled without a reason, or to
+           * Exported/Completed without confirmation. So a change of stage here
+           * asks the same questions as the Move menus -- except that a
+           * Lost/Stalled reason already typed in the form is used as it is.
+           */
+          var fromStage = isNew ? null : (current ? current.current_stage : null);
+          var toStage = payload.current_stage;
+          var needsAsk = toStage !== fromStage &&
+            (toStage === 'Exported/Completed' || (toStage === 'Lost/Stalled' && !String(payload.lost_reason || '').trim()));
+          (needsAsk ? CRM.stageMoveCheck(document.getElementById('company_name').value.trim(), toStage) : Promise.resolve({})).then(function (extra) {
+          if (!extra) { document.getElementById('current_stage').focus(); return; }
+          Object.assign(payload, extra);
+          if (extra.lost_reason) document.getElementById('lost_reason').value = extra.lost_reason;
           saveBtn.disabled = true;
 
           var req = isNew
@@ -446,21 +934,28 @@
           req.then(function (result) {
             saveBtn.disabled = false;
             if (!result.ok) {
-              showStatus(saveErrorText(result.data || {}), false);
+              // Nothing in the form is refilled or cleared on a refusal: what was typed stays, to correct and save again.
+              showStatus(saveErrorText(result.data || {}) + ' Your changes are still in the form.', false, 'form-status');
               return;
             }
             if (isNew) {
               window.location.href = '/crm/buyer/?id=' + result.data.id + '&saved=1';
             } else {
-              showStatus('Saved.', true);
+              CRM.stageMoveSaved(document.getElementById('company_name').value.trim());
+              showStatus('Saved.', true, 'form-status');
+              snapshotForm();
               checkCertificationGap(payload);
+              // The quick actions use the saved number and address, so they follow the save.
+              renderQuick(Object.assign({}, current, payload));
+              refreshLogs();
             }
           }).catch(function (e) {
             saveBtn.disabled = false;
             var msg = isNew
               ? CRM.noReplyMessage(e, 'Adding this buyer', 'Check the Buyers list before trying again, so it is not added twice.')
               : CRM.noReplyMessage(e, 'Saving', 'Your changes are still on this page, and saving them again does no harm.');
-            if (msg) showStatus(msg, false);
+            if (msg) showStatus(msg, false, 'form-status');
+          });
           });
         });
 
@@ -470,9 +965,11 @@
           var entry = entryEl.value.trim();
           if (!entry) return;
           CRM.fetchJson('/api/crm/activity', { method: 'POST', body: { buyer_id: Number(buyerId), entry: entry } }).then(function (result) {
-            if (!result.ok) { showStatus(result.data.error || 'Could not add entry.', false); return; }
+            if (!result.ok) { showStatus('The note was not added. ' + CRM.plainError(result, 'The server did not accept it.'), false); return; }
             entryEl.value = '';
-            return loadExisting();
+            // Only the logs: reloading the whole record here refilled the
+            // details form and lost unsaved edits to it (found 2026-10-20).
+            return refreshLogs();
           }).catch(function (e) {
             // The note stays in the box. Not reloaded here: that would refill
             // the form above from the server and lose any unsaved edits to it.
@@ -483,12 +980,15 @@
         });
 
         document.getElementById('delete-btn').addEventListener('click', function () {
-          if (!window.confirm('Delete this buyer record?\n\nIt will no longer appear anywhere in the CRM, but it is kept in the database and can be recalled if needed.\n\n' +
-            'If the buyer asked for their data to be deleted, cancel and use \u201cErase (deletion request)\u201d instead.')) return;
           var name = document.getElementById('company_name').value;
+          CRM.ask({ title: 'Delete ' + (name || 'this buyer') + '?',
+            message: 'It will no longer appear anywhere in the CRM, but it is kept in the database and can be recalled if needed.\n\n' +
+              'If the buyer asked for their data to be deleted, cancel and use \u201cErase (deletion request)\u201d instead.',
+            confirm: 'Delete buyer', danger: true }).then(function (yes) {
+          if (!yes) return;
           CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&confirmed=1', { method: 'DELETE' }).then(function (result) {
             if (!result.ok) {
-              showStatus(result.data.error || 'Could not delete.', false);
+              showStatus((name || 'The buyer') + ' was not deleted. ' + CRM.plainError(result, 'Nothing was changed.'), false);
               // Already deleted (e.g. by an earlier click): show it as such.
               if (result.data.already_deleted) loadExisting();
               return;
@@ -501,6 +1001,7 @@
             showStatus('The delete request did not complete, so it is not known whether it worked. ' +
               'Check the buyer list before trying again.', false);
           });
+          });
         });
 
         /*
@@ -511,17 +1012,85 @@
           var msg = 'Erase this buyer permanently? Use this when the person asked for their data to be deleted.\n\n' +
             'Removed for good: the buyer record, its notes (including the copy of their original message), its stage history, ' +
             'and the website enquiries linked to it.\n\n' +
-            'Kept: quotations, invoices and letters already issued, and the opt-out list (an unsubscribed address stays unsubscribed). ' +
+            'Kept: documents already issued (quotations, proformas, invoices, packing lists and letters), ' +
+            'and the opt-out list (an unsubscribed address stays unsubscribed). ' +
             'Any other requests from them, such as downloads or a Market Brief signup, are not linked to the buyer: delete those from the Enquiries page.\n\n' +
-            'This cannot be undone, not even from the database.';
-          if (!window.confirm(msg)) return;
-          var name = document.getElementById('company_name').value;
-          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&erase=1&confirmed=1', { method: 'DELETE' }).then(function (result) {
-            if (!result.ok) { showStatus(result.data.error || 'Could not erase.', false); return; }
+            /*
+             * What erasing does NOT reach (owner, 2026-10-20). The database
+             * keeps a restore history: on Neon's Free plan at most 6 hours,
+             * per Neon's plans page; the window is set per project in Neon.
+             * A Neon backup branch or snapshot keeps its copy until it is deleted.
+             * Erasing removes neither, so the message does not claim to.
+             * Counsel question 18 (docs/g0-counsel-questions.md).
+             */
+            'This cannot be undone from the CRM. Copies can remain for a while outside it: in the database\u2019s restore history until it expires ' +
+            '(at most 6 hours on Neon\u2019s Free plan; your project\u2019s window is shown in Neon), and in any database backup branch or snapshot until it is deleted.';
+          var name = document.getElementById('company_name').value.trim();
+          /*
+           * The stronger step the owner asked for: type the buyer's name. A
+           * buyer that was already deleted shows no details, its name
+           * included, so for one of those the word to type is ERASE.
+           */
+          /*
+           * Uploaded files (owner decision 2026-10-20, option (b) of counsel
+           * question 19): a box, ticked, to delete them with the buyer. Unticked,
+           * they are kept -- in the database, but no CRM page leads to them once
+           * the buyer is gone, so the box says so. The audit entry records how
+           * many were deleted or kept. Without a loaded list (a deleted buyer
+           * shows no details) the box speaks of "any" files rather than a number.
+           */
+          var files = loadedFiles;
+          var checkbox = null;
+          if (files === null) {
+            checkbox = { label: 'Also delete any files uploaded to this buyer', checked: true,
+              detail: 'Untick to keep them. Kept files stay in the database but can no longer be opened from the CRM.' };
+          } else if (files.length) {
+            checkbox = { label: 'Also delete the ' + (files.length === 1 ? 'file' : files.length + ' files') + ' uploaded to this buyer', checked: true,
+              detail: files.map(function (f) { return '\u2022 ' + f.filename; }).join('\n') +
+                '\nUntick to keep ' + (files.length === 1 ? 'it' : 'them') + '. Kept files stay in the database but can no longer be opened from the CRM.' };
+          }
+          CRM.ask({ title: 'Erase ' + (name || 'this buyer') + ' permanently?', message: msg, confirm: 'Erase for good', danger: true,
+            checkbox: checkbox,
+            typeToConfirm: name || 'ERASE',
+            typeLabel: name ? 'Type the buyer\u2019s name, ' + name + ', to confirm' : 'Type ERASE to confirm' }).then(function (yes) {
+          if (!yes) return;
+          // No box (no files) is the same as ticked: nothing is kept that the dialog did not mention.
+          var filesParam = !checkbox || yes.checked ? 'delete' : 'keep';
+          CRM.fetchJson('/api/crm/buyers?id=' + encodeURIComponent(buyerId) + '&erase=1&confirmed=1&files=' + filesParam, { method: 'DELETE' }).then(function (result) {
+            if (!result.ok) { showStatus('The buyer was not erased. ' + CRM.plainError(result, 'Nothing was changed.'), false); return; }
             window.location.href = '/crm/buyers/?erased=' + encodeURIComponent(name || ('buyer #' + buyerId));
           }).catch(function (e) {
             var m = CRM.noReplyMessage(e, 'Erasing the buyer', 'Reload this page: if it says Not found, the erase went through.');
             if (m) showStatus(m, false);
+          });
+          });
+        });
+
+        /*
+         * Cancel: close Buyer details without saving (owner, 2026-10-22).
+         * If anything was changed since the form was opened (or last saved),
+         * it asks first; on yes the form goes back to the saved record and
+         * folds. On Add Buyer, Cancel leaves for the Buyers list instead.
+         * Nothing is sent to the server either way.
+         */
+        var formSnapshot = null;
+        function snapshotForm() { formSnapshot = JSON.stringify(collectForm()); }
+        function formChanged() { return formSnapshot !== null && JSON.stringify(collectForm()) !== formSnapshot; }
+        document.getElementById('details-fold').addEventListener('toggle', function (e) {
+          if (e.target.open) snapshotForm();
+        });
+        document.getElementById('details-cancel').addEventListener('click', function () {
+          var changed = formChanged();
+          (changed ? CRM.ask({ title: 'Discard your changes?', message: 'The changes you made in Buyer details have not been saved.',
+            cancel: 'Keep editing', confirm: 'Discard changes', danger: true }) : Promise.resolve(true)).then(function (yes) {
+            if (!yes) return;
+            if (isNew) { window.location.href = '/crm/buyers/'; return; }
+            if (changed && current) { fillForm(current); snapshotForm(); }
+            showStatus('', true, 'form-status');
+            document.getElementById('form-status').style.display = 'none';
+            var fold = document.getElementById('details-fold');
+            fold.open = false;
+            fold.querySelector('summary').focus();
           });
         });
 
@@ -530,12 +1099,14 @@
           CRM.renderNav('Buyers');
           if (isNew) {
             document.getElementById('page-title').textContent = 'Add Buyer';
+            document.getElementById('details-fold').open = true;
             toggleLostReason();
+            snapshotForm();
           } else {
             return loadExisting();
           }
         }).catch(function (e) {
-          if (e.message !== 'unauthorized') showStatus('Could not load page.', false);
+          CRM.loadError(document.getElementById('buyer-messages'), { what: 'this page', key: 'buyer', error: e, retry: function () { window.location.reload(); } });
         });
       })();
     </script>

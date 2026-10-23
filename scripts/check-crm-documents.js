@@ -46,6 +46,7 @@ const db = {
     }],
   ]),
   documents: [],
+  audit: [],
   altered: false,
 };
 
@@ -107,7 +108,18 @@ function fakeSql(strings, ...vals) {
     if (doc) doc.doc_number = vals[0];
     return Promise.resolve([]);
   }
-  if (/INSERT INTO crm_audit_log/i.test(q)) return Promise.resolve([]);
+  if (/INSERT INTO crm_audit_log/i.test(q)) { db.audit.push(vals); return Promise.resolve([]); }
+  // The document a new one is made from (source_doc_id).
+  if (/SELECT id, doc_type, doc_number, voided_at FROM crm_documents WHERE id/i.test(q)) {
+    const doc = db.documents.find((d) => d.id === Number(vals[0]));
+    return Promise.resolve(doc ? [{ id: doc.id, doc_type: doc.doc_type, doc_number: doc.doc_number, voided_at: doc.voided_at || null }] : []);
+  }
+  // "Copy from last invoice": newest live invoice or proforma with bank details.
+  if (/bank_details IS NOT NULL/i.test(q)) {
+    const hit = db.documents.filter((d) => ['invoice', 'proforma'].includes(d.doc_type) && !d.voided_at && d.bank_details)
+      .sort((a, b) => b.id - a.id)[0];
+    return Promise.resolve(hit ? [{ doc_number: hit.doc_number, bank_details: hit.bank_details }] : []);
+  }
 
   return Promise.resolve([]);
 }
@@ -366,8 +378,62 @@ function create(body, { cookie = COOKIE } = {}) {
     });
     const doc = db.documents[db.documents.length - 1];
     t('a quotation ignores letter parts', res.statusCode === 200 &&
-      doc.salutation === null && doc.signatory_name === null && doc.enclosures === null,
-      JSON.stringify([doc.salutation, doc.signatory_name, doc.enclosures]));
+      doc.salutation === null && doc.enclosures === null,
+      JSON.stringify([doc.salutation, doc.enclosures]));
+    // ...but keeps who signs it: the 2026-10-19 sheet has a signature block
+    // and a sales-representative card on every type.
+    t('   but keeps the signatory', doc.signatory_name === 'Someone', JSON.stringify(doc.signatory_name));
+  }
+
+  {
+    // payment terms and lead time: fill-in fields on priced documents, no defaults
+    let res = await create({
+      doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS,
+      payment_terms: '30% advance, 70% against documents', lead_time: '4-6 weeks from order',
+    });
+    let doc = db.documents[db.documents.length - 1];
+    t('an invoice stores payment terms and lead time', res.statusCode === 200 &&
+      doc.payment_terms === '30% advance, 70% against documents' && doc.lead_time === '4-6 weeks from order',
+      JSON.stringify([doc.payment_terms, doc.lead_time]));
+
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    doc = db.documents[db.documents.length - 1];
+    t('   left blank, they stay empty -- nothing is filled in for the writer',
+      res.statusCode === 200 && doc.payment_terms === null && doc.lead_time === null,
+      JSON.stringify([doc.payment_terms, doc.lead_time]));
+
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS, payment_terms: 'P'.repeat(500) });
+    doc = db.documents[db.documents.length - 1];
+    t('   long values are capped', res.statusCode === 200 && doc.payment_terms.length === 200, String(doc.payment_terms && doc.payment_terms.length));
+
+    res = await create({ doc_type: 'letter', buyer_company_name: 'X', body: 'Hello.', payment_terms: 'Cash', lead_time: 'Now' });
+    doc = db.documents[db.documents.length - 1];
+    t('   a letter ignores them', res.statusCode === 200 && doc.payment_terms === null && doc.lead_time === null,
+      JSON.stringify([doc.payment_terms, doc.lead_time]));
+  }
+
+  {
+    // bank details: typed on an invoice, kept with it, nowhere else
+    const BANK = 'Beneficiary: Sample Co\nBank: Sample Bank\nIBAN: EG00 0000 0000 0000\nSWIFT: SAMPEGCX';
+    let res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: BANK });
+    let doc = db.documents[db.documents.length - 1];
+    t('an invoice stores bank details, line breaks kept', res.statusCode === 200 && doc.bank_details === BANK, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    doc = db.documents[db.documents.length - 1];
+    t('   left blank, nothing is filled in', res.statusCode === 200 && doc.bank_details === null, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: BANK });
+    doc = db.documents[db.documents.length - 1];
+    t('   a quotation ignores them', res.statusCode === 200 && doc.bank_details === null, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'letter', buyer_company_name: 'X', body: 'Hello.', bank_details: BANK });
+    doc = db.documents[db.documents.length - 1];
+    t('   so does a letter', res.statusCode === 200 && doc.bank_details === null, JSON.stringify(doc.bank_details));
+
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: 'B'.repeat(900) });
+    doc = db.documents[db.documents.length - 1];
+    t('   long values are capped', res.statusCode === 200 && doc.bank_details.length === 600, String(doc.bank_details && doc.bank_details.length));
   }
 
   {
@@ -433,6 +499,98 @@ function create(body, { cookie = COOKIE } = {}) {
   }
 
   // ---- everything else the handler validated, it still validates -------
+  {
+    // proforma invoice: PI- numbers, a validity date and bank details, no due date
+    const res = await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS,
+      valid_until: '2026-11-30', due_date: '2026-12-31', bank_details: 'IBAN: EG00 TEST' });
+    const doc = db.documents[db.documents.length - 1];
+    t('a proforma invoice is issued with a PI- number', res.statusCode === 200 && /^PI-\d{4}-\d{6}$/.test(JSON.parse(res.body).doc_number), res.body);
+    t('   it keeps a validity date and bank details, and no due date',
+      doc.valid_until === '2026-11-30' && doc.due_date === null && doc.bank_details === 'IBAN: EG00 TEST',
+      JSON.stringify([doc.valid_until, doc.due_date, doc.bank_details]));
+  }
+
+  {
+    // made from another document: the source is checked, linked and audited
+    await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    const quote = db.documents[db.documents.length - 1];
+    let res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    let doc = db.documents[db.documents.length - 1];
+    t('an invoice made from a quotation records which one', res.statusCode === 200 &&
+      doc.source_doc_id === quote.id && doc.source_doc_number === quote.doc_number, JSON.stringify([doc.source_doc_id, doc.source_doc_number]));
+    t('   and the audit log says so', db.audit.some((a) => a.includes(`${doc.doc_number} from ${quote.doc_number}`)));
+
+    res = await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    const pi = db.documents[db.documents.length - 1];
+    t('   a proforma can be made from a quotation', res.statusCode === 200 && pi.source_doc_number === quote.doc_number, res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: pi.id });
+    t('   and an invoice from a proforma', res.statusCode === 200 && db.documents[db.documents.length - 1].source_doc_number === pi.doc_number, res.body);
+
+    const before = db.documents.length;
+    res = await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    t('a quotation cannot be made from another document', res.statusCode === 400 && /source_doc_id/.test(res.body), res.body);
+    res = await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: pi.id });
+    t('   nor a proforma from a proforma', res.statusCode === 400, res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: 999999 });
+    t('   a source that does not exist is refused', res.statusCode === 400, res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: 'abc' });
+    t('   so is one that is not an id', res.statusCode === 400, res.body);
+    quote.voided_at = new Date();
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, source_doc_id: quote.id });
+    t('   nothing is issued from a void quotation', res.statusCode === 409 && /void/.test(res.body), res.body);
+    t('   and none of the refused ones was created', db.documents.length === before, String(db.documents.length - before));
+  }
+
+  {
+    // the last bank details, for "Copy from last invoice"
+    await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: 'OLD ACCOUNT' });
+    await create({ doc_type: 'proforma', buyer_company_name: 'X', line_items: LINE_ITEMS, bank_details: 'NEW ACCOUNT' });
+    const newest = db.documents[db.documents.length - 1];
+    const get = (cookie = COOKIE) => docs.handler({ httpMethod: 'GET', headers: cookie ? { cookie } : {}, queryStringParameters: { last_bank_details: '1' } });
+    let res = await get();
+    t('the last bank details come from the newest invoice or proforma', res.statusCode === 200 &&
+      JSON.parse(res.body).bank_details === 'NEW ACCOUNT' && JSON.parse(res.body).doc_number === newest.doc_number, res.body);
+    newest.voided_at = new Date();
+    res = await get();
+    t('   a void one is skipped', JSON.parse(res.body).bank_details === 'OLD ACCOUNT', res.body);
+    res = await get(null);
+    t('   and they are not given out without a session', res.statusCode === 401, String(res.statusCode));
+  }
+
+  {
+    // packing list: items and shipment, no prices
+    const ITEMS = [{ description: 'Green olives, whole', packing: 'carton, 12 x 720 ml', packages: 1200, net_kg: 10368, gross_kg: 13200 }];
+    await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    const inv = db.documents[db.documents.length - 1];
+    let res = await create({ doc_type: 'packing', buyer_company_name: 'X', packing_items: ITEMS, source_doc_id: inv.id,
+      container_no: 'MSKU 123456-7', seal_no: 'S-001', port_loading: 'Alexandria', line_items: LINE_ITEMS, currency: 'EUR', bank_details: 'X' });
+    let doc = db.documents[db.documents.length - 1];
+    t('a packing list is issued with a PL- number', res.statusCode === 200 && /^PL-\d{4}-\d{6}$/.test(JSON.parse(res.body).doc_number), res.body);
+    t('   it stores its items and shipment details', JSON.parse(doc.packing_items)[0].packages === 1200 &&
+      JSON.parse(doc.shipment).container_no === 'MSKU 123456-7' && JSON.parse(doc.shipment).vessel === null, doc.packing_items + ' ' + doc.shipment);
+    t('   and no prices, line items or bank details', doc.line_items === '[]' && doc.total === 0 && doc.bank_details === null,
+      JSON.stringify([doc.line_items, doc.total, doc.bank_details]));
+    t('   it can be made from an invoice', doc.source_doc_number === inv.doc_number, String(doc.source_doc_number));
+
+    const bad = async (items, name) => {
+      const r = await create({ doc_type: 'packing', buyer_company_name: 'X', packing_items: items });
+      t('   refused: ' + name, r.statusCode === 400 && /packing_items/.test(r.body), r.body);
+    };
+    await bad([], 'no items');
+    await bad([{ ...ITEMS[0], description: '' }], 'an item without a description');
+    await bad([{ ...ITEMS[0], packages: 0 }], 'zero packages');
+    await bad([{ ...ITEMS[0], packages: 2.5 }], 'half a package');
+    await bad([{ ...ITEMS[0], net_kg: 0 }], 'no net weight');
+    await bad([{ ...ITEMS[0], gross_kg: 100 }], 'gross weight below net');
+    await create({ doc_type: 'quotation', buyer_company_name: 'X', line_items: LINE_ITEMS });
+    res = await create({ doc_type: 'packing', buyer_company_name: 'X', packing_items: ITEMS, source_doc_id: db.documents[db.documents.length - 1].id });
+    t('   a packing list is not made from a quotation', res.statusCode === 400 && /source_doc_id/.test(res.body), res.body);
+    res = await create({ doc_type: 'invoice', buyer_company_name: 'X', line_items: LINE_ITEMS, packing_items: ITEMS, container_no: 'X' });
+    doc = db.documents[db.documents.length - 1];
+    t('   an invoice ignores packing fields', res.statusCode === 200 && doc.packing_items === null && doc.shipment === null,
+      JSON.stringify([doc.packing_items, doc.shipment]));
+  }
+
   {
     const res = await create({ doc_type: 'receipt', buyer_company_name: 'X', line_items: LINE_ITEMS });
     t('an unknown doc_type is refused', res.statusCode === 400 && /doc_type/.test(res.body), res.body);
