@@ -12,7 +12,7 @@
 // (that rule is about olivesegypt-site vs. the separate umami-olivesegypt
 // codebase, which this file has no connection to at all).
 
-const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, parseId, INVALID_ID_ERROR, COOKIE_NAME: ADMIN_COOKIE_NAME } = require('./_lib');
+const { hashPassword, verifyPassword, signSession, verifySession, parseCookies, readJsonBody, json, parseId, INVALID_ID_ERROR } = require('./_lib');
 
 const crypto = require('crypto');
 
@@ -472,15 +472,8 @@ function csvCell(value) {
  * Moved here from inquiries.js when leads.js needed the same rule, so the two
  * cannot drift apart.
  */
-function requireReaderSession(event) {
-  const adminSecret = process.env.SESSION_SECRET;
-  if (adminSecret) {
-    const token = parseCookies(event.headers)[ADMIN_COOKIE_NAME];
-    const session = token ? verifySession(token, adminSecret) : null;
-    if (session) return session;
-  }
-  return requireCrmSession(event);
-}
+// The gate itself is _sessions.js currentReaderSession (release 2), which
+// checks each session against its account.
 
 /*
  * Permanently delete one thing a visitor sent: an enquiry, or a guide
@@ -509,7 +502,9 @@ const SUBMISSION_KINDS = {
 async function deleteSubmission(event, sql, kind) {
   const k = SUBMISSION_KINDS[kind];
   if (!k) throw new Error(`deleteSubmission: unknown kind ${kind}`);
-  const session = requireCrmSession(event);
+  // Checked against its account. Required here, not at the top: _sessions.js
+  // requires this file.
+  const session = await require('./_sessions').currentCrmSession(event);
   if (!session) return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   const qs = event.queryStringParameters || {};
   if (qs.confirmed !== '1') {
@@ -590,7 +585,6 @@ module.exports = {
   normaliseCompanyName,
   classifyCompanyName,
   findNearDuplicates,
-  requireReaderSession,
   deleteSubmission,
   parseId,
   INVALID_ID_ERROR,

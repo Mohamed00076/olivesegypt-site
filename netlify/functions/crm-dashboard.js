@@ -2,7 +2,8 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure, recentFailures } = require('./_failure_lib');
-const { requireCrmSession, json } = require('./_crm_lib');
+const { json } = require('./_crm_lib');
+const { currentCrmSession } = require('./_sessions');
 
 // Converted = ever reached one of these stages. See docs/h-crm-schema.md
 // for the full conversion-rate definition this implements: based on
@@ -23,7 +24,7 @@ function connectionString() {
 }
 
 exports.handler = async (event) => {
-  const session = requireCrmSession(event);
+  const session = await currentCrmSession(event);
   if (!session) {
     return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

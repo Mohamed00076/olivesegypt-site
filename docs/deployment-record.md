@@ -32,6 +32,15 @@ change, with its PR, commit and date, so no deploy goes unrecorded. Recording
 each notes-only deploy separately would never end: every record's merge is
 itself a deploy.
 
+**Before every production deploy (owner decision, 2026-10-18).** Every
+PRODUCTION DEPLOYMENT REQUEST lists the result of `npm run test:bundles`,
+run on the exact commit to be merged. It packages every function with
+Netlify's own bundler and fails if a package does not load, has no entry
+point, or is missing an npm package it names; see
+`scripts/check-function-bundles.js`. It is a deployment step, not part of
+everyday `npm test`: it needs the network and takes a minute or two. A
+failing result blocks the request.
+
 ---
 
 ## Deploy 1 — Initial site rebuild (PR #1)

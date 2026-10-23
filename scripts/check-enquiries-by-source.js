@@ -52,13 +52,16 @@ sql.query = (text, params) => sql(text, params);
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const lib = require(path.join(FN, '_lib.js'));
 const crm = require(path.join(FN, '_crm_lib.js'));
 const handler = require(path.join(FN, 'analytics-report.js')).handler;
-const admin = `${lib.COOKIE_NAME}=${lib.signSession('owner', process.env.SESSION_SECRET)}`;
+const admin = `${lib.COOKIE_NAME}=${lib.signSession('owner', process.env.SESSION_SECRET, fx.adminClaims('owner'))}`;
 // signCrmSession arrives with #177; before it, CRM sessions were signed with the raw secret.
-const staff = `${crm.CRM_COOKIE_NAME}=${crm.signCrmSession ? crm.signCrmSession('staff') : crm.signSession('staff', process.env.CRM_SESSION_SECRET)}`;
+const staff = `${crm.CRM_COOKIE_NAME}=${crm.signCrmSession ? crm.signCrmSession('staff', fx.crmClaims('staff')) : crm.signSession('staff', process.env.CRM_SESSION_SECRET)}`;
 const quiet = async (fn) => { const e = console.error; console.error = () => {}; try { return await fn(); } finally { console.error = e; } };
 const get = (cookie, qs) => quiet(() => handler({ httpMethod: 'GET', headers: cookie ? { cookie } : {}, queryStringParameters: Object.assign({ report: 'enquiries_by_source' }, qs) }, {}));
 

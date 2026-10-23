@@ -10,7 +10,8 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
-const { parseCookies, verifySession, COOKIE_NAME, readJsonBody, json } = require('./_lib');
+const { readJsonBody, json } = require('./_lib');
+const { currentAdminSession } = require('./_sessions');
 const { ensureSchema, auditLog, clean, MIN_RETENTION_DAYS, MAX_RETENTION_DAYS } = require('./_analytics_lib');
 
 function connectionString() {
@@ -23,11 +24,8 @@ function connectionString() {
   );
 }
 
-function requireAdmin(event) {
-  const SESSION_SECRET = process.env.SESSION_SECRET;
-  const token = SESSION_SECRET ? parseCookies(event.headers)[COOKIE_NAME] : null;
-  return token ? verifySession(token, SESSION_SECRET) : null;
-}
+// The analytics session, checked against its account (_sessions.js).
+const requireAdmin = currentAdminSession;
 
 async function handleGetPolicy(sql) {
   const rows = await sql`SELECT key, value FROM analytics_settings WHERE key = 'data_retention_days'`;
@@ -98,7 +96,7 @@ async function handleDeleteVisitor(event, sql, body, actor) {
 }
 
 exports.handler = async (event) => {
-  const session = requireAdmin(event);
+  const session = await requireAdmin(event);
   if (!session) {
     return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

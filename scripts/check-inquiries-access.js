@@ -62,6 +62,9 @@ require.cache[neonId] = new Module(neonId, null);
 require.cache[neonId].filename = neonId;
 require.cache[neonId].loaded = true;
 require.cache[neonId].exports = { neon: () => fakeSql };
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const ADMIN_SECRET = 'admin-secret-not-a-real-one';
 const CRM_SECRET = 'crm-secret-not-a-real-one';
@@ -79,8 +82,8 @@ const t = (name, cond, extra) => {
   console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '   <-- ' + (extra === undefined ? '' : extra)}`);
 };
 
-const adminCookie = `${lib.COOKIE_NAME}=${lib.signSession('owner', ADMIN_SECRET)}`;
-const crmCookie = `${crmLib.CRM_COOKIE_NAME}=${crmLib.signCrmSession('staff')}`;
+const adminCookie = `${lib.COOKIE_NAME}=${lib.signSession('owner', ADMIN_SECRET, fx.adminClaims('owner'))}`;
+const crmCookie = `${crmLib.CRM_COOKIE_NAME}=${crmLib.signCrmSession('staff', fx.crmClaims('staff'))}`;
 
 function get(cookie) {
   return inquiries.handler({
@@ -102,7 +105,7 @@ function get(cookie) {
   }
 
   // ---- refused, before touching the table ------------------------------
-  const forgedAdmin = `${lib.COOKIE_NAME}=${lib.signSession('owner', 'the-wrong-secret')}`;
+  const forgedAdmin = `${lib.COOKIE_NAME}=${lib.signSession('owner', 'the-wrong-secret', fx.adminClaims('owner'))}`;
   const forgedCrm = `${crmLib.CRM_COOKIE_NAME}=${crmLib.signSession('staff', 'the-wrong-secret')}`;
 
   for (const [label, cookie] of [
@@ -111,7 +114,7 @@ function get(cookie) {
     ['a junk cookie', 'tc_session=not-a-token'],
     ['an admin token signed with the wrong secret', forgedAdmin],
     ['a CRM token signed with the wrong secret', forgedCrm],
-    ['a CRM token presented in the admin cookie', `${lib.COOKIE_NAME}=${crmLib.signCrmSession('staff')}`],
+    ['a CRM token presented in the admin cookie', `${lib.COOKIE_NAME}=${crmLib.signCrmSession('staff', fx.crmClaims('staff'))}`],
   ]) {
     const before = rowsRead;
     const res = await get(cookie);

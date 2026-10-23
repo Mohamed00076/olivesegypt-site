@@ -1,6 +1,7 @@
 'use strict';
 
-const { parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
+const { json } = require('./_lib');
+const { currentAdminSession } = require('./_sessions');
 
 exports.handler = async (event) => {
   const SESSION_SECRET = process.env.SESSION_SECRET;
@@ -8,11 +9,8 @@ exports.handler = async (event) => {
 
   if (!SESSION_SECRET) return unauth();
 
-  const cookies = parseCookies(event.headers);
-  const token = cookies[COOKIE_NAME];
-  if (!token) return unauth();
-
-  const payload = verifySession(token, SESSION_SECRET);
+  // Checked against its account (_sessions.js): a reset ends it here too.
+  const payload = await currentAdminSession(event);
   if (!payload) return unauth();
 
   return json(200, { authenticated: true, user: { username: payload.sub } }, { 'Cache-Control': 'no-store, private' });

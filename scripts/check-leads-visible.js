@@ -64,6 +64,9 @@ const sql = (strings, ...vals) => {
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const { signCrmSession: signCrm, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const { signSession: signAdmin, COOKIE_NAME: ADMIN_COOKIE } = require(path.join(FN, '_lib.js'));
@@ -83,11 +86,11 @@ const get = async (cookie) => {
   t('   before a single request is read', r.reads === 0, r.reads);
   r = await get(`${CRM_COOKIE_NAME}=forged.value`);
   t('a forged CRM cookie is refused', r.status === 401, r.status);
-  r = await get(`${CRM_COOKIE_NAME}=${signCrm('staff')}`);
+  r = await get(`${CRM_COOKIE_NAME}=${signCrm('staff', fx.crmClaims('staff'))}`);
   t('CRM staff can read them', r.status === 200 && Array.isArray(r.body) && r.body.length === 1, JSON.stringify(r.body).slice(0, 120));
   t('   never cached', /no-store/.test(r.headers['Cache-Control'] || ''), JSON.stringify(r.headers));
   t('   each carries a readable label', r.body[0] && r.body[0].segment_label === 'private-label brief', r.body[0] && r.body[0].segment_label);
-  r = await get(`${ADMIN_COOKIE}=${signAdmin('owner', SECRET + '-admin')}`);
+  r = await get(`${ADMIN_COOKIE}=${signAdmin('owner', SECRET + '-admin', fx.adminClaims('owner'))}`);
   t('the analytics-dashboard session can read them too', r.status === 200, r.status);
 
   // ---- what is read -------------------------------------------------------------
@@ -139,7 +142,7 @@ const get = async (cookie) => {
     const r = await leads.handler({ httpMethod: 'GET', headers: cookie ? { cookie } : {}, queryStringParameters: qs });
     return { status: r.statusCode, body: r.body, headers: r.headers || {}, reads: reads.length, audits: audits.slice() };
   };
-  const staff = `${CRM_COOKIE_NAME}=${signCrm('staff')}`;
+  const staff = `${CRM_COOKIE_NAME}=${signCrm('staff', fx.crmClaims('staff'))}`;
   let x = await exp({ export: 'market_report', confirmed: '1' }, null);
   t('the subscriber export refuses anyone without a session', x.status === 401 && x.reads === 0, x.status);
   x = await exp({ export: 'market_report' }, staff);

@@ -23,7 +23,8 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
-const { readJsonBody, json, parseCookies, verifySession, COOKIE_NAME, netlifyClientIp } = require('./_lib');
+const { readJsonBody, json, netlifyClientIp } = require('./_lib');
+const { currentAdminSession } = require('./_sessions');
 const {
   normaliseEmail, looksLikeEmail, ensureOptOutSchema, unsubscribe, resubscribe,
 } = require('./_optout_lib');
@@ -51,11 +52,9 @@ function clientIp(event) {
   return netlifyClientIp(event);
 }
 
-function isAdmin(event) {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret) return false;
-  const token = parseCookies(event.headers)[COOKIE_NAME];
-  return token ? !!verifySession(token, secret) : false;
+// The analytics session, checked against its account (_sessions.js).
+async function isAdmin(event) {
+  return !!(await currentAdminSession(event));
 }
 
 async function overRateLimit(sql, ip) {
@@ -71,7 +70,7 @@ async function handleGet(event, sql) {
   const qs = event.queryStringParameters || {};
 
   if (qs.list) {
-    if (!isAdmin(event)) return json(401, { ok: false, error: 'Not authorised' });
+    if (!(await isAdmin(event))) return json(401, { ok: false, error: 'Not authorised' });
     const rows = await sql`
       SELECT email, status, updated_at FROM contact_opt_outs
       WHERE status = 'unsubscribed' ORDER BY updated_at DESC LIMIT 1000
@@ -106,12 +105,12 @@ async function handlePost(event, sql) {
   // undo someone else's choice, so it is not something the public form can
   // do -- only a signed-in admin, handling someone who says they never
   // asked to be removed.
-  if (action === 'resubscribe' && !isAdmin(event)) {
+  if (action === 'resubscribe' && !(await isAdmin(event))) {
     return json(401, { ok: false, error: 'Not authorised' });
   }
 
   const ip = clientIp(event);
-  if (action === 'unsubscribe' && !isAdmin(event) && await overRateLimit(sql, ip)) {
+  if (action === 'unsubscribe' && !(await isAdmin(event)) && await overRateLimit(sql, ip)) {
     return json(429, { ok: false, error: 'Too many requests. Please try again later.' });
   }
 

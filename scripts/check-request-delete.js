@@ -54,11 +54,14 @@ sql.query = (text, params) => sql(text, params);
 const neonId = require.resolve('@neondatabase/serverless');
 require.cache[neonId] = new Module(neonId, null);
 Object.assign(require.cache[neonId], { filename: neonId, loaded: true, exports: { neon: () => sql } });
+// Release 2: sessions are checked against their account; fake that lookup.
+const fx = require('./_session_fixtures');
+fx.install(FN);
 
 const { signCrmSession: signCrm, CRM_COOKIE_NAME } = require(path.join(FN, '_crm_lib.js'));
 const { signSession: signAdmin, COOKIE_NAME: ADMIN_COOKIE } = require(path.join(FN, '_lib.js'));
-const staff = `${CRM_COOKIE_NAME}=${signCrm('staff')}`;
-const dashboard = `${ADMIN_COOKIE}=${signAdmin('owner', SECRET + '-admin')}`;
+const staff = `${CRM_COOKIE_NAME}=${signCrm('staff', fx.crmClaims('staff'))}`;
+const dashboard = `${ADMIN_COOKIE}=${signAdmin('owner', SECRET + '-admin', fx.adminClaims('owner'))}`;
 
 const ENDPOINTS = [
   { file: 'inquiries.js', kind: 'inquiry', table: 'inquiries' },

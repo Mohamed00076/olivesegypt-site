@@ -3,8 +3,9 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const {
-  requireCrmSession, readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES, csvCell, stageRuleError,
+  readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES, csvCell, stageRuleError,
 } = require('./_crm_lib');
+const { currentCrmSession } = require('./_sessions');
 
 function connectionString() {
   return (
@@ -205,7 +206,7 @@ async function handleImport(event, sql, actor) {
 }
 
 exports.handler = async (event) => {
-  const session = requireCrmSession(event);
+  const session = await currentCrmSession(event);
   if (!session) {
     return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

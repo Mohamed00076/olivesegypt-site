@@ -24,7 +24,9 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
-const { requireCrmSession, json } = require('./_crm_lib');
+const { json } = require('./_crm_lib');
+// Release 2: the session must still match its account (password unchanged, not revoked).
+const { currentCrmSession } = require('./_sessions');
 
 function connectionString() {
   return (
@@ -37,7 +39,7 @@ function connectionString() {
 }
 
 exports.handler = async (event) => {
-  const session = requireCrmSession(event);
+  const session = await currentCrmSession(event);
   if (!session) return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   if (event.httpMethod !== 'GET') return json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'GET' });
 

@@ -5,9 +5,10 @@ const { reportFailure } = require('./_failure_lib');
 const { normaliseEmail } = require('./_optout_lib');
 const {
   stageRuleError,
-  requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
+  readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
   STAGES, REGIONS: REGION_LIST, ensureBuyerTables, parseId, INVALID_ID_ERROR,
 } = require('./_crm_lib');
+const { currentCrmSession } = require('./_sessions');
 
 function connectionString() {
   return (
@@ -416,7 +417,7 @@ async function handleErase(event, sql, id, actor) {
 }
 
 exports.handler = async (event) => {
-  const session = requireCrmSession(event);
+  const session = await currentCrmSession(event);
   if (!session) {
     return json(401, { ok: false, error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

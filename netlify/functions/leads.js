@@ -21,7 +21,8 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const { readJsonBody, json, netlifyClientIp } = require('./_lib');
-const { requireReaderSession, csvCell, ensureBuyerTables, deleteSubmission } = require('./_crm_lib');
+const { csvCell, ensureBuyerTables, deleteSubmission } = require('./_crm_lib');
+const { currentReaderSession } = require('./_sessions');
 const { sendNotification } = require('./_email_lib');
 const {
   GUIDES, URL_TTL_SECONDS, COOKIE_TTL_SECONDS, signGuideToken, guideCookie,
@@ -401,7 +402,7 @@ async function handleExport(event, sql, session) {
 }
 
 async function handleGet(event, sql) {
-  const session = requireReaderSession(event);
+  const session = await currentReaderSession(event);
   if (!session) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

@@ -12,7 +12,8 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
-const { parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
+const { json } = require('./_lib');
+const { currentAdminSession } = require('./_sessions');
 const { ensureSchema, auditLog } = require('./_analytics_lib');
 const { CLASSIFICATION_DISCLOSURE, ensureSchema: ensureB2bSchema } = require('./_b2b_lib');
 
@@ -28,11 +29,8 @@ function connectionString() {
 
 const RANGES = { '7d': 7, '30d': 30, '90d': 90 };
 
-function requireAdmin(event) {
-  const SESSION_SECRET = process.env.SESSION_SECRET;
-  const token = SESSION_SECRET ? parseCookies(event.headers)[COOKIE_NAME] : null;
-  return token ? verifySession(token, SESSION_SECRET) : null;
-}
+// The analytics session, checked against its account (_sessions.js).
+const requireAdmin = currentAdminSession;
 
 function isoUtc(col) {
   return `to_char(${col} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`;
@@ -436,7 +434,7 @@ async function reportOverview(sql, { startAt, endAt }) {
 }
 
 exports.handler = async (event) => {
-  const session = requireAdmin(event);
+  const session = await requireAdmin(event);
   if (!session) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }

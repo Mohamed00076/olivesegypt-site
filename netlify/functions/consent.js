@@ -9,7 +9,8 @@
 
 const crypto = require('crypto');
 const { neon } = require('@neondatabase/serverless');
-const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json, netlifyClientIp } = require('./_lib');
+const { readJsonBody, json, netlifyClientIp } = require('./_lib');
+const { currentAdminSession } = require('./_sessions');
 
 function connectionString() {
   return (
@@ -95,9 +96,7 @@ async function handlePost(event, sql) {
 async function handleGet(event, sql) {
   // Independently queryable for G4 validation -- session-authenticated,
   // same pattern as the inquiries/analytics admin endpoints.
-  const SESSION_SECRET = process.env.SESSION_SECRET;
-  const token = SESSION_SECRET ? parseCookies(event.headers)[COOKIE_NAME] : null;
-  const session = token ? verifySession(token, SESSION_SECRET) : null;
+  const session = await currentAdminSession(event);
   if (!session) {
     return json(401, { error: 'Unauthorized' }, { 'Cache-Control': 'no-store, private' });
   }
