@@ -278,6 +278,16 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
     t('status messages on Buyers, Documents and Data quality are announced',
       /id="deleted-status"[^>]*role="status" aria-live="polite"/.test(read('crm/buyers/index.html')) &&
       ['crm/documents/index.html', 'crm/data-quality/index.html'].every((f) => /id="status"[^>]*role="status" aria-live="polite"/.test(read(f))));
+    // Owner, 2026-10-23: the small gold labels on the green masthead use the
+    // lighter gold #e6c57d (4.5:1); the gold bar and rules stay #b8923a.
+    const mastheads = ['letterhead/index.html', 'ar/letterhead/index.html', 'crm/document/view/index.html'];
+    t('the masthead\'s small gold labels use #e6c57d, in English and Arabic, letterhead and documents',
+      mastheads.every((f) => {
+        const s = read(f);
+        return /--doc-gold: #b8923a; --doc-gold-on-green: #e6c57d;/.test(s) &&
+          /\.doc-trade \{[^}]*color: var\(--doc-gold-on-green\)/.test(s) && /\.doc-contact dt \{[^}]*color: var\(--doc-gold-on-green\)/.test(s) &&
+          /\.doc-goldbar \{ height: 5px; background: var\(--doc-gold\); \}/.test(s);
+      }));
   }
 
   console.log(`\ncrm-ui ${fail ? 'FAILED' : 'OK'} -- a failure is said in the page, recorded once, and the sign-in pages are left alone.`);
