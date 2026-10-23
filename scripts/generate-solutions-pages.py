@@ -177,17 +177,17 @@ MFR_AR = ('نقدّم التعبئة التعاقدية (Co-packing) وتوري�
           'إذا كنت تحتاج تركيبة أو فرزًا أو إعدادًا محددًا للعلامة الخاصة لعلامتك التجارية أو لمعالجة إضافية، فأخبرنا بمتطلباتك '
           'وسنؤكد إمكانية التنفيذ والمواصفات وعرض السعر.')
 LOCAL_EN = ('We can supply local Egyptian buyers without export logistics. For bulk orders in 220kg barrels, the minimum order is '
-            '10 metric tons (approximately 45 barrels). For retail-ready formats — glass jar, tin, or bucket — the standard minimum '
-            'applies, the same as our export container minimum of 16–18 metric tons. Pricing and delivery arrangements within Egypt '
+            'confirmed during quotation. For retail-ready formats — glass jar, tin, or bucket — the standard minimum applies, the '
+            'same as for export: a full container load (FCL). Pricing and delivery arrangements within Egypt '
             'are confirmed during quotation.')
-LOCAL_AR = ('يمكننا التوريد للمشترين المحليين في مصر دون إجراءات تصدير. للطلبات بالجملة في براميل سعة 220 كجم، الحد الأدنى للطلب '
-            '10 أطنان مترية (نحو 45 برميلًا). أما الصيغ الجاهزة للتجزئة — البرطمان الزجاجي أو العلبة الصفيح أو الدلو — فيُطبَّق عليها '
-            'الحد الأدنى القياسي، وهو نفسه الحد الأدنى لحاوية التصدير: 16–18 طنًا متريًا. ويُؤكَّد التسعير وترتيبات التسليم داخل مصر '
+LOCAL_AR = ('يمكننا التوريد للمشترين المحليين في مصر دون إجراءات تصدير. للطلبات بالجملة في براميل سعة 220 كجم، يُؤكَّد الحد الأدنى للطلب '
+            'أثناء عرض السعر. أما الصيغ الجاهزة للتجزئة — البرطمان الزجاجي أو العلبة الصفيح أو الدلو — فيُطبَّق عليها '
+            'الحد الأدنى القياسي، وهو نفسه الحد الأدنى للتصدير: حاوية كاملة (FCL). ويُؤكَّد التسعير وترتيبات التسليم داخل مصر '
             'أثناء عرض السعر.')
-LOCAL_CARD_EN = ('Local delivery-within-Egypt orders: 10-metric-ton minimum for bulk 220kg barrel orders; other packaging formats '
-                 'follow the standard 16–18 MT container minimum. Pricing confirmed during quotation.')
-LOCAL_CARD_AR = ('طلبات التسليم داخل مصر: حد أدنى 10 أطنان مترية لطلبات البراميل سعة 220 كجم بالجملة؛ وتتبع صيغ التغليف الأخرى '
-                 'الحد الأدنى القياسي للحاوية 16–18 طنًا متريًا. ويُؤكَّد التسعير أثناء عرض السعر.')
+LOCAL_CARD_EN = ('Local delivery-within-Egypt orders: bulk 220kg barrel orders, with the minimum confirmed during quotation; other '
+                 'packaging formats follow the standard full container load (FCL) minimum. Pricing confirmed during quotation.')
+LOCAL_CARD_AR = ('طلبات التسليم داخل مصر: طلبات البراميل سعة 220 كجم بالجملة بحد أدنى يُؤكَّد أثناء عرض السعر؛ وتتبع صيغ التغليف الأخرى '
+                 'الحد الأدنى القياسي: حاوية كاملة (FCL). ويُؤكَّد التسعير أثناء عرض السعر.')
 
 # The hub's cards: the homepage cards' own wording and order, and their icons
 # (scripts/site_icons.py; emoji until 2026-10-03).
@@ -251,14 +251,14 @@ PAGES['importer-distributor'] = {
     'en': dict(
         crumb='Importers &amp; Distributors',
         title=f'Bulk Table Olives for Importers &amp; Distributors',
-        desc='Container terms for importers and distributors: 1×20ft minimum (about 16–18 MT), FOB Alexandria, CIF or CFR, T/T or L/C payment, and export documentation.',
+        desc='Container terms for importers and distributors: a full container load (FCL) minimum, FOB Alexandria, CIF or CFR, T/T or L/C payment, and export documentation.',
         keywords='bulk table olive importer Egypt, olive container export terms, wholesale olive distributor Egypt, FOB olive exporter',
         main=lambda: hero('Solutions', 'For Importers and Distributors',
                           'Egyptian table olives by the container, for importers and wholesale distributors who resell or distribute in their own market.')
         + body(
             forwhom('This page is for importers and wholesale distributors buying by the container. It sets out the commercial terms, the documents that travel with each shipment, and where to find packaging and product detail.'),
             block('Container terms at a glance', extra=facts([
-                ('Minimum order', '1 &times; 20ft container (about 16&ndash;18 metric tons) &mdash; confirmed during quotation'),
+                ('Minimum order', 'Full container load (FCL) &mdash; confirmed during quotation'),
                 ('Incoterms', 'FOB Alexandria, CIF or CFR &mdash; agreed during quotation'),
                 ('Payment', 'Typically 30% T/T deposit &middot; 70% against B/L copy; L/C at sight and other negotiable terms for established partners'),
                 ('Currency', 'USD or EUR'),
@@ -281,14 +281,14 @@ PAGES['importer-distributor'] = {
     'ar': dict(
         crumb='المستوردون والموزعون',
         title=f'زيتون مائدة بالجملة للمستوردين والموزعين | {ORG_AR_SHORT}',
-        desc='شروط الحاويات لمستوردي وموزعي زيتون المائدة: حد أدنى حاوية 20 قدمًا (نحو 16–18 طنًا)، و FOB الإسكندرية أو CIF أو CFR، والدفع بـ T/T أو L/C، وحزمة مستندات تصدير.',
+        desc='شروط الحاويات لمستوردي وموزعي زيتون المائدة: حد أدنى حاوية كاملة (FCL)، و FOB الإسكندرية أو CIF أو CFR، والدفع بـ T/T أو L/C، وحزمة مستندات تصدير.',
         keywords='مستورد زيتون مائدة بالجملة مصر, شروط تصدير حاويات الزيتون, موزع زيتون بالجملة مصر, مصدر زيتون FOB',
         main=lambda: hero('الحلول', 'للمستوردين والموزعين',
                           'زيتون مائدة مصري بالحاوية، للمستوردين وموزعي الجملة الذين يعيدون البيع أو التوزيع في أسواقهم.')
         + body(
             forwhom('هذه الصفحة للمستوردين وموزعي الجملة الذين يشترون بالحاوية. توضّح الشروط التجارية، والمستندات التي ترافق كل شحنة، وأين تجد تفاصيل التغليف والمنتجات.'),
             block('شروط الحاوية في لمحة', extra=facts([
-                ('الحد الأدنى للطلب', 'حاوية واحدة 20 قدمًا (نحو 16&ndash;18 طنًا متريًا) &mdash; تُؤكَّد أثناء عرض السعر'),
+                ('الحد الأدنى للطلب', 'حاوية كاملة (FCL) &mdash; تُؤكَّد أثناء عرض السعر'),
                 ('شروط التسليم', 'FOB الإسكندرية أو CIF أو CFR &mdash; يُتفق عليها أثناء عرض السعر'),
                 ('الدفع', 'عادةً 30% T/T · 70% مقابل صورة B/L؛ واعتماد مستندي عند الاطلاع L/C وشروط قابلة للتفاوض للشركاء المعتمدين'),
                 ('العملة', 'الدولار أو اليورو'),
@@ -330,7 +330,7 @@ PAGES['retail'] = {
                   'Private label is available on all seven of our products, in glass, tin, bucket and barrel formats. We handle printing, filling and export documentation, and can help with label design on request &mdash; we are not a design agency. Products, limits and the brief form are on ' + a('/resources/private-label/', 'Private Label &amp; OEM') + '.'),
             block('The range', 'Seven products. Calibers, brine specification and formats are on each product&rsquo;s own page.', extra=products('en')),
             block('Order terms',
-                  'Retail orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '.'),
+                  'Retail orders follow the same container terms as any other order &mdash; a minimum of one full container load (FCL), confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '.'),
         )
         + cta('Planning a retail range?', 'Tell us your formats, sizes and market — we&#x27;ll confirm options and send an offer.',
               (contact('en', 'quote', 'retail'), 'Request a Quote'), sample('en'))),
@@ -353,7 +353,7 @@ PAGES['retail'] = {
                   'العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الزجاج والصفيح والدلو والبرميل. نتولى الطباعة والتعبئة ومستندات التصدير، ويمكننا المساعدة في تصميم الملصق عند الطلب &mdash; ولسنا وكالة تصميم. المنتجات والحدود ونموذج الموجز على صفحة ' + a('/ar/resources/private-label/', 'العلامة الخاصة و OEM') + '.'),
             block('التشكيلة', 'سبعة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
             block('شروط الطلب',
-                  'تتبع طلبات التجزئة شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '.'),
+                  'تتبع طلبات التجزئة شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية كاملة (FCL)، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '.'),
         )
         + cta('تخطط لتشكيلة تجزئة؟', 'أخبرنا بالصيغ والأحجام والسوق — وسنؤكد الخيارات ونرسل عرضًا.',
               (contact('ar', 'quote', 'retail'), 'اطلب عرض سعر'), sample('ar'))),
@@ -381,7 +381,7 @@ PAGES['food-service'] = {
             block('Your own brand',
                   'Supplying under your own food-service brand? Private label is available on all seven of our products, in bucket, tin, barrel and glass formats &mdash; see ' + a('/resources/private-label/', 'Private Label &amp; OEM') + '.'),
             block('Order terms',
-                  'Food-service orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '. Buying inside Egypt? See ' + a('/solutions/local-egypt/', 'Buyers in Egypt') + '.'),
+                  'Food-service orders follow the same container terms as any other order &mdash; a minimum of one full container load (FCL), confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '. Buying inside Egypt? See ' + a('/solutions/local-egypt/', 'Buyers in Egypt') + '.'),
         )
         + cta('Tell us what your kitchens use', 'Pack sizes, cuts and volumes — we&#x27;ll confirm what fits and send an offer.',
               (contact('en', 'quote', 'food-service'), 'Request a Quote'), sample('en'))),
@@ -406,7 +406,7 @@ PAGES['food-service'] = {
             block('علامتك الخاصة',
                   'توريد بعلامتك الخاصة لخدمات الأغذية؟ العلامة الخاصة متاحة على منتجاتنا السبعة جميعها، بصيغ الدلو والصفيح والبرميل والزجاج &mdash; انظر ' + a('/ar/resources/private-label/', 'العلامة الخاصة و OEM') + '.'),
             block('شروط الطلب',
-                  'تتبع طلبات خدمات الأغذية شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '. تشتري داخل مصر؟ انظر ' + a('/ar/solutions/local-egypt/', 'المشترون داخل مصر') + '.'),
+                  'تتبع طلبات خدمات الأغذية شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية كاملة (FCL)، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '. تشتري داخل مصر؟ انظر ' + a('/ar/solutions/local-egypt/', 'المشترون داخل مصر') + '.'),
         )
         + cta('أخبرنا بما تستخدمه مطابخك', 'أحجام العبوات والتقطيعات والكميات — وسنؤكد ما يناسبك ونرسل عرضًا.',
               (contact('ar', 'quote', 'food-service'), 'اطلب عرض سعر'), sample('ar'))),
@@ -433,7 +433,7 @@ PAGES['manufacturer'] = {
             block('How to start',
                   'Send us your requirements &mdash; the product, the brine, the caliber, the packaging and labeling, and the volume. We will confirm what is feasible, the specification, and a quotation. A sample of the varieties you are considering can come first; see ' + a('/how-we-work/', 'How We Work') + ' for the steps. Which products are offered for private label is on ' + a('/resources/private-label/', 'Private Label &amp; OEM') + '.'),
             block('Order terms',
-                  'OEM orders follow the same container terms as any other order &mdash; a minimum of 1 &times; 20ft container, confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '.'),
+                  'OEM orders follow the same container terms as any other order &mdash; a minimum of one full container load (FCL), confirmed during quotation. Payment, Incoterms and documents are on ' + a('/solutions/importer-distributor/', 'Importers &amp; Distributors') + '.'),
             block('The range', 'Seven products, with calibers, brine specification and formats on each product&rsquo;s own page.', extra=products('en')),
         )
         + cta('Send us your specification', 'Formulation, sort, packaging and volume — we&#x27;ll confirm feasibility and quote.',
@@ -458,7 +458,7 @@ PAGES['manufacturer'] = {
             block('كيف تبدأ',
                   'أرسل لنا متطلباتك &mdash; المنتج، والمحلول الملحي، والعيار، والتغليف والملصقات، والكمية. وسنؤكد ما يمكن تنفيذه، والمواصفات، وعرض السعر. ويمكن أن تسبق ذلك عينة من الأصناف التي تدرسها؛ والخطوات على صفحة ' + a('/ar/how-we-work/', 'كيف نعمل') + '. والمنتجات المتاحة للعلامة الخاصة على صفحة ' + a('/ar/resources/private-label/', 'العلامة الخاصة و OEM') + '.'),
             block('شروط الطلب',
-                  'تتبع طلبات OEM شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية واحدة 20 قدمًا، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '.'),
+                  'تتبع طلبات OEM شروط الحاويات نفسها لأي طلب آخر &mdash; حد أدنى حاوية كاملة (FCL)، يُؤكَّد أثناء عرض السعر. والدفع وشروط التسليم والمستندات على صفحة ' + a('/ar/solutions/importer-distributor/', 'المستوردون والموزعون') + '.'),
             block('التشكيلة', 'سبعة منتجات، والأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج.', extra=products('ar')),
         )
         + cta('أرسل لنا مواصفاتك', 'التركيبة والفرز والتغليف والكمية — وسنؤكد إمكانية التنفيذ ونرسل عرض السعر.',
@@ -468,8 +468,8 @@ PAGES['manufacturer'] = {
 PAGES['local-egypt'] = {
     'en': dict(
         crumb='Buyers in Egypt',
-        title=f'Olive Supplier in Egypt — Local Barrel Orders from 10 Tons',
-        desc='Egyptian olives for buyers inside Egypt, without export logistics: 220 kg barrel orders from 10 metric tons; jars, tins and buckets at the 16–18 MT minimum.',
+        title=f'Olive Supplier in Egypt — Local Bulk Barrel Orders',
+        desc='Egyptian olives for buyers inside Egypt, without export logistics: 220 kg barrel orders with the minimum confirmed during quotation; jars, tins and buckets at the full container load (FCL) minimum.',
         keywords='olive supplier Egypt EGP pricing, local wholesale olives Cairo, olive barrel supplier Egypt',
         main=lambda: hero('Solutions', 'For Buyers in Egypt',
                           'Egyptian table olives for businesses buying inside Egypt rather than for export.')
@@ -477,8 +477,8 @@ PAGES['local-egypt'] = {
             forwhom('This page is for businesses in Egypt &mdash; wholesalers, distributors, food-service operators, retailers and manufacturers &mdash; buying for the local market.'),
             block('Local supply', LOCAL_EN),
             block('Local order terms', extra=facts([
-                ('Bulk barrels (220 kg)', 'Minimum order 10 metric tons &mdash; approximately 45 barrels'),
-                ('Glass jars, tins and buckets', 'The standard minimum, the same as export: 16&ndash;18 metric tons'),
+                ('Bulk barrels (220 kg)', 'Minimum order confirmed during quotation'),
+                ('Glass jars, tins and buckets', 'The standard minimum, the same as export: a full container load (FCL)'),
                 ('Pricing', 'Quoted in Egyptian pounds (EGP) and confirmed during quotation'),
                 ('Delivery within Egypt', 'Arranged and confirmed during quotation'),
             ])),
@@ -490,8 +490,8 @@ PAGES['local-egypt'] = {
               (contact('en', 'local_pricing', 'local-egypt'), 'Request Local Pricing'), sample('en'))),
     'ar': dict(
         crumb='المشترون داخل مصر',
-        title=f'مورد زيتون في مصر — طلبات براميل محلية من 10 أطنان',
-        desc='زيتون مائدة مصري للمشترين داخل مصر دون إجراءات تصدير: طلبات البراميل سعة 220 كجم من 10 أطنان مترية؛ والبرطمانات والعلب والدِلاء بالحد الأدنى 16–18 طنًا متريًا.',
+        title=f'مورد زيتون في مصر — طلبات براميل محلية بالجملة',
+        desc='زيتون مائدة مصري للمشترين داخل مصر دون إجراءات تصدير: طلبات البراميل سعة 220 كجم بحد أدنى يُؤكَّد أثناء عرض السعر؛ والبرطمانات والعلب والدِلاء بالحد الأدنى: حاوية كاملة (FCL).',
         keywords='مورد زيتون مصر بالجنيه المصري, زيتون بالجملة القاهرة, مورد براميل زيتون مصر',
         main=lambda: hero('الحلول', 'للمشترين داخل مصر',
                           'زيتون مائدة مصري للشركات التي تشتري داخل مصر وليس للتصدير.')
@@ -499,8 +499,8 @@ PAGES['local-egypt'] = {
             forwhom('هذه الصفحة للشركات في مصر &mdash; تجار الجملة، والموزعون، ومشغلو خدمات الأغذية، ومتاجر التجزئة، والمصنّعون &mdash; ممن يشترون للسوق المحلي.'),
             block('التوريد المحلي', LOCAL_AR),
             block('شروط الطلب المحلي', extra=facts([
-                ('البراميل بالجملة (220 كجم)', 'الحد الأدنى للطلب 10 أطنان مترية &mdash; نحو 45 برميلًا'),
-                ('البرطمانات الزجاجية والعلب والدِلاء', 'الحد الأدنى القياسي، وهو نفسه للتصدير: 16&ndash;18 طنًا متريًا'),
+                ('البراميل بالجملة (220 كجم)', 'يُؤكَّد الحد الأدنى للطلب أثناء عرض السعر'),
+                ('البرطمانات الزجاجية والعلب والدِلاء', 'الحد الأدنى القياسي، وهو نفسه للتصدير: حاوية كاملة (FCL)'),
                 ('التسعير', 'بالجنيه المصري، ويُؤكَّد أثناء عرض السعر'),
                 ('التسليم داخل مصر', 'يُرتَّب ويُؤكَّد أثناء عرض السعر'),
             ])),

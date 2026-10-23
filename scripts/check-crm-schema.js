@@ -58,6 +58,15 @@ const ALLOWED_FOREIGN_READS = {
   'crm-activity.js': {
     buyers: 'an activity entry is written against a buyer that exists, so the table does too',
   },
+  'crm-environment.js': {
+    deployment_marker: 'read only if to_regclass finds it; it is created by hand on the staging database alone (staging sheet N3), never by code',
+  },
+  'crm-buyers.js': {
+    contact_opt_outs: 'read only if to_regclass finds it (one row, the buyer\'s own address); created by the unsubscribe page, never here, so a CRM read cannot write to it',
+  },
+  'crm-buyer-files.js': {
+    buyers: 'a file is uploaded from an existing buyer\'s page, so the table exists too',
+  },
 };
 
 let pass = 0, fail = 0;
@@ -164,6 +173,24 @@ const CASES = [
     file: 'crm-documents.js',
     what: 'open the documents list',
     event: { httpMethod: 'GET', queryStringParameters: {} },
+    rows: () => [],
+  },
+  {
+    file: 'crm-buyer-files.js',
+    what: "list a buyer's uploaded files",
+    event: { httpMethod: 'GET', queryStringParameters: { buyer_id: '1' } },
+    rows: () => [],
+  },
+  {
+    file: 'crm-buyer-files.js',
+    what: 'upload a file to a buyer',
+    event: { httpMethod: 'POST', queryStringParameters: {}, body: JSON.stringify({ buyer_id: 1, kind: 'quotation', filename: 'q.pdf', data_base64: Buffer.from('%PDF-1.7 test').toString('base64') }) },
+    rows: (q) => (/FROM buyers/i.test(q) ? [{ id: 1, deleted_at: null }] : []),
+  },
+  {
+    file: 'crm-buyer-files.js',
+    what: 'delete an uploaded file',
+    event: { httpMethod: 'DELETE', queryStringParameters: { id: '1', confirmed: '1' } },
     rows: () => [],
   },
   {

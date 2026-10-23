@@ -85,10 +85,15 @@ const patch = async (body) => {
   const page = fs.readFileSync(path.join(ROOT, 'crm/buyer/index.html'), 'utf8');
   const m = page.match(/function saveErrorText\(d\) \{[\s\S]*?\n        \}/);
   t('the buyer page has a function that words a refused save', !!m, 'saveErrorText is missing');
-  t('   and uses it when a save is refused', /showStatus\(saveErrorText\(result\.data \|\| \{\}\), false\)/.test(page));
+  t('   and uses it when a save is refused', /showStatus\(saveErrorText\(result\.data \|\| \{\}\)( \+ ' Your changes are still in the form\.')?, false(, 'form-status')?\)/.test(page));
   if (m) {
     const labels = { company_name: 'Company Name *', country_region: 'Region *' };
+    // The page's own CRM helpers, for CRM.plainError.
+    const crmBox = { window: {}, document: { addEventListener() {}, readyState: 'complete' } };
+    vm.createContext(crmBox);
+    try { vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/crm.js'), 'utf8'), crmBox); } catch (e) { /* DOM wiring */ }
     const sandbox = {
+      CRM: crmBox.window.CRM,
       document: { querySelector: (sel) => {
         const k = (sel.match(/for="([^"]+)"/) || [])[1];
         return labels[k] ? { textContent: labels[k] } : null;
@@ -102,7 +107,9 @@ const patch = async (body) => {
       text === 'Company Name: "Mr Ahmed" looks like a person\'s name. Region: Choose a region from the list.', text);
     t('   and never just "Validation failed" when fields are known', !/^Validation failed/.test(text), text);
     t('   an unlabelled field still says which one', /contact_email: please check/.test(words({ fields: ['contact_email'] })));
-    t('   an error with no fields shows the server\'s error', words({ error: 'Not found' }) === 'Not found');
+    // Since 2026-10-20: a bare code is never shown; a sentence the server wrote is.
+    t('   an error with no fields never shows a bare server code', words({ error: 'Not found' }) === 'Not saved. The server did not accept the change, and nothing was changed.', words({ error: 'Not found' }));
+    t('   but keeps a sentence the server wrote', words({ error: 'This buyer was deleted on 2026-09-27.' }) === 'Not saved. This buyer was deleted on 2026-09-27.', words({ error: 'This buyer was deleted on 2026-09-27.' }));
   }
 
   const ok = fail === 0;

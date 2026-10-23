@@ -2,7 +2,9 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
+const { normaliseEmail } = require('./_optout_lib');
 const {
+  stageRuleError,
   requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
   STAGES, REGIONS: REGION_LIST, ensureBuyerTables, parseId, INVALID_ID_ERROR,
 } = require('./_crm_lib');
@@ -125,7 +127,7 @@ async function handleList(event, sql) {
   const rows = await sql`
     SELECT id, created_at, updated_at, created_by, assigned_to, company_name, country_region,
            contact_name, contact_email, current_stage, product_interest, next_action,
-           next_action_due, certification_gap, deleted_at
+           next_action_due, certification_gap, lost_reason, deleted_at
     FROM buyers
     WHERE deleted_at IS NULL
       AND (${stage}::text IS NULL OR current_stage = ${stage})
@@ -170,24 +172,44 @@ async function handleGet(event, sql, id, actor) {
   const stageHistory = await dbStep('reading the stage history',
     () => sql`SELECT id, from_stage, to_stage, changed_at, changed_by FROM buyer_stage_history WHERE buyer_id = ${id} ORDER BY changed_at ASC`);
 
+  /*
+   * Has this buyer's own email address used the website's unsubscribe page?
+   * (Owner, 2026-10-20: the Email button warns.) A read of one row, for the
+   * address already on this record -- it answers yes or no and nothing
+   * else, so it cannot be used to see who else is on the list. It never
+   * writes: the table is not created here, and if it does not exist yet
+   * (nobody has ever unsubscribed) the answer is simply no.
+   */
+  const emailOptedOut = await dbStep('checking the email against the unsubscribe list', async () => {
+    const e = normaliseEmail(rows[0].contact_email);
+    if (!e) return false;
+    const present = (await sql`SELECT to_regclass('public.contact_opt_outs') IS NOT NULL AS present`)[0].present;
+    if (!present) return false;
+    const o = await sql`SELECT status FROM contact_opt_outs WHERE email = ${e} LIMIT 1`;
+    return !!o[0] && o[0].status === 'unsubscribed';
+  });
+
   // Rule 22: audit log of access to sensitive records -- reads included, not just writes.
   await dbStep('writing the audit entry',
     () => audit(sql, actor, 'read', 'buyer', id, null));
 
-  return json(200, { ...rows[0], activity_log: activity, stage_history: stageHistory });
+  return json(200, { ...rows[0], activity_log: activity, stage_history: stageHistory, email_opted_out: emailOptedOut });
 }
 
 async function handleCreate(event, sql, actor) {
   const body = readJsonBody(event) || {};
   const { errors, fieldReasons, companyName, countryRegion, currentStage, productInterest } = validateBuyerInput(body, true);
   if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors, reasons: fieldReasons });
+  // A buyer created straight into Lost/Stalled or Exported/Completed meets the same rules as a move there.
+  const rule = stageRuleError(currentStage, body);
+  if (rule) return json(400, { ok: false, error: 'Validation failed', stage_rule: true, fields: [rule.field], reasons: { [rule.field]: rule.reason } });
 
   const rows = await sql`
     INSERT INTO buyers (
       created_by, assigned_to, company_name, country_region, contact_name, contact_title,
       contact_email, contact_phone, contact_whatsapp, lead_source, current_stage,
       product_interest, packaging_format, estimated_volume, target_price, quoted_price,
-      incoterm, certifications_required, certification_gap, next_action, next_action_due, notes
+      incoterm, certifications_required, certification_gap, next_action, next_action_due, notes, lost_reason
     ) VALUES (
       ${actor}, ${optional(body.assigned_to, 100) || actor}, ${companyName}, ${countryRegion},
       ${optional(body.contact_name, MAX.contact_name)}, ${optional(body.contact_title, MAX.contact_title)},
@@ -198,7 +220,8 @@ async function handleCreate(event, sql, actor) {
       ${optional(body.target_price, MAX.target_price)}, ${optional(body.quoted_price, MAX.quoted_price)},
       ${optional(body.incoterm, MAX.incoterm)}, ${optional(body.certifications_required, MAX.certifications_required)},
       ${body.certification_gap === true}, ${optional(body.next_action, MAX.next_action)},
-      ${body.next_action_due ? clean(body.next_action_due, 10) : null}, ${optional(body.notes, MAX.notes)}
+      ${body.next_action_due ? clean(body.next_action_due, 10) : null}, ${optional(body.notes, MAX.notes)},
+      ${optional(body.lost_reason, MAX.lost_reason)}
     )
     RETURNING id
   `;
@@ -222,8 +245,17 @@ async function handleUpdate(event, sql, id, actor) {
   const previousStage = existingRows[0].current_stage;
 
   const body = readJsonBody(event) || {};
-  const { errors, fieldReasons, productInterest } = validateBuyerInput(body, false);
+  const { errors, fieldReasons, productInterest, currentStage } = validateBuyerInput(body, false);
   if (errors.length) return json(400, { ok: false, error: 'Validation failed', fields: errors, reasons: fieldReasons });
+  /*
+   * The stage rules (_crm_lib.js stageRuleError), checked before anything is
+   * written, for a move only: the stage actually changing. A refusal writes
+   * nothing -- no UPDATE, no stage-history row, no audit entry.
+   */
+  if (body.current_stage !== undefined && currentStage !== previousStage) {
+    const rule = stageRuleError(currentStage, body);
+    if (rule) return json(400, { ok: false, error: 'Validation failed', stage_rule: true, fields: [rule.field], reasons: { [rule.field]: rule.reason } });
+  }
 
   const fields = [
     'assigned_to', 'company_name', 'country_region', 'contact_name', 'contact_title',
@@ -332,6 +364,11 @@ async function handleDelete(event, sql, id, actor) {
  *   - its activity log, which holds a copy of the original message
  *   - its stage history
  *   - the website enquiries linked to it, which hold the message itself
+ *   - the files uploaded to the buyer (crm_buyer_files), unless staff untick
+ *     "Also delete the files uploaded to this buyer" in the Erase dialog
+ *     (owner decision 2026-10-20, option (b) of counsel question 19). The
+ *     page sends files=delete or files=keep; without either, files are kept,
+ *     as before. The audit entry says how many were deleted or kept.
  * Kept:
  *   - quotations, invoices and letters already issued (crm_documents): business
  *     records, which /privacy says are kept for a quotation or order placed
@@ -349,17 +386,27 @@ async function handleErase(event, sql, id, actor) {
   const enquiriesCte = hasInquiries
     ? 'q AS (DELETE FROM inquiries WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),'
     : 'q AS (SELECT 1 WHERE false),';
+  // Uploaded files: deleted only when the box was ticked; otherwise counted, so the audit says how many stayed.
+  const deleteFiles = qs.files === 'delete';
+  const hasFiles = (await sql`SELECT to_regclass('public.crm_buyer_files') IS NOT NULL AS present`)[0].present;
+  const filesCte = !hasFiles
+    ? 'f AS (SELECT 1 WHERE false),'
+    : deleteFiles
+      ? 'f AS (DELETE FROM crm_buyer_files WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),'
+      : 'f AS (SELECT 1 FROM crm_buyer_files WHERE buyer_id = $1),';
+  const filesWord = deleteFiles ? "' uploaded file(s) deleted'" : "' uploaded file(s) kept (box not ticked)'";
   const rows = await sql.query(
     `WITH b AS (DELETE FROM buyers WHERE id = $1 RETURNING id),
      a AS (DELETE FROM buyer_activity_log WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),
      h AS (DELETE FROM buyer_stage_history WHERE buyer_id IN (SELECT id FROM b) RETURNING 1),
      ${enquiriesCte}
+     ${filesCte}
      counts AS (SELECT (SELECT count(*) FROM a) AS notes, (SELECT count(*) FROM h) AS stage_changes,
-                       (SELECT count(*) FROM q) AS enquiries)
+                       (SELECT count(*) FROM q) AS enquiries, (SELECT count(*) FROM f) AS files)
      INSERT INTO crm_audit_log (actor, action, record_type, record_id, details)
      SELECT $2, 'erase', 'buyer', b.id,
             'deletion request: removed ' || counts.notes || ' note(s), ' || counts.stage_changes ||
-            ' stage change(s), ' || counts.enquiries || ' linked enquiry(ies)'
+            ' stage change(s), ' || counts.enquiries || ' linked enquiry(ies); ' || counts.files || ${filesWord}
      FROM b, counts
      RETURNING details`,
     [id, actor || 'unknown']

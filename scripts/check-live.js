@@ -14,8 +14,10 @@
  * there after every merge to main and once a day, and writes its findings to
  * the run summary.
  *
- * Each line is OK, FAIL or PENDING. FAIL is something on the site that is
- * wrong and fails the run. PENDING is a step that waits on the owner's own
+ * Each line is OK, WARN, FAIL or PENDING. FAIL is something on the site that is
+ * wrong and fails the run. WARN is something to act on soon that is not
+ * wrong yet (a certificate with under 21 days left); it is reported every
+ * run and does not fail it. PENDING is a step that waits on the owner's own
  * accounts (DNS at GoDaddy, Netlify domain settings), reported every run
  * without failing it until it is done.
  *
@@ -32,6 +34,7 @@ const ROOT = path.join(__dirname, '..');
 const results = [];
 const ok = (name, detail = '') => results.push(['OK', name, detail]);
 const fail = (name, detail = '') => results.push(['FAIL', name, detail]);
+const warn = (name, detail = '') => results.push(['WARN', name, detail]);
 const pending = (name, detail = '') => results.push(['PENDING', name, detail]);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -48,10 +51,34 @@ function certExpiry(host) {
   });
 }
 
+/*
+ * One request, tried a second time if the connection itself fails -- no
+ * reply at all, not a wrong one -- or if no reply has come within
+ * REQUEST_LIMIT_MS (30 seconds; owner, 2026-10-21). A request with no time
+ * limit could wait for ever on a connection that neither answered nor
+ * dropped, which is how one run outlasted its own five-minute limit. A dropped connection on the checker's side
+ * ("fetch failed" on one random page per run, a different page each time,
+ * Deploys 267 to 269) is not the site failing; a second failure is reported
+ * as before. Any HTTP status, right or wrong, is answered first time.
+ */
+const REQUEST_LIMIT_MS = Number(process.env.LIVE_REQUEST_LIMIT_MS) || 30000;
+let retried = 0;
 async function get(url, opts = {}) {
-  const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': 'olivesegypt-live-check' }, ...opts });
-  const body = opts.method === 'HEAD' ? '' : await res.text();
-  return { status: res.status, location: res.headers.get('location') || '', headers: res.headers, body };
+  for (let attempt = 1; ; attempt++) {
+    try {
+      // The limit covers the whole reply, body included.
+      const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': 'olivesegypt-live-check' }, signal: AbortSignal.timeout(REQUEST_LIMIT_MS), ...opts });
+      const body = opts.method === 'HEAD' ? '' : await res.text();
+      return { status: res.status, location: res.headers.get('location') || '', headers: res.headers, body };
+    } catch (e) {
+      if (attempt >= 2) {
+        if (e && e.name === 'TimeoutError') throw new Error(`no reply within ${REQUEST_LIMIT_MS / 1000} seconds, twice`);
+        throw e;
+      }
+      retried++;
+      await sleep(2000);
+    }
+  }
 }
 
 const localSitemap = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
@@ -81,7 +108,11 @@ async function checkDeployed(wait) {
   for (;;) {
     let same = false;
     try { const r = await get(BASE + '/sitemap.xml'); same = r.status === 200 && norm(r.body) === norm(localSitemap); } catch (e) { /* retry */ }
-    if (same) return ok('Live sitemap matches main', 'no deploy marker yet, so compared by sitemap');
+    // Reached when there is no commit to compare against -- a run outside
+    // GitHub Actions, which sets GITHUB_SHA -- or a site from before the
+    // marker existed. It said "no deploy marker yet" in both cases, which
+    // read as the site missing its marker when only the expected commit was.
+    if (same) return ok('Live sitemap matches main', want ? 'no deploy marker on the live site, so compared by sitemap' : 'no commit to compare against outside GitHub Actions, so compared by sitemap');
     if (Date.now() >= deadline) return fail('Live sitemap matches main', 'the live sitemap differs from main: the latest merge may not have deployed');
     await sleep(30000);
   }
@@ -189,8 +220,9 @@ async function main() {
   // logged into. A route added to netlify.toml and to neither list fails.
   const PROTECTED = ['/api/inquiries', '/api/leads', '/api/consent', '/api/analytics',
     '/api/analytics-report', '/api/analytics-settings', '/api/analytics-privacy', '/api/crm/auth/me',
+    '/api/crm/client-failure', '/api/crm/environment',
     '/api/crm/buyers', '/api/crm/activity', '/api/crm/dashboard', '/api/crm/csv', '/api/crm/data-quality',
-    '/api/crm/documents', '/api/kpi-definitions', '/api/kpi-values', '/api/kpi-dashboard'];
+    '/api/crm/documents', '/api/crm/buyer-files', '/api/kpi-definitions', '/api/kpi-values', '/api/kpi-dashboard'];
   const NOT_PROBED = {
     '/api/auth/me': 'answers {"authenticated":false} to anyone not signed in, by design',
     '/api/unsubscribe': 'public by design; its admin list (?list=1) is probed below',
@@ -227,7 +259,9 @@ async function main() {
       const until = await certExpiry(host);
       const days = Math.floor((until - Date.now()) / 86400000);
       const when = until.toISOString().slice(0, 10);
-      if (days >= 14) ok(`HTTPS certificate for ${host} is current`, `valid to ${when}, ${days} days`);
+      // OK from 21 days; WARN from 14 to 20, which does not fail the run; FAIL under 14.
+      if (days >= 21) ok(`HTTPS certificate for ${host} is current`, `valid to ${when}, ${days} days`);
+      else if (days >= 14) warn(`HTTPS certificate for ${host} is current`, `expires ${when}, in ${days} days: not failing yet (it fails under 14 days); if it is not renewed soon, check Netlify → Domain management → HTTPS`);
       else fail(`HTTPS certificate for ${host} is current`, `expires ${when}, in ${days} days: Netlify has not renewed it (Netlify → Domain management → HTTPS → Renew certificate)`);
     } catch (e) { fail(`HTTPS certificate for ${host} is current`, e.message); }
   }
@@ -244,10 +278,12 @@ async function main() {
   }
 
   // Report.
-  const icon = { OK: '✅', FAIL: '❌', PENDING: '⏳' };
+  const icon = { OK: '✅', WARN: '⚠️', FAIL: '❌', PENDING: '⏳' };
   const lines = results.map(([lvl, name, d]) => `${icon[lvl]} **${lvl}** ${name}${d ? ` — ${d}` : ''}`);
-  const counts = ['OK', 'FAIL', 'PENDING'].map((l) => `${results.filter((r) => r[0] === l).length} ${l}`).join(', ');
-  const report = `## Live check of ${BASE}\n\n${counts}\n\n${lines.join('\n')}\n`;
+  const counts = ['OK', 'WARN', 'FAIL', 'PENDING'].map((l) => `${results.filter((r) => r[0] === l).length} ${l}`).join(', ');
+  // Retries are said, not hidden: many in one run would mean something.
+  const retriedNote = retried ? `\n\n${retried} request${retried === 1 ? '' : 's'} retried once after a dropped connection or no reply within ${REQUEST_LIMIT_MS / 1000} seconds.` : '';
+  const report = `## Live check of ${BASE}\n\n${counts}${retriedNote}\n\n${lines.join('\n')}\n`;
   console.log(report);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, report);
   process.exit(results.some((r) => r[0] === 'FAIL') ? 1 : 0);
