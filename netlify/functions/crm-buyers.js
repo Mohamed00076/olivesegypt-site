@@ -281,6 +281,10 @@ async function handleUpdate(event, sql, id, actor) {
   if (body.product_interest !== undefined) updates.product_interest = productInterest;
   if (body.certification_gap !== undefined) updates.certification_gap = body.certification_gap === true;
   if (updates.lost_category === '') updates.lost_category = null;
+  // The reason belongs to Lost/Stalled: at any other stage a sent reason is
+  // ignored, so a stale one cannot be saved back (owner, 2026-10-23).
+  const resultingStage = body.current_stage !== undefined ? currentStage : previousStage;
+  if (resultingStage !== 'Lost/Stalled') { delete updates.lost_reason; delete updates.lost_category; }
   // A move to Lost/Stalled stores the reason it was given, made consistent
   // (a reason with no category is "other"), on the buyer and on the new row.
   const movingToLost = body.current_stage !== undefined && currentStage !== previousStage && currentStage === 'Lost/Stalled';

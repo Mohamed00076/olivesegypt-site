@@ -115,7 +115,7 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   // The reason given for Lost/Stalled is shown where it is seen (owner, 2026-10-21).
   t('the buyer page shows "Lost/Stalled: <reason>" under the name', /Lost\/Stalled: ' \+ CRM\.escapeHtml\(CRM\.lostReasonText\(b\.lost_category, b\.lost_reason\)\)/.test(page));
   t('   and "Reason: …" beside the latest move to Lost/Stalled in Stage History, as a label only',
-    /var own = CRM\.lostReasonText\(r\.reason_category, r\.reason_note\);/.test(page) && /i === lastLost && reason/.test(page) && /Buyer\\u2019s current Lost\/Stalled reason \(not stored on this older row\): /.test(page) && !/(UPDATE|DELETE FROM) buyer_stage_history/.test(page));
+    /var own = CRM\.lostReasonText\(r\.reason_category, r\.reason_note\);/.test(page) && /i === lastLost && reason/.test(page) && /Buyer\\u2019s current Lost\/Stalled reason' : 'Last Lost\/Stalled reason recorded for this buyer'\) \+\s*' \(not stored on this older row\): ' \+ reason/.test(page) && !/(UPDATE|DELETE FROM) buyer_stage_history/.test(page));
   t('   and the Kanban card in Lost/Stalled shows it too, from the list, which now carries lost_reason',
     /r\.current_stage === 'Lost\/Stalled' && \(r\.lost_category \|\| r\.lost_reason\)/.test(kanban) &&
     /next_action_due, certification_gap, lost_reason, lost_category, deleted_at/.test(read('netlify/functions/crm-buyers.js')));
@@ -320,6 +320,32 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
     const h2 = statements.find((x) => /^INSERT INTO buyer_stage_history/.test(x.q));
     t('CSV: a lost_category column is imported, onto the buyer and its first history row', ib2.imported === 1 && h2 && h2.params[3] === 'price', imp2.body);
     t('   a category not on the list is skipped, naming the list', (ib2.skipped || []).some((x) => x.line === 3 && /lost_category must be one of: price, certification_gap, competitor, no_response, other/.test(x.reason)));
+  }
+
+  // ---- no stale reason saved back; the export carries the reason (owner, 2026-10-23) ----
+  {
+    buyer.current_stage = 'Contacted';
+    let rr = await patch({ notes: 'edited (test)', lost_category: 'price', lost_reason: 'stale (test)' });
+    const up = (rr.statements.find((x) => /^UPDATE buyers SET/.test(x.q)) || { q: '' }).q;
+    t('saving a buyer who is not Lost/Stalled never writes a reason, even if one is sent',
+      rr.status === 200 && /notes = \$/.test(up) && !/lost_reason|lost_category/.test(up), up);
+    rr = await patch({ lost_category: 'price' });
+    t('   a request that sends only a reason for such a buyer changes nothing', rr.status === 400 && !rr.statements.some((x) => /^UPDATE buyers/.test(x.q)));
+    buyer.current_stage = 'Lost/Stalled';
+    rr = await patch({ lost_category: 'no_response', lost_reason: '' });
+    const up2 = (rr.statements.find((x) => /^UPDATE buyers SET/.test(x.q)) || { q: '' }).q;
+    t('   a buyer still in Lost/Stalled can have the reason corrected (no new history row: not a move)',
+      rr.status === 200 && /lost_category = \$/.test(up2) && !rr.statements.some((x) => /^INSERT INTO buyer_stage_history/.test(x.q)), up2);
+    const pageSrc = read('crm/buyer/index.html');
+    t('   and the details form only sends the reason while the stage is Lost/Stalled',
+      /if \(out\.current_stage !== 'Lost\/Stalled'\) \{ delete out\.lost_reason; delete out\.lost_category; \}/.test(pageSrc));
+    t('Stage History: a row with no stored reason shows no reason line, except the latest unstored Lost/Stalled one, labelled',
+      /var label = own \? 'Reason: ' \+ own\s*: \(i === lastLost && reason\s/.test(pageSrc) && /\(label \? '<div class="crm-ui-lost-reason-row"/.test(pageSrc));
+    statements = [];
+    const ex = await csv({ httpMethod: 'GET', headers: { cookie }, queryStringParameters: { action: 'export', confirmed: '1' }, body: null });
+    const header = String(ex.body || '').split(/\r?\n/)[0];
+    t('the buyer CSV export has lost_category and lost_reason columns, after current_stage (the names the import reads)',
+      /,current_stage,lost_category,lost_reason,/.test(header), header);
   }
 
   const rowsNow = history.length;

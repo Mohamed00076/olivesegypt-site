@@ -371,7 +371,7 @@
 
         function collectForm() {
           var checks = Array.prototype.slice.call(document.querySelectorAll('#product-checks input:checked')).map(function (cb) { return cb.value; });
-          return {
+          var out = {
             company_name: document.getElementById('company_name').value,
             country_region: document.getElementById('country_region').value,
             current_stage: document.getElementById('current_stage').value,
@@ -392,10 +392,20 @@
             certification_gap: document.getElementById('certification_gap').checked,
             next_action: document.getElementById('next_action').value,
             next_action_due: document.getElementById('next_action_due').value || null,
+            // Sent only while the stage is Lost/Stalled (below): a hidden, stale reason is never re-saved.
             lost_reason: document.getElementById('lost_reason').value,
             lost_category: document.getElementById('lost_category').value,
             notes: document.getElementById('notes').value,
           };
+          /*
+           * The Lost/Stalled reason fields are hidden at any other stage
+           * (toggleLostReason), but still hold the buyer's last reason. They
+           * were sent with every Save, so saving a buyer who had moved on
+           * wrote that old reason back. Now sent only while the stage is
+           * Lost/Stalled (owner, 2026-10-23); the server ignores them otherwise.
+           */
+          if (out.current_stage !== 'Lost/Stalled') { delete out.lost_reason; delete out.lost_category; }
+          return out;
         }
 
         function showStatus(msg, ok, where) {
@@ -607,7 +617,11 @@
           document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r, i) {
             var own = CRM.lostReasonText(r.reason_category, r.reason_note);
             var label = own ? 'Reason: ' + own
-              : (i === lastLost && reason ? 'Buyer\u2019s current Lost/Stalled reason (not stored on this older row): ' + reason : '');
+              : (i === lastLost && reason
+                // "current" only while the buyer is Lost/Stalled; after moving on it is the last one recorded.
+                ? (current && current.current_stage === 'Lost/Stalled' ? 'Buyer\u2019s current Lost/Stalled reason' : 'Last Lost/Stalled reason recorded for this buyer') +
+                  ' (not stored on this older row): ' + reason
+                : '');
             return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) +
               (label ? '<div class="crm-ui-lost-reason-row" dir="auto">' + CRM.escapeHtml(label) + '</div>' : '') + '</td>' +
               '<td>' + CRM.fmtDate(r.changed_at) + '</td><td>' + CRM.escapeHtml(r.changed_by || '') + '</td></tr>';

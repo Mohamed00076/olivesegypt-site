@@ -22,7 +22,10 @@ const STAGES = new Set(CRM_STAGES);
 
 const EXPORT_COLUMNS = [
   'id', 'company_name', 'country_region', 'contact_name', 'contact_title', 'contact_email',
-  'contact_phone', 'contact_whatsapp', 'lead_source', 'current_stage', 'packaging_format',
+  'contact_phone', 'contact_whatsapp', 'lead_source', 'current_stage',
+  // The Lost/Stalled reason (2026-10-23): the same names the import reads.
+  'lost_category', 'lost_reason',
+  'packaging_format',
   'estimated_volume', 'target_price', 'quoted_price', 'incoterm', 'certifications_required',
   'certification_gap', 'next_action', 'next_action_due', 'assigned_to', 'created_at', 'updated_at',
 ];
