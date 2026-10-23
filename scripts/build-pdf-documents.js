@@ -312,7 +312,7 @@ function documentHtml(locale, d) {
   const src = read(d.source(locale));
   const main = one(/<main[^>]*>([\s\S]*?)<\/main>/, src, `${d.source(locale)} <main>`);
   const title = inline(one(/<h1[^>]*>([\s\S]*?)<\/h1>/, main, `${d.slug} title`));
-  const dateLine = one(/<\/h1>\s*<p class="text-muted-foreground mb-8">([^<]*)<\/p>/, main, `${d.slug} date line`);
+  const dateLine = one(/<\/h1>\s*<p class="text-muted-foreground mb-8">([\s\S]*?)<\/p>/, main, `${d.slug} date line`);
   const sections = [...main.matchAll(/<section class="(?:spec-card|profile-section)">([\s\S]*?)<\/section>/g)].map((m) => m[1]);
   if (!sections.length) fail(`${d.source(locale)} has no sections`);
   const tail = main.slice(main.lastIndexOf('</section>'));
