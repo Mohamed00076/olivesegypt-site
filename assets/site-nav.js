@@ -405,3 +405,53 @@
     '}';
   document.head.appendChild(style);
 })();
+
+/*
+ * The header fits whatever text size the reader uses (owner, 2026-10-23).
+ *
+ * The desktop header is one row that never wraps. With the browser's
+ * "larger text" setting (text zoom, not page zoom) its links ran 500 to
+ * 1,000px off the right edge; with wider letter spacing the phone header
+ * grew 25px too wide and pushed the menu button off screen. Now the row is
+ * measured: if it does not fit, the page uses the phone header (the menu
+ * button and its drawer) at any width; if even that does not fit, the
+ * company name may wrap onto two lines and the quote button's label may
+ * wrap too. At normal sizes nothing changes. Screen only.
+ */
+(function () {
+  var row = document.querySelector('header .container');
+  if (!row) return;
+  var html = document.documentElement;
+  var style = document.createElement('style');
+  style.id = 'tc-header-fit-style';
+  style.textContent =
+    '@media screen{' +
+    'html.tc-header-compact header .tc-nav{display:none!important;}' +
+    'html.tc-header-compact #mobile-menu-toggle{display:inline-flex!important;}' +
+    'html.tc-header-compact #mobile-menu-panel:not([hidden]){display:block!important;}' +
+    'html.tc-header-tight header .container{height:auto!important;min-height:4rem;}' +
+    'html.tc-header-tight header .container .whitespace-nowrap{white-space:normal!important;}' +
+    'html.tc-header-tight header .container a:first-child{flex-shrink:1!important;min-width:0;}' +
+    '#tc-quote-fab:not(.tc-quote-fab--compact) .tc-quote-fab-label{max-width:24em;}' +
+    '}';
+  document.head.appendChild(style);
+  function overflows() { return row.scrollWidth > row.clientWidth + 1; }
+  var queued = false;
+  function fit() {
+    queued = false;
+    html.classList.remove('tc-header-compact', 'tc-header-tight');
+    if (!overflows()) return;
+    html.classList.add('tc-header-compact');
+    if (overflows()) html.classList.add('tc-header-tight');
+  }
+  function queue() { if (!queued) { queued = true; window.requestAnimationFrame(fit); } }
+  fit();
+  window.addEventListener('resize', queue);
+  window.addEventListener('load', queue);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(queue);
+  // text size or spacing can change without the window changing size
+  if (typeof ResizeObserver === 'function') {
+    var ro = new ResizeObserver(queue);
+    [].forEach.call(row.children, function (c) { ro.observe(c); });
+  }
+})();
