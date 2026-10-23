@@ -41,7 +41,9 @@ const DOCUMENT_CSS = '/scripts/pdf-design/document.css';
  * The cover's photograph (owner, 2026-10-14: "do 3"): the owner's whole
  * green olives, the same file as the Green Olives spec sheet's, square, in
  * a rounded frame at the band's end. 800 px at 42 mm is 484 ppi. Its alt
- * text is the photograph's existing caption.
+ * text is the photograph's existing caption. Its frame is a <div>: a
+ * <figure> around it was tagged as a second, undescribed figure in the PDF
+ * (owner, 2026-10-23, after the PDF accessibility audit).
  */
 const COVER_PHOTO = '/scripts/pdf-design/photos/green-olives-whole.jpg';
 const COVER_ALT = { en: 'Whole green olives', ar: 'زيتون أخضر كامل' };
@@ -332,7 +334,7 @@ function documentHtml(locale, d) {
 ${masthead(locale)}
 <div class="cover-row">
 <div class="doc-head"><h1>${title}</h1><p class="doc-date">${date}</p></div>
-<figure class="cover-photo"><img src="${COVER_PHOTO}" alt="${COVER_ALT[locale]}" width="800" height="800" /></figure>
+<div class="cover-photo"><img src="${COVER_PHOTO}" alt="${COVER_ALT[locale]}" width="800" height="800" /></div>
 </div>
 </div>`;
 
