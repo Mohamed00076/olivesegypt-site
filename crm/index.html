@@ -303,6 +303,31 @@
               '<p class="crm-muted" style="margin-bottom:0;">Counts only stages a buyer has already moved on from, so the stage each buyer sits in today is not included.</p>'
             : '<p class="crm-muted">Not enough stage-change history yet to compute this.</p>';
 
+          /*
+           * Lost/Stalled reasons: each move to Lost/Stalled, by the reason
+           * chosen for it. Every category is listed, zero or not, so a reason
+           * nobody gave still reads as 0 rather than going missing.
+           */
+          var lr = d.lost_reasons;
+          var lostReasonsHtml;
+          if (!lr) {
+            lostReasonsHtml = '<p class="crm-muted">Not available yet. It appears once a buyer has been opened or saved since this update.</p>';
+          } else {
+            var counts = {};
+            lr.rows.forEach(function (r) { counts[r.category] = r; });
+            var reasonRows = CRM.LOST_CATEGORIES.map(function (c) { return [c[0], c[1]]; });
+            if (counts.not_recorded) reasonRows.push(['not_recorded', 'Not recorded (moved before reasons were kept)']);
+            var sumMonth = 0, sumAll = 0;
+            lostReasonsHtml = '<table><thead><tr><th>Reason</th><th>This month</th><th>Overall</th></tr></thead><tbody>' +
+              reasonRows.map(function (c) {
+                var r = counts[c[0]] || { this_month: 0, overall: 0 };
+                sumMonth += r.this_month; sumAll += r.overall;
+                return '<tr><td>' + CRM.escapeHtml(c[1]) + '</td><td>' + r.this_month + '</td><td>' + r.overall + '</td></tr>';
+              }).join('') +
+              '</tbody><tfoot><tr><th scope="row">Total</th><td>' + sumMonth + '</td><td>' + sumAll + '</td></tr></tfoot></table>' +
+              '<p class="crm-muted" style="margin-bottom:0;">Counts each move to Lost/Stalled, so a buyer moved there twice counts twice. This month is the calendar month, Cairo time. Deleted buyers are not counted.</p>';
+          }
+
           document.getElementById('dashboard-content').innerHTML =
             '<div class="crm-card"><h2>Buyers by Stage (' + totalActive + ' active)</h2><div class="crm-grid crm-grid-4">' + stageCardsHtml + '</div></div>' +
             '<div class="crm-card"><h2>By Region</h2><div class="crm-grid crm-grid-4">' + regionHtml + '</div></div>' +
@@ -318,6 +343,7 @@
                   }).join('') + '</tbody></table>'
                 : '<p class="crm-muted">No stalled leads right now.</p>') +
             '</div>' +
+            '<div class="crm-card"><h2>Lost/Stalled Reasons</h2>' + lostReasonsHtml + '</div>' +
             '<div class="crm-card"><h2>Conversion Rate</h2>' +
               '<p><strong style="font-size:22px;">' + CRM.escapeHtml(crBig) + '</strong> <span class="crm-muted">' + CRM.escapeHtml(crNote) + '</span></p>' +
               '<p class="crm-muted">' + CRM.escapeHtml(cr.definition) + '</p>' +
