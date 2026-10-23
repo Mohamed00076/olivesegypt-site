@@ -32,18 +32,11 @@ t('X-Forwarded-For and client-ip are ignored when it is missing',
 t('   the fallback can be chosen (the analytics collector uses "")', netlifyClientIp({ headers: {} }, '') === '');
 t('   no headers at all is safe', netlifyClientIp({}) === 'unknown' && netlifyClientIp(undefined) === 'unknown');
 
-// The three old sign-in functions are rewritten by the password-reset pull
-// request (#382), which reads Netlify's header only (_auth_lib.js clientIp).
-// Remove these when it merges; this check then covers them as well.
-const REPLACED_BY_382 = {
-  'auth-login.js': 'rewritten in #382',
-  'crm-auth-forgot.js': 'replaced by crm-auth-forgot.mjs in #382',
-  'crm-auth-login.js': 'rewritten in #382',
-};
+// The sign-in functions (_auth_lib.js clientIp, password reset release 1)
+// follow the same rule and are covered by the scan below.
 const strip = (src) => src.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
 const readers = [];
 for (const f of fs.readdirSync(FN).filter((x) => /\.m?js$/.test(x)).sort()) {
-  if (REPLACED_BY_382[f]) { t(`${f} -- not checked yet: ${REPLACED_BY_382[f]}`, true); continue; }
   if (/['"](x-forwarded-for|client-ip)['"]/i.test(strip(fs.readFileSync(path.join(FN, f), 'utf8')))) readers.push(f);
 }
 t('no function reads X-Forwarded-For or client-ip', readers.length === 0, readers.join(', '));

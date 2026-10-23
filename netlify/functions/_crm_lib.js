@@ -39,10 +39,10 @@ function crmSessionKey() {
   if (!secret) return null;
   return crypto.createHmac('sha256', secret).update(CRM_KEY_LABEL).digest('hex');
 }
-function signCrmSession(username) {
+function signCrmSession(username, claims) {
   const key = crmSessionKey();
   if (!key) throw new Error('signCrmSession: no CRM_SESSION_SECRET or SESSION_SECRET');
-  return signSession(username, key);
+  return signSession(username, key, claims);
 }
 const CRM_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
@@ -69,10 +69,16 @@ function getCrmSession(event, secret) {
 
 // Deny-by-default authorization gate (Rule 22): every CRM function
 // should call this first and bail out on null before touching any data.
-function requireCrmSession(event) {
+//
+// A session issued with mc ("must change password", set after an emergency
+// reset) opens nothing but the change-password endpoint, which passes
+// { allowMustChange: true }.
+function requireCrmSession(event, opts) {
   const key = crmSessionKey();
   if (!key) return null;
-  return getCrmSession(event, key);
+  const session = getCrmSession(event, key);
+  if (session && session.mc && !(opts && opts.allowMustChange)) return null;
+  return session;
 }
 
 /*

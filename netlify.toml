@@ -135,6 +135,32 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+# Sign-in and password pages (password reset release 1, 2026-10-17): never
+# cached, and no address sent onward. The reset link's token travels after
+# '#', which browsers never send in a Referer; no-referrer is the second
+# line of defence. Each page also carries <meta name="referrer"
+# content="no-referrer">, which holds whatever order Netlify applies these.
+[[headers]]
+  for = "/crm/login/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+[[headers]]
+  for = "/crm/forgot-password/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+[[headers]]
+  for = "/crm/reset-password/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+[[headers]]
+  for = "/crm/change-password/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+
 # Admin analytics page
 [[redirects]]
   from = "/admin/analytics"
@@ -252,6 +278,12 @@
 [[redirects]]
   from = "/api/crm/auth/reset"
   to = "/.netlify/functions/crm-auth-reset"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/crm/auth/change"
+  to = "/.netlify/functions/crm-auth-change"
   status = 200
   force = true
 

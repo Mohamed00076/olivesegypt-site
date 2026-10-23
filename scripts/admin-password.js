@@ -2,10 +2,16 @@
 'use strict';
 
 /*
- * Sets or checks the /admin/analytics password.
+ * Sets or checks the EMERGENCY FALLBACK password for /admin/analytics.
  *
- *   node scripts/admin-password.js set   <password>
- *   node scripts/admin-password.js check <password> <stored-hash>
+ *   node scripts/admin-password.js set
+ *   node scripts/admin-password.js check
+ *
+ * Since 2026-10-17 analytics is opened with a CRM account marked is_admin.
+ * ADMIN_USERNAME / ADMIN_PASSWORD_HASH in Netlify are only the emergency
+ * fallback, which works while ADMIN_FALLBACK_LOGIN is "on". The password is
+ * asked for, hidden -- never an argument, which would land in the shell's
+ * history and the process list.
  *
  * The sibling of scripts/crm-create-user.js. The CRM has had one since its
  * users live in the database; the admin login reads two environment
@@ -53,152 +59,114 @@
  * the hash wrong, and sends people round the loop a second time.
  */
 
-const { hashPassword, verifyPassword } = require('../netlify/functions/_lib');
-
-const MIN_LENGTH = 12;
+const { ask } = require('./_prompt');
+const auth = require('../netlify/functions/_auth_lib');
 
 function usage(message) {
   if (message) console.error(`\n${message}\n`);
   console.error(`Usage:
-  node scripts/admin-password.js set   <password>
-  node scripts/admin-password.js check <password> <stored-hash>
+  node scripts/admin-password.js set     prints a hash for ADMIN_PASSWORD_HASH in Netlify
+  node scripts/admin-password.js check   says whether a password matches the hash you have there
 
-  set    prints a hash to paste into ADMIN_PASSWORD_HASH in Netlify
-  check  says whether a password matches a hash you already have there
-
-Quote the password so the shell does not interpret it:
-  node scripts/admin-password.js set 'my new password!'
+The password is asked for and hidden. Never put it on the command line.
 `);
   process.exit(1);
 }
 
 /*
- * The exact shape hashPassword() produces: a 16-byte salt and a 32-byte hash,
- * both hex, so 32 and 64 characters. The lengths matter as much as the
- * format. A hash pasted a few characters short still has three parts and
- * still begins with "scrypt", so without a length check it reads as a valid
- * hash that simply does not match -- which sends you off to change a password
- * that was never wrong. Netlify's UI truncates long values on screen, so this
- * is a realistic paste error, not a hypothetical one.
+ * The shapes a stored hash can have, with their lengths. The lengths matter
+ * as much as the format: a hash pasted a few characters short still looks
+ * plausible, and without a length check it reads as a valid hash that simply
+ * does not match -- which sends you off to change a password that was never
+ * wrong. Netlify's UI truncates long values on screen, so this is a
+ * realistic paste error, not a hypothetical one.
+ *   scrypt:<32 hex salt>:<64 hex hash>                  (before 2026-10-17)
+ *   scrypt2$32768$8$3$<32 hex salt>$<64 hex hash>        (now)
  */
-const SALT_HEX = 32;
-const HASH_HEX = 64;
-
 function inspectHash(value) {
   const raw = String(value);
   if (raw !== raw.trim()) return { ok: false, why: 'it has whitespace around it' };
-  const parts = raw.split(':');
-  if (parts.length !== 3) {
-    return { ok: false, why: `it has ${parts.length} colon-separated part(s), not 3` };
+  const isNew = raw.startsWith('scrypt2$');
+  const parts = raw.split(isNew ? '$' : ':');
+  if (!isNew && parts[0] !== 'scrypt') return { ok: false, why: `it starts with "${parts[0]}", not "scrypt" or "scrypt2"` };
+  if (parts.length !== (isNew ? 6 : 3)) return { ok: false, why: `it has ${parts.length} parts, not ${isNew ? 6 : 3}` };
+  const salt = parts[isNew ? 4 : 1];
+  const hash = parts[isNew ? 5 : 2];
+  for (const [name, val, want] of [['salt', salt, 32], ['hash', hash, 64]]) {
+    if (!/^[0-9a-f]*$/.test(val)) return { ok: false, why: `its ${name} is not hexadecimal` };
+    if (val.length !== want) return { ok: false, truncated: val.length < want, why: `its ${name} is ${val.length} characters, not ${want}` };
   }
-  if (parts[0] !== 'scrypt') return { ok: false, why: `it starts with "${parts[0]}", not "scrypt"` };
-  for (const [i, name, want] of [[1, 'salt', SALT_HEX], [2, 'hash', HASH_HEX]]) {
-    if (!/^[0-9a-f]*$/.test(parts[i])) return { ok: false, why: `its ${name} is not hexadecimal` };
-    if (parts[i].length !== want) {
-      return {
-        ok: false,
-        truncated: parts[i].length < want,
-        why: `its ${name} is ${parts[i].length} characters, not ${want}`,
-      };
-    }
-  }
-  return { ok: true };
+  return auth.parseHash(raw) ? { ok: true } : { ok: false, why: 'its parameters are out of range' };
 }
 
-const [command, password, stored] = process.argv.slice(2);
+async function main() {
+  const command = process.argv[2];
+  if (!command) usage();
+  if (command !== 'set' && command !== 'check') usage(`Unknown command "${command}".`);
+  if (process.argv.length > 3) usage('Do not put the password on the command line; it is asked for.');
 
-if (!command) usage();
-if (command !== 'set' && command !== 'check') usage(`Unknown command "${command}".`);
-if (!password) usage('No password given.');
-
-/*
- * A password that arrives with whitespace around it is almost always a paste
- * artefact rather than a deliberate choice, and it is invisible on screen --
- * so say so rather than silently hashing something the owner cannot retype.
- */
-if (password !== password.trim()) {
-  console.error(
-    '\nThe password has leading or trailing whitespace. That is almost always a\n' +
-    'paste artefact, and you would never be able to retype it. Quote it exactly:\n' +
-    "  node scripts/admin-password.js " + command + " 'your password'\n"
-  );
-  process.exit(1);
-}
-
-if (command === 'check') {
-  if (!stored) usage('No stored hash given. Copy ADMIN_PASSWORD_HASH out of Netlify and pass it as the third argument.');
-
-  const shape = inspectHash(stored);
-  if (!shape.ok) {
-    console.error(
-      `\nThat is not a usable stored hash: ${shape.why}.\n\n` +
-      `It should look like scrypt:<${SALT_HEX} hex chars>:<${HASH_HEX} hex chars>\n` +
-      `Got: ${String(stored).slice(0, 72)}${String(stored).length > 72 ? '...' : ''}\n\n` +
-      (shape.truncated
-        ? `That is SHORTER than it should be, so the value was almost certainly\n` +
-          `cut off when you copied it. Netlify truncates long values on screen --\n` +
-          `use the copy button rather than selecting the text, and try again.\n\n` +
-          `Nothing is wrong with your password. Do not change it on account of this.\n`
-        : `Copy the whole value out of Netlify and try again.\n`)
-    );
+  const password = await ask('Password: ', { hidden: true });
+  if (!password) usage('No password typed.');
+  if (password !== password.trim()) {
+    console.error('\nThe password has spaces at the start or end. That is almost always a paste\nartefact, and you would never be able to retype it. Try again.\n');
     process.exit(1);
   }
 
-  if (verifyPassword(password, stored)) {
-    console.log(`
+  if (command === 'check') {
+    const stored = (await ask('ADMIN_PASSWORD_HASH as copied from Netlify: ')).trim();
+    const shape = inspectHash(stored);
+    if (!shape.ok) {
+      console.error(
+        `\nThat is not a usable stored hash: ${shape.why}.\n\n` +
+        (shape.truncated
+          ? 'It is SHORTER than it should be, so the value was almost certainly cut off when\n' +
+            'you copied it. Use the copy button in Netlify rather than selecting the text.\n' +
+            'Nothing is wrong with your password. Do not change it on account of this.\n'
+          : 'Copy the whole value out of Netlify and try again.\n')
+      );
+      process.exit(1);
+    }
+    if ((await auth.verifyPassword(password, stored)).ok) {
+      console.log(`
 MATCH -- this password is correct for that hash.
 
-So the password is not the problem. Check ADMIN_USERNAME in Netlify, exactly
-as stored: a trailing space or a capital letter is enough to fail, and the
-sign-in page cannot tell you which half was wrong.
-
-If ADMIN_USERNAME looks right too, confirm the site has been redeployed since
-you last changed either value.`);
-    process.exit(0);
+So the password is not the problem. Check ADMIN_USERNAME in Netlify exactly as
+stored (a trailing space or a capital letter is enough to fail), that
+ADMIN_FALLBACK_LOGIN is "on", and that the site was redeployed since either
+value last changed.`);
+      process.exit(0);
+    }
+    console.log('\nNO MATCH -- this password does not open that hash. Set a new one with:\n  node scripts/admin-password.js set');
+    process.exit(2);
   }
 
+  const again = await ask('Password again: ', { hidden: true });
+  if (again !== password) { console.error('\nThe two passwords do not match. Nothing printed.\n'); process.exit(1); }
+  const problem = auth.passwordProblem(password, process.env.ADMIN_USERNAME || '');
+  if (problem) { console.error(`\n${problem} Nothing printed.\n`); process.exit(1); }
+
+  const hash = await auth.hashPassword(password);
+  // Never print a hash this script cannot itself verify.
+  if (!(await auth.verifyPassword(password, hash)).ok) {
+    console.error('\nInternal error: the generated hash does not verify. Nothing was printed.\n');
+    process.exit(1);
+  }
   console.log(`
-NO MATCH -- this password does not open that hash.
-
-Set a new one:
-  node scripts/admin-password.js set 'your new password'`);
-  process.exit(2);
-}
-
-// ---- set ----------------------------------------------------------------
-if (password.length < MIN_LENGTH) {
-  console.error(
-    `\nChoose a password of at least ${MIN_LENGTH} characters. ` +
-    `This one is ${password.length}.\n\n` +
-    `It guards every visitor statistic, KPI and analytics setting the site\n` +
-    `collects, and it is the only thing doing so.\n`
-  );
-  process.exit(1);
-}
-
-const hash = hashPassword(password);
-
-// Never print a hash this script cannot itself verify.
-if (!verifyPassword(password, hash)) {
-  console.error('\nInternal error: the generated hash does not verify. Nothing was printed.\n');
-  process.exit(1);
-}
-
-console.log(`
 ADMIN_PASSWORD_HASH
 ${hash}
 
 Next:
   1. Netlify -> your site -> Site configuration -> Environment variables
-  2. Set ADMIN_PASSWORD_HASH to the whole line above -- all three
-     colon-separated parts, with no space before or after it
-  3. Check ADMIN_USERNAME while you are there; it is stored in plain text,
-     so you can simply read it
-  4. Redeploy. Netlify injects environment variables at deploy time, so
-     saving alone changes nothing and the old password keeps working
+  2. Set ADMIN_PASSWORD_HASH to the whole line above, with no space before or
+     after it
+  3. Check ADMIN_USERNAME while you are there; it is stored in plain text
+  4. Redeploy. Netlify applies environment variables at deploy time
 
-Then sign in at /admin/analytics.
+This is the EMERGENCY FALLBACK only. It works while ADMIN_FALLBACK_LOGIN is
+"on"; normally analytics is opened with your CRM account.`);
+}
 
-To confirm before you redeploy, paste the value back out of Netlify and run:
-  node scripts/admin-password.js check 'your new password' '<paste it here>'
-`);
+main().catch((err) => {
+  console.error('Error:', String((err && err.message) || err));
+  process.exit(1);
+});

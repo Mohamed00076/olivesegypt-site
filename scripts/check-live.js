@@ -230,6 +230,7 @@ async function main() {
     '/api/auth/login': 'sign-in; POST only', '/api/auth/logout': 'POST only',
     '/api/crm/auth/login': 'sign-in; POST only', '/api/crm/auth/logout': 'POST only',
     '/api/crm/auth/forgot': 'POST only', '/api/crm/auth/reset': 'POST only',
+    '/api/crm/auth/change': 'POST only; refuses without a CRM session (check-password-reset.js)',
   };
   const toml = fs.readFileSync(path.join(ROOT, 'netlify.toml'), 'utf8');
   const routes = [...toml.matchAll(/from = "(\/api\/[^"]+)"\s*\n\s*to = "(\/\.netlify\/functions\/[^"]+)"/g)].map((m) => ({ api: m[1], fn: m[2] }));

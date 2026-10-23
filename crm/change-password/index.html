@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Change Password | Buyer CRM</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="stylesheet" href="/assets/crm.css" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3f4f2b" />
+  </head>
+  <body>
+    <div class="crm-container">
+      <div class="crm-login-wrap crm-card">
+        <h1>Change Password</h1>
+
+        <form id="change-form">
+          <p class="crm-muted" style="margin-bottom:20px;">This password is for both the CRM and analytics. The new one must be 12 to 128 characters, not a common password and not built from your username. A short sentence works well. After changing it you will sign in again, and every other device will be signed out.</p>
+          <div class="crm-field">
+            <label for="current_password">Current Password</label>
+            <input id="current_password" type="password" autocomplete="current-password" required />
+          </div>
+          <div class="crm-field">
+            <label for="new_password">New Password</label>
+            <input id="new_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required />
+          </div>
+          <div class="crm-field">
+            <label for="confirm_password">Confirm New Password</label>
+            <input id="confirm_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required />
+          </div>
+          <div id="change-status" class="crm-status" style="display:none;"></div>
+          <button type="submit" class="crm-btn crm-btn-primary" id="change-submit" style="width:100%;justify-content:center;">Change Password</button>
+        </form>
+
+        <div id="change-done" style="display:none;">
+          <div class="crm-status crm-status-success">Password changed. Every device that was signed in has been signed out. Sign in with your new password.</div>
+          <p style="text-align:center;margin-top:14px;"><a href="/crm/login/" class="crm-btn crm-btn-primary" style="width:100%;justify-content:center;">Go to Sign In</a></p>
+        </div>
+        <p style="text-align:center;margin-top:14px;"><a href="/crm/" class="crm-muted" style="font-size:12px;">Back to the CRM</a></p>
+      </div>
+    </div>
+    <script>
+      (function () {
+        'use strict';
+        var form = document.getElementById('change-form');
+        var statusEl = document.getElementById('change-status');
+        var submitBtn = document.getElementById('change-submit');
+
+        function showError(text) {
+          statusEl.className = 'crm-status crm-status-error';
+          statusEl.textContent = text;
+          statusEl.style.display = 'block';
+        }
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          statusEl.style.display = 'none';
+          var current = document.getElementById('current_password').value;
+          var next = document.getElementById('new_password').value;
+          var confirm = document.getElementById('confirm_password').value;
+          if (next !== confirm) { showError('The two new passwords do not match.'); return; }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Changing...';
+          fetch('/api/crm/auth/change', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ current_password: current, new_password: next, confirm_password: confirm }),
+          }).then(function (res) { return res.json(); }).then(function (data) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Change Password';
+            if (data.ok) {
+              form.reset();
+              form.style.display = 'none';
+              document.getElementById('change-done').style.display = 'block';
+            } else {
+              showError(data.error || 'Could not change the password.');
+            }
+          }).catch(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Change Password';
+            showError('Network error. Please try again.');
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

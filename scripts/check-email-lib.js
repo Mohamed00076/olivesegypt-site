@@ -90,7 +90,7 @@ function rel(){ console.log=realLog; console.error=realErr; }
  cap(); await m.sendNotification('s','b',{formType:'inquiry'}); rel(); global.fetch=realFetch;
  t('warns loudly when NOTIFY_FROM_EMAIL unset with >1 recipient', logs.some(([k,l])=>k==='err'&&l.includes('NOTIFY_FROM_EMAIL is unset')));
 
- // 10. legacy 3-arg call still works (crm-auth-forgot.js)
+ // 10. legacy 3-arg call still works (older callers)
  clearEnv(); m=fresh({RESEND_API_KEY:'k',NOTIFY_FROM_EMAIL:'s@o.com'});
  global.fetch=async()=>({ok:true,status:200,json:async()=>({id:'y'})});
  cap(); r=await m.sendEmail('user@corp.com','Reset','link'); rel(); global.fetch=realFetch;
@@ -125,6 +125,22 @@ function rel(){ console.log=realLog; console.error=realErr; }
    /if \(leadsNotifyEnabled\(\)\)/.test(leadsSrc));
  t('leads.js email body omits client IP and consent flag',
    !/lines\.push\('IP|lines\.push\('Consent/.test(leadsSrc));
+
+ // opts.timeoutMs: a Resend request that never answers is aborted, retry
+ // included, and the call returns false instead of waiting for ever
+ // (the password reset sends with an 8 s limit after answering).
+ clearEnv(); m=fresh({RESEND_API_KEY:'re_test_key_not_real'});
+ { const realFetch=global.fetch; let calls=0, sawSignal=false;
+   global.fetch=(u,o)=>{ calls++; sawSignal=!!(o&&o.signal); return new Promise((_,rej)=>{ if(o&&o.signal) o.signal.addEventListener('abort',()=>rej(Object.assign(new Error('aborted'),{name:'TimeoutError'}))); }); };
+   // AbortSignal.timeout's timer does not keep Node running; without this
+   // one the script would end here, silently, if the abort never fired.
+   const keepAlive=setTimeout(()=>{ rel(); realLog('FAIL  timeoutMs: the hanging call was never aborted'); process.exit(1); },3000);
+   const st=Date.now(); cap(); const r2=await m.sendEmail('a@x.com','s','b',{formType:'password-reset',timeoutMs:200}); rel(); const took=Date.now()-st;
+   clearTimeout(keepAlive);
+   global.fetch=realFetch;
+   t('timeoutMs: a hanging Resend call is aborted and returns false', r2===false && sawSignal && took<1000, `r=${r2} signal=${sawSignal} ${took}ms`);
+   t('timeoutMs: no retry after the deadline has passed', calls===1, `${calls} calls`);
+ }
 
  realLog(`\n${pass} passed, ${fail} failed`);
  process.exit(fail?1:0);

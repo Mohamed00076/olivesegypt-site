@@ -52,9 +52,13 @@ function hmac(payloadB64, secret) {
   return crypto.createHmac('sha256', String(secret)).update(payloadB64).digest();
 }
 
-function signSession(username, secret) {
+// claims: optional extra fields carried in the signed payload -- uid and sv
+// (the account id and its session number, which a password reset raises),
+// mc (must change password), adm (analytics admin), fb (fallback login).
+// sub, iat and exp are always set here and cannot be overridden.
+function signSession(username, secret, claims) {
   const now = Math.floor(Date.now() / 1000);
-  const payload = { sub: username, iat: now, exp: now + SESSION_TTL_SECONDS };
+  const payload = { ...(claims || {}), sub: username, iat: now, exp: now + SESSION_TTL_SECONDS };
   const payloadB64 = b64url(JSON.stringify(payload));
   const sig = b64url(hmac(payloadB64, secret));
   return payloadB64 + '.' + sig;

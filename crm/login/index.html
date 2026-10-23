@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign In | Buyer CRM</title>
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
 <link rel="stylesheet" href="/assets/crm.css" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
@@ -46,10 +47,16 @@
           var m = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
           return m ? decodeURIComponent(m[1]) : null;
         }
+        // Where to go after signing in: a path on this site only. "//other.site"
+        // and "/\\other.site" are other sites to a browser, so they are refused.
+        function nextPath() {
+          var n = qs('next');
+          return n && /^\/(?![\/\\])/.test(n) ? n : '/crm/';
+        }
 
         // If already signed in, skip the form.
         fetch('/api/crm/auth/me', { credentials: 'same-origin' }).then(function (res) {
-          if (res.ok) window.location.href = qs('next') || '/crm/';
+          if (res.ok) window.location.href = nextPath();
         });
 
         form.addEventListener('submit', function (e) {
@@ -69,8 +76,10 @@
           }).then(function (res) { return res.json(); }).then(function (data) {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Sign In';
-            if (data.ok) {
-              window.location.href = qs('next') || '/crm/';
+            if (data.ok && data.must_change) {
+              window.location.href = '/crm/change-password/';
+            } else if (data.ok) {
+              window.location.href = nextPath();
             } else {
               statusEl.textContent = data.error || 'Incorrect username or password.';
               statusEl.style.display = 'block';
