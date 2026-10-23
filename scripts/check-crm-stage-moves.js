@@ -60,7 +60,7 @@ const sql = (strings, ...vals) => {
   }
   if (/^\s*INSERT INTO buyers\b/i.test(q)) return Promise.resolve([{ id: 900 + statements.length }]);
   if (/^\s*INSERT INTO buyer_stage_history/i.test(q)) {
-    history.push({ id: history.length + 1, from_stage: params[1], to_stage: params[2], changed_by: params[3] });
+    history.push({ id: history.length + 1, from_stage: params[1], to_stage: params[2], changed_by: params[3], reason_category: params[4], reason_note: params[5] });
     return Promise.resolve([]);
   }
   return Promise.resolve([]);
@@ -113,12 +113,12 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
     /id="move-btn" disabled/.test(page) && /' \(now\)'/.test(page) && /getElementById\('move-btn'\)\.disabled = !e\.target\.value/.test(page));
 
   // The reason given for Lost/Stalled is shown where it is seen (owner, 2026-10-21).
-  t('the buyer page shows "Lost/Stalled: <reason>" under the name', /Lost\/Stalled: ' \+ CRM\.escapeHtml\(b\.lost_reason\)/.test(page));
+  t('the buyer page shows "Lost/Stalled: <reason>" under the name', /Lost\/Stalled: ' \+ CRM\.escapeHtml\(CRM\.lostReasonText\(b\.lost_category, b\.lost_reason\)\)/.test(page));
   t('   and "Reason: …" beside the latest move to Lost/Stalled in Stage History, as a label only',
-    /i === lastLost && reason/.test(page) && /Buyer\\u2019s current Lost\/Stalled reason: /.test(page) && !/(UPDATE|DELETE FROM) buyer_stage_history/.test(page));
+    /var own = CRM\.lostReasonText\(r\.reason_category, r\.reason_note\);/.test(page) && /i === lastLost && reason/.test(page) && /Buyer\\u2019s current Lost\/Stalled reason \(not stored on this older row\): /.test(page) && !/(UPDATE|DELETE FROM) buyer_stage_history/.test(page));
   t('   and the Kanban card in Lost/Stalled shows it too, from the list, which now carries lost_reason',
-    /r\.current_stage === 'Lost\/Stalled' && r\.lost_reason/.test(kanban) &&
-    /next_action_due, certification_gap, lost_reason, deleted_at/.test(read('netlify/functions/crm-buyers.js')));
+    /r\.current_stage === 'Lost\/Stalled' && \(r\.lost_category \|\| r\.lost_reason\)/.test(kanban) &&
+    /next_action_due, certification_gap, lost_reason, lost_category, deleted_at/.test(read('netlify/functions/crm-buyers.js')));
   t('Exported/Completed asks a plain yes-or-no question',
     /'Has ' \+ who \+ '\\u2019s export been completed\?'/.test(read('assets/crm.js')) && /cancel: 'No, go back', confirm: 'Yes, mark as exported', confirmClass: 'crm-ui-btn-confirm-export'/.test(read('assets/crm.js')) &&
     /Use this only after a shipment has actually left Egypt\./.test(read('assets/crm.js')) && /\.crm-ui-btn-confirm-export \{ background: #b8923a/.test(read('assets/crm-ui.css')));
@@ -126,7 +126,7 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   // ---- the rules themselves, run with a stand-in for the in-page question ----
   {
     const crmSrc = read('assets/crm.js');
-    const m = crmSrc.match(/  var typedReasons = \{\};[\s\S]*?CRM\.stageMoveCheck = function \(companyName, toStage\) \{[\s\S]*?\n  \};/);
+    const m = crmSrc.match(/  CRM\.LOST_CATEGORIES = \[[\s\S]*?CRM\.stageMoveCheck = function \(companyName, toStage\) \{[\s\S]*?\n  \};/);
     t('one set of stage rules, in assets/crm.js', !!m);
     const asked = [];
     let answer = null;
@@ -135,10 +135,12 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
     if (check) {
       let r = await check('Test Co (fake)', 'Contacted');
       t('   an ordinary stage asks nothing and adds nothing', asked.length === 0 && JSON.stringify(r) === '{}');
-      answer = { reason: 'Chose a cheaper supplier (test)' };
+      answer = { choice: 'price', reason: 'Chose a cheaper supplier (test)' };
       r = await check('Test Co (fake)', 'Lost/Stalled');
-      t('   Lost/Stalled asks for a reason, required, and sends it as lost_reason',
-        asked.length === 1 && asked[0].reason && asked[0].reason.maxlength === 300 && r && r.lost_reason === 'Chose a cheaper supplier (test)', JSON.stringify(r));
+      t('   Lost/Stalled asks for a reason from the list, with a note needed only for "Other", and sends both',
+        asked.length === 1 && asked[0].choice && JSON.stringify(asked[0].choice.options.map((c) => c[0])) === '["price","certification_gap","competitor","no_response","other"]' &&
+        asked[0].choice.noteRequiredFor === 'other' && asked[0].reason && asked[0].reason.maxlength === 300 &&
+        r && r.lost_category === 'price' && r.lost_reason === 'Chose a cheaper supplier (test)', JSON.stringify(r));
       answer = false;
       r = await check('Test Co (fake)', 'Lost/Stalled');
       t('   cancelling it moves nothing', r === null);
@@ -150,14 +152,14 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
       t('   and cancelling it moves nothing', r === null);
       // Nothing typed is lost (owner, 2026-10-21): a reason for a move that did not go through is offered again.
       asked.length = 0;
-      answer = { reason: 'Typed once (test)' };
+      answer = { choice: 'no_response', reason: 'Typed once (test)' };
       await check('Keep Co (fake)', 'Lost/Stalled');
       answer = false;
       await check('Keep Co (fake)', 'Lost/Stalled');
-      t('a reason typed for a move that was not saved is offered again next time', asked[1].reason.value === 'Typed once (test)', JSON.stringify(asked[1].reason));
+      t('a reason chosen for a move that was not saved is offered again next time', asked[1].reason.value === 'Typed once (test)' && asked[1].choice.value === 'no_response', JSON.stringify(asked[1].reason));
       CRM.stageMoveSaved('Keep Co (fake)');
       await check('Keep Co (fake)', 'Lost/Stalled');
-      t('   and forgotten once a move is saved', asked[2].reason.value === '');
+      t('   and forgotten once a move is saved', asked[2].reason.value === '' && asked[2].choice.value === '');
       await check('Other Co (fake)', 'Lost/Stalled');
       t('   and never offered for a different buyer', asked[3].reason.value === '');
     }
@@ -205,12 +207,16 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   buyer.current_stage = 'Negotiation';
   const rowsBefore = history.length;
   r = await patch({ current_stage: 'Lost/Stalled' });
-  t('server refuses a move to Lost/Stalled with no reason', refused(r, 'lost_reason'), JSON.stringify(r.data) + ' ' + JSON.stringify(writes(r.statements)));
+  t('server refuses a move to Lost/Stalled with no reason', refused(r, 'lost_category'), JSON.stringify(r.data) + ' ' + JSON.stringify(writes(r.statements)));
   t('   and writes nothing: no UPDATE, no history row, no audit entry', writes(r.statements).length === 0 && history.length === rowsBefore && buyer.current_stage === 'Negotiation');
   r = await patch({ current_stage: 'Lost/Stalled', lost_reason: '   ' });
-  t('   a blank reason is no reason', refused(r, 'lost_reason'));
+  t('   a blank reason is no reason', refused(r, 'lost_category'));
   r = await patch({ current_stage: 'Lost/Stalled', lost_reason: 42 });
-  t('   nor is a number', refused(r, 'lost_reason'));
+  t('   nor is a number', refused(r, 'lost_category'));
+  r = await patch({ current_stage: 'Lost/Stalled', lost_category: 'bored' });
+  t('   nor a category that is not on the list', r.status === 400 && writes(r.statements).length === 0 && history.length === rowsBefore, JSON.stringify(r.data));
+  r = await patch({ current_stage: 'Lost/Stalled', lost_category: 'other', lost_reason: '  ' });
+  t('   "Other" with no note is refused, asking for the note', refused(r, 'lost_reason'), JSON.stringify(r.data));
   r = await patch({ current_stage: 'Exported/Completed' });
   t('server refuses a move to Exported/Completed with no confirmation', refused(r, 'current_stage'), JSON.stringify(r.data));
   r = await patch({ current_stage: 'Exported/Completed', confirm_stage: true });
@@ -221,7 +227,7 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   // A whole-form save, as the folded details form sends it.
   const form = { company_name: 'Test Olive Importers (fake)', country_region: 'EU', notes: 'edited', lost_reason: '' };
   r = await patch({ ...form, current_stage: 'Lost/Stalled' });
-  t('the details form is held to it too: Lost/Stalled with the reason box empty is refused', refused(r, 'lost_reason'));
+  t('the details form is held to it too: Lost/Stalled with the reason box empty is refused', refused(r, 'lost_category'));
   r = await patch({ ...form, current_stage: 'Lost/Stalled', lost_reason: 'Went with a local packer (test)' });
   t('   and saves with a reason: one new history row', r.status === 200 && history.length === rowsBefore + 1 && history[history.length - 1].to_stage === 'Lost/Stalled', JSON.stringify(r.data));
   r = await patch({ ...form, current_stage: 'Lost/Stalled', notes: 'edited again', lost_reason: '' });
@@ -240,7 +246,7 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   };
   const base = { company_name: 'New Test Buyer (fake)', country_region: 'EU' };
   r = await create({ ...base, current_stage: 'Lost/Stalled' });
-  t('creating a buyer in Lost/Stalled without a reason is refused, nothing written', refused(r, 'lost_reason'), JSON.stringify(r.data));
+  t('creating a buyer in Lost/Stalled without a reason is refused, nothing written', refused(r, 'lost_category'), JSON.stringify(r.data));
   r = await create({ ...base, current_stage: 'Exported/Completed' });
   t('creating one in Exported/Completed without confirmation is refused', refused(r, 'current_stage'));
   r = await create({ ...base, current_stage: 'Lost/Stalled', lost_reason: 'Old contact, no longer trading (test)' });
@@ -260,7 +266,7 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
     'Csv Exported (fake),EU,Exported/Completed,\n' }) });
   const ib = JSON.parse(imp.body || '{}');
   t('CSV import: the Lead row and the Lost/Stalled row with a reason are imported', ib.ok && ib.imported === 2, imp.body);
-  t('   a Lost/Stalled row without a reason is skipped, saying why', (ib.skipped || []).some((x) => x.line === 3 && /needs a reason: add a lost_reason column/.test(x.reason)));
+  t('   a Lost/Stalled row without a reason is skipped, saying why', (ib.skipped || []).some((x) => x.line === 3 && /needs a reason: add a lost_category column/.test(x.reason)));
   t('   an Exported/Completed row is skipped, saying how to do it instead', (ib.skipped || []).some((x) => x.line === 5 && /needs confirming by a person/.test(x.reason)));
   t('   and the imported reason is saved', statements.some((x) => /^INSERT INTO buyers/.test(x.q) && x.params.includes('Stopped importing (test)')));
 
@@ -269,6 +275,52 @@ const touchesHistory = (s) => /^(INSERT INTO|UPDATE|DELETE FROM|TRUNCATE)\s+buye
   t('the website-enquiry intake never moves a buyer to Lost/Stalled or Exported/Completed',
     Object.values(intake.PLAN).every((pl) => !['Lost/Stalled', 'Exported/Completed'].includes(pl.stage)) &&
     intake.forwardMove('Shipment Prepared', 'Lead') === null && intake.forwardMove('Lost/Stalled', 'Sample Requested') === null);
+
+  // ---- reason categories, stored on each history row (owner, 2026-10-23) ----
+  {
+    const lastRow = () => history[history.length - 1];
+    const updateOf = (st) => (st.find((x) => /^UPDATE buyers SET/.test(x.q)) || { q: '', params: [] });
+    buyer.current_stage = 'Negotiation';
+    let rr = await patch({ current_stage: 'Lost/Stalled', lost_category: 'price' });
+    t('a category alone is enough (no note needed except for "Other")', rr.status === 200 && lastRow().to_stage === 'Lost/Stalled', JSON.stringify(rr.data));
+    t('   the new history row carries its own reason: price, no note', lastRow().reason_category === 'price' && lastRow().reason_note === null, JSON.stringify(lastRow()));
+    const u = updateOf(rr.statements);
+    t('   and the buyer keeps it as the current reason', /lost_category = \$/.test(u.q) && u.params.includes('price'), u.q);
+    const snapshot = JSON.stringify(history);
+    rr = await patch({ current_stage: 'Contacted' });
+    t('moving on adds a row with no reason, and leaves every earlier row exactly as it was',
+      rr.status === 200 && lastRow().to_stage === 'Contacted' && lastRow().reason_category === null && JSON.stringify(history.slice(0, -1)) === snapshot);
+    const lostRow = history.find((h, i) => i === history.length - 2);
+    t('   the earlier row still says price', lostRow.to_stage === 'Lost/Stalled' && lostRow.reason_category === 'price');
+    rr = await patch({ current_stage: 'Lost/Stalled', lost_category: 'competitor', lost_reason: 'Buying from Spain (test)' });
+    t('a second move to Lost/Stalled stores its own reason on its own row; the first is untouched',
+      lastRow().reason_category === 'competitor' && lastRow().reason_note === 'Buying from Spain (test)' && lostRow.reason_category === 'price');
+    buyer.current_stage = 'Negotiation';
+    rr = await patch({ current_stage: 'Lost/Stalled', lost_reason: 'Old page, note only (test)' });
+    t('an older page or API caller sending only a note still works, stored as "Other" with that note',
+      rr.status === 200 && lastRow().reason_category === 'other' && lastRow().reason_note === 'Old page, note only (test)' && updateOf(rr.statements).params.includes('other'));
+    t('the history is only ever inserted into: nothing in the code updates it after',
+      !/UPDATE\s+buyer_stage_history/i.test(read('netlify/functions/crm-buyers.js') + read('netlify/functions/crm-csv.js') + read('netlify/functions/_crm_lib.js')));
+    const lib = read('netlify/functions/_crm_lib.js');
+    t('the new columns are added on first use, no migration by hand',
+      /ALTER TABLE buyers ADD COLUMN IF NOT EXISTS lost_category text/.test(lib) && /ALTER TABLE buyer_stage_history ADD COLUMN IF NOT EXISTS reason_category text/.test(lib) &&
+      /ALTER TABLE buyer_stage_history ADD COLUMN IF NOT EXISTS reason_note text/.test(lib));
+    const libList = JSON.stringify(require(path.join(FN, '_crm_lib.js')).LOST_CATEGORIES);
+    const pageList = (read('assets/crm.js').match(/CRM\.LOST_CATEGORIES = (\[[\s\S]*?\]);/) || [])[1];
+    t('the page and the server use the same list, in the same order', pageList && JSON.stringify(eval(pageList)) === libList, pageList);
+    rr = await create({ ...base, current_stage: 'Lost/Stalled', lost_category: 'certification_gap' });
+    const hRow = rr.statements.find((x) => /^INSERT INTO buyer_stage_history/.test(x.q));
+    t('a buyer created into Lost/Stalled gets the reason on its first history row', rr.status === 200 && hRow && hRow.params[3] === 'certification_gap', JSON.stringify(hRow && hRow.params));
+    statements = [];
+    const imp2 = await csv({ httpMethod: 'POST', headers: { cookie }, queryStringParameters: { action: 'import' }, body: JSON.stringify({ csv:
+      'company_name,country_region,current_stage,lost_category,lost_reason\n' +
+      'Csv Price (fake),EU,Lost/Stalled,price,\n' +
+      'Csv Bad Category (fake),EU,Lost/Stalled,bored,\n' }) });
+    const ib2 = JSON.parse(imp2.body || '{}');
+    const h2 = statements.find((x) => /^INSERT INTO buyer_stage_history/.test(x.q));
+    t('CSV: a lost_category column is imported, onto the buyer and its first history row', ib2.imported === 1 && h2 && h2.params[3] === 'price', imp2.body);
+    t('   a category not on the list is skipped, naming the list', (ib2.skipped || []).some((x) => x.line === 3 && /lost_category must be one of: price, certification_gap, competitor, no_response, other/.test(x.reason)));
+  }
 
   const rowsNow = history.length;
   const unsigned = await buyers({ httpMethod: 'PATCH', headers: {}, queryStringParameters: { id: '7' }, body: JSON.stringify({ current_stage: 'Lead' }) });

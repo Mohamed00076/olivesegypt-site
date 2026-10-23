@@ -3,7 +3,7 @@
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const {
-  requireCrmSession, readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES, csvCell, stageRuleError,
+  requireCrmSession, readJsonBody, json, REGIONS: CRM_REGIONS, STAGES: CRM_STAGES, csvCell, stageRuleError, lostReasonOf, LOST_CATEGORIES,
 } = require('./_crm_lib');
 
 function connectionString() {
@@ -125,12 +125,17 @@ function validateImportRow(headerMap, rawRow) {
    * at an earlier stage and moved in the CRM, which asks.
    */
   const lost_reason = get('lost_reason').slice(0, 300);
+  const lost_category_raw = get('lost_category').toLowerCase();
   if (current_stage === 'Exported/Completed') {
     return { error: 'current_stage Exported/Completed needs confirming by a person: import this buyer at an earlier stage, then move it in the CRM' };
   }
-  if (stageRuleError(current_stage, { lost_reason })) {
-    return { error: 'current_stage Lost/Stalled needs a reason: add a lost_reason column with one for this row' };
+  if (lost_category_raw && !LOST_CATEGORIES.some((c) => c[0] === lost_category_raw)) {
+    return { error: 'lost_category must be one of: ' + LOST_CATEGORIES.map((c) => c[0]).join(', ') };
   }
+  if (stageRuleError(current_stage, { lost_reason, lost_category: lost_category_raw })) {
+    return { error: 'current_stage Lost/Stalled needs a reason: add a lost_category column (' + LOST_CATEGORIES.map((c) => c[0]).join(', ') + ') or a lost_reason column with a note for this row' };
+  }
+  const lostWhy = current_stage === 'Lost/Stalled' ? lostReasonOf({ lost_reason, lost_category: lost_category_raw }) : { category: null, note: null };
 
   const contact_email = get('contact_email');
   if (contact_email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) {
@@ -155,6 +160,7 @@ function validateImportRow(headerMap, rawRow) {
       next_action: get('next_action') || null,
       notes: get('notes') || null,
       lost_reason: lost_reason || null,
+      lost_category: lostWhy.category || null,
     },
   };
 }
@@ -185,17 +191,18 @@ async function handleImport(event, sql, actor) {
         created_by, assigned_to, company_name, country_region, contact_name, contact_title,
         contact_email, contact_phone, contact_whatsapp, lead_source, current_stage,
         packaging_format, estimated_volume, target_price, quoted_price, incoterm,
-        certifications_required, next_action, notes, lost_reason
+        certifications_required, next_action, notes, lost_reason, lost_category
       ) VALUES (
         ${actor}, ${actor}, ${row.company_name}, ${row.country_region}, ${row.contact_name}, ${row.contact_title},
         ${row.contact_email}, ${row.contact_phone}, ${row.contact_whatsapp}, ${row.lead_source}, ${row.current_stage},
         ${row.packaging_format}, ${row.estimated_volume}, ${row.target_price}, ${row.quoted_price}, ${row.incoterm},
-        ${row.certifications_required}, ${row.next_action}, ${row.notes}, ${row.lost_reason}
+        ${row.certifications_required}, ${row.next_action}, ${row.notes}, ${row.lost_reason}, ${row.lost_category}
       )
       RETURNING id
     `;
     const newId = inserted[0].id;
-    await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by) VALUES (${newId}, NULL, ${row.current_stage}, ${actor})`;
+    await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by, reason_category, reason_note)
+              VALUES (${newId}, NULL, ${row.current_stage}, ${actor}, ${row.lost_category}, ${row.lost_category ? row.lost_reason : null})`;
     results.imported += 1;
   }
 
