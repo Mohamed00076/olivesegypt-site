@@ -11307,6 +11307,94 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 290 and 291 — The record of 287 to 289; CRM Batch 3: phone bottom bar, larger text and 44 px targets, the document colours (PRs #414, #415)
+
+**Previous recorded deploy:** `e9fbdfa` (Deploy 289, PR #413)
+**Approvals:**
+- **#414:** "merge" (2026-10-21).
+- **#415:**
+  - "Batch 3 approved with these requests before I merge #415: (1) … close the folded Buyer details form without saving … (2) … More menu … (3) … no page content hides behind the bottom bar … (4) mark the bottom bar as navigation…".
+  - Then: "Merge #415 now. Before or with it, confirm or add … 1. … 'Keep editing' must be the default focus … 2. Under every date input … show the chosen date in plain text … (if you add anything, re-run the tests and tell me before merging)".
+  - Item 2 was added and reported, and the owner then wrote "merge all".
+  - **Only #415 was merged under "merge all".** #390 (dependency bump, held for its 2026-10-29 recheck) and the drafts #382, #383 and #359 were left as they are.
+- **The merges:** #414 was merged in this session on 2026-10-21; #415 on 2026-10-23 (+0300). Each was tested on the current `main` first.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 290 | #414 | `0891c34` | 2026-10-21 23:42:09 | 1 | +81 / −1 | Notes only |
+| 291 | #415 | `99974e5` | 2026-10-23 02:59:17 | 4 | +290 / −2 | CRM: Batch 3 of the owner's CRM audit |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 290** recorded Deploys 287 to 289.
+
+### What the deploys did
+
+- **Deploy 291 — CRM Batch 3 (#415).** This is the last of the three batches from the CRM visual audit.
+  - **Phone bottom bar (under 640 px):**
+    - **Tabs:** Dashboard · Enquiries · Buyers · Documents · More. More holds Letterhead, Letterhead (AR), and Log out, which is set apart in red below a rule.
+    - **For screen readers:** a navigation landmark named "Main"; the current page is marked with `aria-current="page"`; labels sit under silent icons.
+    - **More:** closes on Escape or a tap elsewhere and returns focus to More, unless the tap focused a field or link.
+    - **Top bar:** keeps only the name on a phone. Desktop is unchanged.
+    - The bar is not printed.
+  - **Colours of the new document design** on the working pages: olive #4b5a23, gold #b8923a, cream #f7f2e4. The secondary-text grey is darkened to #5f6654 (5.3:1 on cream).
+  - **Text and targets:** 15 px text, 16 px fields, and 44 px buttons, fields and menus.
+  - **Buyer page:**
+    - Buyer details shows "Tap to edit" while folded.
+    - With the form open on a phone, Save Buyer and **Cancel** stay above the bottom bar.
+    - Cancel folds the form if nothing changed. Otherwise it asks "Discard your changes?", with "Keep editing" focused by default; on Add Buyer it returns to the Buyers list.
+    - Bottom scroll padding keeps a focused field above both bars.
+  - **Dates:** under every date field (Next Action Due, an uploaded document's date, a document's Valid Until or Due date), the chosen date shows in the CRM's format, "23 Oct 2026", or "No date chosen". Screen readers get it through `aria-describedby` and an `aria-live` line.
+  - **Scope:** all of it hangs off `body.crm-ui-app`, which `CRM.renderNav` sets. The sign-in, forgot-password and reset-password pages load neither `crm-ui.css` nor `crm.js`, and are unchanged.
+  - **Checks:** `check-crm-ui.js` reached 90 checks. Its new sign-in check names the real folders (`forgot-password`, `reset-password`); a first version had wrong folder names, which Batch 1's own check already covered.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-23)
+
+- **Deployed commit:** `deployed-commit.txt` reads `99974e53b9db8c152fbf20cb7d5a590b44f2e6fc`.
+- **Live check:**
+  - after Deploy 290: 21 OK, 0 WARN, 0 FAIL, 0 PENDING;
+  - after Deploy 291: 21 OK, 0 WARN, 0 FAIL, 0 PENDING, in 22 s.
+- **Served as expected:**
+  - `/assets/crm.js` carries `CRM.tabBar` and `CRM.dateTexts`;
+  - `/assets/crm-ui.css` carries the cream page colour;
+  - `/crm/login/` does not load `crm-ui.css`.
+- **Certificates:** valid to 2026-11-22 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 291:** `git revert -m 1 99974e5`. Nothing is stored.
+- **Deploy 290** is documentation only.
+
+### Known limitations shipped with Deploys 290 and 291
+
+- **Owner's phone check of Batch 3 on the live site:** pending.
+- **Backlog, not started on the owner's instruction:**
+  - the sign-in, forgot, reset and change-password pages restyle, after #382 and #383 are merged and live;
+  - Lost/Stalled reason categories, and the reason stored on each Stage History row;
+  - a plan to finish the password-reset staging tests.
+- **Unchanged from Deploys 287 to 289:**
+  - the open Stage History label wording;
+  - counsel questions 18 to 20;
+  - #383's session-check wiring;
+  - the PREVIEW bar and step L1;
+  - the Arabic awaiting review;
+  - `@page` margin boxes;
+  - listings outside this repository;
+  - the old sign-in functions until #382;
+  - the visitor-ID questions;
+  - the owner items at Deploys 242 to 244;
+  - #359's photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11325,7 +11413,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 289 (2026-10-21).**
+**Unchanged since U4, through Deploy 291 (2026-10-23).**
 
 ## Outstanding, unresolved by this document
 
