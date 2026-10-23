@@ -32,7 +32,11 @@
  *      the trade the Arabic copy keeps on purpose (FOB, OEM, pH, kg...),
  *      the English glosses it gives in brackets ("(Co-packing)"), and
  *      addresses. Anything in an aria-hidden block (the forms' off-screen
- *      anti-spam field) is not shown to a reader and is skipped.
+ *      anti-spam field) is not shown to a reader and is skipped;
+ *   6. a number range or a date inside an Arabic sentence ("1–5 كجم",
+ *      "آخر تحديث 2026-10-02") has its own dir="ltr" span, so it is not
+ *      shown reversed (2026-10-23: eight were, on six pages; the five outside
+ *      the PDF sources are fixed).
  */
 
 const fs = require('fs');
@@ -109,6 +113,20 @@ for (const file of pages) {
     if (!KEEP.has(w.toLowerCase()) && !/^[A-Z0-9/]{2,6}$/.test(w)) stray.add(w);
   }
   if (stray.size) say(`English left in the Arabic text: ${[...stray].slice(0, 8).join(', ')}`);
+
+  // 6. A range or a date inside an Arabic sentence sits in its own
+  // left-to-right span; otherwise right-to-left text shows "1–5" as "5–1"
+  // and "2026-10-02" as "02-10-2026" (2026-10-23).
+  // The print catalogue and the company profile are the sources of their
+  // Arabic PDFs (scripts/build-pdf-documents.js reads them), so their ranges
+  // are fixed when the PDFs are rebuilt in the redesign (#359).
+  if (/catalog[\\/]print|company-profile/.test(rel)) continue;
+  const body = (html.match(/<main\b[\s\S]*?<\/main>/) || [''])[0].replace(/<(svg|script|style)\b[\s\S]*?<\/\1>/g, ' ');
+  for (const m of body.matchAll(/>([^<]+)</g)) {
+    const seg = m[1].replace(/&ndash;/g, '\u2013');
+    const run = seg.match(/\d+(?:\.\d+)?%?\s?[\u2013-]\s?\d+(?:[.-]\d+)*%?/);
+    if (run && AR.test(seg)) say(`"${run[0]}" sits in Arabic text without its own dir="ltr" span: "${seg.trim().slice(0, 50)}"`);
+  }
 }
 
 // A left-to-right run (a range like 3.7–4.2, a phone number) must not break
