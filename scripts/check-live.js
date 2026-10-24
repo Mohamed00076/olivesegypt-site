@@ -124,6 +124,45 @@ async function pool(items, n, fn) {
   return out;
 }
 
+/*
+ * What a page's HTML says about access, without a browser: [key, detail]
+ * for each problem. Kept deliberately simple -- it reads the served markup
+ * as scripts/check-*.js read the files -- so a WARN here means "look", and
+ * the browser scans in the PR history say how it renders.
+ */
+function a11yProblems(html, u) {
+  const out = [];
+  const isAr = /\/ar(\/|$)/.test(new URL(u).pathname);
+  const vp = (html.match(/<meta[^>]+name="viewport"[^>]*>/) || [''])[0];
+  if (/user-scalable\s*=\s*(no|0)/i.test(vp) || /maximum-scale\s*=\s*1(\.0)?\b/i.test(vp)) out.push(['zoom', 'blocks zoom (viewport)']);
+  const htmlTag = (html.match(/<html\b[^>]*>/i) || [''])[0];
+  if (isAr ? !(/\blang="ar"/.test(htmlTag) && /\bdir="rtl"/.test(htmlTag)) : !/\blang="en/.test(htmlTag)) out.push(['lang', `<html> says ${htmlTag.replace(/^<html\s*|>$/g, '') || '(nothing)'}`]);
+  const body = html.replace(/<(script|style|svg|template|noscript)\b[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<div\b[^>]*aria-hidden="true"[^>]*>(?:(?!<div\b)[\s\S])*?<\/div>/g, ' ');
+  // a name can also come from inside: an image's alt, or an inner element's aria-label or title
+  const text = (s) => s.replace(/<img\b[^>]*\balt="([^"]+)"[^>]*>/gi, ' $1 ').replace(/<[^>]*\b(?:aria-label|title)="([^"]+)"[^>]*>/gi, ' $1 ')
+    .replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/gi, 'x').trim();
+  const attr = (tag, a) => { const m = tag.match(new RegExp(`\\b${a}="([^"]*)"`)); return m ? m[1] : null; };
+  for (const m of body.matchAll(/<(input|select|textarea)\b[^>]*>/gi)) {
+    const tag = m[0]; const type = (attr(tag, 'type') || '').toLowerCase();
+    if (['hidden', 'submit', 'button', 'reset', 'image'].includes(type)) continue;
+    const id = attr(tag, 'id');
+    const before = body.slice(0, m.index);
+    const wrapped = before.lastIndexOf('<label') > before.lastIndexOf('</label>');
+    const named = (attr(tag, 'aria-label') || '').trim() || attr(tag, 'aria-labelledby') || (attr(tag, 'title') || '').trim() ||
+      (id && new RegExp(`<label\\b[^>]*\\bfor="${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`).test(body)) || wrapped;
+    if (!named) out.push(['field', `${m[1].toLowerCase()}${id ? '#' + id : ''}${attr(tag, 'placeholder') ? ` ("${attr(tag, 'placeholder')}" only as placeholder)` : ''}`]);
+  }
+  for (const m of body.matchAll(/<(button|a)\b([^>]*)>([\s\S]*?)<\/\1>/gi)) {
+    if (m[1].toLowerCase() === 'a' && !/\bhref=/.test(m[2])) continue;
+    if (/aria-hidden="true"/.test(m[2])) continue;
+    if (!text(m[3]) && !(attr(m[2], 'aria-label') || '').trim() && !attr(m[2], 'aria-labelledby') && !(attr(m[2], 'title') || '').trim()) out.push(['control', `<${m[1].toLowerCase()}${attr(m[2], 'id') ? '#' + attr(m[2], 'id') : ''}> with no name`]);
+  }
+  for (const m of body.matchAll(/<img\b[^>]*>/gi)) if (attr(m[0], 'alt') === null) out.push(['img', `img ${attr(m[0], 'src') || ''} has no alt`]);
+  if (/<header\b/.test(html) && !/<script[^>]+src="\/assets\/site-nav\.js"/.test(html)) out.push(['focus', 'no site-nav.js']);
+  return out;
+}
+
 async function main() {
   await checkDeployed(process.argv.includes('--wait'));
 
@@ -132,7 +171,7 @@ async function main() {
     try {
       const r = await get(u);
       const canon = (r.body.match(/<link rel="canonical" href="([^"]*)"/) || [])[1] || '';
-      return { u, status: r.status, canon: canon.replace('https://olivesegypt.com', BASE) };
+      return { u, status: r.status, canon: canon.replace('https://olivesegypt.com', BASE), a11y: r.status === 200 ? a11yProblems(r.body, u) : null };
     } catch (e) { return { u, status: 'error ' + e.message, canon: '' }; }
   });
   const notOk = pages.filter((p) => p.status !== 200);
@@ -141,6 +180,21 @@ async function main() {
   else ok('Every sitemap page answers 200', `${pages.length} pages`);
   if (badCanon.length) fail('Every page names itself as canonical', badCanon.slice(0, 8).map((p) => `${p.u} says ${p.canon || '(none)'}`).join('; '));
   else ok('Every page names itself as canonical', `${pages.length} pages`);
+
+  // Accessibility, from the pages just fetched (no extra requests). Zoom
+  // blocked or the wrong language/direction fails; a field, button, link or
+  // image a screen reader cannot name warns (owner, 2026-10-23).
+  const served = pages.filter((p) => p.a11y);
+  const A11Y = [
+    ['zoom', 'Pages let visitors zoom', fail], ['lang', 'Pages declare their language and direction', fail],
+    ['field', 'Every form field has a name a screen reader can say', warn], ['control', 'Every button and link has a name', warn],
+    ['img', 'Every image has alt text (empty for decoration)', warn], ['focus', 'Pages load the site script that draws the focus ring', warn],
+  ];
+  for (const [key, title, bad] of A11Y) {
+    const hits = served.flatMap((p) => p.a11y.filter((x) => x[0] === key).map((x) => `${new URL(p.u).pathname} ${x[1]}`));
+    if (hits.length) bad(title, `${hits.length}: ` + hits.slice(0, 6).join('; ') + (hits.length > 6 ? '; …' : ''));
+    else ok(title, `${served.length} pages`);
+  }
 
   // The slash-less form of each page redirects once, permanently, to it (#337).
   const slashless = urls.filter((u) => u.endsWith('/') && new URL(u).pathname !== '/' && new URL(u).pathname !== '/ar/');
