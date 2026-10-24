@@ -39,10 +39,8 @@ const UNDESCRIBED_FIGURES = {
   'netlify/functions/_guides/en/pricing-packaging-guide.pdf': 1,
   'netlify/functions/_guides/ar/pricing-packaging-guide.pdf': 1,
 };
-// Not tagged yet: the single-product spec sheets, printed from the print
-// catalogue without tags until they are reprinted (#359, or tagged in the
-// current design first).
-const UNTAGGED = new Set(JOBS.filter((j) => /^spec-/.test(j.slug) && j.slug !== 'spec-sheets-all').map((j) => j.out));
+// Not tagged yet: none (the single spec sheets were the last, 2026-10-24).
+const UNTAGGED = new Set([]);
 
 function objects(buf) {
   const text = buf.toString('latin1');
