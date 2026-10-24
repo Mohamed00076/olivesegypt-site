@@ -41,7 +41,9 @@ const DOCUMENT_CSS = '/scripts/pdf-design/document.css';
  * The cover's photograph (owner, 2026-10-14: "do 3"): the owner's whole
  * green olives, the same file as the Green Olives spec sheet's, square, in
  * a rounded frame at the band's end. 800 px at 42 mm is 484 ppi. Its alt
- * text is the photograph's existing caption.
+ * text is the photograph's existing caption. Its frame is a <div>: a
+ * <figure> around it was tagged as a second, undescribed figure in the PDF
+ * (owner, 2026-10-23, after the PDF accessibility audit).
  */
 const COVER_PHOTO = '/scripts/pdf-design/photos/green-olives-whole.jpg';
 const COVER_ALT = { en: 'Whole green olives', ar: 'زيتون أخضر كامل' };
@@ -312,7 +314,7 @@ function documentHtml(locale, d) {
   const src = read(d.source(locale));
   const main = one(/<main[^>]*>([\s\S]*?)<\/main>/, src, `${d.source(locale)} <main>`);
   const title = inline(one(/<h1[^>]*>([\s\S]*?)<\/h1>/, main, `${d.slug} title`));
-  const dateLine = one(/<\/h1>\s*<p class="text-muted-foreground mb-8">([^<]*)<\/p>/, main, `${d.slug} date line`);
+  const dateLine = one(/<\/h1>\s*<p class="text-muted-foreground mb-8">([\s\S]*?)<\/p>/, main, `${d.slug} date line`);
   const sections = [...main.matchAll(/<section class="(?:spec-card|profile-section)">([\s\S]*?)<\/section>/g)].map((m) => m[1]);
   if (!sections.length) fail(`${d.source(locale)} has no sections`);
   const tail = main.slice(main.lastIndexOf('</section>'));
@@ -332,7 +334,7 @@ function documentHtml(locale, d) {
 ${masthead(locale)}
 <div class="cover-row">
 <div class="doc-head"><h1>${title}</h1><p class="doc-date">${date}</p></div>
-<figure class="cover-photo"><img src="${COVER_PHOTO}" alt="${COVER_ALT[locale]}" width="800" height="800" /></figure>
+<div class="cover-photo"><img src="${COVER_PHOTO}" alt="${COVER_ALT[locale]}" width="800" height="800" /></div>
 </div>
 </div>`;
 
