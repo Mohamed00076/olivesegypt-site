@@ -293,3 +293,115 @@
   window.addEventListener('resize', queue);
   update();
 })();
+
+/*
+ * Keyboard focus never ends up hidden (owner, 2026-10-23).
+ *
+ * The cookie banner, the WhatsApp bubble and the floating "Request a Quote"
+ * button are fixed to the bottom of the screen. When Tab moved to a link or
+ * a field underneath one of them the browser scrolled it into view -- behind
+ * the banner -- and on a phone a keyboard user could not see where they
+ * were. Now, whenever focus lands on something one of them covers, the page
+ * scrolls just enough to lift it clear, never past the top bar; and
+ * something under the sticky top bar is brought down below it. Mouse and
+ * touch use are untouched: this answers only to focus moving.
+ */
+(function () {
+  // (the insights tab counts only on phones and tablets, where it is an icon near the bottom)
+  var COVERS = ['#tc-consent-banner', '.fixed.bottom-6.right-6', '#tc-quote-fab', '#tc-consent-reopen', '[data-testid="floating-blog-link"]'];
+  function covers() {
+    var out = [];
+    COVERS.forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (!el) return;
+      var cs = window.getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || cs.position !== 'fixed') return;
+      out.push(el);
+    });
+    return out;
+  }
+  function topLimit() {
+    var h = document.querySelector('header');
+    if (!h) return 0;
+    var pos = window.getComputedStyle(h).position;
+    return pos === 'sticky' || pos === 'fixed' ? Math.max(0, h.getBoundingClientRect().bottom) : 0;
+  }
+  function keepClear(el) {
+    if (!el || !el.getBoundingClientRect || el === document.body) return;
+    var list = covers();
+    for (var i = 0; i < list.length; i++) if (list[i].contains(el)) return;
+    var r = el.getBoundingClientRect();
+    if (!r.width && !r.height) return;
+    var bottom = window.innerHeight;
+    list.forEach(function (c) {
+      var b = c.getBoundingClientRect();
+      if (!b.width || b.top < window.innerHeight / 2) return;
+      if (b.left < r.right && b.right > r.left) bottom = Math.min(bottom, b.top - 8);
+    });
+    var top = topLimit();
+    if (r.top < top) {
+      // under the sticky top bar (Shift+Tab, or a tall box): bring its top just below the bar
+      window.scrollBy(0, r.top - top - 8);
+      return;
+    }
+    if (r.bottom <= bottom) return;
+    var by = Math.min(r.bottom - bottom, r.top - top - 8);
+    if (by > 0) window.scrollBy(0, by);
+  }
+  document.addEventListener('focusin', function (e) {
+    var el = e.target;
+    window.requestAnimationFrame(function () { keepClear(el); });
+  });
+})();
+
+/*
+ * The floating buttons in one labelled region (owner, 2026-10-23).
+ *
+ * The WhatsApp bubble, the "Request a Quote" button and the insights tab sat
+ * outside every page region, so a screen reader listing the page's regions
+ * never offered them. They now share one, "Quick links", at the end of the
+ * page. They are fixed to the screen, so where they sit in the page changes
+ * nothing on screen; the scripts that move them find them by id or class,
+ * as before.
+ */
+(function () {
+  var items = [document.querySelector('.fixed.bottom-6.right-6'), document.getElementById('tc-quote-fab'),
+    document.querySelector('[data-testid="floating-blog-link"]')].filter(Boolean);
+  if (!items.length || document.getElementById('tc-quick-links')) return;
+  var ar = (document.documentElement.getAttribute('lang') || '').slice(0, 2) === 'ar';
+  var region = document.createElement('div');
+  region.id = 'tc-quick-links';
+  region.setAttribute('role', 'region');
+  region.setAttribute('aria-label', ar ? 'روابط سريعة' : 'Quick links');
+  items.forEach(function (el) { region.appendChild(el); });
+  document.body.appendChild(region);
+})();
+
+/*
+ * Keyboard focus, every public page (owner, 2026-10-23).
+ *
+ * The site had no focus style of its own, so each browser drew its default:
+ * black on a desktop, amber on Android (2.2:1 on the cream page), and
+ * nothing visible on the WhatsApp bubble. One ring now, in two tones: a dark
+ * olive outline with a thin white band inside it, so whichever the
+ * background -- cream page, olive band, dark footer, the cookie banner --
+ * one of the two stands out (dark olive on cream 13:1, white on the footer
+ * 12:1). Dark mode swaps the tones. Components that draw their own ring
+ * (focus-visible:ring-*) keep it. Added here rather than to the site
+ * stylesheet, which the gated PDFs are built from; it is screen-only.
+ */
+(function () {
+  if (document.getElementById('tc-focus-style')) return;
+  var style = document.createElement('style');
+  style.id = 'tc-focus-style';
+  style.textContent =
+    '@media screen{' +
+    ':focus-visible{outline:3px solid #26301a;outline-offset:2px;box-shadow:0 0 0 2px #ffffff;}' +
+    'html.dark :focus-visible{outline-color:#f7f2e4;box-shadow:0 0 0 2px #1c2416;}' +
+    '#tc-quote-fab:focus-visible{outline:3px solid #26301a;outline-offset:2px;box-shadow:0 0 0 2px #ffffff;}' +
+    'html.dark #tc-quote-fab:focus-visible{outline-color:#f7f2e4;box-shadow:0 0 0 2px #1c2416;}' +
+    // the privacy page's wide table scrolls sideways on a phone; its box takes focus
+    '.tc-scroll-region:focus-visible{outline-offset:-3px;box-shadow:none;}' +
+    '}';
+  document.head.appendChild(style);
+})();

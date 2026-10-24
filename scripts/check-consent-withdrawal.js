@@ -97,6 +97,8 @@ function makePage(storage, pathname, hostname) {
     }
     get innerHTML() { return ''; }
     appendChild(c) { c.parent = this; this.children.push(c); return c; }
+    insertBefore(c, ref) { c.parent = this; const i = this.children.indexOf(ref); i < 0 ? this.children.push(c) : this.children.splice(i, 0, c); return c; }
+    get firstChild() { return this.children[0] || null; }
     remove() { if (this.parent) this.parent.children = this.parent.children.filter((x) => x !== this); this.parent = null; }
     addEventListener(t, f) { (this.on[t] = this.on[t] || []).push(f); }
     removeEventListener() {}
