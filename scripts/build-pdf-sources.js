@@ -53,21 +53,34 @@ const DIR_OF = Object.fromEntries(PRODUCTS.map((p) => [p.key, p.dir]));
 // absent) is drawn as a neutral panel for working drafts, never captioned
 // "pending", and the generator refuses to print a sheet that has one.
 const PHOTO_DIR = 'scripts/pdf-design/photos';
+// Each photo's description (alt) says only what is visible: English approved
+// by the owner 2026-10-24; the Arabic awaits the owner's review (vowel-mark
+// convention to follow). A photo still to be supplied gets one with its file.
 const PHOTOS = {
   green: [
-    { file: 'green-olives-whole.jpg', caption: { en: 'Whole green olives', ar: 'زيتون أخضر كامل' } },
-    { file: 'green-olives-pitted.jpg', caption: { en: 'Pitted green olives', ar: 'زيتون أخضر منزوع النواة' } },
+    { file: 'green-olives-whole.jpg', caption: { en: 'Whole green olives', ar: 'زيتون أخضر كامل' }, alt: {
+      en: 'Close-up of whole yellow-green olives, piled together.',
+      ar: 'لقطة قريبة لزيتون أخضر مصفرّ كامل متراكم.' } },
+    { file: 'green-olives-pitted.jpg', caption: { en: 'Pitted green olives', ar: 'زيتون أخضر منزوع النواة' }, alt: {
+      en: 'Close-up of pitted green olives, some showing the hole where the pit was.',
+      ar: 'لقطة قريبة لزيتون أخضر منزوع النواة، تظهر في بعضه فتحة النواة.' } },
   ],
   stuffed: [{ file: 'stuffed-green-olives.jpg' }],
   black_natural: [{ file: 'natural-black-olives.jpg' }],
   // Both the owner's oxidized photographs show pitted olives; the glossier,
   // clearer one is used (owner, 2026-10-13: "do what you think is recommended").
-  oxidized_black: [{ file: 'oxidized-black-olives.jpg' }],
+  oxidized_black: [{ file: 'oxidized-black-olives.jpg', alt: {
+    en: 'Close-up of glossy pitted black olives spread on a light surface.',
+    ar: 'لقطة قريبة لزيتون أسود لامع منزوع النواة، موزّع على سطح فاتح.' } }],
   // Captions are the catalogue's own format names (owner, 2026-10-13: both
   // photos for jalapeño).
   jalapeno: [
-    { file: 'jalapeno-green-rings.jpg', caption: { en: 'Sliced Green Rings', ar: 'حلقات خضراء مقطعة' } },
-    { file: 'jalapeno-red-rings.jpg', caption: { en: 'Sliced Red Rings', ar: 'حلقات حمراء مقطعة' } },
+    { file: 'jalapeno-green-rings.jpg', caption: { en: 'Sliced Green Rings', ar: 'حلقات خضراء مقطعة' }, alt: {
+      en: 'Close-up of sliced green jalapeño rings with their seeds.',
+      ar: 'لقطة قريبة لحلقات هالبينو خضراء مقطّعة مع بذورها.' } },
+    { file: 'jalapeno-red-rings.jpg', caption: { en: 'Sliced Red Rings', ar: 'حلقات حمراء مقطعة' }, alt: {
+      en: 'Close-up of sliced red jalapeño rings with their seeds, in liquid.',
+      ar: 'لقطة قريبة لحلقات هالبينو حمراء مقطّعة مع بذورها، في سائل.' } },
   ],
   artichoke: [{ file: 'marinated-artichoke-hearts.jpg' }],
   pepperoncini: [{ file: 'pepperoncini-peppers.jpg' }],
@@ -88,7 +101,8 @@ function photosHtml(locale, key) {
   const list = PHOTOS[key];
   const cell = (ph) => {
     const have = fs.existsSync(path.join(ROOT, PHOTO_DIR, ph.file));
-    const pic = have ? `<img src="/${PHOTO_DIR}/${ph.file}" alt="${ph.caption ? ph.caption[locale] : ''}" />`
+    const alt = ph.alt ? ph.alt[locale] : ph.caption ? ph.caption[locale] : '';
+    const pic = have ? `<img src="/${PHOTO_DIR}/${ph.file}" alt="${alt}" />`
       : '<div class="photo-panel" aria-hidden="true"></div>';
     return `<div class="photo">${pic}${ph.caption ? `<div class="photo-caption" aria-hidden="true">${ph.caption[locale]}</div>` : ''}</div>`;
   };
