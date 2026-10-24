@@ -1,0 +1,37 @@
+# The repository's own checks (npm test), on GitHub's servers. Runs on every
+# push to any branch and on every pull request, so a failing check shows as a
+# red cross on the commit and the PR whoever pushed it (owner, 2026-10-24:
+# "every push stops on a failing test"). GitHub cannot refuse a push; the
+# owner's branch protection on main can require this check before a merge,
+# and merging is deploying. It needs no secrets.
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # check-sitemap-lastmod.js dates each page from its git history.
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: npm test
+        run: npm test
