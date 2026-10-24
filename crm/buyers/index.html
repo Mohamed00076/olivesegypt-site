@@ -45,7 +45,7 @@
         <p class="crm-muted">
           First row must be a header with column names (e.g. <code>company_name,country_region,contact_name,contact_email,current_stage,...</code>).
           Rows that fail validation are skipped and listed below with the reason — nothing partial is written for a skipped row.
-          A Lost/Stalled row needs its reason in a <code>lost_reason</code> column. Exported/Completed rows are skipped: import them at an earlier stage and move them in the CRM, which asks you to confirm.
+          A Lost/Stalled row needs its reason: a <code>lost_category</code> column (<code>price</code>, <code>certification_gap</code>, <code>competitor</code>, <code>no_response</code> or <code>other</code>), with a note in a <code>lost_reason</code> column (needed for <code>other</code>; a note on its own counts as <code>other</code>). Exported/Completed rows are skipped: import them at an earlier stage and move them in the CRM, which asks you to confirm.
         </p>
         <div class="crm-field">
           <label for="import-file">CSV file</label>

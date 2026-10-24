@@ -3,7 +3,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://olivesegypt.com/</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/" />
@@ -12,7 +12,7 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/ar/</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/" />
@@ -453,7 +453,7 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/resources/private-label/</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/private-label/" />
@@ -462,7 +462,7 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/ar/resources/private-label/</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/resources/private-label/" />
@@ -507,7 +507,7 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/downloads/</loc>
-    <lastmod>2026-10-13</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/downloads/" />
@@ -516,7 +516,7 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/ar/downloads/</loc>
-    <lastmod>2026-10-13</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/downloads/" />
