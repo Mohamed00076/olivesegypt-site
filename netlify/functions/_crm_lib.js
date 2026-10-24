@@ -425,6 +425,17 @@ async function ensureBuyerTables(sql) {
       changed_by   text
     )
   `;
+  /*
+   * Why a buyer went to Lost/Stalled (owner, 2026-10-23): a category, and a
+   * note. The buyer keeps the latest (lost_category beside lost_reason); each
+   * move to Lost/Stalled also stores its own on the Stage History row it
+   * adds, so an earlier reason is never overwritten. History stays
+   * append-only: these are filled when the row is inserted, never after.
+   * Older rows have none.
+   */
+  await sql`ALTER TABLE buyers ADD COLUMN IF NOT EXISTS lost_category text`;
+  await sql`ALTER TABLE buyer_stage_history ADD COLUMN IF NOT EXISTS reason_category text`;
+  await sql`ALTER TABLE buyer_stage_history ADD COLUMN IF NOT EXISTS reason_note text`;
   await sql`
     CREATE TABLE IF NOT EXISTS crm_audit_log (
       id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -534,9 +545,11 @@ async function deleteSubmission(event, sql, kind) {
  * 2026-10-21). The browser asks first (CRM.stageMoveCheck in assets/crm.js);
  * this refuses a request that skipped the asking.
  *
- *   Lost/Stalled        needs a reason: lost_reason, not blank, sent with
- *                       the move itself -- a reason stored from an earlier
- *                       time does not count for a new move.
+ *   Lost/Stalled        needs a reason sent with the move itself -- one
+ *                       stored from an earlier time does not count: a
+ *                       lost_category from LOST_CATEGORIES, and for "other"
+ *                       a lost_reason (the note) that is not blank. A
+ *                       lost_reason alone counts as "other" (lostReasonOf).
  *   Exported/Completed  needs explicit confirmation: confirm_stage set to
  *                       exactly 'Exported/Completed'.
  *
@@ -544,14 +557,46 @@ async function deleteSubmission(event, sql, kind) {
  * into one of those stages. Returns null when allowed, else
  * { field, reason } in the words the page shows beside the field.
  */
+/*
+ * The reasons a buyer is lost or stalled (owner, 2026-10-23). The value is
+ * stored; the label is what staff see. Same list, same order, in
+ * assets/crm.js (CRM.LOST_CATEGORIES); scripts/check-crm-stage-moves.js
+ * fails if they drift.
+ */
+const LOST_CATEGORIES = [
+  ['price', 'Price'],
+  ['certification_gap', 'Certification gap'],
+  ['competitor', 'Went to a competitor'],
+  ['no_response', 'No response'],
+  ['other', 'Other'],
+];
+const LOST_CATEGORY_SET = new Set(LOST_CATEGORIES.map((c) => c[0]));
+
+/*
+ * The category and note a request gives for Lost/Stalled, made consistent:
+ * a request with a reason but no category (an older page, a CSV file with
+ * only a lost_reason column, an API caller) counts as "other" with that
+ * note, so nothing that worked before is refused now.
+ */
+function lostReasonOf(body) {
+  const b = body || {};
+  const note = typeof b.lost_reason === 'string' ? b.lost_reason.trim() : '';
+  let category = typeof b.lost_category === 'string' ? b.lost_category.trim() : '';
+  if (!category && note) category = 'other';
+  return { category, note };
+}
+
 const STAGE_RULE_REASONS = {
-  lost_reason: 'Moving a buyer to Lost/Stalled needs a reason. Say why, then save again.',
+  lost_category: 'Moving a buyer to Lost/Stalled needs a reason. Choose one, then save again.',
+  lost_reason: 'Moving a buyer to Lost/Stalled with the reason "Other" needs a note saying what it was.',
   current_stage: 'Moving a buyer to Exported/Completed needs confirming. Use the CRM\u2019s Move to, which asks first, or confirm and save again.',
 };
 function stageRuleError(toStage, body) {
   const b = body || {};
-  if (toStage === 'Lost/Stalled' && !(typeof b.lost_reason === 'string' && b.lost_reason.trim())) {
-    return { field: 'lost_reason', reason: STAGE_RULE_REASONS.lost_reason };
+  if (toStage === 'Lost/Stalled') {
+    const { category, note } = lostReasonOf(b);
+    if (!LOST_CATEGORY_SET.has(category)) return { field: 'lost_category', reason: STAGE_RULE_REASONS.lost_category };
+    if (category === 'other' && !note) return { field: 'lost_reason', reason: STAGE_RULE_REASONS.lost_reason };
   }
   if (toStage === 'Exported/Completed' && b.confirm_stage !== 'Exported/Completed') {
     return { field: 'current_stage', reason: STAGE_RULE_REASONS.current_stage };
@@ -561,6 +606,8 @@ function stageRuleError(toStage, body) {
 
 module.exports = {
   stageRuleError,
+  lostReasonOf,
+  LOST_CATEGORIES,
   CRM_COOKIE_NAME,
   CRM_SESSION_TTL_SECONDS,
   crmSessionKey,
