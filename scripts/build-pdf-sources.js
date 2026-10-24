@@ -77,14 +77,20 @@ const PHOTOS = {
 const ready = (key) => PHOTOS[key].every((ph) => fs.existsSync(path.join(ROOT, PHOTO_DIR, ph.file)));
 const READY_SHEETS = SPEC_SHEETS.filter(ready);
 
-/** The photo block: one or two squares, captioned when the sheet gives captions. */
+/**
+ * The photo block: one or two squares, captioned when the sheet gives captions.
+ * Each frame is a <div>, not a <figure>: Chromium tags a <figure> as a second,
+ * undescribed Figure around the photo's own (owner, 2026-10-24, after the PDF
+ * accessibility audit). The caption repeats the photo's description, so it is
+ * hidden from screen readers, which read the description once.
+ */
 function photosHtml(locale, key) {
   const list = PHOTOS[key];
   const cell = (ph) => {
     const have = fs.existsSync(path.join(ROOT, PHOTO_DIR, ph.file));
     const pic = have ? `<img src="/${PHOTO_DIR}/${ph.file}" alt="${ph.caption ? ph.caption[locale] : ''}" />`
       : '<div class="photo-panel" aria-hidden="true"></div>';
-    return `<figure class="photo">${pic}${ph.caption ? `<figcaption>${ph.caption[locale]}</figcaption>` : ''}</figure>`;
+    return `<div class="photo">${pic}${ph.caption ? `<div class="photo-caption" aria-hidden="true">${ph.caption[locale]}</div>` : ''}</div>`;
   };
   return `<div class="hero-photos${list.length > 1 ? ' pair' : ''}">${list.map(cell).join('')}</div>`;
 }
@@ -383,7 +389,8 @@ function catalogueHtml(locale) {
     const ph = PHOTOS[key][0];
     const have = fs.existsSync(path.join(ROOT, PHOTO_DIR, ph.file));
     const pic = have ? `<img src="/${PHOTO_DIR}/${ph.file}" alt="" />` : '<div class="photo-panel" aria-hidden="true"></div>';
-    return `<figure class="cat-tile">${pic}<figcaption>${p.name}</figcaption></figure>`;
+    // A <div>, like the sheets' photos: the image is decoration, the name is read.
+    return `<div class="cat-tile">${pic}<div class="tile-caption">${p.name}</div></div>`;
   }).join('');
   const cover = `<section class="pdf-page cat-cover">
 <div class="sheet-band">
