@@ -11395,6 +11395,99 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 292 to 296 — The record of 290 and 291; Arabic number order; PDF accessibility: catalogues tagged, Arabic ranges and dates, one cover figure (PRs #416, #424, #427, #428, #430)
+
+**Previous recorded deploy:** `99974e5` (Deploy 291, PR #415)
+**Approvals:**
+- **#416:** in the owner's merge order of 2026-10-23 ("#416, Neon backup branch, #417, then #419 and #418").
+- **#424:** in the owner's merge order "#424, #427, #428, then #430" (2026-10-24).
+- **#427, #428, #430:** "Approved: #427, #428, #430, and #429 (after I check the Arabic myself)", then "Approved: merge order #424, #427, #428, #430; #429 into #426's branch" (2026-10-24).
+- **The merges:** #416 was merged by the owner on 2026-10-23. #424, #427, #428 and #430 were merged in this session on 2026-10-24 (+0300), in that order, each after the one before it was live and its live check passed.
+- **Not a deploy:** #429 (the accessibility statement's PDF line) was merged into #426's branch, `claude/accessibility-statement`. It goes live only with #426.
+- **GitHub mergeability:** after #427, GitHub reported #428 as conflicting, though `git merge` was clean. Merging `main` into its branch (`fed8ee2`, tests passing) cleared it. #430 got the same base merge (`a38deca`) before its merge.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 292 | #416 | `4040fe3` | 2026-10-23 12:03:46 | 1 | +89 / −1 | Notes only |
+| 293 | #424 | `3effc30` | 2026-10-24 03:21:50 | 6 | +24 / −6 | Arabic pages: number ranges in order |
+| 294 | #427 | `05bca24` | 2026-10-24 03:23:28 | 8 | +22 / −14 | PDFs: catalogues tagged |
+| 295 | #428 | `76f7f5d` | 2026-10-24 03:26:06 | 16 | +48 / −40 | Arabic PDFs and pages: ranges and dates in order |
+| 296 | #430 | `9dc0eb8` | 2026-10-24 03:32:49 | 34 | +52 / −50 | PDFs: one described cover figure |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 292** recorded Deploys 290 and 291.
+
+### What the deploys did
+
+- **Deploy 293 — Arabic number ranges (#424).**
+  - **Pages:** five ranges on four Arabic pages now sit in their own `dir="ltr"` span, so they no longer show reversed: «5–7 أيام», «5–8%», «0.2–0.5%», «(2014–2023)» and «1–5 كجم».
+  - **Check:** `check-rtl.js` rule 6 was added for these runs.
+- **Deploy 294 — Catalogue PDFs tagged (#427).**
+  - **Files:** the product catalogue, all spec sheets in one file and the export catalogue, English and Arabic (6 PDFs).
+  - **Now carry:** tags, the document language and bookmarks: 8, 36 and 14 per language.
+  - **Unchanged:** the text layer, page counts and page sizes.
+  - **Settings:** `CATALOGUE_TAGS` in `scripts/guide-pdfs.js`.
+- **Deploy 295 — Arabic ranges and dates in the right order (#428).**
+  - **Sources fixed:** every reversed run found by scanning what is displayed, not the source:
+    - each line of all 18 Arabic PDFs, rebuilt in visual order and compared with its English twin;
+    - all 48 Arabic pages, rendered.
+  - **In `ar/catalog/print/`:** the date «آخر تحديث 2026-10-11», in the page and in its single-sheet script, and «الأعيرة 140-360», twice.
+  - **In `ar/company-profile/`:** the date, «3–4 أسابيع» and «تشكيلة 1–5 كجم».
+  - **In `scripts/export-catalog-source-ar.html`:** «4–6» and «3–4».
+  - **Reprinted:** 10 Arabic PDFs (the product catalogue, all-spec-sheets, the 7 single spec sheets and the export catalogue). The only text-layer change is the order of those runs.
+  - **Builder:** `build-pdf-documents.js` accepts the span in the profile's date line. Its PDF source is unchanged, so the company-profile PDF was not reprinted.
+  - **Check:** rule 6 no longer exempts the PDF sources, and it now reads the Arabic export-catalogue source.
+- **Deploy 296 — One described cover figure (#430).**
+  - **What was wrong:** the cover photo of the 7 guides and the company profile (16 PDFs) was tagged twice: an undescribed Figure from its `<figure>` frame around the photo's own Figure.
+  - **Fix:** the frame is now a `<div>`.
+  - **Unchanged:** text, pages and every pixel at 100 dpi.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-24)
+
+- **Deployed commit:** `deployed-commit.txt` reads `9dc0eb89700d1cf83b14dabb7ff78b640ddb9a19`.
+- **Live check:** after each of Deploys 293 to 296: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **PDFs served:**
+  - every public catalogue, spec-sheet and company-profile PDF fetched from the live site is byte for byte the file in `main`;
+  - the 4 catalogue files are tagged, with language and bookmarks;
+  - the 2 company-profile PDFs have one cover Figure, with its description.
+- **Arabic order on the live site:**
+  - the reversed-run scan of the 10 public Arabic PDFs, as served, found none;
+  - the rendered scan of all 49 Arabic pages (48 plus the all-products print view) found none: 648 live responses, fetched with TLS verified, none failed.
+- **Gated PDFs** (guides, export catalogue): checked from the repo files the functions serve.
+- **File names and URLs:** unchanged.
+- **Certificates:** valid to 2026-11-23 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged. (Row C-184 is updated on #426's branch by #429, which is not live.)
+
+### Rollback
+
+- **Deploy 296:** `git revert -m 1 9dc0eb8`.
+- **Deploy 295:** `git revert -m 1 76f7f5d`. If 296 is also being reverted, revert it first: both update `scripts/guide-pdfs.json`.
+- **Deploy 294:** `git revert -m 1 05bca24`. #428 carries #427's reprinted Arabic catalogue files, so revert 295 first.
+- **Deploy 293:** `git revert -m 1 3effc30`. #428 extends its rule 6, so revert 295 first.
+- **Deploy 292** is documentation only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 292 to 296
+
+- **Owner's phone checks of Deploys 293 to 296:** pending.
+- **PDFs:**
+  - the 14 single spec sheets stay untagged until #359 reprints them in the new design;
+  - the caliber-scale drawing in the packaging overview and pricing & packaging guide (4 PDFs) is one Figure without a description;
+  - photo descriptions for #359 are awaiting the owner's approval, including the missing one for the oxidized black olive photo.
+- **#359** (draft): on 2026-10-24 its photos became one described Figure each. It still needs a rebase and reprint after #427 and #428, which I'll do when it merges.
+- **#426** (draft, merge last): now carries #429.
+- **Unchanged from Deploys 290 and 291:** the owner's phone check of Batch 3; the backlog items; and the items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11413,7 +11506,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 291 (2026-10-23).**
+**Unchanged since U4, through Deploy 296 (2026-10-24).**
 
 ## Outstanding, unresolved by this document
 
