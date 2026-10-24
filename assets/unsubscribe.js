@@ -51,6 +51,18 @@
       status.style.color = kind === 'error' ? '#b91c1c' : '#15803d';
     }
 
+
+    // Keyboard focus after sending (owner, 2026-10-23). The Send button is
+    // switched off while the request is out, and a switched-off button drops
+    // the focus to the top of the page. When it comes back, focus returns to
+    // where the person was -- unless they have already moved on.
+    function returnFocus(el) {
+      var a = document.activeElement;
+      if (!el || (a && a !== document.body)) return;
+      if (el.tagName === 'P' || el.tagName === 'DIV') el.setAttribute('tabindex', '-1');
+      try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var email = (input.value || '').trim();
@@ -67,6 +79,7 @@
         return;
       }
 
+      var hadFocus = form.contains(document.activeElement);
       button.disabled = true;
       show('ok', T.working);
 
@@ -84,15 +97,18 @@
           // there looking un-submitted.
           form.querySelectorAll('input, button').forEach(function (el) { el.disabled = true; });
           show('ok', T.done);
+          if (hadFocus) returnFocus(status);
           return;
         }
         button.disabled = false;
         if (r.status === 429) show('error', T.rateLimited);
         else if (r.status === 400) show('error', T.invalid);
         else show('error', T.generic);
+        if (hadFocus) returnFocus(button);
       }).catch(function () {
         button.disabled = false;
         show('error', T.network);
+        if (hadFocus) returnFocus(button);
       });
     });
   }
