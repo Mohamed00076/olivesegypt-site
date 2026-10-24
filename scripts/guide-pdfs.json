@@ -190,8 +190,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "b6e413fd4059dac869bf7d5c90c9b6802d4aa73a6ba915e40a691fff7c5b8d95",
-    "pdf": "16a0b2a5342ff55208186acd305798f0c3c58142c22310e06a44324d3ba1c4c8"
+    "render": "67c23fb8cbc6ef74863732ace8304ee2f7adfe98a8167bc40867eba7eda78e98",
+    "pdf": "6f444aebdb2626c287f12161813738ff316afaecbd774cf059974c3f8df91951"
   },
   "ar/downloads/spec-sheets/all-spec-sheets-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -291,8 +291,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "b6e413fd4059dac869bf7d5c90c9b6802d4aa73a6ba915e40a691fff7c5b8d95",
-    "pdf": "92f8ba3fe68c38cd5f0e8ec1a40537119113e50ce2d966585798b4d6c4206417"
+    "render": "67c23fb8cbc6ef74863732ace8304ee2f7adfe98a8167bc40867eba7eda78e98",
+    "pdf": "20bf44204dcdfda62a2a5bf71c5f3e4f16c6a8d2867f1073390deb0412efebef"
   },
   "ar/downloads/spec-sheets/green-olives-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -1191,8 +1191,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "041121c87a54dbb09c6e86fca51ab2c36478cc14a864be3ee93910a916b815e0",
-    "pdf": "ce5000be9fb0a151525d3e3c9fce0bb31aec42ab00eefcdb0067fdd72bff1979"
+    "render": "b47e3f58d36977f9229f89201eade161861a077675dfbb2397822e098572bc48",
+    "pdf": "ffa0d0212a6af600af9c05321106dc835fdd4cc53e0e21a579889662a84ecf86"
   },
   "downloads/spec-sheets/all-spec-sheets-en.pdf": {
     "source": "catalog/print/index.html",
@@ -1291,8 +1291,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "041121c87a54dbb09c6e86fca51ab2c36478cc14a864be3ee93910a916b815e0",
-    "pdf": "fdd4af28c31897d0e07b3bfe3aed5fc12669e81be3a60798a9a90a6ee629fbdc"
+    "render": "b47e3f58d36977f9229f89201eade161861a077675dfbb2397822e098572bc48",
+    "pdf": "7085db59ad314c28b4707fe502ce5ad31dfc002858503c4e9ee95405d5ff88bb"
   },
   "downloads/spec-sheets/green-olives-en.pdf": {
     "source": "catalog/print/index.html",
@@ -2277,8 +2277,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "1764f512dcf800a2214ac82eb6bcd64041a8a2f387f7aaa433443e946c23d942",
-    "pdf": "a75bcc7e523d4ca15acf1ccf58971124a74d2e4e3036e5d4ad71e3c5743342d2"
+    "render": "39b65610215312120904daa2de7a4ec2ab986d101ff7013387c7d23b1e138a05",
+    "pdf": "50c2986934964b7178b7fd2c3f414b63606e148b5a8a8d0ec8c6a1505a0582a8"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-ar.html",
@@ -3028,8 +3028,8 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyygA-700.woff2": "244bfde5ad8e0a349f351c419373906f81d6a6dc1ebf3cff158e2393bb948ad9",
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
-    "render": "228f944bfc45a3d79c25bf4d25de6d1870663aae934df0844b378567facbae87",
-    "pdf": "5d03a713854bacc3c3c50ee5050f4b8933312fa98dd7ec79751c089ecb9223c7"
+    "render": "f04e3f916acbc42affa249ae48f49302ccf236c7e401f5413e95bf2d403fcd7a",
+    "pdf": "f16689f364ab7b7dee7e4eca07fff414d3a5fb727f416554170553f0aca182ec"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-en.html",
