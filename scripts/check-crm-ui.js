@@ -256,7 +256,7 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
       /id="details-cancel">Cancel</.test(buyer) && /confirm: 'Discard changes'/.test(buyer) && /fillForm\(current\); snapshotForm\(\);/.test(buyer) &&
       /fold\.open = false;/.test(buyer) && /if \(isNew\) \{ window\.location\.href = '\/crm\/buyers\/'; return; \}/.test(buyer));
     t('the dialog focuses its safe button by default (Cancel, here "Keep editing"), never the confirm',
-      /\(reasonInput \|\| input \|\| cancel\)\.focus\(\);/.test(js) && /cancel: 'Keep editing', confirm: 'Discard changes'/.test(buyer));
+      /\((choiceSel \|\| )?reasonInput \|\| input \|\| cancel\)\.focus\(\);/.test(js) && /cancel: 'Keep editing', confirm: 'Discard changes'/.test(buyer));
     t('every date field shows its date in words underneath ("23 Oct 2026"), for screen readers too',
       /CRM\.dateTexts\(\);\s*document\.body\.classList\.add\('crm-ui-app'\);/.test(js) && /input\[type=date\]/.test(js) &&
       /setAttribute\('aria-live', 'polite'\)/.test(js) && /setAttribute\('aria-describedby'/.test(js) && /'No date chosen'/.test(js) &&
