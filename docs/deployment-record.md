@@ -11488,6 +11488,81 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 297 to 300 — Tests on GitHub; a PDF structure check; every PDF tagged; one link per spec-sheet download (PRs #432, #433, #434, #435)
+
+**Previous recorded deploy:** `9dc0eb8` (Deploy 296, PR #430)
+**Approvals:**
+- **#432:** "Approved #432" (2026-10-24).
+- **#433, #434, #435:** "Approved #433, #434, #435 and the caliber description" (2026-10-24).
+- **The merges:** all four were merged in this session on 2026-10-24 (+0300), each after the one before it was live and its live check passed. Before its merge, `main` was merged into the branches of #434 (`f6b85a9`) and #435 (`8bf88ce`), with tests passing.
+- **Not yet merged:** #431, this record. The owner's merge of it did not go through, and it stays open. It was extended with this entry and becomes Deploy 301 when merged.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 297 | #432 | `20ed158` | 2026-10-24 21:13:36 | 1 | +37 / −0 | Tests on GitHub (no site change) |
+| 298 | #433 | `9e1a277` | 2026-10-24 21:42:48 | 2 | +119 / −1 | Check: PDF structure (no site change) |
+| 299 | #434 | `fa9e2ba` | 2026-10-24 21:45:35 | 17 | +36 / −39 | PDFs: the 14 single spec sheets tagged |
+| 300 | #435 | `00a99ce` | 2026-10-24 21:48:32 | 2 | +8 / −8 | Catalogue: one link per spec-sheet download |
+
+Files and lines are each merge against the `main` it landed on.
+
+### What the deploys did
+
+- **Deploy 297 — Tests on GitHub (#432).**
+  - **What:** `.github/workflows/tests.yml` runs `npm test` on every push to any branch, on every pull request, and on demand, with the full git history (for the sitemap dates).
+  - **Result:** a failing check shows as a red cross on the commit and the PR.
+  - **To block merges:** branch protection on `main` requiring the "test" check is the owner's to turn on.
+  - **Also:** a local pre-push hook runs the same suite before any push from this session (owner, 2026-10-24: "make every push stop on a failing test before it pushes").
+- **Deploy 298 — PDF structure check (#433).** `scripts/check-pdf-structure.js` in `npm test` holds all 36 PDFs to five rules:
+  - tagged;
+  - their own language;
+  - bookmarks;
+  - a shown title;
+  - every figure described, none framed by an undescribed one.
+
+  Known gaps are listed in the check with what closes each. The order of numbers in the Arabic PDFs is held at the source by `check-rtl.js` rule 6.
+- **Deploy 299 — every PDF tagged (#434).**
+  - **Reprinted:** the 7 single-product spec sheets, EN and AR, in their current design, now tagged with language and 6 bookmarks each.
+  - **Unchanged:** text, pages and every pixel.
+  - **Code:** the print-catalogue path in `scripts/guide-pdfs.js` now tags every PDF, and the check's untagged list is empty.
+  - **#359** still reprints the sheets in the new design as photos arrive.
+- **Deploy 300 — catalogue download links (#435).**
+  - **What changed:** on `/catalog/` and `/ar/catalog/`, each of the 7 "Download spec sheet" controls is now a single link, not a button inside a link. That's 7 keyboard stops per page instead of 14.
+  - **Unchanged:** the same name (now also the link's `aria-label` in English) and the same look; screenshots are pixel-identical at 1280 and 390 px.
+  - **Focus:** the browser's focus outline is kept.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-24)
+
+- **Deployed commit:** `deployed-commit.txt` reads `00a99ce9e9ccc5d47db95ddc1142f98e74235813`.
+- **Live check:** after each of Deploys 297 to 300: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **GitHub workflows:** on Deploy 297's merge commit, both "Tests" and "Live site check" passed.
+- **PDFs served:** all 14 single spec sheets fetched from the live site are byte for byte the files in `main`, each tagged, in its language (`en`/`ar`), with 6 bookmarks.
+- **Catalogue pages served:** `/catalog/` and `/ar/catalog/` have 7 spec-sheet links each, none containing a button.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 300:** `git revert -m 1 00a99ce`.
+- **Deploy 299:** `git revert -m 1 fa9e2ba`. Its check change needs Deploy 298 in place.
+- **Deploy 298:** `git revert -m 1 9e1a277`. Revert 299 first.
+- **Deploy 297:** `git revert -m 1 20ed158`. It removes the GitHub workflow only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 297 to 300
+
+- **Caliber-scale drawing:** its description was approved on 2026-10-24 and is in #436, not yet merged. Until then, #433's check lists it as the one known gap.
+- **Branch protection on `main`:** not yet on (owner).
+- **#426's PDF line:** it still names spec sheets and catalogues. Once #436 is live, every PDF is tagged and described, and changing that line is a wording change for the owner.
+- **Unchanged from Deploys 292 to 296:** the owner's phone checks; #359's Arabic photo descriptions awaiting the vowel-mark convention; the merge train #417 to #426.
+
+**Listed in the next entry:** the merge of this record, #431 (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11506,7 +11581,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 296 (2026-10-24).**
+**Unchanged since U4, through Deploy 300 (2026-10-24).**
 
 ## Outstanding, unresolved by this document
 
