@@ -270,6 +270,14 @@ const PAGE_PDF_CSS = `
 
 const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true };
 
+// The catalogue-type PDFs -- the product catalogue, all spec sheets in one
+// file, and the export catalogue -- are tagged for screen readers, with the
+// document language and bookmarks from their headings (owner, 2026-10-23,
+// after the PDF accessibility audit). The single-product spec sheets keep
+// their settings here: they are reprinted, tagged, in the redesign (#359).
+const CATALOGUE_TAGS = { tagged: true, outline: true };
+const CATALOGUE_SLUGS = ['product-catalog', 'spec-sheets-all'];
+
 /**
  * How a job is printed: page settings, the CSS added before printing, and the
  * letterhead sheet (null for the export catalogue). The generator captures the
@@ -296,12 +304,12 @@ function renderFor(job) {
     // footers (styled like the letterhead's foot). Its cover carries the same
     // masthead as every other PDF (owner, 2026-10-02: one consistent header),
     // placed by the generator in place of the cover's own brand line.
-    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } },
+    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 }, ...CATALOGUE_TAGS },
       css: STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
       letterhead: letterheadSheet(job.locale), mastheadHtml: mastheadHtml(job.locale), masthead: 'catalogue-cover' };
   }
   return {
-    pdf: LETTERHEAD_PDF,
+    pdf: CATALOGUE_SLUGS.includes(job.slug) ? { ...LETTERHEAD_PDF, ...CATALOGUE_TAGS } : LETTERHEAD_PDF,
     css: PAGE_PDF_CSS + STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
     letterhead: letterheadSheet(job.locale),
     mastheadHtml: mastheadHtml(job.locale),
