@@ -31,14 +31,9 @@ const { ROOT, JOBS } = require('./guide-pdfs');
 
 // Known gaps, each with the change that closes it. Empty them as they close.
 //
-// Figures without a description: the caliber-scale drawing in these two
-// guides, awaiting the owner's approval of its description (2026-10-24).
-const UNDESCRIBED_FIGURES = {
-  'netlify/functions/_guides/en/packaging-overview.pdf': 1,
-  'netlify/functions/_guides/ar/packaging-overview.pdf': 1,
-  'netlify/functions/_guides/en/pricing-packaging-guide.pdf': 1,
-  'netlify/functions/_guides/ar/pricing-packaging-guide.pdf': 1,
-};
+// Figures without a description: none (the caliber-scale drawing was the
+// last, described 2026-10-24).
+const UNDESCRIBED_FIGURES = {};
 // Not tagged yet: none (the single spec sheets were the last, 2026-10-24).
 const UNTAGGED = new Set([]);
 
