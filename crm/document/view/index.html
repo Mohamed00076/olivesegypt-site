@@ -19,7 +19,7 @@
          stamp box. A green band closes every printed page with the company
          line and "Page n / N".
 
-         Colours are the design's: green #4b5a23, gold #b8923a, cream
+         Colours are the design's: green #4b5a23, gold #b8923a (#e6c57d for the small gold labels on green, for contrast, owner 2026-10-23), cream
          #f7f2e4. Type is the site's own (Plus Jakarta Sans; Noto Naskh
          Arabic for Arabic) -- the design's PDFs used stand-in fonts, which
          is why its Arabic looked heavy.
@@ -28,7 +28,7 @@
          start/end), so the Arabic sheet is the same sheet mirrored by the
          browser rather than a second stylesheet.
          ------------------------------------------------------------------ */
-      :root { --doc-green: #4b5a23; --doc-gold: #b8923a; --doc-cream: #f7f2e4; --doc-ink: #25281c; --doc-muted: #6b6f60; }
+      :root { --doc-green: #4b5a23; --doc-gold: #b8923a; --doc-gold-on-green: #e6c57d; --doc-cream: #f7f2e4; --doc-ink: #25281c; --doc-muted: #6b6f60; }
 
       .sheet {
         max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; padding: 0;
@@ -45,13 +45,15 @@
       .doc-logo-tile img { width: 44px; height: 54px; object-fit: contain; }
       .doc-wordmark { font-size: 22px; font-weight: 800; letter-spacing: 0.01em; line-height: 1.1; }
       .doc-sub { font-size: 12.5px; opacity: 0.92; margin-top: 2px; }
-      .doc-trade { font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--doc-gold); margin-top: 6px; }
+      .doc-trade { font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--doc-gold-on-green); margin-top: 6px; }
       .doc-contact { display: grid; grid-template-columns: auto auto; gap: 3px 14px; margin: 0; padding-inline-start: 16px; border-inline-start: 1px solid var(--doc-gold); font-size: 9.5px; line-height: 1.45; max-width: 8.4cm; }
-      .doc-contact dt { font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-gold); padding-top: 2px; }
+      .doc-contact dt { font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-gold-on-green); padding-top: 2px; }
       .doc-contact dd { margin: 0; }
       .doc-goldbar { height: 5px; background: var(--doc-gold); }
 
       .doc-body { padding: 26px 1.5cm 18px; display: flex; flex-direction: column; flex: 1; }
+      .doc-body:focus { outline: none; }
+      .doc-body:focus-visible { outline: 2px solid var(--doc-green); outline-offset: -2px; }
 
       /* title row --------------------------------------------------------- */
       .doc-titlerow { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-bottom: 20px; }
@@ -268,7 +270,7 @@
       </header>
       <div class="doc-goldbar"></div>
 
-      <div class="doc-body">
+      <div class="doc-body" tabindex="0" role="region" aria-label="Document contents">
         <div class="doc-titlerow">
           <div>
             <div class="doc-kind" id="doc-title-type">Quotation</div>
