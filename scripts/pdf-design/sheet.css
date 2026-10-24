@@ -104,7 +104,7 @@ html[lang="ar"] h1 { line-height: 1.4; }
 .photo img, .photo-panel { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 4mm; }
 /* A photo not supplied yet, in working drafts only: a plain panel, no text. */
 .photo-panel { background: var(--sand); border: 0.75pt solid var(--line); }
-.photo .photo-caption { margin-top: 1.8mm; font-size: 9.5pt; line-height: 1.35; color: var(--label); text-align: center; }
+.photo figcaption { margin-top: 1.8mm; font-size: 9.5pt; line-height: 1.35; color: var(--label); text-align: center; }
 
 /* ---- at-a-glance cards ---- */
 .glance { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin-top: 7mm; }
