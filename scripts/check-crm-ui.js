@@ -170,6 +170,25 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
   t('the route is wired and probed by the live check', /from = "\/api\/crm\/client-failure"/.test(read('netlify.toml')) && read('scripts/check-live.js').includes("'/api/crm/client-failure'"));
   t('the dashboard names it in "Something failed"', /'crm-page': 'A CRM page'/.test(read('crm/index.html')));
 
+  // ---- Keyboard walkthrough (2026-10-23) ------------------------------------
+  {
+    const js = read('assets/crm.js'), css = read('assets/crm-ui.css'), kanban = read('crm/kanban/index.html');
+    t('"Skip to main content" comes first and jumps to the page\'s main region',
+      /'<a class="crm-ui-skip" href="#' \+ main\.id \+ '">Skip to main content<\/a>'/.test(js) &&
+      /main\.setAttribute\('role', 'main'\);/.test(js) && /main\.setAttribute\('tabindex', '-1'\);/.test(js) &&
+      /\.crm-ui-skip \{ position: absolute;[^}]*top: -100px;/.test(css) && /\.crm-ui-skip:focus \{ top: 8px; \}/.test(css));
+    t('the top links are marked as navigation', /<nav class="crm-nav" aria-label="Main">/.test(js) && /<\/nav><\/div>';/.test(js));
+    t('focus rings are olive (7.5:1 on white), light gold on the dark top bar; never the 2.9:1 gold',
+      /--crm-focus: #4b5a23;/.test(css) && /body\.crm-ui-app :focus-visible \{ outline: 3px solid var\(--crm-focus\);/.test(css) &&
+      /body\.crm-ui-app \.crm-header :focus-visible \{ outline-color: #e6c57d; \}/.test(css) &&
+      !/outline:[^;]*var\(--crm-secondary/.test(css));
+    t('the More menu closes when focus leaves it', /addEventListener\('focusout'/.test(js) && /if \(!more\.hidden && !more\.contains\(a\) && a !== moreBtn\) setOpen\(false\);/.test(js));
+    t('Kanban: choosing a stage does not move the buyer; the Move button does',
+      /sel\.addEventListener\('change', function \(\) \{ btn\.disabled = !sel\.value; \}\);/.test(kanban) &&
+      /btn\.addEventListener\('click', function \(\) \{\s*if \(sel\.value\) moveBuyer\(r, sel\.value, true\);/.test(kanban) &&
+      /btn\.disabled = true;/.test(kanban) && !/sel\.addEventListener\('change', function \(\) \{\s*if \(sel\.value\) moveBuyer/.test(kanban));
+  }
+
   // ---- the STAGING / PREVIEW badge -------------------------------------------
   {
     const env = (marker, cookieOk = true) => {
