@@ -46,6 +46,18 @@ const RETIRED = new RegExp([
   'ثلاث(?:ة)?\\s*(?:إلى|الى|-|–)\\s*أربع(?:ة)?\\s*أسابيع',
 ].join('|'), 'i');
 
+// One Arabic word for lead time everywhere, «مدة التجهيز» (owner, 2026-10-25):
+// the other names it went by are retired...
+const AR_LABEL_RETIRED = /مدة التسليم|مدة التنفيذ|موعد التسليم/;
+// ...except in three sentences that tie it to the buyer's port or region,
+// which the owner chose to leave as they are (decision 3 of 2026-10-25).
+const AR_LABEL_KEPT = [
+  { file: 'ar/resources/certifications/index.html', text: 'الإنكوترمز ومدة التنفيذ لمينائك وحجم طلبك' },
+  { file: 'ar/resources/export-markets/index.html', text: 'ومدة التسليم لتلك المنطقة' },
+  { file: 'netlify/functions/_guides/ar/export-documentation-checklist.html', text: 'الإنكوترم ومدة التنفيذ، لميناك وحجم طلبك' },
+  { file: 'scripts/pdf-sources/documents/export-documentation-checklist-ar.html', text: 'الإنكوترم ومدة التنفيذ، لميناك وحجم طلبك' },
+];
+
 // Records of what was said before: the only files that may quote it.
 const HISTORY = [
   'docs/deployment-record.md',
@@ -53,4 +65,4 @@ const HISTORY = [
   'docs/system-health-audit-log.md',
 ];
 
-module.exports = { LEAD_TIME, QUALIFIER, STATEMENTS, RETIRED, HISTORY };
+module.exports = { LEAD_TIME, QUALIFIER, STATEMENTS, RETIRED, AR_LABEL_RETIRED, AR_LABEL_KEPT, HISTORY };
