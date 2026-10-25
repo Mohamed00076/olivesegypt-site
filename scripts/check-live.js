@@ -68,7 +68,7 @@ async function get(url, opts = {}) {
     try {
       // The limit covers the whole reply, body included.
       const res = await fetch(url, { redirect: 'manual', headers: { 'user-agent': 'olivesegypt-live-check' }, signal: AbortSignal.timeout(REQUEST_LIMIT_MS), ...opts });
-      const body = opts.method === 'HEAD' ? '' : await res.text();
+      const body = opts.method === 'HEAD' ? '' : opts.binary ? Buffer.from(await res.arrayBuffer()) : await res.text();
       return { status: res.status, location: res.headers.get('location') || '', headers: res.headers, body };
     } catch (e) {
       if (attempt >= 2) {
@@ -289,9 +289,12 @@ async function main() {
     const pub = JOBS.filter((j) => j.public);
     const bad = (await pool(pub, 6, async (job) => {
       try {
-        const res = await fetch(`${BASE}/${job.out}`, { headers: { 'user-agent': 'olivesegypt-live-check' }, signal: AbortSignal.timeout(REQUEST_LIMIT_MS) });
+        // Through get(), so a dropped connection or a slow reply is retried
+        // once like every other request here (a first version fetched
+        // directly and failed a run on one 30-second timeout, 2026-10-25).
+        const res = await get(`${BASE}/${job.out}`, { binary: true });
         if (res.status !== 200) return `/${job.out}: HTTP ${res.status}`;
-        const buf = Buffer.from(await res.arrayBuffer());
+        const buf = res.body;
         const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
         if (sha(buf) !== sha(fs.readFileSync(path.join(ROOT, job.out)))) return `/${job.out}: not the file in main`;
         const found = problemsOf(job, buf);
