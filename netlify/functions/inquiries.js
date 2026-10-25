@@ -2,7 +2,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
-const { readJsonBody, json } = require('./_lib');
+const { readJsonBody, json, netlifyClientIp } = require('./_lib');
 const { requireReaderSession } = require('./_crm_lib');
 const { sendNotification } = require('./_email_lib');
 const { addEnquiryToPipeline } = require('./_crm_intake');
@@ -67,9 +67,9 @@ function sessionIdOrNull(v) {
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 const RATE_LIMIT_MAX_PER_WINDOW = 5;
 
+// Netlify's client-IP header only (_lib.js netlifyClientIp).
 function clientIp(event) {
-  const h = event.headers || {};
-  return h['x-nf-client-connection-ip'] || h['client-ip'] || (h['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+  return netlifyClientIp(event);
 }
 
 async function ensureSchema(sql) {

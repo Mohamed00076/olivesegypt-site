@@ -9,7 +9,7 @@
 
 const crypto = require('crypto');
 const { neon } = require('@neondatabase/serverless');
-const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json } = require('./_lib');
+const { readJsonBody, parseCookies, verifySession, COOKIE_NAME, json, netlifyClientIp } = require('./_lib');
 
 function connectionString() {
   return (
@@ -31,9 +31,9 @@ function clean(v, cap) {
   return str(v).trim().slice(0, cap);
 }
 
+// Netlify's client-IP header only (_lib.js netlifyClientIp).
 function clientIp(event) {
-  const h = event.headers || {};
-  return h['x-nf-client-connection-ip'] || h['client-ip'] || (h['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+  return netlifyClientIp(event);
 }
 
 function deviceHash(event) {

@@ -27,6 +27,7 @@ const MAX_RETENTION_DAYS = 3650;
  */
 
 const { isbot } = require('isbot');
+const { netlifyClientIp } = require('./_lib');
 
 const BOT_DETECTION_VERSION = 'v1';
 
@@ -426,9 +427,10 @@ function isAllowlistedIp(ip) {
   return false;
 }
 
+// Netlify's client-IP header only (_lib.js netlifyClientIp). '' when it is
+// missing, as before: callers treat no address as "nothing to rate-limit on".
 function clientIp(event) {
-  const h = event.headers || {};
-  return h['x-nf-client-connection-ip'] || h['client-ip'] || (h['x-forwarded-for'] || '').split(',')[0].trim() || '';
+  return netlifyClientIp(event, '');
 }
 
 module.exports = {

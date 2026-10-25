@@ -152,7 +152,7 @@ const STATIC_PDF_CSS = (() => {
 const LETTERHEAD_TEXT = {
   en: {
     dir: 'ltr', wordmark: 'TRIPLE COMPANY', tagline: 'for Industrial Development',
-    address: ['Ouroba Square (ميدان العروبة), 5th Settlement,', 'New Cairo, Cairo, Egypt'],
+    address: ['Ouroba Square, 5th Settlement,', 'New Cairo, Cairo, Egypt'],
     legal: 'Triple Company for Industrial Development',
   },
   ar: {
@@ -270,6 +270,13 @@ const PAGE_PDF_CSS = `
 
 const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true };
 
+// Every PDF printed here is tagged for screen readers, with the document
+// language and bookmarks from its headings: the catalogue-type PDFs since
+// 2026-10-23 (owner, after the PDF accessibility audit), the single-product
+// spec sheets in their current design since 2026-10-24, before the redesign
+// (#359) reprints them.
+const CATALOGUE_TAGS = { tagged: true, outline: true };
+
 /**
  * How a job is printed: page settings, the CSS added before printing, and the
  * letterhead sheet (null for the export catalogue). The generator captures the
@@ -280,9 +287,9 @@ const LETTERHEAD_PDF = { format: 'A4', printBackground: true, preferCSSPageSize:
 // that carry their own masthead and foot as live text, so nothing is drawn
 // around them. Tagged for screen readers, with bookmarks from the headings.
 // 'TC Arabic Inline' is Amiri over its whole range, the word space included,
-// for the Arabic phrases in the English documents ("Ouroba Square (ميدان
-// العروبة)"): with the space in a Latin face they extracted as one-word runs
-// in reverse order.
+// for any Arabic phrase in an English document (the address carried its
+// Arabic name until 2026-10-18): with the space in a Latin face such phrases
+// extracted as one-word runs in reverse order.
 const SHEET_PDF = { format: 'A4', printBackground: true, preferCSSPageSize: true,
   margin: { top: 0, bottom: 0, left: 0, right: 0 }, tagged: true, outline: true };
 const SHEET_INLINE_ARABIC = `@font-face { font-family: 'TC Arabic Inline'; src: url(/${PDF_ARABIC_FONTS.regular}) format('truetype'); }`;
@@ -297,12 +304,12 @@ function renderFor(job) {
     // footers (styled like the letterhead's foot). Its cover carries the same
     // masthead as every other PDF (owner, 2026-10-02: one consistent header),
     // placed by the generator in place of the cover's own brand line.
-    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } },
+    return { pdf: { format: 'A4', printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 }, ...CATALOGUE_TAGS },
       css: STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
       letterhead: letterheadSheet(job.locale), mastheadHtml: mastheadHtml(job.locale), masthead: 'catalogue-cover' };
   }
   return {
-    pdf: LETTERHEAD_PDF,
+    pdf: { ...LETTERHEAD_PDF, ...CATALOGUE_TAGS },
     css: PAGE_PDF_CSS + STATIC_PDF_CSS + (job.locale === 'ar' ? ARABIC_PDF_CSS : ARABIC_IN_ENGLISH_PDF_CSS),
     letterhead: letterheadSheet(job.locale),
     mastheadHtml: mastheadHtml(job.locale),

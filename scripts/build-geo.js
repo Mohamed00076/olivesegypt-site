@@ -27,15 +27,13 @@
  * filesystem mtime deliberately -- whether a cache-restore step
  * preserves original mtimes isn't something to depend on.
  *
- * MAX_AGE_MS is currently set to 1 day rather than the ~1 week the geo-
- * refresh scheduled function's cadence implies -- deliberately, while
- * the site is under heavy active development with many deploys per
- * day. A day-old ceiling still means at most one real download per day
- * no matter how many builds happen that day, which is most of the
- * savings this change was for. Once things settle back down to mostly
- * occasional blog/article updates, bump this back to a week (matching
- * geo-refresh again) so quiet periods don't force daily downloads for
- * no reason.
+ * MAX_AGE_MS is 1 week, matching the geo-refresh scheduled function's
+ * weekly cadence. It was 1 day from early October while the site was
+ * under heavy development (14 to 25 merges a day, 9-12 Oct); the weekly
+ * reminder checked the pace and, once it settled to 3 or 4 merges a day
+ * (13-16 Oct), it went back to a week (owner approval, 2026-10-16). A
+ * week-old country database is plenty: countries do not move, and
+ * GeoLite2-Country changes little week to week.
  *
  * Must never fail the whole site build over a geo-data hiccup: any
  * download/extract failure is logged and the script exits 0, leaving
@@ -57,7 +55,7 @@ const DEST_MMDB = path.join(GEO_DIR, 'GeoLite2-Country.mmdb');
 const FETCHED_AT_FILE = path.join(GEO_DIR, '.fetched-at');
 const TMP_TAR = path.join(GEO_DIR, '.download.tar.gz');
 const TMP_EXTRACT = path.join(GEO_DIR, '.extract');
-const MAX_AGE_MS = 1 * 24 * 60 * 60 * 1000; // 1 day for now -- see note above; bump to a week later
+const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 1 week -- see note above
 
 function cachedCopyIsFresh() {
   if (!fs.existsSync(DEST_MMDB) || !fs.existsSync(FETCHED_AT_FILE)) return false;

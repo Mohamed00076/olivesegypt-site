@@ -9941,6 +9941,1628 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 240 and 241 — The company profile and buyer guides in the new design (PRs #361, #362)
+
+**Previous recorded deploy:** `1c5988e` (Deploy 239, PR #360)
+**Approvals:**
+- "merge" (#361).
+- "Phase C approved with these changes" (1–7), "do it" (the last-page rule), "this one looks better" (Direction B), then "merge" (#362).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 240 | #361 | `7ec084a` | 2026-10-13 08:08:52 | 1 | +100 / −1 | Notes only |
+| 241 | #362 | `a741b5c` | 2026-10-13 15:15:13 | 43 | +3921 / −174 | 16 PDFs redesigned, pricing guide source, PDF tooling |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 240** recorded Deploys 238 and 239.
+
+### What the deploys did
+
+- **Deploy 241 — The company profile and the seven buyer guides in the new A4 design (#362).** Owner's PDF redesign brief of 2026-10-12, Phase C2. 16 PDFs (EN and AR); the file addresses, the Downloads pages and the shared letterhead are unchanged.
+  - **Source:** `scripts/build-pdf-documents.js` writes each document's A4 source (`scripts/pdf-sources/documents/`, pruned from the deploy) from its existing page: the guide HTML in `netlify/functions/_guides/` and the company profile page. `scripts/check-pdf-sources.js` (in `npm test`) fails when a source is out of date with its page.
+  - **No calls to action:** every "Request a Quote" and "Request a Sample" link and the profile's Download PDF link are gone; the only links are `mailto:` and `tel:`. Closing lines that were only an invitation were dropped ("Ready to move forward?" in the B2B Buyer's Guide; the Origin & Sourcing Guide's "Considering Egypt as a sourcing origin? …"); the Private Label Brochure's closing line ends "…for your market." Links inside sentences keep their words.
+  - **Design (Direction B, owner: "this one looks better"):** an olive cover band on page 1 with an olive-branch drawing (decoration only, mirrored in Arabic); a slim olive and gold strip on later pages; numbered section headings; leaf bullets; questions as cards; gold-edged fact cards; olive figure tiles and table head; the closing line as an olive band. Live-text foot with the legal name, date line, page n / N and domain. Tagged, `/Lang`, bookmarks.
+  - **Type:** one fixed scale for every document (owner): body 11.5pt in English, 13.22pt in Arabic (11.5pt with Amiri's 115% size adjustment); smallest text 8.5pt; no Type3 fonts.
+  - **Layout rules:** a section splits only between items; tables, card sets and lists of fewer than four paragraph-length points never break; a list of four or more such points may break between whole points, two at least on each side; the profile's Product Range always starts on page 2 (owner); a last page under 40% full is laid out again with tighter spacing, kept only if that removes the page; content stops at least 3 mm above the foot.
+  - **Packaging & Quotation Guide (EN, AR):**
+    - a packaging table (Format, Sizes, Case pack, Typical channel) restating every size and case pack from the old list; buckets and barrels read "Confirmed during quotation" / «تؤكد أثناء عرض السعر» (owner)
+    - the four price drivers as cards
+    - "What to Tell Us for a Quotation" in place of "Requesting a current quote", with the owner's first two items: product type and form (green, stuffed green, natural black, oxidized black; whole, pitted or sliced) and caliber; any specific cultivar (availability is checked per request)
+    - removed from the packaging list: "Showcases the product; supports branded and private-label labeling.", "Shelf-stable and durable", "Stack and ship efficiently.", "Balance cost, volume, and convenience."
+  - **Owner decisions recorded:** the title "Packaging & Quotation Guide" was approved on 2026-10-13 ("aproved 1 and 2"); short last pages are accepted without shortening or padding; "variety" elsewhere in the guides is reported, unchanged.
+  - **Arabic wording is for the owner's review.**
+
+### Verified on the live site (2026-10-13)
+
+- **Live PDFs:** `downloads/company-profile-en.pdf` and `ar/downloads/company-profile-ar.pdf` match the merged files byte for byte.
+- **Live check** after #362: 21 OK, 0 FAIL (local run); GitHub Actions "Live site check" runs 38395940233 and 38399194630: success.
+- **HTTPS certificates** (apex and `www`): valid to 2026-11-12.
+
+### Not deployed
+
+- **Spec sheets and the product catalogue** stay on hold until all seven product photographs are in (draft PRs #358 and #359).
+
+### Claim register
+
+168 claims (unchanged: the table and list restate existing claims).
+
+### Rollback
+
+- **Deploy 241:** `git revert -m 1 a741b5c`. The previous PDFs and their fingerprints come back together.
+- **Deploy 240** is documentation only.
+
+### Known limitations shipped with Deploys 240 and 241
+
+- **Short last pages, accepted by the owner:**
+  - EN: Origin & Sourcing p2 69%, Export Documentation Checklist p2 54%, Packaging & Quotation p3 52%, Buyer's Guide p3 50%, Private Label p2 29% empty
+  - AR: Export Documentation Checklist p2 60%, Packaging & Quotation p3 58%, Private Label p2 35% empty
+- **Unchanged from Deploys 238 and 239:** the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 242 to 244 — The PDF source check fixed; photo covers, more room and pictures in the profile and guides (PRs #364, #363, #365)
+
+**Previous recorded deploy:** `a741b5c` (Deploy 241, PR #362)
+**Approvals:**
+- "merge" (#363 and #364).
+- "do 3" (photo covers), "do 1 2 3" (more room), "can you make them look more appealing and nice by adding diagrams or images", then "approve all and merge" (#365).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 242 | #364 | `b68538d` | 2026-10-14 01:57:09 | 2 | +12 / −5 | Test tooling |
+| 243 | #363 | `517bf2a` | 2026-10-14 01:57:12 | 1 | +64 / −1 | Notes only |
+| 244 | #365 | `63a115c` | 2026-10-14 10:57:29 | 37 | +385 / −640 | 16 PDFs reprinted, cover photograph, rights register |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 243** recorded Deploys 240 and 241.
+
+### What the deploys did
+
+- **Deploy 242 — The PDF source check now checks (#364).** A bug introduced in #362 and found while updating the spec-sheet branch: `scripts/check-pdf-sources.js` required `build-pdf-documents.js` expecting a `--check` flag to act, but the builder only ran when started directly, so the check passed even when a source was out of date with its page. The builder now exports `run(check)` and the check calls `run(true)`; a deliberately stale source fails it (exit 1). No live PDF was affected: all 16 sources matched their pages.
+- **Deploy 244 — Photo covers, more room and pictures (#365).** All 16 live PDFs (the company profile and the seven guides, EN and AR). No word of the documents changed except where noted.
+  - **Cover photograph** (owner, "do 3"): the owner's whole green olives (`scripts/pdf-design/photos/green-olives-whole.jpg`, from `assets/hero-green-olives.jpg`: 800 x 800, JPEG 85, no metadata) in a gold frame beside the title, 40 mm (484 ppi), mirrored in Arabic, in place of the olive-branch drawing. Alt text is its caption, "Whole green olives" / «زيتون أخضر كامل». Row added to `docs/asset-rights-register.md`.
+  - **More room** (owner: "a little bit crowded", "do 1"): the tighter-spacing pass that pulled a short last page back is removed; sections, items and list points have more space between them. Room comes before page count.
+  - **Pictures** (owner: "adding diagrams or images"), each drawing what the text already says, decoration only and hidden from screen readers:
+    - packaging icons (jar, tin, bucket, barrel) beside each format in the Packaging & Quotation Guide's table and the Packaging Overview's list
+    - a caliber scale, 140 to 360, olives drawn smaller as the count rises, under both caliber explanations; end labels "Larger olives" / "Smaller olives" (AR «حبات أكبر» / «حبات أصغر»), approved
+    - the Private Label Brochure's six order steps as a numbered timeline
+    - Company Overview's "We handle" / "The approved partner facility handles" as two cards side by side
+    - the export checklist's points marked prepared (check), confirmed per order (clipboard) or still being established (hourglass)
+  - **Company profile:** the PDF leaves out the Contact section, which repeated the masthead's address, email and phone and stood alone on a third page (owner: "approve all"); the web page keeps it.
+  - **Page counts:** EN Buyer's Guide 3, Origin 2, Packaging & Quotation 3, Company Overview 3, Private Label 2, Packaging Overview 2, Export Checklist 2, Profile 2; AR Buyer's Guide 2, Origin 2, Packaging & Quotation 3, Company Overview 2, Private Label 2, Packaging Overview 2, Export Checklist 2, Profile 2.
+  - **Arabic:** the Arabic Private Label Brochure's step numerals stay «١ … ٦», as in its source.
+
+### Verified on the live site (2026-10-14)
+
+- **Live PDFs:** `downloads/company-profile-en.pdf` and `ar/downloads/company-profile-ar.pdf` match the merged files byte for byte.
+- **Live check** after #365: 21 OK, 0 FAIL (local run); GitHub Actions "Live site check" run 38531780039: success.
+
+### Not deployed (draft PR #359)
+
+- **Spec sheets:** in the shipped look (olive band, numbered sections, gold-edged cards, olive table head and closing band); under the packaging chips only the catalogue's qualifier, "Subject to product and order volume." / «حسب المنتج وحجم الطلب.» (approved).
+- **Product catalogue:** a cover with the catalogue's own title, date and summary line over a photograph of every product, the range at a glance, then one product per page (9 pages).
+- **Both wait** for the photographs of Stuffed, Natural Black, Artichoke and Pepperoncini (no mixed set). Draft PR #358 was closed as contained in #359.
+
+### Claim register
+
+168 claims (unchanged).
+
+### Rollback
+
+- **Deploy 244:** `git revert -m 1 63a115c`. The previous PDFs and their fingerprints come back together.
+- **Deploy 242:** `git revert -m 1 b68538d`.
+- **Deploy 243** is documentation only.
+
+### Known limitations shipped with Deploys 242 to 244
+
+- **Short last pages, accepted by the owner:** the documents that gained a page with the extra room end on a partly filled page (largest gaps: Origin & Sourcing p2 69% empty in English and 72% in Arabic, Arabic Packaging Overview p2 68%, English Packaging Overview p2 47%).
+- **Unchanged from Deploys 238 and 239:** the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 245 to 247 — The PET pail in the guides, a closing-line rule, and the caliber scale on the packaging page (PRs #366, #367, #368)
+
+**Previous recorded deploy:** `63a115c` (Deploy 244, PR #365)
+**Approvals:**
+- "merge" (#366).
+- "do 5 and 6", "add it" (the PET pail), then "merge" (#367 and #368).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 245 | #366 | `3f422d5` | 2026-10-14 11:03:19 | 1 | +65 / −1 | Notes only |
+| 246 | #367 | `78ba4a9` | 2026-10-16 02:10:52 | 40 | +351 / −104 | 16 PDFs reprinted, guide sources, PDF tooling, test, register |
+| 247 | #368 | `7374757` | 2026-10-16 02:10:56 | 3 | +34 / −6 | Packaging page (EN, AR), sitemap |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 245** recorded Deploys 242 to 244.
+
+### What the deploys did
+
+- **Deploy 246 — The PET pail in the guides; a closing line never stands alone (#367).**
+  - **PET pail** (owner, "add it"): the Packaging & Quotation Guide's table and the Packaging Overview's list now carry the 4 kg PET pail, 4 per carton, for sliced jalapeño peppers only, as `/resources/packaging` has since 24 Sep. Source: C-100, the supplier's September 2026 jalapeño offer; the olive offers carry no PET line. English is the website's sentence; Arabic is the website's «كما يتوفر وعاء PET سعة 4 كجم للفلفل الهالبينو المقطّع، 4 في الكرتونة.», plus the new table cells «وعاء PET» and «للفلفل الهالبينو المقطّع فقط» (on the owner's Arabic review page). A pail icon beside it. Both guides' revision date is 2026-10-15; C-100 names the guides.
+  - **Closing-line rule:** when a guide's closing band would stand alone on its last page, the section before it starts that page instead. Verified by recreating the 14 Oct near-miss in a browser; no current document needs it.
+  - **Test fix:** `check-packaging-claims` stops a barrel's reach at the end of its own list item or table row, so the pail's "4kg" listed after the barrels is no longer read as a barrel size. Same 41 barrel figures checked; a planted wrong barrel size in a list or a table row still fails it.
+  - **Page counts unchanged.**
+- **Deploy 247 — The caliber scale on the packaging page (#368).** Under "Understanding caliber sizing" on `/resources/packaging` and `/ar/resources/packaging`: the 140 to 360 range, olives drawn smaller as the count rises, with the approved labels "Larger olives" / "Smaller olives" (AR «حبات أكبر» / «حبات أصغر»). In the site's own colours, dark mode included, mirrored in Arabic; styles in each page's own `<style>`, so the shared stylesheet is untouched. `/resources/pricing` has no packaging list or caliber section and is unchanged. Sitemap dates updated for the two pages.
+
+### Owner actions reported (2026-10-14 and 15)
+
+- **GitHub security:** Dependabot alerts, malware detection and another security feature switched on for both repositories by the owner (this session's access cannot change or read those settings; the alerts API changed from "disabled" to "not accessible by integration"). No Dependabot security PRs; `npm audit` (website, 33 packages) and `pnpm audit` (Umami, 1,143 packages) found no known vulnerabilities on 2026-10-14.
+- **Arabic review page** published for the owner (private), listing every Arabic phrase written since 13 Oct; answers pending.
+
+### Verified on the live site (2026-10-16)
+
+- `/resources/packaging` carries the caliber scale; `/ar/resources/packaging` shows «حبات أكبر».
+- **Live check** after #368: 21 OK, 0 FAIL (local run). GitHub Actions "Live site check" run 38822007095 was queued at the time of writing; run 38821999566 was cancelled when the second merge superseded it.
+- The guides are gated, so the reprinted PDFs were verified before merge, not fetched live.
+
+### Claim register
+
+168 claims (C-100 updated to name the guides).
+
+### Rollback
+
+- **Deploy 247:** `git revert -m 1 7374757`.
+- **Deploy 246:** `git revert -m 1 78ba4a9`. The previous PDFs and their fingerprints come back together.
+- **Deploy 245** is documentation only.
+
+### Known limitations shipped with Deploys 245 to 247
+
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 248 to 250 — The location database back to weekly; the caliber scale on the olive product pages (PRs #369, #370, #371)
+
+**Previous recorded deploy:** `7374757` (Deploy 247, PR #368)
+**Approvals:**
+- "merge" (#369).
+- "do 1 and 2", then "merge" (#370 and #371).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 248 | #369 | `4c338b9` | 2026-10-16 02:13:54 | 1 | +57 / −1 | Notes only |
+| 249 | #370 | `e4f9062` | 2026-10-16 02:20:17 | 2 | +11 / −14 | Build setting (location database) |
+| 250 | #371 | `71fe61e` | 2026-10-16 02:20:20 | 10 | +163 / −11 | Olive product pages (EN, AR), generator, sitemap |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 248** recorded Deploys 245 to 247.
+
+### What the deploys did
+
+- **Deploy 249 — The location database refreshes weekly again (#370).** The 16 Oct review: `MAX_AGE_MS` in `scripts/build-geo.js` had been 1 day while the site deployed 14 to 25 times a day (9-12 Oct). With the pace at 3 or 4 merges a day (13-16 Oct) it goes back to 1 week, matching the weekly `geo-refresh` schedule; comments in `build-geo.js` and `netlify.toml` updated. The download path was exercised: the mirror served `GeoLite2-Country_20261013`. The weekly reminder for this review is complete.
+- **Deploy 250 — The caliber scale on the olive product pages (#371).** Under the specification table on Green, Stuffed Green, Natural Black and Oxidized Black, English and Arabic: each page's own caliber range (140 to 360 on all four), olives drawn smaller as the count rises, labels "Larger olives" / "Smaller olives" (AR «حبات أكبر» / «حبات أصغر»). English pages from `scripts/generate-product-pages.py` (`caliber_scale`, its styles only on pages that show it); the hand-kept Arabic pages carry the generator's own markup. The three pickled-vegetable pages have no calibers and are unchanged. Sitemap dates updated for the eight pages.
+
+### Verified on the live site (2026-10-16)
+
+- `/products/green-olives/` and `/ar/products/natural-black-olives/` carry the scale; `/products/marinated-artichoke-hearts/` does not.
+- **Live check** after #371: 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+168 claims (unchanged).
+
+### Rollback
+
+- **Deploy 250:** `git revert -m 1 71fe61e`.
+- **Deploy 249:** `git revert -m 1 e4f9062` (back to 1 day).
+- **Deploy 248** is documentation only.
+
+### Known limitations shipped with Deploys 248 to 250
+
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 251 and 252 — The cookie banner: equal choices, compact, plain wording; the visit counter disclosed and cleared on withdrawal (PRs #372, #373)
+
+**Previous recorded deploy:** `71fe61e` (Deploy 250, PR #371)
+**Approvals:**
+- "merge" (#372).
+- "approve and merge" (#373). Before that, after a read-only consent diagnosis: "do 1 2 3 and 5", the owner's wording and checks, "use shorter", "do 1 2 3 and b", and the six follow-up items.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 251 | #372 | `c49dbf6` | 2026-10-16 02:22:33 | 1 | +47 / −1 | Notes only |
+| 252 | #373 | `e50a6b3` | 2026-10-16 18:28:21 | 10 | +353 / −36 | Cookie banner, privacy pages (EN, AR), quote button, tests, counsel questions, sitemap |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 251** recorded Deploys 248 to 250.
+
+### What the deploy did
+
+- **Deploy 252 — The cookie banner, the visit counter's disclosure and a withdrawal fix (#373).** Follows a read-only diagnosis of low consent acceptance (15 Oct). It found: the banner covered up to 45% of a phone screen and could be scrolled past; Accept was a filled gold button while Reject was outlined; the wording was long and full of jargon; the settings panel had no keyboard handling. Nothing was stored or sent before a choice.
+  - **Equal choices.** Reject and Accept share one style and size, side by side; Settings is a text button. All are 44px tall.
+  - **Compact.** Banner coverage, English / Arabic: 320px 22.9% / 19.5% (English within the owner's 23% allowance at 320px only), 360px 17.6% / 15.0%, 390px 13.2%, 412px 12.1%, 768px 6.3%. It was 45% / 41% at 320px.
+  - **Wording.** English: "May we measure visits? Google Analytics sets cookies; our counter stores an ID in your browser. Privacy". Arabic: «هل نقيس الزيارات؟ تضع Google Analytics الكوكيز، ويحفظ عدّادنا معرّفًا في متصفحك. سياسة الخصوصية». Buttons: Reject / Settings / Accept, «رفض / الإعدادات / قبول». Arabic uses «الكوكيز» throughout the banner; the Arabic privacy page uses «ملفات تعريف الارتباط (الكوكيز)» once.
+  - **Keyboard.** In the settings panel, Escape closes it, Tab stays inside it, and focus returns to the control that opened it.
+  - **Privacy pages (EN, AR).** They now name the visit counter's two local-storage entries: `tc-analytics-visitor`, a random ID with no expiry, and `tc-analytics-session`, holding the visit's details and treated as ended after 30 minutes. Both are said to be removed on withdrawal. The Google Analytics cookie lifetime is corrected from "up to two years" to "until two years after your most recent visit", per Google's gtag.js reference: the default `cookie_update` renews them on every page load.
+  - **Bug fix (pre-existing).** Withdrawing consent removed the Google Analytics cookies but left the counter's two entries in the browser, so accepting again later revived the old ID. `clearCounterIds` in `assets/consent.js` now removes them on withdrawal and on any page load where the saved choice is "no".
+  - **Quote button.** On phones and tablets it shows as its icon while the banner is up, and returns to its full label after a choice. Its accessible name is unchanged.
+  - **Tests.** `scripts/check-consent-withdrawal.js` joins `npm test`; with the fix removed, 5 of its 10 checks fail. `check-rtl` allows the two entry names, like `_ga`.
+  - **Counsel questions 8–13** added to `docs/g0-counsel-questions.md`, including a finite visitor-ID lifetime (owner's suggestion: 13 months; not implemented) and whether the earlier, less detailed disclosure means asking again.
+  - **No saved choice cleared.** `POLICY_VERSION` (2026-10-11) and `CONSENT_VERSION` (1.0) are unchanged. The privacy pages show no last-updated date, so none changed (C-173).
+
+### Verified before merge (final commit `d7eeda5`, local copy, trackers blocked)
+
+- **Before a choice:** no cookies, no storage, no requests to Umami, Google or Facebook, and no errors.
+- **Persistence:** the banner never returned after any choice, across a reload, five pages and a new tab, including with in-app browser user agents.
+- **Failure cases:** with the consent script blocked or JavaScript off, there is no banner and no tracking.
+- **Overlap:** nothing overlaps at 320/360/390/412/768px, English and Arabic, light and dark.
+- **Keyboard, layout and tests:** keyboard handling, right-to-left order and contrast (12.9:1 text, 7.0:1 link) pass. The withdrawal and quote-button behaviour passes. `npm test` passes.
+
+### Verified on the live site (2026-10-16)
+
+- **Files live:** `consent.js`, `site-nav.js`, `/privacy/` and `/ar/privacy/` serve the new code and wording.
+- **320px, English and Arabic** (looked at only, nothing pressed, requests blocked): the new text and buttons, coverage 22.8% / 19.5%, the quote button as an icon with its name, nothing stored before a choice, and no errors.
+- **Live check:** 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+173 claims (C-169 to C-173 added).
+
+### Rollback
+
+- **Deploy 252:** `git revert -m 1 e50a6b3`. Saved choices are untouched either way, because the policy version is unchanged. Counter entries already removed for visitors who said "no" are not restored, which is correct.
+- **Deploy 251** is documentation only.
+
+### Known limitations shipped with Deploys 251 and 252
+
+- **Arabic wording** awaits the owner's review. Two vowel marks were noted against the site's convention: «تُعدّ», which the site writes as «يُعد», and «إدخالَي».
+- **The visitor ID has no expiry,** pending counsel (question 8).
+- **Visitors who accepted before the fuller disclosure are not asked again,** pending counsel (question 9).
+- **In-app browsers** (WhatsApp, Facebook, Instagram) keep their own storage, so a choice made there does not carry over to the phone's browser.
+- **The deploy preview** shares production's analytics IDs and functions, so choices made there may reach real data.
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 253 and 254 — The cookie settings panel matches the banner; only the live site reports (PRs #374, #375)
+
+**Previous recorded deploy:** `e50a6b3` (Deploy 252, PR #373)
+**Approvals:**
+- "merge" (#374).
+- "do 1 and 2", then "merge" (#375).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 253 | #374 | `db5e84f` | 2026-10-16 18:39:18 | 1 | +68 / −1 | Notes only |
+| 254 | #375 | `3a5762d` | 2026-10-16 19:04:16 | 7 | +70 / −23 | Cookie settings panel (EN, AR), analytics scripts, privacy pages (EN, AR), tests |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 253** recorded Deploys 251 and 252.
+
+### What the deploy did
+
+- **Deploy 254 — The settings panel matches the banner, and only the live site reports (#375).**
+  - **Settings panel, footer link and fallback pill (EN, AR).** They now use the banner's words and say what the counter stores.
+    - "Cookie Preferences" (pill: 🍪) becomes "Cookie settings" / «إعدادات الكوكيز».
+    - "Strictly Necessary" becomes "Needed for the site" / «لازم لعمل الموقع», described as "Forms, navigation, and remembering your choices here. Always on."
+    - The Analytics row reads: "Measures visits. Google Analytics sets cookies and sends visit data to Google; our counter stores an ID in your browser. Off unless you turn it on." It no longer names Umami.
+    - "Save Preferences" becomes "Save" / «حفظ».
+    - The "Analytics" label is kept, because the privacy pages refer to it. Both privacy pages refer to the footer link by its new name.
+  - **Only the live site reports.** `LIVE_HOST` in `assets/consent.js` and `assets/analytics.js` limits loading Umami and Google Analytics, and sending to `/api/consent` and `/api/analytics-collect`, to `olivesegypt.com` and `www.olivesegypt.com`. Deploy previews and local copies keep the same banner, choice and storage but send nothing. This follows Deploy 252's finding that choices made on a preview could reach real data.
+  - **Tests.**
+    - `check-consent-withdrawal` gains five live-host checks (15 in all): both live hosts send; a preview host, localhost and 127.0.0.1 do not.
+    - `check-csp-allows` accepts the Google Analytics consent guard with the live-host condition, and still requires consent.
+  - **No saved choice cleared.** `POLICY_VERSION` (2026-10-11) and `CONSENT_VERSION` (1.0) are unchanged.
+
+### Verified before merge (local copy, trackers blocked)
+
+- **Live-host rule in a real browser:** "olivesegypt.com" was served from the local copy. On both live hosts, Umami, Google Analytics, `/api/consent` and `/api/analytics-collect` were requested after Accept, and nothing before. On a preview host and 127.0.0.1, nothing was requested.
+- **Settings panel:** EN and AR, light and dark, at 320 and 390px, it fits on screen with the new wording. The footer link is renamed on four pages.
+- **Banner regression:** passes. That covers nothing sent before a choice, persistence, overlap at five widths in both languages and themes, keyboard, right-to-left order and contrast.
+- **Tests:** `npm test` passes.
+
+### Verified on the live site (2026-10-16)
+
+- **Files live:** `consent.js` and `analytics.js` serve `LIVE_HOST`, and both privacy pages name "Cookie settings" / «إعدادات الكوكيز».
+- **Live olivesegypt.com in a browser,** with tracker and `/api` requests blocked so nothing was recorded, in EN and AR:
+  - nothing before a choice
+  - the new panel wording
+  - after Accept, Umami and Google Analytics requested, and `/api/consent` and `/api/analytics-collect` called
+  - the footer link renamed
+  - no page errors
+- **Live check:** 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+175 claims (C-174 and C-175 added).
+
+### Rollback
+
+- **Deploy 254:** `git revert -m 1 3a5762d`. Saved choices are untouched either way.
+- **Deploy 253** is documentation only.
+
+### Known limitations shipped with Deploys 253 and 254
+
+- **Forms on a deploy preview** (enquiry, sample, guide) still reach the real CRM. They are business forms, not analytics, and were left for the owner to decide.
+- **Arabic wording** of the panel awaits the owner's review, as does the Arabic from Deploy 252.
+- **Unchanged from Deploys 251 and 252:**
+  - the visitor ID has no expiry (counsel question 8)
+  - visitors who accepted before the fuller disclosure are not asked again (counsel question 9)
+  - in-app browsers keep their own storage
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 255 to 257 — Forms on a deploy preview send nothing; the Arabic guide's glass-jar row in the owner's wording (PRs #376, #377, #378)
+
+**Previous recorded deploy:** `3a5762d` (Deploy 254, PR #375)
+**Approvals:**
+- "merge" (#376).
+- "do 1 2 and 3", then "make the glass jar change ande merge" (#377 and #378).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 255 | #376 | `84fa255` | 2026-10-16 19:09:21 | 1 | +74 / −1 | Notes only |
+| 256 | #377 | `5746242` | 2026-10-16 19:17:06 | 6 | +98 / −3 | Form scripts (all form pages, EN and AR), tests |
+| 257 | #378 | `d011c19` | 2026-10-16 19:19:36 | 6 | +6 / −5 | Arabic Packaging & Quotation Guide (source, PDF) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 255** recorded Deploys 253 and 254.
+
+### What the deploys did
+
+- **Deploy 256 — Forms on a deploy preview send nothing (#377).** After Deploy 254, the forms were the last thing a preview could send to real systems: a form filled in on a preview created a real CRM record and notification email.
+  - The enquiry, sample, guide download, market brief, private-label and unsubscribe forms (`assets/inquiry-form.js`, `gated-download.js`, `unsubscribe.js`) send only from `olivesegypt.com` and `www.olivesegypt.com`.
+  - On a preview or local copy they show "This is a preview copy of the site: nothing was sent. Forms send only from olivesegypt.com." (Arabic: «هذه نسخة معاينة من الموقع: لم يُرسل أي شيء. لا تُرسل النماذج إلا من olivesegypt.com.») and send nothing. The live site is unchanged.
+  - **New check, `check-preview-sends`, in `npm test`:** every public script that posts to `/api` or loads a tracker must check the live-host rule before its first send. It fails with a guard removed. The staff CRM (`crm.js`) is exempt, with its reason stated: it needs a signed-in session, and blocking it would make CRM changes impossible to check on a preview.
+- **Deploy 257 — The Arabic guide's glass-jar row (#378).** The Arabic Packaging & Quotation Guide's glass-jar "typical channel" now reads «التجزئة ومحلات الأطعمة الفاخرة» (was «التجزئة الفاخرة ومحلات الأطعمة الفاخرة»).
+  - This is the owner's wording from the Arabic review page (answer `p-jars`, 14 Oct). The other 22 answers given then were all "Fine".
+  - Source edited, PDF source rebuilt, guide re-printed: still 3 pages. The English PDF was re-printed alongside it with identical text.
+
+### Verified before merge
+
+- **Forms (#377):** all 10 form pages, EN and AR, tested in a browser with dummy data, with `/api` answered locally.
+  - On 127.0.0.1, each showed the preview message and made no `/api` call.
+  - On a stand-in "olivesegypt.com" served from the local copy, each called `/api/inquiries`, `/api/leads` or `/api/unsubscribe` and showed its usual thank-you.
+- **Guide (#378):** the Arabic PDF contains the new wording and not the old; the row was checked visually.
+- **Tests:** `npm test` passes for both.
+
+### Verified on the live site (2026-10-16)
+
+- **Deployed commit:** `deployed-commit.txt` reads `d011c19`.
+- **Form scripts:** all three serve the live-host rule and the preview message. No live form was submitted, so no record was created.
+- **Live check:** 21 OK, 0 FAIL (local run).
+
+### Claim register
+
+177 claims (C-176 and C-177 added).
+
+### Rollback
+
+- **Deploy 257:** `git revert -m 1 d011c19`.
+- **Deploy 256:** `git revert -m 1 5746242`. The live site is unaffected either way.
+- **Deploy 255** is documentation only.
+
+### Known limitations shipped with Deploys 255 to 257
+
+- **The staff CRM on a preview** still talks to the real database. This is deliberate (see above).
+- **Arabic awaiting the owner's review** on the review page:
+  - the 11 cookie and privacy lines (Deploys 252 and 254), with «تُعدّ» and «إدخالَي» flagged
+  - the preview message
+  - the PET pail row
+- **Unchanged from Deploys 251 to 254:** the visitor-ID lifetime and re-ask questions are with counsel, and in-app browsers keep their own storage.
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 258 and 259 — The privacy pages' cookie heading matches the footer link (PRs #379, #380)
+
+**Previous recorded deploy:** `d011c19` (Deploy 257, PR #378)
+**Approvals:**
+- "merge" (#379).
+- "do number 2", then "merge and do the brief corrections" (#380).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 258 | #379 | `2425431` | 2026-10-16 19:28:27 | 1 | +67 / −1 | Notes only |
+| 259 | #380 | `f6a03e7` | 2026-10-17 01:55:39 | 2 | +2 / −2 | Privacy pages (EN, AR) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 258** recorded Deploys 255 to 257.
+
+### What the deploy did
+
+- **Deploy 259 — The cookie heading on the privacy pages (#380).** "Managing cookie preferences" becomes "Managing cookie settings", and «إدارة تفضيلات الكوكيز» becomes «إدارة إعدادات الكوكيز».
+  - This matches the footer link and the settings panel (Deploy 254).
+  - The sentence under "Your rights" ("change your cookie preferences" / «تغيير تفضيلات الكوكيز») is kept, because it describes the action, not the control.
+  - No sitemap change: both pages already carried that day's date.
+
+### Related work outside the site (not deployed)
+
+- **Wording sweep, 16 Oct:** no visitor-facing text still uses the cookie wording replaced in Deploys 252 and 254. The old terms remain only in internal audit notes and a stylesheet comment.
+- **Speed check, 16 Oct, local copies:** 10 pages at 390px with 4x CPU slowdown, ~slow-4G network and a first-time visitor, median of 3 runs. Compared the site before PR #373 with main after #377.
+  - Largest content paint: 1.34–1.68 s, an average change of +9 ms per page, within run-to-run noise.
+  - Blocking time: 16 ms lower on average.
+  - Layout shift: at most 0.001.
+  - The cookie banner is never the largest content element.
+- **Counsel brief:** the owner's brief was corrected at the owner's request and delivered as a PDF, not committed. The corrections:
+  - the visit counter, not Umami, keeps the two browser entries
+  - the Facebook box is listed as a provider
+  - the 30-day hashed IP is noted
+  - the CRM's Delete and Erase are explained
+  - Meta is added to the agreements question
+
+### Verified on the live site (2026-10-17)
+
+- **Deployed commit:** `deployed-commit.txt` reads `f6a03e7`, and both privacy pages serve the new heading.
+- **Live check:** the first run reported 20 OK, 1 FAIL. Its output was not captured, so the failing check is not known. Four re-runs straight after each reported 21 OK, 0 FAIL. It is treated as transient, but recorded rather than dropped.
+- **Certificate:** the live check reports it valid to 2026-11-15, 29 days ahead.
+
+### Claim register
+
+177 claims (unchanged).
+
+### Rollback
+
+- **Deploy 259:** `git revert -m 1 f6a03e7`.
+- **Deploy 258** is documentation only.
+
+### Known limitations shipped with Deploys 258 and 259
+
+- **Unchanged from Deploys 255 to 257:**
+  - Arabic awaits the owner's review on the review page.
+  - The staff CRM on a preview uses the real database, by design.
+  - The visitor-ID lifetime and re-ask questions are with counsel.
+- **Unchanged from Deploys 242 to 244:** the accepted short last pages and the owner items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 260 and 261 — The unsubscribe rate limit counts only Netlify's own client IP (PRs #381, #384)
+
+**Previous recorded deploy:** `f6a03e7` (Deploy 259, PR #380)
+**Approvals:**
+- "merge" (#381).
+- "do 4", then "merge" (#384).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 260 | #381 | `37e9842` | 2026-10-17 02:03:28 | 1 | +67 / −1 | Notes only |
+| 261 | #384 | `6df6f65` | 2026-10-18 06:35:51 | 2 | +25 / −4 | Function + check |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 260** recorded Deploys 258 and 259.
+
+### What the deploy did
+
+- **Deploy 261 — Unsubscribe rate limit (#384).** `unsubscribe.js` limits how many addresses one connection can opt out. It now counts only Netlify's own client-IP header (`x-nf-client-connection-ip`). Before, if that header was missing, it fell back to `client-ip` and then `X-Forwarded-For`, which the caller writes.
+  - **A precaution, not a live repair.** On Netlify the header is always present and was already read first, so the fallback was never reached on the live site. The new test that a changing `X-Forwarded-For` cannot escape the limit passes on the old code too. Only the no-header case behaves differently: such a request now counts as `unknown`.
+  - **Why this was raised:** in the "what else" list of 18 Oct it was described as a bypass anyone could use. Testing showed that overstated the risk, and the request and this record say so.
+  - **Same rule elsewhere:** the sign-in code follows the same rule since PR #382 (not yet deployed).
+  - **Same fallback, unchanged:** `consent.js`, `inquiries.js`, `leads.js` and `_analytics_lib.js` keep the fallback, with the same low risk, pending the owner's decision.
+  - **`check-unsubscribe.js`** gains three checks:
+    - 40 requests, each with a new `X-Forwarded-For` and `client-ip`, still hit the limit;
+    - every recorded row holds Netlify's IP;
+    - without Netlify's header, the caller's headers are ignored. This check fails on the old code.
+
+### Related work outside the site (not deployed)
+
+- **Password reset, release 1 (draft PR #382).**
+  - **What it does:** one CRM account opens both the CRM and analytics. The reset flow is hardened, and the reset email is sent after the answer (`context.waitUntil`).
+  - **Testing:** 75 checks, and 37 protections proven by removing each in turn.
+  - **Staging kit:** a setup sheet, a smoke test that refuses the live site, and the owner's checklist.
+  - **Retention:** option B is the working default for the sign-in log, and counsel questions 14–17 are added in `docs/g0-counsel-questions.md`. Both live on the PR branch until it merges.
+- **Password reset, release 2 (draft PR #383, stacked on #382).**
+  - **What it does:** every session is checked against its account on each request, across 20 functions plus the enquiry and lead delete.
+  - **Testing:** a 33-check regression test, and 16 protections proven.
+- **`npm run test:bundles` (in #383):** packages every function with Netlify's bundler and loads each package on its own.
+  - **Before every production deploy:** the owner decided on 18 Oct that it runs then; the standing note at the top of this record arrives with #383.
+  - **Deploy 261:** run on `533152c` with the script from #383: 43 of 43 packages OK.
+- **Bundler finding, 17 Oct:** Netlify's bundler left the database driver out of the newer-format forgot-password function. It was caught locally before any deploy and fixed in #382.
+
+### Verified on the live site (2026-10-18)
+
+- **Deployed commit:** `deployed-commit.txt` reads `6df6f656944e3d829ef7210bba784b2267dda9f3`.
+- **Live check:** the latest run reported 21 OK, 0 FAIL. The run straight after the merge counted 20 OK lines and no FAIL lines; its output was not kept, so the difference cannot be named.
+- **Certificates:** `olivesegypt.com` and `www.olivesegypt.com` are valid to 2026-11-17, 29 days ahead.
+- **Not exercised on the live site:** the rate limit itself, since that would write real opt-out records. It is covered by `check-unsubscribe.js`.
+
+### Claim register
+
+177 claims (unchanged).
+
+### Rollback
+
+- **Deploy 261:** `git revert -m 1 6df6f65`.
+- **Deploy 260** is documentation only.
+
+### Known limitations shipped with Deploys 260 and 261
+
+- **The fallback in the four files above.**
+- **#383 conflict:** #383 edits `unsubscribe.js` a few lines below this change, so a small conflict is expected when it is brought up to date with `main`.
+- **Unchanged from Deploys 258 and 259:**
+  - Arabic awaits the owner's review.
+  - The staff CRM on a preview uses the real database, by design.
+  - The visitor-ID lifetime and re-ask questions are with counsel.
+  - The owner items listed at Deploys 242 to 244.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 262 and 263 — Every visitor IP address comes from Netlify's own header (PRs #385, #386)
+
+**Previous recorded deploy:** `6df6f65` (Deploy 261, PR #384)
+**Approvals:**
+- "merge" (#385).
+- "do 4 5 and 7", then "mereg" (#386).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 262 | #385 | `a4bda67` | 2026-10-18 06:46:57 | 1 | +75 / −1 | Notes only |
+| 263 | #386 | `d0dff1e` | 2026-10-18 07:06:31 | 8 | +84 / −15 | Functions + check |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 262** recorded Deploys 260 and 261. It was merged while its deploy preview was still building; the preview passed afterwards.
+
+### What the deploy did
+
+- **Deploy 263 — Client IP from Netlify's header only (#386).** A shared helper, `_lib.js` `netlifyClientIp`, reads `x-nf-client-connection-ip` and never `client-ip` or `X-Forwarded-For`, which the caller writes. It is now used by:
+  - `consent.js`, for the consent record's one-way device fingerprint;
+  - `inquiries.js` and `leads.js`, for the form rate limits;
+  - `_analytics_lib.js`, for the visit collector's rate limit (still `''` when the header is missing);
+  - `unsubscribe.js`, the same rule as Deploy 261, now through the helper.
+  - **No live behaviour changed.** As in Deploy 261, Netlify always sets its header and every file already read it first. So no stored value, fingerprint or limit changes; this only keeps the fallback from ever being reachable.
+  - **`scripts/check-client-ip.js` (in `npm test`)** checks the helper and scans every function for code that reads the caller-written headers. The three old sign-in functions (`auth-login.js`, `crm-auth-login.js`, `crm-auth-forgot.js`) are exempt on `main`, with the reason: #382 rewrites them to read Netlify's header only. On the #382 branch the exemptions are already removed and the scan covers everything.
+
+### Related work outside the site (not deployed)
+
+- **Drafts #382 and #383 brought up to date with `main` (through Deploy 263).**
+  - **Conflicts:** only in `package.json` and import lines.
+  - **Release 1 (#382):** 37 of 37 protections still proven.
+  - **Release 2 (#383):** 16 of 16 still proven.
+  - **Bundle check:** 48 of 48 OK on #383.
+- **Found and fixed on #382:** its new `/api/crm/auth/change` route was missing from `check-live.js`, so the live check would have failed after Release 1 shipped. It is now listed as POST only.
+  - **How it was found:** a live check run from the Release 2 branch, whose `netlify.toml` already has that route, reported it. This was a local artefact, not a fault on the live site.
+- **Found and fixed on #383:** `npm test` had been failing on that branch since `d06adfa`.
+  - **Cause:** the script-integrity check read code snippets inside the new session mutation harness as file references.
+  - **Fix (`685370a`):** the snippets are spelt so they no longer look like file references; they produce the same code.
+  - **Why it was missed:** the passing run reported then was taken before the file was committed.
+- **Staging sheet (#382), new step L8:** Release 2 on its own branch deploy, for staging tests E1–E4.
+
+### Verified on the live site (2026-10-18)
+
+- **Deployed commit:** `deployed-commit.txt` reads `d0dff1e2462f1ac4139bbc8ae23cab824a4d71e6`.
+- **Live check:** straight after the merge, 21 OK, 0 FAIL.
+- **One failure while writing this record:** a later run reported 20 OK, 1 FAIL. The "/page redirects to /page/" check got a network error fetching `/ar/resources/export-markets`.
+  - **Direct probe:** the address answered 301 to `/ar/resources/export-markets/`, which answered 200.
+  - **Reruns:** three, each 21 OK, 0 FAIL.
+  - **Treated as transient,** and recorded rather than dropped.
+- **Certificates:** both are valid to 2026-11-17, 29 days ahead.
+
+### Claim register
+
+177 claims (unchanged).
+
+### Rollback
+
+- **Deploy 263:** `git revert -m 1 d0dff1e`.
+- **Deploy 262** is documentation only.
+
+### Known limitations shipped with Deploys 262 and 263
+
+- **The three old sign-in functions on `main`** keep their fallback until #382 is deployed (the same low risk).
+- **Unchanged from Deploys 260 and 261:**
+  - Arabic awaits the owner's review.
+  - The staff CRM on a preview uses the real database, by design.
+  - The visitor-ID lifetime and re-ask questions are with counsel.
+  - The owner items listed at Deploys 242 to 244.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 264 to 266 — The letterhead prints blank with its footer at the foot; the English address loses its bracketed Arabic street name (PRs #387, #388, #389)
+
+**Previous recorded deploy:** `d0dff1e` (Deploy 263, PR #386)
+**Approvals:**
+- "merge" (#387).
+- "fix 1. 2 and 3", then "merge 388 and 389" (#388).
+- "b", then "merge 388 and 389" (#389).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 264 | #387 | `b40ba1b` | 2026-10-19 02:07:01 | 1 | +75 / −1 | Notes only |
+| 265 | #388 | `3ae182f` | 2026-10-19 09:17:10 | 2 | +24 / −4 | Letterhead (EN, AR), print only |
+| 266 | #389 | `389260a` | 2026-10-19 09:18:45 | 85 | +118 / −116 | Address everywhere, 18 English PDFs |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 264** recorded Deploys 262 and 263.
+
+### What the deploys did
+
+- **Background.** The owner asked to see every PDF the CRM can issue. Sample quotation, invoice and letter PDFs (EN and AR, plus a voided quotation) and the two letterhead pages were rendered from the CRM's own document view with fictitious data, and sent to the owner; none was issued or committed. Three problems were raised from that review and the owner chose to fix all three.
+- **Deploy 265 — The letterhead's print output (#388).** These are print-only changes to `/letterhead/` and `/ar/letterhead/`; the screen view is unchanged.
+  - **The prompt no longer prints.** A blank sheet no longer prints the "Click here to draft your letter..." / «اضغط هنا لكتابة خطابك...» prompt.
+  - **The footer sits at the foot of the paper.** The sheet now fills the A4 printable area (25.6 of 25.7 cm), instead of the footer sitting under the last line. A longer letter still runs on to page two, with the footer after it.
+  - **The paper size is fixed.** `@page` names A4.
+  - **Checked by printing:** blank, short and long letters in both languages gave 1, 1 and 2 A4 pages, with no prompt in any.
+- **Deploy 266 — The English head-office address (#389).**
+  - **New wording:** "Ouroba Square, 5th Settlement, New Cairo, Cairo, Egypt". The bracketed «(ميدان العروبة)» is dropped everywhere: page footers, /contact, /company-profile, /privacy, /business-card, the letterhead, the CRM document template, the Organization JSON-LD, `llms.txt`, the product-page generator, and all 18 English PDFs.
+  - **The Arabic address is unchanged.**
+  - **A reversal of an earlier decision.** Claim C-22 (owner-confirmed 2026-09-05) had fixed the bracketed form as the one English string, so the owner was asked to choose between keeping it and changing it everywhere. Changing only the documents would have reintroduced two wordings. The owner chose to change it everywhere.
+  - **What changed with it:**
+    - C-22 records the decision;
+    - `check-nav-footer.js` holds the new string and rejects the bracketed form;
+    - `sitemap.xml` dates moved for /privacy/, /company-profile/ and /contact/, whose content carries the address.
+  - **PDFs.** The English PDFs were rebuilt with `scripts/generate-export-catalog-pdf.js`. The Arabic PDFs, which the generator also rewrote with no change in content, were restored so the deploy carries only what changed.
+  - **Merge order.** #388 and #389 both touch `letterhead/index.html`, on different lines. #389 merged cleanly after #388, and `npm test` passed on the combination before it merged.
+
+### Verified on the live site (2026-10-19)
+
+- **Deployed commit:** `deployed-commit.txt` reads `389260ad2302e9227781cb570a7f3bba125d4091`.
+- **Address:**
+  - /contact/, /letterhead/ and /crm/document/view/ serve "Ouroba Square, 5th Settlement…" without the bracketed Arabic.
+  - /ar/contact/ keeps the Arabic address.
+  - The live `downloads/company-profile-en.pdf` carries the new line.
+- **Live check:** 21 OK, 0 FAIL, both straight after the deploy and while writing this record.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims. C-22 has been reworded, not added.
+
+### Rollback
+
+- **Deploy 266:** `git revert -m 1 389260a`. This restores the pages, the PDFs, the check and C-22 together.
+- **Deploy 265:** `git revert -m 1 3ae182f`.
+- **Deploy 264** is documentation only.
+
+### Known limitations shipped with Deploys 264 to 266
+
+- **Listings outside this repository:** Google Business Profile, Maps and any directory listings still show whatever was entered there; the owner updates those.
+- **CRM documents:** their footer still follows the content rather than the foot of the page. This was not part of the request; for a document with a table that is the usual layout.
+- **Unchanged from Deploys 262 and 263:**
+  - the three old sign-in functions keep their IP fallback until #382;
+  - Arabic awaits the owner's review;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID lifetime and re-ask questions are with counsel;
+  - the owner items listed at Deploys 242 to 244.
+
+---
+
+## Deploy 267 — The CRM's quotation, invoice and letter in the owner's new design; minimum order as a full container; payment terms and lead time as fill-in fields (PR #393)
+
+**Previous recorded deploy:** `389260a` (Deploy 266, PR #389)
+**Approval:**
+- The owner sent the new design for the CRM's official documents and asked for the minimum-order wording to carry no figures.
+- "a yes, b yes remove all numbers, c fill-in fields": build the design into the CRM; remove the minimum-order figures (#392, separate and not yet merged); payment terms and lead time as fill-in fields.
+- After the samples, the owner asked for a header check and less empty space ("if you agree"). This was done in the same PR.
+- "merge" (#393).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 267 | #393 | `b401d53` | 2026-10-19 10:08:34 | 4 | +557 / −421 | CRM document view and form, documents function, its check |
+
+Files and lines are the merge against the `main` it landed on.
+
+**Notes-only deploys listed here:** none. #391, which records Deploys 264 to 266, had not merged yet, so this entry is on the same branch.
+
+### What the deploy did
+
+- **The printed document (`crm/document/view/`).** The layout follows the owner's 2026-10-19 design, in English and Arabic:
+  - a green masthead with the logo tile and a gold contact column;
+  - the title and number, with the dates beside them;
+  - a buyer card and a "Sales Representative" card;
+  - a green-headed table and a green total bar;
+  - a terms grid;
+  - a signature line and a dashed company-stamp box (quotations and invoices; letters keep a plain signature).
+- **The printed footer** is now the page's own `@bottom-center` box. It prints on every page with the company line, the document number and "Page n / N". This resolves the limitation listed at Deploys 264 to 266, where the footer followed the content.
+- **Pages 2 onward** open with a slim green band naming the company and the document number. Before, they started straight on the table.
+- **Empty space.** Type is slightly larger, more so in Arabic, because Noto Naskh sets smaller than Plus Jakarta Sans at the same size. On a one-page quotation or invoice, the signature and stamp sit at the foot of the page. Terms, notes and signature move as one block, so no page carries the signature alone.
+- **Minimum order** on a quotation reads "Full container load (FCL)" / «حاوية كاملة (FCL)», with no tonnage or container size.
+- **Payment terms and lead time** are new optional fields on quotations and invoices. They have no defaults and print only when written. The documents function stores them in two new nullable columns, `payment_terms` and `lead_time`, each up to 200 characters, and ignores them on letters.
+- **Signatory.** "Signed by" (name and title) is taken for every document type, not only letters. The form's "Signed by" card is shared by all three types.
+- **Fixed, pre-existing:** the form pre-filled the letter signatory with "[object Object]". `CRM.user` is `{ username }`; the form now uses the username.
+- **Arabic print footer.** Its Latin runs are wrapped in Unicode isolates, so the page counter, email and web address read in the right order.
+- **Checks:**
+  - `check-crm-documents.js` gained five checks (66 in all): terms are stored, left empty when blank, capped, and ignored on letters, and a quotation keeps its signatory.
+  - `npm test` passed.
+  - `npm run test:bundles` (script copied temporarily from #383) reported 43 packaged and 0 problems.
+  - Sample documents were printed with Chromium from fictitious data: every type in both languages, a voided quotation, blank terms, and a 30-line invoice (3 pages). Samples were sent to the owner; none was committed.
+
+### Database
+
+`ensureSchema` adds `payment_terms` and `lead_time` with `ADD COLUMN IF NOT EXISTS`. This runs on the first documents request after the deploy, the same pattern as the `language` column. No migration was run by hand. Existing documents have neither field and print without those rows.
+
+### Verified on the live site (2026-10-19)
+
+- **Deployed commit:** `deployed-commit.txt` reads `b401d532d5e758deb5a8121e97a8d50923cf24a7`.
+- **Document view:** `/crm/document/view/` serves the new layout. It contains the closing block, the continuation-page header rule and «حاوية كاملة (FCL)».
+- **Form:** `/crm/document/` serves the payment-terms field and the username prefill.
+- **Live check:** 20 OK and 1 FAIL. The failure was `/ar/solutions` returning a network error with no response. Fetched again on its own, it returned 301 to `/ar/solutions/`, so all 21 pass.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims, unchanged. The FCL wording repeats the minimum-order claims as #392 rewrites them. Until #392 merges, the public pages still carry the earlier figures.
+
+### Rollback
+
+`git revert -m 1 b401d53`. The two new columns stay in place. They are nullable, and the earlier code never reads them.
+
+### Known limitations shipped with Deploy 267
+
+- **Arabic labels** new with this design await the owner's review: «الأسعار: للوحدة المبينة», «صفحة», «رقم», the date labels and the table headings.
+- **Browser support.** The every-page footer and the continuation header use `@page` margin boxes. Chrome and Edge (131 and later) print them; another browser prints the document without them.
+- **Bank details** are not on invoices. They were not requested.
+- **Unchanged from Deploys 264 to 266:**
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244.
+
+**Listed in the next entry:** the merge of this record (#391, notes only).
+
+---
+
+## Deploys 268 and 269 — Minimum order is a full container load (FCL), with no figure anywhere; the record of Deploys 264 to 267 (PRs #392, #391)
+
+**Previous recorded deploy:** `b401d53` (Deploy 267, PR #393)
+**Approvals:**
+- The owner asked that the minimum order carry no figures: "different packing have different dry or drained weight so the 16 to 18 tons doesn't apply to all … just leave it fcl or fully loaded container". Then "b yes remove all numbers" (#392).
+- The owner asked what was waiting for approval. The reply named #392 and #391, and the owner answered "okay merge" (both).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 268 | #392 | `36e50e2` | 2026-10-20 01:52:43 | 71 | +202 / −193 | Minimum-order wording (EN, AR), 10 PDFs, checks, claims |
+| 269 | #391 | `836c1af` | 2026-10-20 01:52:59 | 1 | +148 / −1 | Notes only |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 269** recorded Deploys 264 to 267.
+
+### What the deploys did
+
+- **Deploy 268 — Minimum order (#392).**
+  - **The rule:** every statement of the export minimum now reads "a full container load (FCL)" / «حاوية كاملة (FCL)». No statement gives a tonnage ("16–18 MT") or a container size ("1 × 20ft"). On the homepage, the "1×20ft · Container MOQ" figure is now "FCL".
+  - **"Indicative" goes:** the sentence becomes "Our minimum order is…". The hedge existed only because of the tonnage.
+  - **Inside Egypt:** the minimum for 220 kg barrels, "10 metric tons (about 45 barrels)", becomes "confirmed during quotation". The local page's title drops "from 10 tons". Jars, tins and buckets follow the FCL minimum.
+  - **Where:**
+    - pages: the homepage (FAQ, structured data and stats tile), `/resources/faq`, `/company-profile`, `/how-we-work`, `/resources/private-label`, `/resources/certifications`, `/catalog`, the olive and pickled-vegetable pages, four articles, the solutions hub and five solutions pages, and `llms.txt`, each in English and Arabic (37 pages);
+    - 10 PDFs: company profile, buyer's guide, company overview, export catalogue and private-label brochure, in English and Arabic.
+  - **Kept on purpose:**
+    - the pricing page's worked example ("…for a full 20ft container FOB Alexandria"), in the page and in the pricing guide, which shows how costs add up and is not a minimum;
+    - the contact form's estimated-volume choices.
+  - **Generated content:** `generate-solutions-pages.py` was re-run, and its output is identical to the edited pages. The PDF sources were rebuilt and the 10 PDFs reprinted with new fingerprints. The other 26 PDFs, rewritten by the generator with no change in content, were restored.
+  - **Checks:**
+    - `check-article-claims.js` now fails any minimum-order sentence that carries a quantity, and any tonnage put on a container. It was shown to fail on the old text.
+    - `check-solutions.js` holds the new Egypt wording.
+    - The figure-parity check caught three Arabic texts still saying "20" before the PR opened; all three were fixed.
+  - **Register and sitemap:** C-133, C-136, C-138, C-139 and C-140 record the decision, and `evidence-needed.md` is updated. 37 `sitemap.xml` dates moved, one for each page whose text changed.
+  - **Before merging:** the branch was merged locally with the `main` that carried Deploy 267. `npm test` passed on the combination, and `check-function-bundles.js` (copied temporarily from #383) reported 43 packaged and 0 problems.
+- **Deploy 269 — The record (#391):** Deploys 264 to 266 and Deploy 267. Deploy 267 was added to the same branch because #393 merged first.
+
+### Verified on the live site (2026-10-20)
+
+- **Deployed commit:** `deployed-commit.txt` reads `836c1af12ce35fb5b70c410e2c7de669337376bf`.
+- **Minimum order:** these pages carry "FCL" and no "16–18" or "20 tons" in either language: `/`, `/ar/`, `/products/`, `/ar/resources/certifications/` and `llms.txt`.
+- **Live check:** two runs, each 20 OK and 1 FAIL. The failure was a different page each time (`/ar/resources/pricing` and then `/catalog/`), each a connection error with no response. Fetched again, `/ar/resources/pricing` returned 301 to `/ar/resources/pricing/` and `/catalog/` returned 200. With the earlier single failure on `/ar/solutions` at Deploy 267, the pattern points to the checking connection, not the site.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims. C-133, C-136, C-138, C-139 and C-140 have been reworded, not added.
+
+### Rollback
+
+- **Deploy 268:** `git revert -m 1 36e50e2`. This restores the pages, the PDFs, the checks and the five claims together.
+- **Deploy 269** is documentation only.
+
+### Known limitations shipped with Deploys 268 and 269
+
+- **Arabic awaits the owner's review:** the new minimum-order sentence, «حاوية كاملة (FCL)» and the Egypt-page wording, along with the CRM document labels listed at Deploy 267.
+- **Listings outside this repository:** directories, marketplaces or past PDFs sent to buyers may still state a tonnage. The owner updates those.
+- **Unchanged from Deploy 267:**
+  - the three old sign-in functions keep their IP fallback until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions are with counsel;
+  - the owner items listed at Deploys 242 to 244.
+- **#359 (PDF redesign, Phase B)** stays a draft until the four remaining product photographs arrive. This was the owner's choice on 2026-10-20.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 270 to 273 — The live check retries a dropped connection once; optional bank details on CRM invoices; the letterhead in the new design (PRs #394, #395, #396, #397)
+
+**Previous recorded deploy:** `836c1af` (Deploy 269, PR #391)
+**Approvals:**
+- "merge" (#394).
+- The owner asked "what else". The reply listed six options, and the owner answered "do all". Then "merge 395 396 397" (#395, #396, #397).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 270 | #394 | `88af9d0` | 2026-10-20 02:03:33 | 1 | +70 / −1 | Notes only |
+| 271 | #395 | `3ed04a4` | 2026-10-20 02:25:55 | 1 | +22 / −4 | Live-check script |
+| 272 | #396 | `4caaedc` | 2026-10-20 02:26:01 | 4 | +76 / −3 | CRM invoice form and view, documents function, its check |
+| 273 | #397 | `1c7182f` | 2026-10-20 02:26:07 | 2 | +173 / −117 | Letterhead (EN, AR) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 270** recorded Deploys 268 and 269.
+
+### What the deploys did
+
+- **Deploy 271 — The live check (#395).**
+  - **Retry:** `scripts/check-live.js` now tries a request a second time, after 2 seconds, when the connection itself fails with no reply. A second failure is reported as before, and any HTTP status is judged on the first answer.
+  - **Why:** three runs in a row (Deploys 267 to 269) each failed one random page with "fetch failed", and every one passed when fetched again.
+  - **Visible:** the report states how many requests were retried.
+  - **Checks:** an offline test with a stand-in for the network confirmed it: a connection dropped once is retried and passes, one dropped twice fails, and a normal request is made once.
+- **Deploy 272 — Bank details on CRM invoices (#396).**
+  - **The field:** "Bank details for payment (optional)" on the invoice form. It is free text over several lines, printed under "Bank Details" / «البيانات المصرفية» only when typed.
+  - **No defaults:** the details are stored only with that invoice. No account number is in the site's code, and an old account can never print by default.
+  - **Invoices only:** quotations and letters ignore the field.
+  - **Database:** a new nullable column, `bank_details`, up to 600 characters. `ensureSchema` adds it with `ADD COLUMN IF NOT EXISTS` on the first documents request. No migration was run by hand.
+  - **Layout:** stacked under the terms, the bank details pushed a three-line invoice's signature onto a second page. Side by side, it stays on one page. On a phone screen they stack.
+  - **Checks:** `check-crm-documents.js` gained 5 checks (71 in all). Bank details are stored with their line breaks, left empty when blank, ignored on a quotation and on a letter, and capped at 600 characters.
+- **Deploy 273 — The letterhead (#397).**
+  - **The design:** `/letterhead/` and `/ar/letterhead/` take the owner's 2026-10-19 letterhead design, with the same masthead, gold rule and green footer band as the CRM documents (Deploy 267).
+  - **Printing:** the footer band is the page's own `@bottom-center` box, at the foot of every printed page. A long letter gets a slim company band at the top of each later page, and a gap above the footer.
+  - **Unchanged:** a blank letterhead prints blank, on one A4 page. The toolbar, the back link to the CRM, Clear, and Print are as before.
+  - **Address:** the owner's design PDF still showed the bracketed English address. The page uses the current one (C-22).
+- **Before merging:** the three branches were merged together on the `main` that carried Deploy 270, and `npm test` passed on the combination. `check-function-bundles.js` (copied temporarily from #383) reported 43 packaged and 0 problems on #396.
+
+### Owner material outside the repository (2026-10-20)
+
+None of this was committed.
+- **Arabic review page:** the existing Arabic Wording Review page gained nine minimum-order phrases (Deploy 268) and the invoice heading «البيانات المصرفية».
+  - The owner's earlier 24 answers are kept. The one correction among them, the glass-jar row, was confirmed applied.
+  - Two groups were marked live: the preview-forms message (#377) and the PET pail row (#367).
+- **Buyer message:** a message in English and Arabic for buyers holding documents with the old "16–18 tons", with a checklist of places outside the site to update. The Arabic was flagged for the owner's review.
+- **Correction to Deploy 267:** the CRM Arabic labels listed there as awaiting review come from the owner's own design PDFs. The Arabic written here is limited to «حاوية كاملة (FCL)» and, from this entry, «البيانات المصرفية».
+- **Scheduled check:** the HTTPS certificate renewal is to be checked on 2026-11-01. The owner is told only if it has not renewed.
+
+### Verified on the live site (2026-10-20)
+
+- **Deployed commit:** `deployed-commit.txt` reads `1c7182fd977308d6eee889f64eec84c3f1218371`.
+- **Pages:**
+  - `/letterhead/` and `/ar/letterhead/` serve the new masthead;
+  - `/crm/document/` serves the bank-details field;
+  - `/crm/document/view/` serves the bank-details layout.
+- **Live check:** 21 OK, 0 FAIL, with "1 request retried once after a dropped connection." That is the case Deploy 271 is for.
+- **Certificates:** valid to 2026-11-18, 29 days ahead.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 273:** `git revert -m 1 1c7182f`.
+- **Deploy 272:** `git revert -m 1 4caaedc`. The column stays in place; it is nullable, and the earlier code never reads it.
+- **Deploy 271:** `git revert -m 1 3ed04a4`.
+- **Deploy 270** is documentation only.
+
+### Known limitations shipped with Deploys 270 to 273
+
+- **Browser support.** The letterhead's every-page footer and continuation band use `@page` margin boxes, as the CRM documents do. Chrome and Edge (131 and later) print them; another browser prints the sheet without them.
+- **Arabic awaiting the owner's review:** the minimum-order wording, «البيانات المصرفية», and the older unanswered items on the review page (cookie banner and privacy page, 2026-10-16).
+- **Unchanged from Deploys 268 and 269:**
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244;
+  - #359 waits for four product photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 274 to 278 — Proforma invoices, invoices and packing lists made from earlier documents, uploaded buyer documents, and clearer live-check wording (PRs #398, #399, #400, #401, #402)
+
+**Previous recorded deploy:** `1c7182f` (Deploy 273, PR #397)
+**Approvals:**
+- "merge" (#398).
+- The owner asked "what else". The reply offered proforma invoices, quotation-to-invoice, packing lists, copying the last bank details and the live-check wording. The owner answered "do all 1 to 5", and added: "i have quatations and other document that i would like to add to my existing buyers that are not issued by me, so i want you to make an upload doc in crm buyer details with the add quatation and add invoice".
+- "merge 399 400 401 402".
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 274 | #398 | `8b2fdf4` | 2026-10-20 02:33:29 | 1 | +88 / −1 | Notes only |
+| 275 | #399 | `2000bd7` | 2026-10-20 02:59:07 | 1 | +5 / −1 | Live-check script |
+| 276 | #400 | `00232f0` | 2026-10-20 02:59:13 | 6 | +267 / −24 | CRM: proforma, documents made from others, last bank details |
+| 277 | #401 | `a1f6966` | 2026-10-20 02:59:31 | 6 | +297 / −17 | CRM: packing lists |
+| 278 | #402 | `7676c6b` | 2026-10-20 02:59:51 | 9 | +699 / −4 | CRM: uploaded buyer documents, new function |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 274** recorded Deploys 270 to 273.
+
+### What the deploys did
+
+- **Deploy 275 — The live check's wording (#399).** When the check has no commit to compare against, it compares the live sitemap instead. It used to say "no deploy marker yet"; it now says which reason applies. The logic is unchanged.
+- **Deploy 276 — Proforma invoices, documents made from others, and the last bank details (#400).**
+  - **Proforma invoice:** a new CRM document type, numbered `PI-`. It carries a validity date and bank details, and appears on the Documents page and each buyer's page.
+  - **From one document to the next:** a live quotation offers Create proforma and Create invoice; a live proforma offers Create invoice.
+    - The form opens filled in from the source: buyer, language, lines, currency, terms, bank details and signatory. Dates are not copied.
+    - The new document takes its own number, records `source_doc_id` and `source_doc_number`, and prints "Ref: Q-…".
+    - The server checks that the source exists, is a kind the new document can come from, and is not void.
+  - **"Copy from last invoice":** fills the bank details from the newest live invoice or proforma, on a click only. A void document is skipped.
+  - **Fixed, pre-existing:** the buyer page listed every letter as a "Quotation".
+  - **Checks:** `check-crm-documents.js` reached 86 checks.
+- **Deploy 277 — Packing lists (#401).**
+  - **The document:** a new type, numbered `PL-`. Each line has a description, packing, packages, and net and gross weight in kg, with column totals. Shipment details (container, seal, vessel, ports, shipping marks) are optional. It has no prices.
+  - **From an invoice:** a live invoice offers Create packing list. The buyer and goods are copied; packages and weights are left empty to be entered from the loading.
+  - **Validation:** gross weight below net is refused, in the form and on the server.
+  - **Lists:** letters and packing lists no longer show "0.00 USD" in the Documents and buyer lists.
+  - **Checks:** 98 checks.
+  - **Merge order:** #401 was opened against #400's branch. It was moved to `main` after #400 merged, then merged.
+- **Deploy 278 — Uploaded buyer documents (#402).**
+  - **The card:** each buyer's page has an "Uploaded documents" card with Upload quotation, Upload invoice and Upload other. Each upload carries the file and, optionally, their number, date, issuer, total and a note, and can be opened or deleted.
+  - **The function:** `crm-buyer-files.js` (`/api/crm/buyer-files`) checks a CRM session on every request.
+    - Files are stored in Neon as bytea, in the new table `crm_buyer_files`. They pass through SQL as base64.
+    - 4 MB per file.
+    - The type is decided from the file's own bytes: PDF, PNG, JPEG, WebP, .docx and .xlsx.
+    - Files are served with nosniff, a sandboxing CSP and no-store.
+    - Delete needs `confirmed=1`.
+    - Uploads, opens and deletes are audited with the kind and size, never the content.
+  - **Erasure:** an erased buyer's files are kept, like the documents the CRM issued.
+  - **Checks:** a new `check-crm-buyer-files.js` (45 checks) runs in `npm test`. The schema, strict-id, session and deleted-buyer checks cover the new function and card.
+- **Before merging:** #399 to #402 were merged together on the `main` that carried Deploy 274. `npm test` passed on the combination, and `check-function-bundles.js` (copied temporarily from #383) reported 44 packaged and 0 problems.
+- **Database:** the new columns (`source_doc_id`, `source_doc_number`, `packing_items`, `shipment`) and the `crm_buyer_files` table are added by each function's `ensureSchema` on first use. No migration was run by hand.
+
+### Verified on the live site (2026-10-20)
+
+- **Deployed commit:** `deployed-commit.txt` reads `7676c6b12f1d64cda8be6af031238d5363504888`.
+- **Pages:**
+  - `/crm/document/` serves the proforma and packing types and the copy button;
+  - `/crm/document/view/` serves Create packing list;
+  - `/crm/buyer/` serves the Uploaded documents card;
+  - `/crm/documents/` offers New Packing List.
+- **Upload route:** `/api/crm/buyer-files` answers 401 without a session.
+- **Live check:** 21 OK and **1 FAIL**: "Every API route is checked for private data — not in check-live.js: /api/crm/buyer-files". The check fails any API route it does not probe, and #402 did not add the new one. The route itself refuses visitors without a session (401, above). The fix is #403, which adds the route; with it the check reads 21 OK, 0 FAIL.
+- **Certificates:** valid to 2026-11-18. A renewal check is scheduled for 2026-11-01.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 278:** `git revert -m 1 7676c6b`. The table stays and nothing reads it; uploaded files remain until removed.
+- **Deploy 277:** `git revert -m 1 a1f6966`.
+- **Deploy 276:** `git revert -m 1 00232f0`. Proformas already issued would show as "Document" on the old sheet.
+- **Deploy 275:** `git revert -m 1 2000bd7`.
+- **Deploy 274** is documentation only.
+- **Order:** revert 277 before 276, because it is built on 276.
+
+### Known limitations shipped with Deploys 274 to 278
+
+- **Live check:** fails until #403 merges (see above).
+- **Arabic awaiting the owner's review:**
+  - «فاتورة مبدئية»;
+  - «قائمة التعبئة» and the packing-list column and shipment labels;
+  - the minimum-order wording;
+  - «البيانات المصرفية».
+- **Storage:** uploads use the Neon free tier (0.5 GB), at 4 MB per file at most. **Corrected at Deploys 279 to 281: the Free plan's limit is 1 GB per project, not 0.5 GB.**
+- **Password reset:** Release 2 (#383) must add `crm-buyer-files.js` to its session check when it is next brought up to date with `main`.
+- **Unchanged from Deploys 270 to 273:**
+  - the browser support of `@page` margin boxes;
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
+  - the staff CRM on a preview uses the real database, by design;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244;
+  - #359 waits for four product photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 279 to 281 — The live check probes the upload route; the record of 274 to 278; CRM Batch 1: failures said in the page and recorded, phone cards, dates (PRs #403, #404, #405)
+
+**Previous recorded deploy:** `7676c6b` (Deploy 278, PR #402)
+**Approvals:**
+- The owner wrote, after reviewing Batch 1, "Update #405 with 1, 2, 3, 4 and 6… I am merging #403 and #404 now."
+- Then "merge 403, 404 and 405".
+- Then "#405 approved; I am merging #403, #404 and #405."
+- **The owner merged all three themselves** (GitHub shows `Mohamed00076` as the merger).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 279 | #403 | `e0b51bf` | 2026-10-21 02:13:52 | 1 | +1 / −1 | Live-check script |
+| 280 | #404 | `dbf3543` | 2026-10-21 02:13:59 | 1 | +103 / −1 | Notes only |
+| 281 | #405 | `a8d8d19` | 2026-10-21 02:14:21 | 25 | +1136 / −159 | CRM: Batch 1 of the owner's CRM audit; two new functions |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 280** recorded Deploys 274 to 278.
+
+### What the deploys did
+
+- **Deploy 279 — The live check probes the upload route (#403).**
+  - `/api/crm/buyer-files` was added to the check's list of private routes.
+  - #402 had added the route but not the probe, so the check failed on it (see Deploys 274 to 278).
+- **Deploy 281 — CRM Batch 1 (#405).** This is the first of the three batches the owner approved after the read-only CRM visual audit.
+  - **Failures said in the page.**
+    - A failed load shows a banner in plain words, with Retry. Banners use role=alert and aria-live.
+    - Before, a failed load left an empty page, said "Nothing received yet", or showed a raw code.
+    - Raw server codes and anything from a 5xx are never shown.
+    - Fixed, pre-existing: the Kanban hid its "Loading…" line before checking the reply, so a failed load showed nothing at all.
+  - **Failures recorded.**
+    - A new function, `crm-client-failure.js` (`/api/crm/client-failure`), takes POST only and needs a CRM session. It allows 30 reports a minute.
+    - It records what the server never saw (no reply, or a 4xx other than 401) through `reportFailure`. That puts the failure on the dashboard's failure card and sends the throttled alert.
+    - A 5xx is not reported twice, because the function that failed has already recorded it.
+  - **Pop-ups replaced.**
+    - The 5 browser alerts and 8 browser confirmations are now in-page dialogs (`CRM.ask`): Cancel is focused, and Escape or a click outside cancels.
+    - Erase needs the buyer's name typed, or ERASE for a buyer already deleted.
+  - **The Erase wording** no longer claims removal from backups. It names the restore history and backup branches or snapshots, and counsel question 18 was added.
+  - **Phones:** the Enquiries and Buyers tables become one card per row under 640 px.
+  - **Dates** read "20 Oct 2026". A date-only value keeps its calendar day.
+  - **STAGING / PREVIEW badge.**
+    - A new function, `crm-environment.js` (`/api/crm/environment`), needs a session and only reads. It reports "staging" when the `deployment_marker` label exists.
+    - On any address other than the live site, the CRM shows an amber STAGING bar, or a red PREVIEW bar ("connected to the LIVE database").
+  - **Not touched:**
+    - the sign-in, forgot, reset and change-password pages, which still load only `crm.css`;
+    - headers, permissions and the audit log.
+    New styles are in `assets/crm-ui.css`, scoped to `.crm-ui-`, and loaded by the 9 working CRM pages only.
+  - **Checks:** a new `check-crm-ui.js` (74 checks) runs in `npm test`. Seven existing checks were updated, including the write-failure check, which now fails on any browser pop-up.
+- **Before merging:**
+  - `npm test` passed.
+  - `check-function-bundles.js` (copied temporarily from #383) reported 46 packaged and 0 problems.
+  - Both new routes are in `netlify.toml` and in the live check's private-route list.
+- **Database:** nothing new. `crm-environment.js` reads `deployment_marker` only if `to_regclass` finds it, and never creates it.
+
+### Verified on the live site (2026-10-21)
+
+- **Deployed commit:** `deployed-commit.txt` reads `a8d8d191299ed24c0148802ed9aa1e3ff287381c`.
+- **Live check: 21 OK, 0 FAIL, 0 PENDING.** "Private data refuses visitors who are not signed in" now covers 44 addresses, the two new routes among them.
+- **New files and routes:**
+  - `/assets/crm-ui.css` is served with the dialog styles;
+  - `/assets/crm.js` carries `CRM.ask` and the environment badge;
+  - `/api/crm/environment` and `/api/crm/client-failure` answer 401 without a session.
+- **Certificates:** valid to 2026-11-19 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Correction: Neon storage
+
+The entry for Deploys 274 to 278, and the description of #402, said the Neon Free plan gives **0.5 GB**. **Neon's plans page gives 1 GB of storage per project on the Free plan.** At that limit, inserts, updates and deletes fail. The figure is corrected in place above, with a note. Uploads are now capped by #406, which is not yet merged: 300 MB in total by default, with a warning at 80 %.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 281:** `git revert -m 1 a8d8d19`. The pop-ups and blank failures would return. Nothing is stored that needs undoing: failures already recorded stay in `crm_failures` and age out after 90 days.
+- **Deploy 279:** `git revert -m 1 e0b51bf`. The live check would fail again on the upload route.
+- **Deploy 280** is documentation only.
+
+### Known limitations shipped with Deploys 279 to 281
+
+- **Password reset:** Release 2 (#383) must add `crm-buyer-files.js`, `crm-client-failure.js` and `crm-environment.js` to its session check when it is next brought up to date with `main`.
+- **PREVIEW bar:** a deploy preview still uses the live database until step L1 of the staging sheet is done. The red bar says so; it does not change it.
+- **Open PRs, not deployed:**
+  - #406: upload cap and Erase with files;
+  - #407: Batch 2;
+  - #408: the Email warning for an unsubscribed address;
+  - #382 and #383: password reset, still drafts.
+- **Unchanged from Deploys 274 to 278:**
+  - the Arabic awaiting the owner's review («فاتورة مبدئية», «قائمة التعبئة» and the packing-list labels, the minimum-order wording, «البيانات المصرفية»);
+  - the browser support of `@page` margin boxes;
+  - listings outside this repository;
+  - the three old sign-in functions until #382;
+  - the visitor-ID questions with counsel;
+  - the owner items listed at Deploys 242 to 244;
+  - #359 waits for four product photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 282 to 286 — Upload cap and Erase with files; CRM Batch 2; the Email warning; stage rules enforced by the server; the record of 279 to 281 (PRs #406, #407, #408, #410, #409)
+
+**Previous recorded deploy:** `a8d8d19` (Deploy 281, PR #405)
+**Approvals:**
+- **#406:**
+  - "#406: implement Erase option (b)… Then #406 is ready to merge."
+  - "Approved: #406 is being merged now".
+- **#407 and #408:**
+  - "Approved: I will merge #406, #407, #408 in order, then #409 (point each at main as I go). The Email warning wording is approved as staff guidance pending counsel question 20."
+- **#410:**
+  - "Approve the refusal messages and CSV notes as listed, with these requests for #410: (1) keep any text I have typed… (2) the CSV import result must list skipped rows and the reason for each."
+  - Both requests were added before merging.
+- **#409:** "Merge #409 any time."
+- **All five:**
+  - The owner then wrote "merge all in order". The merges were made in this session on that instruction, in the order #406, #407, #408, #410, #409. GitHub shows the owner's account as the merger.
+  - Before each merge, `npm test` and the bundle check were run on the PR merged onto the current `main`. Each merge waited for the previous one to be live with the live check green.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 282 | #406 | `afcd1b2` | 2026-10-21 11:12:19 | 8 | +216 / −16 | CRM: upload cap and usage line; Erase deletes uploaded files unless unticked |
+| 283 | #407 | `efbdba7` | 2026-10-21 11:13:53 | 11 | +803 / −114 | CRM: Batch 2 (Kanban Move to, one stage on a phone, buyer quick actions, Today) and browser stage rules |
+| 284 | #408 | `0fc7869` | 2026-10-21 11:15:22 | 7 | +176 / −3 | CRM: Email warns for an unsubscribed address (read-only check) |
+| 285 | #410 | `1dd8b54` | 2026-10-21 11:16:47 | 10 | +222 / −17 | CRM: the server enforces the stage rules |
+| 286 | #409 | `be1772e` | 2026-10-21 11:23:42 | 1 | +103 / −2 | Notes only |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 286** recorded Deploys 279 to 281, with the Neon storage correction.
+
+### What the deploys did
+
+- **Deploy 282 — Upload cap; Erase and uploaded files (#406).**
+  - **Cap:** uploaded files have a total cap, 300 MB by default, which can be changed with `CRM_FILES_TOTAL_MB` in Netlify.
+    - The buyer page shows a usage line with a bar.
+    - It shows an amber warning from 80 % and a red one at 100 %.
+    - An upload over the cap is refused (413) and nothing is stored.
+    - A new `GET /api/crm/buyer-files?usage=1` needs a session and is not cached.
+  - **Erase wording** now names "database backup branch or snapshot".
+  - **Erase and files, owner's option (b):**
+    - The dialog has a ticked box, "Also delete the N files uploaded to this buyer", with the file names listed. Unticking keeps them.
+    - Ticked deletes the files in the same single statement as the rest of the erasure.
+    - The audit row records "N uploaded file(s) deleted" or "N uploaded file(s) kept (box not ticked)".
+    - A kept file can no longer be opened from the CRM.
+    - Counsel questions 18 and 19 were updated.
+- **Deploy 283 — CRM Batch 2 (#407).**
+  - **Kanban:**
+    - A "Move to" menu on every card sends the same request as a drag.
+    - On a phone, one stage is shown at a time, with a Stage menu.
+  - **Buyer page:**
+    - Quick actions come first: WhatsApp, Call, Email, Add note, Move stage, New quotation.
+    - Then activity, documents, uploads and stage history.
+    - The details form is folded below, and Delete/Erase are last.
+  - **Dashboard:** a Today section comes first. It shows new enquiries with "Open newest enquiry", and follow-ups due today and overdue.
+  - **Stage rules in the browser**, for drag and both menus: Lost/Stalled asks for a reason; Exported/Completed asks to confirm.
+  - **Fixed, pre-existing:** adding a note reloaded the record and lost unsaved form edits.
+  - **Checks:** `check-crm-stage-moves.js` (30 checks at this deploy).
+- **Deploy 284 — The Email warning (#408).**
+  - The buyer read returns `email_opted_out`: one yes/no for the buyer's own address. It is a one-row SELECT, run only if the table exists. It never writes and never lists anything.
+  - The page shows a red line, and Email asks before opening the mail app.
+  - The wording was approved by the owner as staff guidance pending counsel question 20, which was added.
+  - **Checks:** `check-buyer-optout-flag.js` (17 checks).
+- **Deploy 285 — The server enforces the stage rules (#410).**
+  - `_crm_lib.js` `stageRuleError` refuses a move to Lost/Stalled without a non-blank `lost_reason`, and a move to Exported/Completed without `confirm_stage: 'Exported/Completed'`.
+    - **Where it applies:** PATCH, POST (a buyer created into either stage) and CSV import.
+    - **What a refusal does:** it is a 400 that names the field, and it writes nothing.
+  - **The folded details form** asks the same questions before saving.
+  - **Nothing typed is lost on a refusal:**
+    - a reason is kept and offered again for that buyer;
+    - the form is never refilled or cleared;
+    - the server's own reason is shown.
+  - **CSV import:**
+    - a Lost/Stalled row needs a `lost_reason` column;
+    - an Exported/Completed row is skipped with the reason;
+    - every skipped row is listed with its line and reason.
+  - **Fixed, pre-existing:** creating a buyer never saved `lost_reason`.
+  - **Counsel question 19** gained the owner's addition about files kept by an unticked Erase.
+  - **Checks:** `check-crm-stage-moves.js` reached 59 checks.
+- **Database:** nothing new. No table or column was added, and no migration was run.
+
+### Verified on the live site (2026-10-21)
+
+- **Deployed commit:** `deployed-commit.txt` reads `be1772ece2ce03e28ea73683e96ec19f3bb8b790`.
+- **Live check after each merge:** 21 OK, 0 FAIL, 0 PENDING, after Deploys 282, 283, 284, 285 and 286.
+  - After 285, the first run was stopped by its own time limit, so it was run again. That rerun was green, with one request retried once after a dropped connection.
+- **Served as expected:**
+  - **282:** the usage line and the Erase files box on `/crm/buyer/`. The usage route answers 401 without a session.
+  - **283:** the Kanban Stage menu, the buyer quick actions, the dashboard Today card, and `stageMoveCheck` in `crm.js`.
+  - **284:** the opt-out line on `/crm/buyer/`.
+  - **285:** `refusalText` in `crm.js` and the CSV hint on `/crm/buyers/`. A PATCH without a session answers 401.
+- **Certificates:** valid to 2026-11-20 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+Revert in reverse order, because each was built on the one before:
+- **Deploy 285:** `git revert -m 1 1dd8b54`. The rules would be in the browser only again.
+- **Deploy 284:** `git revert -m 1 0fc7869`.
+- **Deploy 283:** `git revert -m 1 efbdba7`.
+- **Deploy 282:** `git revert -m 1 afcd1b2`.
+  - The cap would be lifted.
+  - Erase would keep files again.
+  - Files already deleted by an erasure cannot be restored from the CRM.
+- **Deploy 286** is documentation only.
+
+### Known limitations shipped with Deploys 282 to 286
+
+- **Counsel, open:**
+  - 18: erasure versus backups;
+  - 19: uploaded files and Erase, including files kept by an unticked box;
+  - 20: whether an unsubscribe covers one-to-one business email.
+- **Unsubscribe page:** it offers no Market Brief-only choice. That is a question for counsel (20); nothing was changed.
+- **Password reset:** Release 2 (#383) must add `crm-buyer-files.js`, `crm-client-failure.js` and `crm-environment.js` to its session check when it is next brought up to date.
+- **Next:** CRM Batch 3 (phone bottom bar, larger text and 44 px targets, the document colours), after this record.
+- **Unchanged from Deploys 279 to 281:**
+  - the PREVIEW bar and step L1;
+  - the Arabic awaiting review;
+  - `@page` margin boxes;
+  - listings outside this repository;
+  - the old sign-in functions until #382;
+  - the visitor-ID questions;
+  - the owner items at Deploys 242 to 244;
+  - #359's photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 287 to 289 — The record of 282 to 286; the Lost/Stalled reason shown and a plain Exported/Completed question; the live check's certificate WARN and request time limit (PRs #411, #412, #413)
+
+**Previous recorded deploy:** `be1772e` (Deploy 286, PR #409)
+**Approvals:**
+- **#411:** "Then I will merge #411 and you can start Batch 3."
+- **#412:**
+  - "The small PR for the visible Lost/Stalled reason and the clearer Exported/Completed confirmation goes next, then Batch 3."
+  - Then, after review: "#412: make 'Yes, mark as exported' a distinct colour… add the line 'Use this only after a shipment has actually left Egypt.'; label the history reason clearly as the buyer's current reason… Then it is ready to merge after #411."
+- **#413:** "Live check: add a non-failing WARN at 21 days of certificate validity (keep FAIL under 14). Approved: small PR giving each request a 30-second time limit with one retry."
+- **All three:** the owner then wrote "merge". The merges were made in this session in the order #411, #412, #413. Each was tested on the current `main` first, and each waited for the one before to be live with the live check green.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 287 | #411 | `97a4577` | 2026-10-21 12:21:41 | 1 | +132 / −1 | Notes only |
+| 288 | #412 | `1668a86` | 2026-10-21 12:22:39 | 6 | +52 / −8 | CRM: the Lost/Stalled reason shown; a plain Exported/Completed question |
+| 289 | #413 | `e9fbdfa` | 2026-10-21 12:23:52 | 1 | +22 / −9 | Live-check script |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 287** recorded Deploys 282 to 286.
+
+### What the deploys did
+
+- **Deploy 288 — The Lost/Stalled reason shown; a plain Exported/Completed question (#412).** Both came from the owner's phone check of Deploys 282 to 285.
+  - **Step 7 of that check:** the reason was saved but could be seen nowhere once the folded form's field was hidden. It is now shown:
+    - under the buyer's name, as "Lost/Stalled: …";
+    - beside the latest move to Lost/Stalled in Stage History, as "Buyer's current Lost/Stalled reason: …". This is a label only; the history is not changed;
+    - on the Kanban card in the Lost/Stalled column. For this, the buyer list now returns `lost_reason`, which is a read only.
+  - **Step 8 of that check:** the confirmation's "Move to Exported/Completed" read like the panel's Move button. The box now asks:
+    - "Has <Company>'s export been completed?";
+    - adds "Use this only after a shipment has actually left Egypt.";
+    - offers **No, go back** (focused) and a **gold** "Yes, mark as exported" (#b8923a, dark text, 6.1:1), distinct from the olive Move button.
+  - **Checks:** `check-crm-stage-moves.js` (63 checks).
+- **Deploy 289 — Live check (#413).**
+  - **Certificates:** OK from 21 days. A non-failing **WARN** from 14 to 20 days. **FAIL** under 14, unchanged.
+  - **Requests:** each has a 30-second limit and is tried once more on no reply. Before this, requests had no time limit, which is how one run on 2026-10-21 outlasted its own five-minute limit.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-21)
+
+- **Deployed commit:** `deployed-commit.txt` reads `e9fbdfa5a3304986126ffac5b3cf045b6a68e9b6`.
+- **Live check after each merge:**
+  - 21 OK, 0 FAIL, 0 PENDING after Deploys 287 and 288;
+  - after Deploy 289, with the new script: 21 OK, 0 WARN, 0 FAIL, 0 PENDING, in 9 s.
+- **`/assets/crm.js`** carries the gold confirm button and the line about leaving Egypt.
+- **Certificates:** valid to 2026-11-20 (29 days). The new WARN would begin from 2026-10-31 if the certificate has not been renewed by then. The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 289:** `git revert -m 1 e9fbdfa`.
+- **Deploy 288:** `git revert -m 1 1668a86`.
+- **Deploy 287** is documentation only.
+
+### Known limitations shipped with Deploys 287 to 289
+
+- **Owner choices, offered and not yet decided:**
+  - **Stage History label once a buyer has moved on:** it still reads "Buyer's current Lost/Stalled reason". An alternative wording for that case was offered.
+  - **Storing the reason on each history row:** feasible as one small PR. New moves would carry their own reason; old rows would stay without one, because history is add-only.
+- **Folded Buyer details form:** it is easy to miss on a phone, and Save Buyer is far down the page. Both are planned for Batch 3.
+- **Unchanged from Deploys 282 to 286:**
+  - counsel questions 18 to 20;
+  - #383's session-check wiring;
+  - the PREVIEW bar and step L1;
+  - the Arabic awaiting review;
+  - `@page` margin boxes;
+  - listings outside this repository;
+  - the old sign-in functions until #382;
+  - the visitor-ID questions;
+  - the owner items at Deploys 242 to 244;
+  - #359's photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 290 and 291 — The record of 287 to 289; CRM Batch 3: phone bottom bar, larger text and 44 px targets, the document colours (PRs #414, #415)
+
+**Previous recorded deploy:** `e9fbdfa` (Deploy 289, PR #413)
+**Approvals:**
+- **#414:** "merge" (2026-10-21).
+- **#415:**
+  - "Batch 3 approved with these requests before I merge #415: (1) … close the folded Buyer details form without saving … (2) … More menu … (3) … no page content hides behind the bottom bar … (4) mark the bottom bar as navigation…".
+  - Then: "Merge #415 now. Before or with it, confirm or add … 1. … 'Keep editing' must be the default focus … 2. Under every date input … show the chosen date in plain text … (if you add anything, re-run the tests and tell me before merging)".
+  - Item 2 was added and reported, and the owner then wrote "merge all".
+  - **Only #415 was merged under "merge all".** #390 (dependency bump, held for its 2026-10-29 recheck) and the drafts #382, #383 and #359 were left as they are.
+- **The merges:** #414 was merged in this session on 2026-10-21; #415 on 2026-10-23 (+0300). Each was tested on the current `main` first.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 290 | #414 | `0891c34` | 2026-10-21 23:42:09 | 1 | +81 / −1 | Notes only |
+| 291 | #415 | `99974e5` | 2026-10-23 02:59:17 | 4 | +290 / −2 | CRM: Batch 3 of the owner's CRM audit |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 290** recorded Deploys 287 to 289.
+
+### What the deploys did
+
+- **Deploy 291 — CRM Batch 3 (#415).** This is the last of the three batches from the CRM visual audit.
+  - **Phone bottom bar (under 640 px):**
+    - **Tabs:** Dashboard · Enquiries · Buyers · Documents · More. More holds Letterhead, Letterhead (AR), and Log out, which is set apart in red below a rule.
+    - **For screen readers:** a navigation landmark named "Main"; the current page is marked with `aria-current="page"`; labels sit under silent icons.
+    - **More:** closes on Escape or a tap elsewhere and returns focus to More, unless the tap focused a field or link.
+    - **Top bar:** keeps only the name on a phone. Desktop is unchanged.
+    - The bar is not printed.
+  - **Colours of the new document design** on the working pages: olive #4b5a23, gold #b8923a, cream #f7f2e4. The secondary-text grey is darkened to #5f6654 (5.3:1 on cream).
+  - **Text and targets:** 15 px text, 16 px fields, and 44 px buttons, fields and menus.
+  - **Buyer page:**
+    - Buyer details shows "Tap to edit" while folded.
+    - With the form open on a phone, Save Buyer and **Cancel** stay above the bottom bar.
+    - Cancel folds the form if nothing changed. Otherwise it asks "Discard your changes?", with "Keep editing" focused by default; on Add Buyer it returns to the Buyers list.
+    - Bottom scroll padding keeps a focused field above both bars.
+  - **Dates:** under every date field (Next Action Due, an uploaded document's date, a document's Valid Until or Due date), the chosen date shows in the CRM's format, "23 Oct 2026", or "No date chosen". Screen readers get it through `aria-describedby` and an `aria-live` line.
+  - **Scope:** all of it hangs off `body.crm-ui-app`, which `CRM.renderNav` sets. The sign-in, forgot-password and reset-password pages load neither `crm-ui.css` nor `crm.js`, and are unchanged.
+  - **Checks:** `check-crm-ui.js` reached 90 checks. Its new sign-in check names the real folders (`forgot-password`, `reset-password`); a first version had wrong folder names, which Batch 1's own check already covered.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-23)
+
+- **Deployed commit:** `deployed-commit.txt` reads `99974e53b9db8c152fbf20cb7d5a590b44f2e6fc`.
+- **Live check:**
+  - after Deploy 290: 21 OK, 0 WARN, 0 FAIL, 0 PENDING;
+  - after Deploy 291: 21 OK, 0 WARN, 0 FAIL, 0 PENDING, in 22 s.
+- **Served as expected:**
+  - `/assets/crm.js` carries `CRM.tabBar` and `CRM.dateTexts`;
+  - `/assets/crm-ui.css` carries the cream page colour;
+  - `/crm/login/` does not load `crm-ui.css`.
+- **Certificates:** valid to 2026-11-22 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 291:** `git revert -m 1 99974e5`. Nothing is stored.
+- **Deploy 290** is documentation only.
+
+### Known limitations shipped with Deploys 290 and 291
+
+- **Owner's phone check of Batch 3 on the live site:** pending.
+- **Backlog, not started on the owner's instruction:**
+  - the sign-in, forgot, reset and change-password pages restyle, after #382 and #383 are merged and live;
+  - Lost/Stalled reason categories, and the reason stored on each Stage History row;
+  - a plan to finish the password-reset staging tests.
+- **Unchanged from Deploys 287 to 289:**
+  - the open Stage History label wording;
+  - counsel questions 18 to 20;
+  - #383's session-check wiring;
+  - the PREVIEW bar and step L1;
+  - the Arabic awaiting review;
+  - `@page` margin boxes;
+  - listings outside this repository;
+  - the old sign-in functions until #382;
+  - the visitor-ID questions;
+  - the owner items at Deploys 242 to 244;
+  - #359's photographs.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 292 to 296 — The record of 290 and 291; Arabic number order; PDF accessibility: catalogues tagged, Arabic ranges and dates, one cover figure (PRs #416, #424, #427, #428, #430)
+
+**Previous recorded deploy:** `99974e5` (Deploy 291, PR #415)
+**Approvals:**
+- **#416:** in the owner's merge order of 2026-10-23 ("#416, Neon backup branch, #417, then #419 and #418").
+- **#424:** in the owner's merge order "#424, #427, #428, then #430" (2026-10-24).
+- **#427, #428, #430:** "Approved: #427, #428, #430, and #429 (after I check the Arabic myself)", then "Approved: merge order #424, #427, #428, #430; #429 into #426's branch" (2026-10-24).
+- **The merges:** #416 was merged by the owner on 2026-10-23. #424, #427, #428 and #430 were merged in this session on 2026-10-24 (+0300), in that order, each after the one before it was live and its live check passed.
+- **Not a deploy:** #429 (the accessibility statement's PDF line) was merged into #426's branch, `claude/accessibility-statement`. It goes live only with #426.
+- **GitHub mergeability:** after #427, GitHub reported #428 as conflicting, though `git merge` was clean. Merging `main` into its branch (`fed8ee2`, tests passing) cleared it. #430 got the same base merge (`a38deca`) before its merge.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 292 | #416 | `4040fe3` | 2026-10-23 12:03:46 | 1 | +89 / −1 | Notes only |
+| 293 | #424 | `3effc30` | 2026-10-24 03:21:50 | 6 | +24 / −6 | Arabic pages: number ranges in order |
+| 294 | #427 | `05bca24` | 2026-10-24 03:23:28 | 8 | +22 / −14 | PDFs: catalogues tagged |
+| 295 | #428 | `76f7f5d` | 2026-10-24 03:26:06 | 16 | +48 / −40 | Arabic PDFs and pages: ranges and dates in order |
+| 296 | #430 | `9dc0eb8` | 2026-10-24 03:32:49 | 34 | +52 / −50 | PDFs: one described cover figure |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 292** recorded Deploys 290 and 291.
+
+### What the deploys did
+
+- **Deploy 293 — Arabic number ranges (#424).**
+  - **Pages:** five ranges on four Arabic pages now sit in their own `dir="ltr"` span, so they no longer show reversed: «5–7 أيام», «5–8%», «0.2–0.5%», «(2014–2023)» and «1–5 كجم».
+  - **Check:** `check-rtl.js` rule 6 was added for these runs.
+- **Deploy 294 — Catalogue PDFs tagged (#427).**
+  - **Files:** the product catalogue, all spec sheets in one file and the export catalogue, English and Arabic (6 PDFs).
+  - **Now carry:** tags, the document language and bookmarks: 8, 36 and 14 per language.
+  - **Unchanged:** the text layer, page counts and page sizes.
+  - **Settings:** `CATALOGUE_TAGS` in `scripts/guide-pdfs.js`.
+- **Deploy 295 — Arabic ranges and dates in the right order (#428).**
+  - **Sources fixed:** every reversed run found by scanning what is displayed, not the source:
+    - each line of all 18 Arabic PDFs, rebuilt in visual order and compared with its English twin;
+    - all 48 Arabic pages, rendered.
+  - **In `ar/catalog/print/`:** the date «آخر تحديث 2026-10-11», in the page and in its single-sheet script, and «الأعيرة 140-360», twice.
+  - **In `ar/company-profile/`:** the date, «3–4 أسابيع» and «تشكيلة 1–5 كجم».
+  - **In `scripts/export-catalog-source-ar.html`:** «4–6» and «3–4».
+  - **Reprinted:** 10 Arabic PDFs (the product catalogue, all-spec-sheets, the 7 single spec sheets and the export catalogue). The only text-layer change is the order of those runs.
+  - **Builder:** `build-pdf-documents.js` accepts the span in the profile's date line. Its PDF source is unchanged, so the company-profile PDF was not reprinted.
+  - **Check:** rule 6 no longer exempts the PDF sources, and it now reads the Arabic export-catalogue source.
+- **Deploy 296 — One described cover figure (#430).**
+  - **What was wrong:** the cover photo of the 7 guides and the company profile (16 PDFs) was tagged twice: an undescribed Figure from its `<figure>` frame around the photo's own Figure.
+  - **Fix:** the frame is now a `<div>`.
+  - **Unchanged:** text, pages and every pixel at 100 dpi.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-24)
+
+- **Deployed commit:** `deployed-commit.txt` reads `9dc0eb89700d1cf83b14dabb7ff78b640ddb9a19`.
+- **Live check:** after each of Deploys 293 to 296: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **PDFs served:**
+  - every public catalogue, spec-sheet and company-profile PDF fetched from the live site is byte for byte the file in `main`;
+  - the 4 catalogue files are tagged, with language and bookmarks;
+  - the 2 company-profile PDFs have one cover Figure, with its description.
+- **Arabic order on the live site:**
+  - the reversed-run scan of the 10 public Arabic PDFs, as served, found none;
+  - the rendered scan of all 49 Arabic pages (48 plus the all-products print view) found none: 648 live responses, fetched with TLS verified, none failed.
+- **Gated PDFs** (guides, export catalogue): checked from the repo files the functions serve.
+- **File names and URLs:** unchanged.
+- **Certificates:** valid to 2026-11-23 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged. (Row C-184 is updated on #426's branch by #429, which is not live.)
+
+### Rollback
+
+- **Deploy 296:** `git revert -m 1 9dc0eb8`.
+- **Deploy 295:** `git revert -m 1 76f7f5d`. If 296 is also being reverted, revert it first: both update `scripts/guide-pdfs.json`.
+- **Deploy 294:** `git revert -m 1 05bca24`. #428 carries #427's reprinted Arabic catalogue files, so revert 295 first.
+- **Deploy 293:** `git revert -m 1 3effc30`. #428 extends its rule 6, so revert 295 first.
+- **Deploy 292** is documentation only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 292 to 296
+
+- **Owner's phone checks of Deploys 293 to 296:** pending.
+- **PDFs:**
+  - the 14 single spec sheets stay untagged until #359 reprints them in the new design;
+  - the caliber-scale drawing in the packaging overview and pricing & packaging guide (4 PDFs) is one Figure without a description;
+  - photo descriptions for #359 are awaiting the owner's approval, including the missing one for the oxidized black olive photo.
+- **#359** (draft): on 2026-10-24 its photos became one described Figure each. It still needs a rebase and reprint after #427 and #428, which I'll do when it merges.
+- **#426** (draft, merge last): now carries #429.
+- **Unchanged from Deploys 290 and 291:** the owner's phone check of Batch 3; the backlog items; and the items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 297 to 300 — Tests on GitHub; a PDF structure check; every PDF tagged; one link per spec-sheet download (PRs #432, #433, #434, #435)
+
+**Previous recorded deploy:** `9dc0eb8` (Deploy 296, PR #430)
+**Approvals:**
+- **#432:** "Approved #432" (2026-10-24).
+- **#433, #434, #435:** "Approved #433, #434, #435 and the caliber description" (2026-10-24).
+- **The merges:** all four were merged in this session on 2026-10-24 (+0300), each after the one before it was live and its live check passed. Before its merge, `main` was merged into the branches of #434 (`f6b85a9`) and #435 (`8bf88ce`), with tests passing.
+- **Not yet merged:** #431, this record. The owner's merge of it did not go through, and it stays open. It was extended with this entry and becomes Deploy 301 when merged.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 297 | #432 | `20ed158` | 2026-10-24 21:13:36 | 1 | +37 / −0 | Tests on GitHub (no site change) |
+| 298 | #433 | `9e1a277` | 2026-10-24 21:42:48 | 2 | +119 / −1 | Check: PDF structure (no site change) |
+| 299 | #434 | `fa9e2ba` | 2026-10-24 21:45:35 | 17 | +36 / −39 | PDFs: the 14 single spec sheets tagged |
+| 300 | #435 | `00a99ce` | 2026-10-24 21:48:32 | 2 | +8 / −8 | Catalogue: one link per spec-sheet download |
+
+Files and lines are each merge against the `main` it landed on.
+
+### What the deploys did
+
+- **Deploy 297 — Tests on GitHub (#432).**
+  - **What:** `.github/workflows/tests.yml` runs `npm test` on every push to any branch, on every pull request, and on demand, with the full git history (for the sitemap dates).
+  - **Result:** a failing check shows as a red cross on the commit and the PR.
+  - **To block merges:** branch protection on `main` requiring the "test" check is the owner's to turn on.
+  - **Also:** a local pre-push hook runs the same suite before any push from this session (owner, 2026-10-24: "make every push stop on a failing test before it pushes").
+- **Deploy 298 — PDF structure check (#433).** `scripts/check-pdf-structure.js` in `npm test` holds all 36 PDFs to five rules:
+  - tagged;
+  - their own language;
+  - bookmarks;
+  - a shown title;
+  - every figure described, none framed by an undescribed one.
+
+  Known gaps are listed in the check with what closes each. The order of numbers in the Arabic PDFs is held at the source by `check-rtl.js` rule 6.
+- **Deploy 299 — every PDF tagged (#434).**
+  - **Reprinted:** the 7 single-product spec sheets, EN and AR, in their current design, now tagged with language and 6 bookmarks each.
+  - **Unchanged:** text, pages and every pixel.
+  - **Code:** the print-catalogue path in `scripts/guide-pdfs.js` now tags every PDF, and the check's untagged list is empty.
+  - **#359** still reprints the sheets in the new design as photos arrive.
+- **Deploy 300 — catalogue download links (#435).**
+  - **What changed:** on `/catalog/` and `/ar/catalog/`, each of the 7 "Download spec sheet" controls is now a single link, not a button inside a link. That's 7 keyboard stops per page instead of 14.
+  - **Unchanged:** the same name (now also the link's `aria-label` in English) and the same look; screenshots are pixel-identical at 1280 and 390 px.
+  - **Focus:** the browser's focus outline is kept.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-24)
+
+- **Deployed commit:** `deployed-commit.txt` reads `00a99ce9e9ccc5d47db95ddc1142f98e74235813`.
+- **Live check:** after each of Deploys 297 to 300: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **GitHub workflows:** on Deploy 297's merge commit, both "Tests" and "Live site check" passed.
+- **PDFs served:** all 14 single spec sheets fetched from the live site are byte for byte the files in `main`, each tagged, in its language (`en`/`ar`), with 6 bookmarks.
+- **Catalogue pages served:** `/catalog/` and `/ar/catalog/` have 7 spec-sheet links each, none containing a button.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 300:** `git revert -m 1 00a99ce`.
+- **Deploy 299:** `git revert -m 1 fa9e2ba`. Its check change needs Deploy 298 in place.
+- **Deploy 298:** `git revert -m 1 9e1a277`. Revert 299 first.
+- **Deploy 297:** `git revert -m 1 20ed158`. It removes the GitHub workflow only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 297 to 300
+
+- **Caliber-scale drawing:** its description was approved on 2026-10-24 and is in #436, not yet merged. Until then, #433's check lists it as the one known gap.
+- **Branch protection on `main`:** not yet on (owner).
+- **#426's PDF line:** it still names spec sheets and catalogues. Once #436 is live, every PDF is tagged and described, and changing that line is a wording change for the owner.
+- **Unchanged from Deploys 292 to 296:** the owner's phone checks; #359's Arabic photo descriptions awaiting the vowel-mark convention; the merge train #417 to #426.
+
+**Listed in the next entry:** the merge of this record, #431 (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -9959,7 +11581,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 239 (2026-10-13).**
+**Unchanged since U4, through Deploy 300 (2026-10-24).**
 
 ## Outstanding, unresolved by this document
 

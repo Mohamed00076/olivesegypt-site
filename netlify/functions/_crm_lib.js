@@ -527,7 +527,40 @@ async function deleteSubmission(event, sql, kind) {
   return json(200, { ok: true });
 }
 
+/*
+ * The rules for putting a buyer into a stage, enforced here on the server
+ * whatever sends the request: the Kanban, the buyer page's menus or details
+ * form, a CSV import, or anything calling the API directly (owner,
+ * 2026-10-21). The browser asks first (CRM.stageMoveCheck in assets/crm.js);
+ * this refuses a request that skipped the asking.
+ *
+ *   Lost/Stalled        needs a reason: lost_reason, not blank, sent with
+ *                       the move itself -- a reason stored from an earlier
+ *                       time does not count for a new move.
+ *   Exported/Completed  needs explicit confirmation: confirm_stage set to
+ *                       exactly 'Exported/Completed'.
+ *
+ * Applies to a move (the stage changing) and to a buyer created straight
+ * into one of those stages. Returns null when allowed, else
+ * { field, reason } in the words the page shows beside the field.
+ */
+const STAGE_RULE_REASONS = {
+  lost_reason: 'Moving a buyer to Lost/Stalled needs a reason. Say why, then save again.',
+  current_stage: 'Moving a buyer to Exported/Completed needs confirming. Use the CRM\u2019s Move to, which asks first, or confirm and save again.',
+};
+function stageRuleError(toStage, body) {
+  const b = body || {};
+  if (toStage === 'Lost/Stalled' && !(typeof b.lost_reason === 'string' && b.lost_reason.trim())) {
+    return { field: 'lost_reason', reason: STAGE_RULE_REASONS.lost_reason };
+  }
+  if (toStage === 'Exported/Completed' && b.confirm_stage !== 'Exported/Completed') {
+    return { field: 'current_stage', reason: STAGE_RULE_REASONS.current_stage };
+  }
+  return null;
+}
+
 module.exports = {
+  stageRuleError,
   CRM_COOKIE_NAME,
   CRM_SESSION_TTL_SECONDS,
   crmSessionKey,

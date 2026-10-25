@@ -47,6 +47,7 @@
       rateLimited: 'Too many requests — please try again in a little while.',
       generic: 'Something went wrong. Please try again, or email sales@olivesegypt.com directly.',
       network: 'Network error — please try again, or email sales@olivesegypt.com directly.',
+      preview: 'This is a preview copy of the site: nothing was sent. Forms send only from olivesegypt.com.',
       invalid: {
         email: 'That email address does not look right — please check it.',
         company_name: 'Please enter your company name.',
@@ -61,6 +62,7 @@
       rateLimited: 'عدد كبير جدًا من الطلبات — يرجى المحاولة مرة أخرى بعد قليل.',
       generic: 'حدث خطأ ما. يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
       network: 'خطأ في الشبكة — يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
+      preview: 'هذه نسخة معاينة من الموقع: لم يُرسل أي شيء. لا تُرسل النماذج إلا من olivesegypt.com.',
       invalid: {
         email: 'يبدو أن البريد الإلكتروني غير صحيح — يرجى التحقق منه.',
         company_name: 'يرجى إدخال اسم شركتك.',
@@ -72,6 +74,11 @@
   };
   var LANG = (document.documentElement.lang === 'ar') ? 'ar' : 'en';
   var T = STRINGS[LANG];
+
+  // Only the live site sends. On a deploy preview or a local copy the form
+  // says so and sends nothing, so checking a preview never creates a real
+  // lead or notification email. Same rule as consent.js.
+  var LIVE_HOST = /^(www\.)?olivesegypt\.com$/.test(window.location.hostname);
 
   function field(form, name) {
     return form.querySelector('[data-field="' + name + '"]');
@@ -147,6 +154,11 @@
 
       if (!form.checkValidity()) {
         form.reportValidity();
+        return;
+      }
+
+      if (!LIVE_HOST) {
+        showStatus('error', T.preview);
         return;
       }
 

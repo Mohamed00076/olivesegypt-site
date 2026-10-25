@@ -23,7 +23,7 @@
  */
 
 const { neon } = require('@neondatabase/serverless');
-const { readJsonBody, json, parseCookies, verifySession, COOKIE_NAME } = require('./_lib');
+const { readJsonBody, json, parseCookies, verifySession, COOKIE_NAME, netlifyClientIp } = require('./_lib');
 const {
   normaliseEmail, looksLikeEmail, ensureOptOutSchema, unsubscribe, resubscribe,
 } = require('./_optout_lib');
@@ -42,10 +42,13 @@ function connectionString() {
   );
 }
 
+// Netlify's own client-IP header only. X-Forwarded-For and client-ip are
+// whatever the caller sends, so falling back to them would let one
+// connection pick a new "IP" per request and walk past the limit below. On
+// Netlify this header is always present; without it, every request shares
+// the 'unknown' bucket, which fails safe (the same rule as the sign-in code).
 function clientIp(event) {
-  const h = event.headers || {};
-  return h['x-nf-client-connection-ip'] || h['client-ip'] ||
-    (h['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+  return netlifyClientIp(event);
 }
 
 function isAdmin(event) {

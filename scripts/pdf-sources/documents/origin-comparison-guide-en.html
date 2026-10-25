@@ -16,29 +16,14 @@
     <div><div class="wordmark">TRIPLE COMPANY</div><div class="tagline">for Industrial Development</div></div>
   </div>
   <div class="contact">
-    Ouroba Square (<span class="ar-inline" lang="ar" dir="rtl">ميدان العروبة</span>), 5th Settlement,<br/>New Cairo, Cairo, Egypt<br/>
+    Ouroba Square, 5th Settlement,<br/>New Cairo, Cairo, Egypt<br/>
     <span dir="ltr"><a href="mailto:sales@olivesegypt.com">sales@olivesegypt.com</a> &middot; <a href="tel:+201006045961">+20 100 604 5961</a></span>
   </div>
 </header>
+<div class="cover-row">
 <div class="doc-head"><h1>Egypt Origin &amp; Sourcing Guide</h1><p class="doc-date">Revised <span class="nb">2026-09</span>-28</p></div>
-<svg class="cover-art" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
-  <path d="M8,138 C60,118 110,92 150,60 C178,38 204,22 234,12" stroke="#c9a84c" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-  <g fill="#8fa86a">
-    <ellipse cx="44" cy="112" rx="20" ry="5.5" transform="rotate(-38 44 112)"/>
-    <ellipse cx="62" cy="132" rx="20" ry="5.5" transform="rotate(12 62 132)"/>
-    <ellipse cx="92" cy="86" rx="21" ry="5.5" transform="rotate(-52 92 86)"/>
-    <ellipse cx="118" cy="104" rx="20" ry="5.5" transform="rotate(4 118 104)"/>
-    <ellipse cx="146" cy="44" rx="20" ry="5.5" transform="rotate(-60 146 44)"/>
-    <ellipse cx="176" cy="62" rx="20" ry="5.5" transform="rotate(-6 176 62)"/>
-    <ellipse cx="200" cy="14" rx="18" ry="5" transform="rotate(-28 200 14)"/>
-    <ellipse cx="218" cy="36" rx="17" ry="5" transform="rotate(14 218 36)"/>
-  </g>
-  <g>
-    <ellipse cx="100" cy="118" rx="9" ry="11.5" fill="#b9c77a" transform="rotate(-14 100 118)"/>
-    <ellipse cx="160" cy="80" rx="9" ry="11.5" fill="#a3b665" transform="rotate(10 160 80)"/>
-    <ellipse cx="186" cy="40" rx="8" ry="10.5" fill="#c3cf86" transform="rotate(-8 186 40)"/>
-  </g>
-</svg>
+<div class="cover-photo"><img src="/scripts/pdf-design/photos/green-olives-whole.jpg" alt="Whole green olives" width="800" height="800" /></div>
+</div>
 </div></template>
 <template id="page-next"><header class="run-head" aria-hidden="true">
   <div class="brand"><img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" /><span class="wordmark">TRIPLE COMPANY</span></div>
@@ -79,7 +64,7 @@ window.tcFit = () => {
     const last = body.lastElementChild;
     return !last || last.getBoundingClientRect().bottom <= limit();
   };
-  const layout = () => {
+  const layout = (breakBefore = -1) => {
     pages.textContent = '';
     const place = (blk) => {
       body.appendChild(blk);
@@ -135,7 +120,11 @@ window.tcFit = () => {
       place(rest);
     };
     newPage(true);
-    for (const blk of [...tpl('flow').cloneNode(true).children]) place(blk);
+    [...tpl('flow').cloneNode(true).children].forEach((blk, i) => {
+      blk.dataset.i = i;
+      if (i === breakBefore && body.children.length) newPage(false);
+      place(blk);
+    });
     // How full the last page is, from the top of its content to its foot.
     const top = body.getBoundingClientRect().top;
     const last = body.lastElementChild.getBoundingClientRect().bottom;
@@ -145,20 +134,21 @@ window.tcFit = () => {
   // last page stays short rather than the type growing or shrinking to fill
   // it. Its fill is recorded for the report.
   //
-  // One exception (owner, 2026-10-13): a document whose last page holds only
-  // a few lines (under a quarter of the page) is laid out again with tighter
-  // spacing between sections and items -- the type is never resized -- and
-  // kept that way only if that removes the page.
-  pages.classList.remove('tight');
+  // No spacing is squeezed to save a page (owner, 2026-10-14: "a little bit
+  // crowded"; the tighter-spacing pass that pulled a short last page back
+  // was removed): room on the page comes before the page count.
   let result = layout();
-  if (result.count > 1 && result.fill < 0.4) {
-    const before = result.count;
-    pages.classList.add('tight');
-    result = layout();
-    if (result.count >= before) { pages.classList.remove('tight'); result = layout(); }
+  // A closing line never stands alone on the last page: the section before
+  // it moves over to keep it company (it starts that page instead), as long
+  // as that leaves something on the page it came from.
+  const bodies = [...pages.querySelectorAll('.page-body')];
+  const lastBody = bodies[bodies.length - 1];
+  if (bodies.length > 1 && [...lastBody.children].every((c) => c.classList.contains('closing'))) {
+    const prev = bodies[bodies.length - 2];
+    const mover = prev.lastElementChild;
+    if (mover && prev.children.length > 1 && mover.dataset.i !== undefined) result = layout(Number(mover.dataset.i));
   }
   document.documentElement.dataset.fill = result.fill.toFixed(2);
-  document.documentElement.dataset.tight = pages.classList.contains('tight') ? '1' : '0';
   const all = pages.querySelectorAll('.pdf-page');
   all.forEach((pg, n) => { pg.querySelector('.pageno').textContent = (n + 1) + ' / ' + all.length; });
 };

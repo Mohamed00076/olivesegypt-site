@@ -55,6 +55,13 @@
   var GA_SRC = 'https://www.googletagmanager.com/gtag/js';
   var GA_MEASUREMENT_ID = 'G-2GS8BNCXXQ';
 
+  // Only the live site reports anywhere. Deploy previews and local copies
+  // run the same code, and a choice made while checking one used to reach
+  // the real Google Analytics, Umami and consent register. Off the live
+  // hosts the banner, the choice and its storage behave exactly as live;
+  // nothing is sent. assets/analytics.js applies the same rule.
+  var LIVE_HOST = /^(www\.)?olivesegypt\.com$/.test(window.location.hostname);
+
   function readStoredConsent() {
     try {
       var raw = window.localStorage.getItem(STORAGE_KEY);
@@ -83,7 +90,7 @@
   }
 
   function loadUmamiIfConsented() {
-    if (!TC.consent.analytics) return;
+    if (!TC.consent.analytics || !LIVE_HOST) return;
     if (document.querySelector('script[data-tc-umami]')) return; // already injected this page load
     var s = document.createElement('script');
     s.defer = true;
@@ -94,7 +101,7 @@
   }
 
   function loadGoogleAnalyticsIfConsented() {
-    if (!TC.consent.analytics) return;
+    if (!TC.consent.analytics || !LIVE_HOST) return;
     if (document.querySelector('script[data-tc-ga]')) return; // already injected this page load
     window['ga-disable-' + GA_MEASUREMENT_ID] = false;
     window.dataLayer = window.dataLayer || [];
@@ -113,7 +120,8 @@
   // Withdrawal. Not loading gtag.js on the next page is not enough for Google
   // Analytics the way it is for Umami: a copy already running on this page
   // would keep sending, and the _ga cookies it set would sit in the browser
-  // for up to two years. So: tell any running copy to stop, and expire the
+  // until two years after the last visit (gtag renews them on every page
+  // load by default). So: tell any running copy to stop, and expire the
   // cookies on every domain scope gtag.js may have written them to.
   function disableGoogleAnalytics() {
     window['ga-disable-' + GA_MEASUREMENT_ID] = true;
@@ -133,7 +141,23 @@
     }
   }
 
+  // Without analytics consent the visit counter's two entries
+  // (assets/analytics.js) must not exist. Withdrawal used to leave them
+  // behind, so accepting again later revived the old visitor ID and linked
+  // the new visits to the old ones. Also run on every page load where the
+  // saved choice is "no", which clears entries left by a withdrawal made
+  // before this fix.
+  function clearCounterIds() {
+    try {
+      window.localStorage.removeItem('tc-analytics-visitor');
+      window.localStorage.removeItem('tc-analytics-session');
+    } catch (e) {
+      // Storage unavailable: nothing can be stored there either.
+    }
+  }
+
   function logConsentServerSide(mechanism, analytics) {
+    if (!LIVE_HOST) return;
     try {
       fetch('/api/consent', {
         method: 'POST',
@@ -159,6 +183,7 @@
       loadGoogleAnalyticsIfConsented();
     } else {
       disableGoogleAnalytics();
+      clearCounterIds();
     }
     // Withdrawal: if analytics is false, we simply never inject Umami on
     // this or any future page load again (each full page load re-checks
@@ -199,13 +224,18 @@
   // ended up in the same Arabic corner (C-87).
   var STYLE = '' +
     '#tc-consent-banner,#tc-consent-modal-overlay{position:fixed;left:0;right:0;z-index:9999;font-family:inherit;}' +
-    '#tc-consent-banner{bottom:0;background:#1c2416;color:#e9e7dd;padding:16px 20px;box-shadow:0 -2px 12px rgba(0,0,0,.25);border-top:1px solid #c9a84c;}' +
-    '#tc-consent-banner .tc-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;max-width:1100px;margin:0 auto;}' +
-    '#tc-consent-banner p{margin:0;font-size:13px;line-height:1.5;flex:1 1 320px;}' +
+    '#tc-consent-banner{bottom:0;background:#1c2416;color:#e9e7dd;padding:10px 16px;box-shadow:0 -2px 12px rgba(0,0,0,.25);border-top:1px solid #c9a84c;}' +
+    '#tc-consent-banner .tc-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;max-width:1100px;margin:0 auto;}' +
+    '#tc-consent-banner p{margin:0;font-size:13px;line-height:1.45;flex:1 1 320px;}' +
+    // Reject and Accept share one class, so they can never differ in weight.
+    // Choose opens the detail panel and reads as a link beside them.
+    '.tc-actions{display:flex;align-items:center;gap:8px;flex:1 1 auto;justify-content:flex-end;}' +
+    '.tc-actions .tc-btn-choice{flex:1 1 0;min-width:96px;max-width:160px;}' +
+    '.tc-btn-choice{min-height:44px;background:#e9e7dd;color:#1c2416;border-color:#e9e7dd;}' +
+    '.tc-btn-link{min-height:44px;background:transparent;color:#e9e7dd;text-decoration:underline;text-underline-offset:3px;padding:9px 8px;}' +
     '#tc-consent-banner a{color:#c9a84c;text-decoration:underline;}' +
     '.tc-btn{font-size:13px;font-weight:600;border-radius:6px;padding:9px 16px;cursor:pointer;border:1px solid transparent;white-space:nowrap;}' +
     '.tc-btn-primary{background:#c9a84c;color:#1c2416;}' +
-    '.tc-btn-secondary{background:transparent;color:#e9e7dd;border-color:#e9e7dd55;}' +
     '#tc-consent-modal-overlay{top:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;}' +
     '#tc-consent-modal{background:#fff;color:#1c2416;border-radius:12px;max-width:480px;width:100%;padding:24px;box-shadow:0 12px 40px rgba(0,0,0,.3);}' +
     '#tc-consent-modal h2{margin:0 0 12px;font-size:18px;}' +
@@ -239,43 +269,49 @@
   var STRINGS = {
     en: {
       bannerLabel: 'Cookie consent',
-      body: 'We use analytics (our own Umami, and Google Analytics, which sets cookies), only with your consent, to understand site traffic. Strictly necessary functions (like this form) always work regardless of your choice. See our ',
-      privacy: 'Privacy page',
+      // Names everything Accept turns on and what each keeps in the browser:
+      // Google Analytics sets cookies; our own counter (Umami plus the
+      // site's /api/analytics-collect pipeline) sets none, but keeps a
+      // visit ID in local storage (assets/analytics.js, VISITOR_KEY).
+      body: 'May we measure visits? Google Analytics sets cookies; our counter stores an ID in your browser. ',
+      privacy: 'Privacy',
       privacyHref: '/privacy/',
-      reject: 'Reject Non-Essential',
-      manage: 'Manage Preferences',
-      accept: 'Accept All',
-      reopen: '\uD83C\uDF6A Cookie Preferences',
-      reopenFooter: 'Cookie Preferences',
-      modalTitle: 'Cookie Preferences',
+      reject: 'Reject',
+      manage: 'Settings',
+      accept: 'Accept',
+      // The panel says what the banner says, in a little more detail, and
+      // uses the banner's names: "our counter", "Settings".
+      reopen: 'Cookie settings',
+      reopenFooter: 'Cookie settings',
+      modalTitle: 'Cookie settings',
       modalSubtext: "Choose what we're allowed to use. You can change this anytime.",
-      necessary: 'Strictly Necessary',
-      necessaryDesc: 'Required for the site to function (forms, navigation). Always on.',
-      necessaryAria: 'Strictly Necessary (always on)',
+      necessary: 'Needed for the site',
+      necessaryDesc: 'Forms, navigation, and remembering your choices here. Always on.',
+      necessaryAria: 'Needed for the site (always on)',
       analytics: 'Analytics',
-      analyticsDesc: 'Helps us understand site traffic, using our own Umami and Google Analytics. Google Analytics sets cookies and sends visit data to Google. Off unless you turn it on.',
+      analyticsDesc: 'Measures visits. Google Analytics sets cookies and sends visit data to Google; our counter stores an ID in your browser. Off unless you turn it on.',
       cancel: 'Cancel',
-      save: 'Save Preferences'
+      save: 'Save'
     },
     ar: {
       bannerLabel: 'الموافقة على الكوكيز',
-      body: 'نستخدم أدوات تحليلات (أداة Umami الخاصة بنا، وGoogle Analytics التي تضع ملفات تعريف ارتباط)، بموافقتك وحدها، لفهم حركة الزيارات على الموقع. أما الوظائف الضرورية تمامًا (مثل هذا النموذج) فتعمل دائمًا مهما كان اختيارك. اطّلع على ',
-      privacy: 'صفحة الخصوصية',
+      body: 'هل نقيس الزيارات؟ تضع Google Analytics الكوكيز، ويحفظ عدّادنا معرّفًا في متصفحك. ',
+      privacy: 'سياسة الخصوصية',
       privacyHref: '/ar/privacy/',
-      reject: 'رفض غير الضروري',
-      manage: 'إدارة التفضيلات',
-      accept: 'قبول الكل',
-      reopen: '\uD83C\uDF6A تفضيلات الكوكيز',
-      reopenFooter: 'تفضيلات الكوكيز',
-      modalTitle: 'تفضيلات الكوكيز',
+      reject: 'رفض',
+      manage: 'الإعدادات',
+      accept: 'قبول',
+      reopen: 'إعدادات الكوكيز',
+      reopenFooter: 'إعدادات الكوكيز',
+      modalTitle: 'إعدادات الكوكيز',
       modalSubtext: 'اختر ما يُسمح لنا باستخدامه. ويمكنك تغيير ذلك في أي وقت.',
-      necessary: 'ضروري تمامًا',
-      necessaryDesc: 'لازم لعمل الموقع (النماذج والتنقل). مفعّل دائمًا.',
-      necessaryAria: 'ضروري تمامًا (مفعّل دائمًا)',
+      necessary: 'لازم لعمل الموقع',
+      necessaryDesc: 'النماذج والتنقل وتذكّر اختياراتك هنا. مفعّل دائمًا.',
+      necessaryAria: 'لازم لعمل الموقع (مفعّل دائمًا)',
       analytics: 'التحليلات',
-      analyticsDesc: 'تساعدنا على فهم حركة الزيارات، باستخدام أداة Umami الخاصة بنا وGoogle Analytics. تضع Google Analytics ملفات تعريف ارتباط وترسل بيانات الزيارة إلى Google. معطّل ما لم تفعّله أنت.',
+      analyticsDesc: 'تقيس الزيارات. تضع Google Analytics الكوكيز وترسل بيانات الزيارة إلى Google، ويحفظ عدّادنا معرّفًا في متصفحك. معطّل ما لم تفعّله أنت.',
       cancel: 'إلغاء',
-      save: 'حفظ التفضيلات'
+      save: 'حفظ'
     }
   };
   var T = STRINGS[document.documentElement.lang === 'ar' ? 'ar' : 'en'];
@@ -289,7 +325,7 @@
   }
 
   // The WhatsApp FAB sits bottom-right, exactly where the banner's
-  // "Accept All" button lands -- push it up out of the way while the
+  // Settings button lands -- push it up out of the way while the
   // banner is visible, and put it back once the banner is gone.
   //
   // The height has to be re-read, not measured once. The banner is a single
@@ -364,7 +400,12 @@
     var el = fab();
     if (el) el.style.bottom = h ? (24 + h) + 'px' : '';
     var q = quoteFab();
-    if (q) q.style.bottom = h ? (28 + h) + 'px' : '';
+    if (q) {
+      q.style.bottom = h ? (28 + h) + 'px' : '';
+      // Icon only while the banner is up on a phone or tablet: the full
+      // label covered the text above the banner. site-nav.js keeps it so.
+      if (h) q.classList.toggle('tc-quote-fab--compact', window.matchMedia('(max-width: 1023.98px)').matches);
+    }
     positionTab(h);
   }
   // site-nav.js adds the quote button after this file has run; it calls this
@@ -398,7 +439,10 @@
     var el = fab();
     if (el) el.style.bottom = '';
     var q = quoteFab();
-    if (q) q.style.bottom = '';
+    if (q) {
+      q.style.bottom = '';
+      q.classList.remove('tc-quote-fab--compact');
+    }
     positionTab(0);
   }
 
@@ -441,13 +485,32 @@
     document.body.appendChild(btn);
   }
 
+  // The panel is a modal dialog, so the keyboard has to behave like one:
+  // Escape closes it, Tab stays inside it, and focus goes back to whatever
+  // opened it (the banner's Choose button or the footer link).
+  var modalOpener = null;
+
   function closeModal() {
     var overlay = document.getElementById('tc-consent-modal-overlay');
-    if (overlay) overlay.remove();
+    if (!overlay) return;
+    overlay.remove();
+    if (modalOpener && document.contains(modalOpener)) modalOpener.focus();
+    modalOpener = null;
+  }
+
+  function trapModalKeys(e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; }
+    if (e.key !== 'Tab') return;
+    var items = document.getElementById('tc-consent-modal').querySelectorAll('input:not([disabled]),button');
+    var first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
   function openPreferencesModal() {
+    var opener = document.activeElement;
     closeModal();
+    modalOpener = opener;
     var stored = readStoredConsent();
     var analyticsChecked = stored ? stored.analytics === true : false;
 
@@ -471,6 +534,8 @@
         '</div>' +
       '</div>';
     document.body.appendChild(overlay);
+    overlay.addEventListener('keydown', trapModalKeys);
+    document.getElementById('tc-consent-analytics-toggle').focus();
 
     document.getElementById('tc-consent-modal-cancel').addEventListener('click', closeModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
@@ -491,10 +556,12 @@
     banner.setAttribute('aria-label', T.bannerLabel);
     banner.innerHTML =
       '<div class="tc-row">' +
-        '<p>' + T.body + '<a href="' + T.privacyHref + '">' + T.privacy + '</a>.</p>' +
-        '<button type="button" class="tc-btn tc-btn-secondary" id="tc-consent-reject">' + T.reject + '</button>' +
-        '<button type="button" class="tc-btn tc-btn-secondary" id="tc-consent-manage">' + T.manage + '</button>' +
-        '<button type="button" class="tc-btn tc-btn-primary" id="tc-consent-accept">' + T.accept + '</button>' +
+        '<p>' + T.body + '<a href="' + T.privacyHref + '">' + T.privacy + '</a></p>' +
+        '<div class="tc-actions">' +
+          '<button type="button" class="tc-btn tc-btn-choice" id="tc-consent-reject">' + T.reject + '</button>' +
+          '<button type="button" class="tc-btn tc-btn-choice" id="tc-consent-accept">' + T.accept + '</button>' +
+          '<button type="button" class="tc-btn tc-btn-link" id="tc-consent-manage">' + T.manage + '</button>' +
+        '</div>' +
       '</div>';
     document.body.appendChild(banner);
     shiftFabForBanner();
@@ -519,6 +586,7 @@
     var stored = readStoredConsent();
     if (stored) {
       TC.setConsent(stored.analytics === true);
+      if (stored.analytics !== true) clearCounterIds();
       loadUmamiIfConsented();
       loadGoogleAnalyticsIfConsented();
       showReopenControl();
