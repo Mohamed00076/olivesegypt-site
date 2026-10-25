@@ -307,10 +307,10 @@
         function addLine(prefill) {
           var tr = document.createElement('tr');
           tr.innerHTML =
-            '<td><input type="text" class="li-desc" list="product-suggestions" maxlength="300" required /></td>' +
-            '<td class="unit"><input type="text" class="li-unit" maxlength="30" placeholder="kg / tons / cartons" /></td>' +
-            '<td class="qty"><input type="number" class="li-qty" min="0" step="any" required /></td>' +
-            '<td class="price"><input type="number" class="li-price" min="0" step="any" required /></td>' +
+            '<td><input type="text" class="li-desc" aria-label="Description" list="product-suggestions" maxlength="300" required /></td>' +
+            '<td class="unit"><input type="text" class="li-unit" aria-label="Unit" maxlength="30" placeholder="kg / tons / cartons" /></td>' +
+            '<td class="qty"><input type="number" class="li-qty" aria-label="Quantity" min="0" step="any" required /></td>' +
+            '<td class="price"><input type="number" class="li-price" aria-label="Unit price" min="0" step="any" required /></td>' +
             '<td class="line-total"><span class="li-line-total">0.00</span></td>' +
             '<td><button type="button" class="remove-btn" title="Remove line">&times;</button></td>';
           if (prefill && typeof prefill === 'object') {
@@ -368,11 +368,11 @@
         function addPackLine(prefill) {
           var tr = document.createElement('tr');
           tr.innerHTML =
-            '<td><input type="text" class="pk-desc" list="product-suggestions" maxlength="300" required /></td>' +
-            '<td class="unit"><input type="text" class="pk-packing" maxlength="60" placeholder="carton, 12 x 720 ml" /></td>' +
-            '<td class="qty"><input type="number" class="pk-packages" min="1" step="1" required /></td>' +
-            '<td class="price"><input type="number" class="pk-net" min="0" step="any" required /></td>' +
-            '<td class="price"><input type="number" class="pk-gross" min="0" step="any" required /></td>' +
+            '<td><input type="text" class="pk-desc" aria-label="Description" list="product-suggestions" maxlength="300" required /></td>' +
+            '<td class="unit"><input type="text" class="pk-packing" aria-label="Packing" maxlength="60" placeholder="carton, 12 x 720 ml" /></td>' +
+            '<td class="qty"><input type="number" class="pk-packages" aria-label="Packages" min="1" step="1" required /></td>' +
+            '<td class="price"><input type="number" class="pk-net" aria-label="Net kg" min="0" step="any" required /></td>' +
+            '<td class="price"><input type="number" class="pk-gross" aria-label="Gross kg" min="0" step="any" required /></td>' +
             '<td><button type="button" class="remove-btn" title="Remove line">&times;</button></td>';
           if (prefill) {
             tr.querySelector('.pk-desc').value = prefill.description || '';
