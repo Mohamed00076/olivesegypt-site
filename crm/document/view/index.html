@@ -175,6 +175,8 @@
         padding: 4px 30px; letter-spacing: 0.1em; pointer-events: none; text-transform: uppercase; z-index: 5;
       }
       .doc-toolbar { max-width: 21cm; }
+      /* Keyboard focus on the toolbar: the CRM's olive ring (7:1), not the site's. */
+      .doc-toolbar a:focus-visible, .doc-toolbar button:focus-visible { outline: 3px solid #4b5a23; outline-offset: 2px; }
 
       /* On a phone: the sheet keeps A4 proportions, so the table scrolls
          inside it rather than pushing the page sideways. Screen only. */
