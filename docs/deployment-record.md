@@ -11563,6 +11563,59 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 301 and 302 — The record of 292 to 300; the caliber-scale drawing described (PRs #431, #436)
+
+**Previous recorded deploy:** `00a99ce` (Deploy 300, PR #435)
+**Approvals:**
+- **#431:** "#431: I will merge", then "I merged #431" twice (2026-10-24). Neither merge reached GitHub: the PR showed no merge event and stayed open, clean and green. It was merged in this session on 2026-10-25, since the owner's intent to merge it was plain.
+- **#436:** "Approved #436" (2026-10-25). The description's wording was approved on 2026-10-24: "Approved #433, #434, #435 and the caliber description".
+- **The merges:** both in this session on 2026-10-25 (+0300), #431 first, as its text names it Deploy 301. Before its merge, `main` was merged into #436's branch (`6c9e0ad`), with tests passing.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 301 | #431 | `5008856` | 2026-10-25 02:18:21 | 1 | +169 / −1 | Notes only |
+| 302 | #436 | `785eba8` | 2026-10-25 02:21:12 | 11 | +22 / −21 | PDFs: the caliber-scale drawing described |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 301** recorded Deploys 292 to 300.
+
+### What the deploys did
+
+- **Deploy 302 — the caliber-scale drawing described (#436).**
+  - **Where:** the packaging overview and the pricing & packaging guide, EN and AR (4 PDFs). The drawing's figure now carries a description:
+    - EN: "Drawing: seven olives in a row, from the largest beside 140 to the smallest beside 360."
+    - AR: «رسم: سبع حبات زيتون في صف، من الأكبر عند 140 إلى الأصغر عند 360.»
+  - **Unchanged:** text, pages and every pixel.
+  - **The check:** this was the last undescribed figure, so `check-pdf-structure.js` now allows none.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-25)
+
+- **Deployed commit:** `deployed-commit.txt` reads `785eba8695f8eb70a6c23a649fa5484388c628ae`.
+- **Live check:** after Deploy 301 and after Deploy 302: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **PDFs:** on `main`, `check-pdf-structure` reports all 36 PDFs tagged, in their language, with bookmarks and a shown title, every figure described. The 4 changed guides are gated, so they were checked from the files the function serves.
+
+### Claim register
+
+177 claims, unchanged on `main`. Row C-184 (the statement's PDF line, now the approved option (a)) changes on #426's branch, which is not live.
+
+### Rollback
+
+- **Deploy 302:** `git revert -m 1 785eba8`. Nothing is stored.
+- **Deploy 301** is documentation only.
+
+### Known limitations shipped with Deploys 301 and 302
+
+- **Branch protection on `main`:** not yet on (owner).
+- **#426:** carries the approved PDF line, and the company-profile ranges bullet is removed. It goes live with #426, last in the train.
+- **Unchanged from Deploys 297 to 300:** the owner's phone checks; #359's Arabic photo descriptions awaiting the vowel-mark convention; the merge train #417 to #426.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11581,7 +11634,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 300 (2026-10-24).**
+**Unchanged since U4, through Deploy 302 (2026-10-25).**
 
 ## Outstanding, unresolved by this document
 
