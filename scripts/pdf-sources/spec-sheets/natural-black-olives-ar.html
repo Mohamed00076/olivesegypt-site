@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- Written by scripts/build-pdf-sources.js from ar/catalog/print/index.html. Do not edit: edit the catalogue and rebuild. -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>زيتون أسود طبيعي — ورقة مواصفات المنتج | الشركة الثلاثية للتنمية الصناعية</title>
+<link rel="stylesheet" href="/assets/fonts/fonts.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/sheet.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/sheet-look.css" />
+</head>
+<body>
+<section class="pdf-page" id="natural-black-olives">
+<div class="sheet-band">
+<header class="masthead">
+  <div class="brand">
+    <img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" />
+    <div><div class="wordmark">الشركة الثلاثية</div><div class="tagline">للتنمية الصناعية</div></div>
+  </div>
+  <div class="contact">
+    ميدان العروبة، التجمع الخامس،<br/>القاهرة الجديدة، القاهرة، مصر<br/>
+    <span dir="ltr"><a href="mailto:sales@olivesegypt.com">sales@olivesegypt.com</a> &middot; <a href="tel:+201006045961">+20 100 604 5961</a></span>
+  </div>
+</header>
+<div class="doc-line"><span class="doc-kind">ورقة مواصفات المنتج</span><span>آخر تحديث <span dir="ltr">2026-10-13</span></span></div>
+</div>
+<div class="hero">
+  <div class="hero-text">
+    <span class="pill">زيتون أسود</span>
+    <h1>زيتون أسود طبيعي</h1>
+    <p class="lede">زيتون أسود مصري ينضج طبيعيًا. دون غلوكونات الحديد أو ألوان صناعية. متاح كاملًا، في محلول ملحي. الأعيرة <span dir="ltr">140-360</span>.</p>
+  </div>
+  <div class="hero-photos"><div class="photo"><div class="photo-panel" aria-hidden="true"></div></div></div>
+</div>
+<div class="glance">
+  <div class="card"><p class="label">الصيغ المتاحة</p><ul><li>كامل</li></ul></div>
+  <div class="card"><p class="label">الأعيرة (عدد الحبات / كجم)</p><p class="card-value"><span dir="ltr">140-360</span></p></div>
+  <div class="card"><p class="label">الأنسب لـ</p><ul><li>المشترين الراغبين في زيتون أسود ناضج طبيعيًا (غير مؤكسد)</li><li>التجزئة وخدمات الأغذية</li></ul></div>
+</div>
+<div class="section">
+  <h2>مواصفات المحلول الملحي</h2>
+  <table class="spec">
+    <thead><tr><th scope="col">البند</th><th scope="col">المواصفة</th></tr></thead>
+    <tbody><tr><th scope="row">الملوحة</th><td><span dir="ltr">4–6%</span></td></tr><tr><th scope="row">الحموضة</th><td><span dir="ltr">0.1–0.2%</span> ستريك</td></tr><tr><th scope="row">الرقم الهيدروجيني</th><td><span dir="ltr">6.0–7.0</span></td></tr></tbody>
+  </table>
+</div>
+<div class="section">
+  <h2>خيارات التغليف</h2>
+  <ul class="chips"><li>برطمانات زجاجية</li><li>علب صفيح</li><li>دِلاء بلاستيكية</li><li>براميل بلاستيكية (للمحلول الملحي)</li></ul>
+  <p class="body">حسب المنتج وحجم الطلب.</p>
+</div>
+<p class="note">تُؤكَّد خيارات التغليف الدقيقة، ومواصفات المحلول الملحي، والأسعار أثناء عرض السعر للمنتج المحدد وحجم الطلب.</p>
+<footer class="foot"><span>الشركة الثلاثية للتنمية الصناعية</span><span>آخر تحديث <span dir="ltr">2026-10-13</span></span><span>صفحة <span dir="ltr">1 / 1</span></span><span>olivesegypt.com</span></footer>
+</section>
+<script>
+// Fitting (sheet.css): a page whose content reaches its foot tightens its
+// spacing a step at a time. The generator still refuses a page that does
+// not fit after the last step.
+// The generator calls tcFit() again once the PDF's own fonts are applied,
+// since those (Amiri above all) set taller lines than the screen fonts.
+window.tcFit = () => {
+  for (const pg of document.querySelectorAll('.pdf-page')) {
+    pg.classList.remove('fit-0', 'fit-1', 'fit-2');
+    const over = () => {
+      const foot = pg.querySelector('.foot').getBoundingClientRect().top - 2;
+      return [...pg.children].some((el) => !el.classList.contains('foot') && el.getBoundingClientRect().bottom > foot);
+    };
+    for (const step of ['fit-0', 'fit-1', 'fit-2']) { if (!over()) break; pg.classList.add(step); }
+  }
+};
+window.tcFit();
+</script>
+</body>
+</html>

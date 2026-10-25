@@ -282,7 +282,8 @@ const CATALOGUE_TAGS = { tagged: true, outline: true };
  * letterhead sheet (null for the export catalogue). The generator captures the
  * sheet and adds the templates; the sheet's HTML is part of the fingerprint.
  */
-// The redesigned downloads (scripts/build-pdf-documents.js): fixed A4 pages
+// The redesigned downloads (scripts/build-pdf-documents.js and
+// scripts/build-pdf-sources.js): fixed A4 pages
 // that carry their own masthead and foot as live text, so nothing is drawn
 // around them. Tagged for screen readers, with bookmarks from the headings.
 // 'TC Arabic Inline' is Amiri over its whole range, the word space included,
@@ -320,6 +321,12 @@ function renderFor(job) {
 // rendering. The generator refuses them.
 const BLOCKED_SCRIPTS = /\/assets\/(consent|analytics|locale-switch)\.js(\?|$)/;
 
+// The spec sheets printed in the new design (build-pdf-sources.js): those
+// whose photographs are all supplied. The rest, and the combined file until
+// every sheet is ready, keep their current PDFs (owner: no mixed sets ship).
+const { READY_SHEETS: REDESIGNED_SHEETS, SPEC_SHEETS: ALL_SHEETS } = require('./build-pdf-sources');
+const ALL_READY = ALL_SHEETS.every((k) => REDESIGNED_SHEETS.includes(k));
+
 const JOBS = ['en', 'ar'].flatMap((locale) => [
   // Redesigned (owner's PDF brief, 2026-10-12, Phase C): each guide is
   // printed from its own A4 source, which scripts/build-pdf-documents.js
@@ -344,21 +351,37 @@ const JOBS = ['en', 'ar'].flatMap((locale) => [
   },
   // The full product catalogue: every product's specification, as the
   // printable /catalog/print page shows it. Public, like the profile.
-  {
+  // Redesigned with the sheets (build-pdf-sources.js, catalogueHtml) and
+  // printed only when every product's photographs are in: no mixed set.
+  ALL_READY ? {
+    locale, slug: 'product-catalog', kind: 'sheet', public: true,
+    source: `scripts/pdf-sources/catalogue/product-catalog-${locale}.html`,
+    out: locale === 'en' ? 'downloads/product-catalog-en.pdf' : 'ar/downloads/product-catalog-ar.pdf',
+  } : {
     locale, slug: 'product-catalog', kind: 'print', public: true,
     source: locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html',
     out: locale === 'en' ? 'downloads/product-catalog-en.pdf' : 'ar/downloads/product-catalog-ar.pdf',
   },
   // One specification sheet per product: the same page's single-product view
   // (?product=<key>). Public. ONLY=spec-sheets builds all twenty.
-  ...PRODUCTS.map(({ key, dir }) => ({
+  ...PRODUCTS.map(({ key, dir }) => (REDESIGNED_SHEETS.includes(key) ? {
+    // Redesigned (owner's PDF brief, 2026-10-12): its own A4 source, read
+    // from the same catalogue by scripts/build-pdf-sources.js.
+    locale, slug: `spec-${dir}`, group: 'spec-sheets', kind: 'sheet', public: true,
+    source: `scripts/pdf-sources/spec-sheets/${dir}-${locale}.html`,
+    out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/${dir}-${locale}.pdf`,
+  } : {
     locale, slug: `spec-${dir}`, group: 'spec-sheets', kind: 'print', public: true,
     source: locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html',
     query: `?product=${key}`,
     out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/${dir}-${locale}.pdf`,
   })),
   // All ten sheets in one file, one product per page (?product=all).
-  {
+  ALL_READY ? {
+    locale, slug: 'spec-sheets-all', group: 'spec-sheets', kind: 'sheet', public: true,
+    source: `scripts/pdf-sources/spec-sheets/all-spec-sheets-${locale}.html`,
+    out: `${locale === 'en' ? '' : 'ar/'}downloads/spec-sheets/all-spec-sheets-${locale}.pdf`,
+  } : {
     locale, slug: 'spec-sheets-all', group: 'spec-sheets', kind: 'print', public: true,
     source: locale === 'en' ? 'catalog/print/index.html' : 'ar/catalog/print/index.html',
     query: '?product=all',

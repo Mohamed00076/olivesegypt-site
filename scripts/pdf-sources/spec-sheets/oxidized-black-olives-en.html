@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- Written by scripts/build-pdf-sources.js from catalog/print/index.html. Do not edit: edit the catalogue and rebuild. -->
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<title>Oxidized Black Olives — Product Specification Sheet | Triple Company for Industrial Development</title>
+<link rel="stylesheet" href="/assets/fonts/fonts.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/sheet.css" />
+<link rel="stylesheet" href="/scripts/pdf-design/sheet-look.css" />
+</head>
+<body>
+<section class="pdf-page" id="oxidized-black-olives">
+<div class="sheet-band">
+<header class="masthead">
+  <div class="brand">
+    <img src="/assets/logo-BJ1TOn9V.png" alt="" width="236" height="289" />
+    <div><div class="wordmark">TRIPLE COMPANY</div><div class="tagline">for Industrial Development</div></div>
+  </div>
+  <div class="contact">
+    Ouroba Square (<span class="ar-inline" lang="ar" dir="rtl">ميدان العروبة</span>), 5th Settlement,<br/>New Cairo, Cairo, Egypt<br/>
+    <span dir="ltr"><a href="mailto:sales@olivesegypt.com">sales@olivesegypt.com</a> &middot; <a href="tel:+201006045961">+20 100 604 5961</a></span>
+  </div>
+</header>
+<div class="doc-line"><span class="doc-kind">Product Specification Sheet</span><span>Revised <span dir="ltr">2026-10-13</span></span></div>
+</div>
+<div class="hero">
+  <div class="hero-text">
+    <span class="pill">Black Olive</span>
+    <h1>Oxidized Black Olives</h1>
+    <p class="lede">California-style black olives darkened by controlled oxidation for a uniform jet-black color and smooth, mild flavor. Whole, sliced, or pitted. Ideal for pizza toppings, food service, and retail cans. Grown in the Nile Delta, Egypt.</p>
+  </div>
+  <div class="hero-photos"><div class="photo"><img src="/scripts/pdf-design/photos/oxidized-black-olives.jpg" alt="Close-up of glossy pitted black olives spread on a light surface." /></div></div>
+</div>
+<div class="glance">
+  <div class="card"><p class="label">Available Formats</p><ul><li>Whole</li><li>Sliced</li><li>Pitted</li></ul></div>
+  <div class="card"><p class="label">Calibers (count / kg)</p><p class="card-value"><span class="nb">140-360</span></p></div>
+  <div class="card"><p class="label">Best For</p><ul><li>Pizza toppings</li><li>Food service</li><li>Retail cans</li></ul></div>
+</div>
+<div class="section">
+  <h2>Brine specification</h2>
+  <table class="spec">
+    <thead><tr><th scope="col">Parameter</th><th scope="col">Specification</th></tr></thead>
+    <tbody><tr><th scope="row">Salt</th><td><span class="nb">3–5%</span></td></tr><tr><th scope="row">Acidity</th><td><span class="nb">0.1–0.2%</span> citric</td></tr><tr><th scope="row">pH</th><td><span class="nb">5.5–6.5</span></td></tr></tbody>
+  </table>
+</div>
+<div class="section">
+  <h2>Packaging Options</h2>
+  <ul class="chips"><li>Glass jars</li><li>Tin cans</li><li>Plastic buckets</li><li>Plastic barrels (brine)</li></ul>
+  <p class="body">Subject to product and order volume.</p>
+</div>
+<p class="note">Exact packaging options, brine specifications, and pricing are confirmed during quotation for the selected product and order volume.</p>
+<footer class="foot"><span>Triple Company for Industrial Development</span><span>Revised <span dir="ltr">2026-10-13</span></span><span>Page <span dir="ltr">1 / 1</span></span><span>olivesegypt.com</span></footer>
+</section>
+<script>
+// Fitting (sheet.css): a page whose content reaches its foot tightens its
+// spacing a step at a time. The generator still refuses a page that does
+// not fit after the last step.
+// The generator calls tcFit() again once the PDF's own fonts are applied,
+// since those (Amiri above all) set taller lines than the screen fonts.
+window.tcFit = () => {
+  for (const pg of document.querySelectorAll('.pdf-page')) {
+    pg.classList.remove('fit-0', 'fit-1', 'fit-2');
+    const over = () => {
+      const foot = pg.querySelector('.foot').getBoundingClientRect().top - 2;
+      return [...pg.children].some((el) => !el.classList.contains('foot') && el.getBoundingClientRect().bottom > foot);
+    };
+    for (const step of ['fit-0', 'fit-1', 'fit-2']) { if (!over()) break; pg.classList.add(step); }
+  }
+};
+window.tcFit();
+</script>
+</body>
+</html>
