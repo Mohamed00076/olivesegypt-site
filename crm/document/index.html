@@ -176,7 +176,7 @@
           <div class="crm-grid crm-grid-2">
             <div class="crm-field">
               <label for="payment-terms">Payment terms <span class="crm-muted">(optional)</span></label>
-              <input id="payment-terms" maxlength="200" dir="auto" placeholder="e.g. 30% advance, balance against documents" />
+              <input id="payment-terms" maxlength="200" dir="auto" placeholder="e.g. 30% T/T deposit, 70% against B/L copy" />
             </div>
             <div class="crm-field">
               <label for="lead-time">Lead time <span class="crm-muted">(optional)</span></label>
@@ -308,7 +308,7 @@
           var tr = document.createElement('tr');
           tr.innerHTML =
             '<td><input type="text" class="li-desc" aria-label="Description" list="product-suggestions" maxlength="300" required /></td>' +
-            '<td class="unit"><input type="text" class="li-unit" aria-label="Unit" maxlength="30" placeholder="kg / tons / cartons" /></td>' +
+            '<td class="unit"><input type="text" class="li-unit" aria-label="Unit" maxlength="30" placeholder="kg / cartons / buckets" /></td>' +
             '<td class="qty"><input type="number" class="li-qty" aria-label="Quantity" min="0" step="any" required /></td>' +
             '<td class="price"><input type="number" class="li-price" aria-label="Unit price" min="0" step="any" required /></td>' +
             '<td class="line-total"><span class="li-line-total">0.00</span></td>' +
