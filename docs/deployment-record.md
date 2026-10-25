@@ -11616,6 +11616,68 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 303 to 305 — The record of 301 and 302; the public PDFs in the live check; download links that name the product (PRs #437, #438, #439)
+
+**Previous recorded deploy:** `785eba8` (Deploy 302, PR #436)
+**Approvals:**
+- **#437, #438, #439:** "Approved #437, #438 and #439" (2026-10-25). #439's wording was listed in the PR for approval: English, and Arabic marked as my draft.
+- **The merges:** all three were merged in this session on 2026-10-25 (+0300), in that order, each after the one before it was live and its live check passed. Before its merge, `main` was merged into the branches of #438 (`22fc96c`) and #439 (`594e125`), with tests passing.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 303 | #437 | `98b9f88` | 2026-10-25 03:03:55 | 1 | +54 / −1 | Notes only |
+| 304 | #438 | `91800a9` | 2026-10-25 03:06:05 | 2 | +30 / −0 | Live check: the public PDFs (no site change) |
+| 305 | #439 | `c13e487` | 2026-10-25 03:08:27 | 2 | +8 / −8 | Catalogue: download links name the product |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 303** recorded Deploys 301 and 302.
+
+### What the deploys did
+
+- **Deploy 304 — the public PDFs in the live check (#438).** A new row, "Public PDFs are the files in main, tagged and in their language". After every merge and once a day, it fetches the 20 public PDFs from the live site. It fails if any:
+  - is not served;
+  - differs from the file in `main`, byte for byte;
+  - breaks a rule of `check-pdf-structure.js`, which now exports its per-file check so the live check and `npm test` share one set of rules.
+
+  The gated guides and export catalogue are left to `npm test`: they are served only after the download form.
+- **Deploy 305 — download links that name the product (#439).** On `/catalog/` and `/ar/catalog/`, each of the 7 spec-sheet download links now names its product in its `aria-label` and tooltip, instead of seven identical "Download spec sheet as PDF". For example:
+  - "Download the Green Olives spec sheet (PDF)";
+  - «تنزيل ورقة مواصفات زيتون أخضر (PDF)».
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-25)
+
+- **Deployed commit:** `deployed-commit.txt` reads `c13e487f3ee6967481f346db766aae4da41670ea`.
+- **Live check:**
+  - after Deploy 303: 21 OK, 0 WARN, 0 FAIL, 0 PENDING;
+  - after Deploys 304 and 305: 22 OK, 0 WARN, 0 FAIL, 0 PENDING. The new row reads "20 PDFs, with bookmarks and every figure described".
+- **Catalogue pages served:** each of the 7 links on both pages carries its product's name.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 305:** `git revert -m 1 c13e487`.
+- **Deploy 304:** `git revert -m 1 91800a9`. It removes the live-check row and the export only.
+- **Deploy 303** is documentation only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 303 to 305
+
+- **The "Download product catalogue" control at the top of `/catalog/`** is still a button inside a link: two keyboard stops for one action. #435 changed only the spec-sheet links. Not yet fixed.
+- **The merge train:** after Deploy 305, `main` was merged into all nine branches (#417 to #426), with tests passing on each.
+  - #421, #422 and #426 still conflict with the PRs before them on the one-line test list in `package.json`. Every PR that adds a check edits that same line.
+  - Each is resolved at its turn by merging `main` into its branch.
+- **Unchanged from Deploys 301 and 302:** branch protection on `main` (owner); #426 and #359 as listed there; the owner's phone checks.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11634,7 +11696,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 302 (2026-10-25).**
+**Unchanged since U4, through Deploy 305 (2026-10-25).**
 
 ## Outstanding, unresolved by this document
 
