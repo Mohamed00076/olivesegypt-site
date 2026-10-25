@@ -11395,6 +11395,227 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 292 to 296 — The record of 290 and 291; Arabic number order; PDF accessibility: catalogues tagged, Arabic ranges and dates, one cover figure (PRs #416, #424, #427, #428, #430)
+
+**Previous recorded deploy:** `99974e5` (Deploy 291, PR #415)
+**Approvals:**
+- **#416:** in the owner's merge order of 2026-10-23 ("#416, Neon backup branch, #417, then #419 and #418").
+- **#424:** in the owner's merge order "#424, #427, #428, then #430" (2026-10-24).
+- **#427, #428, #430:** "Approved: #427, #428, #430, and #429 (after I check the Arabic myself)", then "Approved: merge order #424, #427, #428, #430; #429 into #426's branch" (2026-10-24).
+- **The merges:** #416 was merged by the owner on 2026-10-23. #424, #427, #428 and #430 were merged in this session on 2026-10-24 (+0300), in that order, each after the one before it was live and its live check passed.
+- **Not a deploy:** #429 (the accessibility statement's PDF line) was merged into #426's branch, `claude/accessibility-statement`. It goes live only with #426.
+- **GitHub mergeability:** after #427, GitHub reported #428 as conflicting, though `git merge` was clean. Merging `main` into its branch (`fed8ee2`, tests passing) cleared it. #430 got the same base merge (`a38deca`) before its merge.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 292 | #416 | `4040fe3` | 2026-10-23 12:03:46 | 1 | +89 / −1 | Notes only |
+| 293 | #424 | `3effc30` | 2026-10-24 03:21:50 | 6 | +24 / −6 | Arabic pages: number ranges in order |
+| 294 | #427 | `05bca24` | 2026-10-24 03:23:28 | 8 | +22 / −14 | PDFs: catalogues tagged |
+| 295 | #428 | `76f7f5d` | 2026-10-24 03:26:06 | 16 | +48 / −40 | Arabic PDFs and pages: ranges and dates in order |
+| 296 | #430 | `9dc0eb8` | 2026-10-24 03:32:49 | 34 | +52 / −50 | PDFs: one described cover figure |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 292** recorded Deploys 290 and 291.
+
+### What the deploys did
+
+- **Deploy 293 — Arabic number ranges (#424).**
+  - **Pages:** five ranges on four Arabic pages now sit in their own `dir="ltr"` span, so they no longer show reversed: «5–7 أيام», «5–8%», «0.2–0.5%», «(2014–2023)» and «1–5 كجم».
+  - **Check:** `check-rtl.js` rule 6 was added for these runs.
+- **Deploy 294 — Catalogue PDFs tagged (#427).**
+  - **Files:** the product catalogue, all spec sheets in one file and the export catalogue, English and Arabic (6 PDFs).
+  - **Now carry:** tags, the document language and bookmarks: 8, 36 and 14 per language.
+  - **Unchanged:** the text layer, page counts and page sizes.
+  - **Settings:** `CATALOGUE_TAGS` in `scripts/guide-pdfs.js`.
+- **Deploy 295 — Arabic ranges and dates in the right order (#428).**
+  - **Sources fixed:** every reversed run found by scanning what is displayed, not the source:
+    - each line of all 18 Arabic PDFs, rebuilt in visual order and compared with its English twin;
+    - all 48 Arabic pages, rendered.
+  - **In `ar/catalog/print/`:** the date «آخر تحديث 2026-10-11», in the page and in its single-sheet script, and «الأعيرة 140-360», twice.
+  - **In `ar/company-profile/`:** the date, «3–4 أسابيع» and «تشكيلة 1–5 كجم».
+  - **In `scripts/export-catalog-source-ar.html`:** «4–6» and «3–4».
+  - **Reprinted:** 10 Arabic PDFs (the product catalogue, all-spec-sheets, the 7 single spec sheets and the export catalogue). The only text-layer change is the order of those runs.
+  - **Builder:** `build-pdf-documents.js` accepts the span in the profile's date line. Its PDF source is unchanged, so the company-profile PDF was not reprinted.
+  - **Check:** rule 6 no longer exempts the PDF sources, and it now reads the Arabic export-catalogue source.
+- **Deploy 296 — One described cover figure (#430).**
+  - **What was wrong:** the cover photo of the 7 guides and the company profile (16 PDFs) was tagged twice: an undescribed Figure from its `<figure>` frame around the photo's own Figure.
+  - **Fix:** the frame is now a `<div>`.
+  - **Unchanged:** text, pages and every pixel at 100 dpi.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-24)
+
+- **Deployed commit:** `deployed-commit.txt` reads `9dc0eb89700d1cf83b14dabb7ff78b640ddb9a19`.
+- **Live check:** after each of Deploys 293 to 296: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **PDFs served:**
+  - every public catalogue, spec-sheet and company-profile PDF fetched from the live site is byte for byte the file in `main`;
+  - the 4 catalogue files are tagged, with language and bookmarks;
+  - the 2 company-profile PDFs have one cover Figure, with its description.
+- **Arabic order on the live site:**
+  - the reversed-run scan of the 10 public Arabic PDFs, as served, found none;
+  - the rendered scan of all 49 Arabic pages (48 plus the all-products print view) found none: 648 live responses, fetched with TLS verified, none failed.
+- **Gated PDFs** (guides, export catalogue): checked from the repo files the functions serve.
+- **File names and URLs:** unchanged.
+- **Certificates:** valid to 2026-11-23 (29 days). The renewal check scheduled for 2026-11-01 stands.
+
+### Claim register
+
+177 claims, unchanged. (Row C-184 is updated on #426's branch by #429, which is not live.)
+
+### Rollback
+
+- **Deploy 296:** `git revert -m 1 9dc0eb8`.
+- **Deploy 295:** `git revert -m 1 76f7f5d`. If 296 is also being reverted, revert it first: both update `scripts/guide-pdfs.json`.
+- **Deploy 294:** `git revert -m 1 05bca24`. #428 carries #427's reprinted Arabic catalogue files, so revert 295 first.
+- **Deploy 293:** `git revert -m 1 3effc30`. #428 extends its rule 6, so revert 295 first.
+- **Deploy 292** is documentation only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 292 to 296
+
+- **Owner's phone checks of Deploys 293 to 296:** pending.
+- **PDFs:**
+  - the 14 single spec sheets stay untagged until #359 reprints them in the new design;
+  - the caliber-scale drawing in the packaging overview and pricing & packaging guide (4 PDFs) is one Figure without a description;
+  - photo descriptions for #359 are awaiting the owner's approval, including the missing one for the oxidized black olive photo.
+- **#359** (draft): on 2026-10-24 its photos became one described Figure each. It still needs a rebase and reprint after #427 and #428, which I'll do when it merges.
+- **#426** (draft, merge last): now carries #429.
+- **Unchanged from Deploys 290 and 291:** the owner's phone check of Batch 3; the backlog items; and the items listed there.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
+## Deploys 297 to 300 — Tests on GitHub; a PDF structure check; every PDF tagged; one link per spec-sheet download (PRs #432, #433, #434, #435)
+
+**Previous recorded deploy:** `9dc0eb8` (Deploy 296, PR #430)
+**Approvals:**
+- **#432:** "Approved #432" (2026-10-24).
+- **#433, #434, #435:** "Approved #433, #434, #435 and the caliber description" (2026-10-24).
+- **The merges:** all four were merged in this session on 2026-10-24 (+0300), each after the one before it was live and its live check passed. Before its merge, `main` was merged into the branches of #434 (`f6b85a9`) and #435 (`8bf88ce`), with tests passing.
+- **Not yet merged:** #431, this record. The owner's merge of it did not go through, and it stays open. It was extended with this entry and becomes Deploy 301 when merged.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 297 | #432 | `20ed158` | 2026-10-24 21:13:36 | 1 | +37 / −0 | Tests on GitHub (no site change) |
+| 298 | #433 | `9e1a277` | 2026-10-24 21:42:48 | 2 | +119 / −1 | Check: PDF structure (no site change) |
+| 299 | #434 | `fa9e2ba` | 2026-10-24 21:45:35 | 17 | +36 / −39 | PDFs: the 14 single spec sheets tagged |
+| 300 | #435 | `00a99ce` | 2026-10-24 21:48:32 | 2 | +8 / −8 | Catalogue: one link per spec-sheet download |
+
+Files and lines are each merge against the `main` it landed on.
+
+### What the deploys did
+
+- **Deploy 297 — Tests on GitHub (#432).**
+  - **What:** `.github/workflows/tests.yml` runs `npm test` on every push to any branch, on every pull request, and on demand, with the full git history (for the sitemap dates).
+  - **Result:** a failing check shows as a red cross on the commit and the PR.
+  - **To block merges:** branch protection on `main` requiring the "test" check is the owner's to turn on.
+  - **Also:** a local pre-push hook runs the same suite before any push from this session (owner, 2026-10-24: "make every push stop on a failing test before it pushes").
+- **Deploy 298 — PDF structure check (#433).** `scripts/check-pdf-structure.js` in `npm test` holds all 36 PDFs to five rules:
+  - tagged;
+  - their own language;
+  - bookmarks;
+  - a shown title;
+  - every figure described, none framed by an undescribed one.
+
+  Known gaps are listed in the check with what closes each. The order of numbers in the Arabic PDFs is held at the source by `check-rtl.js` rule 6.
+- **Deploy 299 — every PDF tagged (#434).**
+  - **Reprinted:** the 7 single-product spec sheets, EN and AR, in their current design, now tagged with language and 6 bookmarks each.
+  - **Unchanged:** text, pages and every pixel.
+  - **Code:** the print-catalogue path in `scripts/guide-pdfs.js` now tags every PDF, and the check's untagged list is empty.
+  - **#359** still reprints the sheets in the new design as photos arrive.
+- **Deploy 300 — catalogue download links (#435).**
+  - **What changed:** on `/catalog/` and `/ar/catalog/`, each of the 7 "Download spec sheet" controls is now a single link, not a button inside a link. That's 7 keyboard stops per page instead of 14.
+  - **Unchanged:** the same name (now also the link's `aria-label` in English) and the same look; screenshots are pixel-identical at 1280 and 390 px.
+  - **Focus:** the browser's focus outline is kept.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-24)
+
+- **Deployed commit:** `deployed-commit.txt` reads `00a99ce9e9ccc5d47db95ddc1142f98e74235813`.
+- **Live check:** after each of Deploys 297 to 300: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **GitHub workflows:** on Deploy 297's merge commit, both "Tests" and "Live site check" passed.
+- **PDFs served:** all 14 single spec sheets fetched from the live site are byte for byte the files in `main`, each tagged, in its language (`en`/`ar`), with 6 bookmarks.
+- **Catalogue pages served:** `/catalog/` and `/ar/catalog/` have 7 spec-sheet links each, none containing a button.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 300:** `git revert -m 1 00a99ce`.
+- **Deploy 299:** `git revert -m 1 fa9e2ba`. Its check change needs Deploy 298 in place.
+- **Deploy 298:** `git revert -m 1 9e1a277`. Revert 299 first.
+- **Deploy 297:** `git revert -m 1 20ed158`. It removes the GitHub workflow only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 297 to 300
+
+- **Caliber-scale drawing:** its description was approved on 2026-10-24 and is in #436, not yet merged. Until then, #433's check lists it as the one known gap.
+- **Branch protection on `main`:** not yet on (owner).
+- **#426's PDF line:** it still names spec sheets and catalogues. Once #436 is live, every PDF is tagged and described, and changing that line is a wording change for the owner.
+- **Unchanged from Deploys 292 to 296:** the owner's phone checks; #359's Arabic photo descriptions awaiting the vowel-mark convention; the merge train #417 to #426.
+
+**Listed in the next entry:** the merge of this record, #431 (notes only).
+
+---
+
+## Deploys 301 and 302 — The record of 292 to 300; the caliber-scale drawing described (PRs #431, #436)
+
+**Previous recorded deploy:** `00a99ce` (Deploy 300, PR #435)
+**Approvals:**
+- **#431:** "#431: I will merge", then "I merged #431" twice (2026-10-24). Neither merge reached GitHub: the PR showed no merge event and stayed open, clean and green. It was merged in this session on 2026-10-25, since the owner's intent to merge it was plain.
+- **#436:** "Approved #436" (2026-10-25). The description's wording was approved on 2026-10-24: "Approved #433, #434, #435 and the caliber description".
+- **The merges:** both in this session on 2026-10-25 (+0300), #431 first, as its text names it Deploy 301. Before its merge, `main` was merged into #436's branch (`6c9e0ad`), with tests passing.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 301 | #431 | `5008856` | 2026-10-25 02:18:21 | 1 | +169 / −1 | Notes only |
+| 302 | #436 | `785eba8` | 2026-10-25 02:21:12 | 11 | +22 / −21 | PDFs: the caliber-scale drawing described |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 301** recorded Deploys 292 to 300.
+
+### What the deploys did
+
+- **Deploy 302 — the caliber-scale drawing described (#436).**
+  - **Where:** the packaging overview and the pricing & packaging guide, EN and AR (4 PDFs). The drawing's figure now carries a description:
+    - EN: "Drawing: seven olives in a row, from the largest beside 140 to the smallest beside 360."
+    - AR: «رسم: سبع حبات زيتون في صف، من الأكبر عند 140 إلى الأصغر عند 360.»
+  - **Unchanged:** text, pages and every pixel.
+  - **The check:** this was the last undescribed figure, so `check-pdf-structure.js` now allows none.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-25)
+
+- **Deployed commit:** `deployed-commit.txt` reads `785eba8695f8eb70a6c23a649fa5484388c628ae`.
+- **Live check:** after Deploy 301 and after Deploy 302: 21 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **PDFs:** on `main`, `check-pdf-structure` reports all 36 PDFs tagged, in their language, with bookmarks and a shown title, every figure described. The 4 changed guides are gated, so they were checked from the files the function serves.
+
+### Claim register
+
+177 claims, unchanged on `main`. Row C-184 (the statement's PDF line, now the approved option (a)) changes on #426's branch, which is not live.
+
+### Rollback
+
+- **Deploy 302:** `git revert -m 1 785eba8`. Nothing is stored.
+- **Deploy 301** is documentation only.
+
+### Known limitations shipped with Deploys 301 and 302
+
+- **Branch protection on `main`:** not yet on (owner).
+- **#426:** carries the approved PDF line, and the company-profile ranges bullet is removed. It goes live with #426, last in the train.
+- **Unchanged from Deploys 297 to 300:** the owner's phone checks; #359's Arabic photo descriptions awaiting the vowel-mark convention; the merge train #417 to #426.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11413,7 +11634,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 291 (2026-10-23).**
+**Unchanged since U4, through Deploy 302 (2026-10-25).**
 
 ## Outstanding, unresolved by this document
 
