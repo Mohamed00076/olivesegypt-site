@@ -276,6 +276,32 @@ async function main() {
     } catch (e) { fail('Umami is up', e.message); }
   }
 
+  // The public PDFs as served: each is the file in this checkout, byte for
+  // byte, and keeps its structure -- tagged, its language, bookmarks, a shown
+  // title, every figure described (scripts/check-pdf-structure.js, the same
+  // rules npm test holds the repository to). The gated guides and export
+  // catalogue are served by a function after the form, so are left to npm test
+  // (owner, 2026-10-25).
+  {
+    const crypto = require('crypto');
+    const { JOBS } = require('./guide-pdfs');
+    const { problemsOf } = require('./check-pdf-structure');
+    const pub = JOBS.filter((j) => j.public);
+    const bad = (await pool(pub, 6, async (job) => {
+      try {
+        const res = await fetch(`${BASE}/${job.out}`, { headers: { 'user-agent': 'olivesegypt-live-check' }, signal: AbortSignal.timeout(REQUEST_LIMIT_MS) });
+        if (res.status !== 200) return `/${job.out}: HTTP ${res.status}`;
+        const buf = Buffer.from(await res.arrayBuffer());
+        const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
+        if (sha(buf) !== sha(fs.readFileSync(path.join(ROOT, job.out)))) return `/${job.out}: not the file in main`;
+        const found = problemsOf(job, buf);
+        return found.length ? `/${job.out}: ${found.join('; ')}` : null;
+      } catch (e) { return `/${job.out}: ${e.message}`; }
+    })).filter(Boolean);
+    if (bad.length) fail('Public PDFs are the files in main, tagged and in their language', bad.slice(0, 6).join(' | '));
+    else ok('Public PDFs are the files in main, tagged and in their language', `${pub.length} PDFs, with bookmarks and every figure described`);
+  }
+
   // Report.
   const icon = { OK: '✅', WARN: '⚠️', FAIL: '❌', PENDING: '⏳' };
   const lines = results.map(([lvl, name, d]) => `${icon[lvl]} **${lvl}** ${name}${d ? ` — ${d}` : ''}`);
