@@ -323,8 +323,10 @@
           }
           document.getElementById('li-tbody').appendChild(tr);
           tr.querySelector('.remove-btn').addEventListener('click', function () {
+            var next = lineAfterRemoval(tr, 'add-line-btn');
             tr.remove();
             recalc();
+            next.focus();
           });
           ['li-qty', 'li-price'].forEach(function (cls) {
             tr.querySelector('.' + cls).addEventListener('input', recalc);
@@ -363,7 +365,17 @@
           el.style.display = 'block';
         }
 
-        document.getElementById('add-line-btn').addEventListener('click', function () { addLine(); });
+        /*
+         * Keyboard (2026-10-23): "Add Line" puts the cursor in the new line's
+         * first field, and removing a line moves it to the next line's remove
+         * button -- or the line before, or "Add Line" when none is left --
+         * instead of dropping it to the top of the page.
+         */
+        function lineAfterRemoval(tr, addId) {
+          var other = tr.nextElementSibling || tr.previousElementSibling;
+          return (other && other.querySelector('.remove-btn')) || document.getElementById(addId);
+        }
+        document.getElementById('add-line-btn').addEventListener('click', function () { addLine().querySelector('.li-desc').focus(); });
 
         function addPackLine(prefill) {
           var tr = document.createElement('tr');
@@ -379,7 +391,12 @@
             tr.querySelector('.pk-packing').value = prefill.packing || '';
           }
           document.getElementById('pk-tbody').appendChild(tr);
-          tr.querySelector('.remove-btn').addEventListener('click', function () { tr.remove(); packTotals(); });
+          tr.querySelector('.remove-btn').addEventListener('click', function () {
+            var next = lineAfterRemoval(tr, 'pk-add-btn');
+            tr.remove();
+            packTotals();
+            next.focus();
+          });
           ['pk-packages', 'pk-net', 'pk-gross'].forEach(function (c) { tr.querySelector('.' + c).addEventListener('input', packTotals); });
           return tr;
         }
@@ -401,7 +418,7 @@
           document.getElementById('pk-total-net').textContent = fmt2(t.n);
           document.getElementById('pk-total-gross').textContent = fmt2(t.g);
         }
-        document.getElementById('pk-add-btn').addEventListener('click', function () { addPackLine(); });
+        document.getElementById('pk-add-btn').addEventListener('click', function () { addPackLine().querySelector('.pk-desc').focus(); });
 
         document.getElementById('bank-copy-btn').addEventListener('click', function () {
           var note = document.getElementById('bank-copy-note');
