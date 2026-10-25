@@ -36,9 +36,8 @@ const t = (name, cond, extra) => {
 const show = (l) => `${l.length}: ${l.slice(0, 6).join(', ')}${l.length > 6 ? ' …' : ''}`;
 
 // Static third-party loads allowed, by page, with the reason.
-const EXTERNAL_ALLOWED = new Map([
-  ['admin/analytics/index.html cdn.jsdelivr.net', 'Chart.js on the owner-only dashboard, behind login; never a visitor page'],
-]);
+// None since 2026-10-25: Chart.js, the last, is served from assets/vendor/.
+const EXTERNAL_ALLOWED = new Map([]);
 
 const tracked = execFileSync('git', ['ls-files'], { cwd: ROOT }).toString().split('\n').filter(Boolean);
 // Internal notes may mention the old hosts; everything that ships or generates a page may not.
