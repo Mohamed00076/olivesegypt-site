@@ -103,11 +103,27 @@
             if (stage === r.current_stage) return;
             var o = document.createElement('option'); o.value = stage; o.textContent = stage; sel.appendChild(o);
           });
-          sel.addEventListener('change', function () {
+          /*
+           * Choosing a stage does not move the buyer; the Move button does
+           * (keyboard walkthrough, 2026-10-23). On a computer, each arrow key
+           * on a closed menu is a "change", so moving on change sent one stage
+           * change per key press -- a keyboard user could never get past the
+           * first stage, and every press was saved to the history. The buyer
+           * page already works this way: Move is off until another stage is chosen.
+           */
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'crm-btn crm-btn-primary crm-ui-move-btn';
+          btn.textContent = 'Move';
+          btn.setAttribute('aria-label', 'Move ' + (r.company_name || 'this buyer'));
+          btn.disabled = true;
+          sel.addEventListener('change', function () { btn.disabled = !sel.value; });
+          btn.addEventListener('click', function () {
             if (sel.value) moveBuyer(r, sel.value, true);
           });
           wrap.appendChild(label);
           wrap.appendChild(sel);
+          wrap.appendChild(btn);
           return wrap;
         }
 
