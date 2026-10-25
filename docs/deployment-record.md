@@ -11759,6 +11759,97 @@ Replayed in the owner's order on `main` with #444, the train merges with no conf
 
 ---
 
+## Deploys 311 to 322 — The record of 306 to 310; the company profile in dark mode and with the tagline; three register rows; Chart.js served from the site; the stuffed-olive name in the Arabic search data; shorter descriptions; the live check's PDF row retries; CRM accessibility, keyboard and documents; an accessibility guard in the live check (PRs #445 to #452, #418, #420, #423, #425)
+
+**Previous recorded deploy:** `5bdf8d2` (Deploy 310, PR #444)
+**Approvals:**
+- **#445:** "Approved #445" (2026-10-25).
+- **#446:** "Approved #446, add the tagline too" (2026-10-25). The tagline became #447.
+- **#447:** "Approved #447" (2026-10-25).
+- **#448 to #451:** "Approved #448, #449, #450 and #451" (2026-10-25).
+- **#452:** "Approved #452" (2026-10-25).
+- **#418:** "Approved: #418 (names read aloud, never shown) and #419 after #417" (2026-10-23).
+- **#420, #423, #425:** "all approved" (2026-10-25), answering the list of the train PRs that change no data. #421 and #422 were in that list but are held: they turned out to contain #417's and #419's database changes, so they wait for the Neon backup with the rest of the train. The owner was told the list had been wrong.
+- **The merges:** all twelve were merged in this session, in the order of the table, each after its GitHub Tests run passed and the one before it was live with its live check run.
+- **Before its merge, `main` was merged into:** #449 (`1fc2e12`), #450 (`6dd5772`), #451 (`9686110`), #418 (`739ecd4`), #420 (`ca6196d`), #423 (`493582f`), #425 (`be40c4a`).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 311 | #445 | `56f5696` | 2026-10-25 11:04:24 | 1 | +82 / −1 | Notes only |
+| 312 | #446 | `596d0fc` | 2026-10-25 11:28:18 | 2 | +56 / −2 | Company profile follows dark mode |
+| 313 | #447 | `e8315a1` | 2026-10-25 11:31:15 | 2 | +2 / −8 | Company profile header tagline |
+| 314 | #448 | `6d65732` | 2026-10-25 17:55:02 | 1 | +3 / −0 | Register only (no site change) |
+| 315 | #449 | `bc14515` | 2026-10-25 17:58:03 | 5 | +31 / −7 | Chart.js from the site; CSP |
+| 316 | #450 | `cf11496` | 2026-10-25 18:00:29 | 1 | +1 / −1 | Arabic homepage search data |
+| 317 | #451 | `cbcf514` | 2026-10-25 18:03:46 | 6 | +35 / −27 | Shorter descriptions; generator |
+| 318 | #452 | `09ffefa` | 2026-10-25 18:07:41 | 1 | +6 / −3 | Live check (no site change) |
+| 319 | #418 | `bb02bf3` | 2026-10-26 00:31:16 | 8 | +53 / −27 | CRM accessibility |
+| 320 | #420 | `72463bc` | 2026-10-26 00:33:37 | 5 | +74 / −9 | CRM keyboard |
+| 321 | #423 | `ed6b9d6` | 2026-10-26 00:35:30 | 3 | +36 / −4 | CRM documents by keyboard |
+| 322 | #425 | `b930527` | 2026-10-26 00:37:58 | 1 | +55 / −1 | Live check (no site change) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 311** recorded Deploys 306 to 310.
+
+### What the deploys did
+
+- **Deploy 312 — the company profile in dark mode (#446).** `/company-profile/` and `/ar/company-profile/` carry the site's theme script and the theme toggle, so they follow the visitor's choice like every other page.
+- **Deploy 313 — the company profile's tagline (#447).** The header of both company-profile pages shows the tagline every other page has (C-91).
+- **Deploy 314 — three register rows (#448).** C-178 (brine figures for six products), C-179 (lead time "3–4 weeks, order to vessel") and C-180 (export documents "for every order"), all needs-review: published claims that had no row. The site is unchanged.
+- **Deploy 315 — Chart.js from the site (#449).** The analytics dashboard loads `assets/vendor/chart-4.4.1.umd.js` (with its licence) instead of a CDN. The Content-Security-Policy in `netlify.toml` no longer allows `cdn.jsdelivr.net`, and `check-self-hosted-fonts` now allows no external script or font host at all.
+- **Deploy 316 — the Arabic homepage's search data (#450).** The structured data names stuffed green olives «زيتون أخضر محشو», as every page does.
+- **Deploy 317 — shorter descriptions (#451).** The meta descriptions of `/catalog/`, `/solutions/local-egypt/` and `/ar/solutions/local-egypt/` fit search results. The solutions generator now writes #424's fix itself, and `check-generator-parity` covers the solutions pages in both languages.
+- **Deploy 318 — the live check's PDF row retries (#452).** The public-PDF row added by #438 fetches through the same retrying request as every other row. After Deploy 316, a dropped connection had failed that row once (below).
+- **Deploy 319 — CRM accessibility (#418).** Unlabelled controls on the buyers, data-quality, documents and document pages, and the letterheads, have names that screen readers read aloud (never shown). Status messages are announced. `check-crm-ui` holds both.
+- **Deploy 320 — CRM keyboard (#420).** A "Skip to main content" link, focus rings of 3 px #e6c57d, and a Move button on each Kanban card, so a card moves without a mouse. `check-crm-ui` holds them. The skip link is keyboard-only; it cannot be seen on a phone, which has no Tab key.
+- **Deploy 321 — CRM documents by keyboard (#423).** On the document form, focus follows Add Line to the new line and Remove to the next control. The printed footer's document number is readable.
+- **Deploy 322 — an accessibility guard in the live check (#425).** The live check adds rows that read the live pages for accessibility faults. Its first run warned of 70 form fields labelled only by placeholder text, which #422 fixes.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-25 and 2026-10-26)
+
+- **Deployed commit:** `deployed-commit.txt` read each production commit above after its merge, ending `b930527`.
+- **Live check:**
+  - after Deploys 311 to 315: 22 OK, 0 WARN, 0 FAIL, 0 PENDING;
+  - after Deploy 316: 21 OK, 0 WARN, **1 FAIL**, 0 PENDING. The public-PDF row met a dropped connection and had no retry. Deploy 318 is the fix;
+  - after Deploys 317 and 318: 22 OK, 0 WARN, 0 FAIL, 0 PENDING;
+  - after Deploys 319 to 321: 22 OK, 0 WARN, 0 FAIL, 0 PENDING;
+  - after Deploy 322: 27 OK, **1 WARN**, 0 FAIL, 0 PENDING. The WARN is the 70 placeholder-only fields, expected until #422 merges.
+- **GitHub workflows:** "Tests" passed on every branch before its merge.
+
+### The open pull requests, updated
+
+- **The train:** #417, #419, #421, #422 and #426 wait for the owner's Neon backup. #421 and #422 carry #417's and #419's database changes, so they go after them.
+- **New since Deploy 322, all waiting for approval:** #453 (the LCL volume option removed), #454 (the pt-BR landing page, a draft), #455 and #456 (the lead time 4–6 weeks; «مدة التجهيز»).
+- **Register numbering:** #453, #454, #455 and #426 each number new rows from C-181 on their own branch. Whichever merges first keeps its numbers; the others are renumbered when `main` is merged into them.
+
+### Claim register
+
+180 claims (177 + C-178 to C-180 from #448).
+
+### Rollback
+
+- **Deploys 319 to 322:** `git revert -m 1` on `b930527`, `ed6b9d6`, `72463bc`, `bb02bf3`, newest first.
+- **Deploy 318:** `git revert -m 1 09ffefa`. The PDF row loses its retry.
+- **Deploy 317:** `git revert -m 1 cbcf514`.
+- **Deploy 316:** `git revert -m 1 cf11496`.
+- **Deploy 315:** `git revert -m 1 bc14515`. The CSP must allow the CDN again for the old script tag to load; the revert restores both.
+- **Deploys 312 and 313:** `git revert -m 1` on `e8315a1`, then `596d0fc`.
+- **Deploys 311 and 314** are documentation and register only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 311 to 322
+
+- **Placeholder-only form fields:** 70, the live check's WARN, until #422 merges.
+- **Branch protection on `main`:** not yet on (owner).
+- **Unchanged from Deploys 306 to 310:** the owner's phone checks; #359's Arabic photo descriptions awaiting the vowel-mark convention, and its four photos still to come; the statement's "Known limitations" heading (#426); the merge train.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11777,7 +11868,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 310 (2026-10-25).**
+**Unchanged since U4, through Deploy 322 (2026-10-26).**
 
 ## Outstanding, unresolved by this document
 
