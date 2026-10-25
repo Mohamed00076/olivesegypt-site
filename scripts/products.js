@@ -30,13 +30,13 @@
 // Order is the order every list on the site uses: olive types, then the
 // pickled vegetables. key: ?product= and data-slug; dir: the page directory.
 const PRODUCTS = [
-  { key: 'green', dir: 'green-olives', category: 'green', en: 'Green Olives', ar: 'زيتون أخضر' },
-  { key: 'stuffed', dir: 'stuffed-green-olives', category: 'green', en: 'Stuffed Green Olives', ar: 'زيتون أخضر محشو' },
-  { key: 'black_natural', dir: 'natural-black-olives', category: 'black', en: 'Natural Black Olives', ar: 'زيتون أسود طبيعي' },
-  { key: 'oxidized_black', dir: 'oxidized-black-olives', category: 'black', en: 'Oxidized Black Olives', ar: 'زيتون أسود مؤكسد' },
-  { key: 'jalapeno', dir: 'sliced-jalapeno-peppers', category: 'specialty', en: 'Sliced Jalapeño Peppers', ar: 'فلفل هالبينو مقطع' },
-  { key: 'artichoke', dir: 'marinated-artichoke-hearts', category: 'specialty', en: 'Marinated Artichoke Hearts', ar: 'قلوب أرضي شوكي متبّلة' },
-  { key: 'pepperoncini', dir: 'pepperoncini-peppers', category: 'specialty', en: 'Pepperoncini Peppers', ar: 'فلفل بيبرونشيني' },
+  { key: 'green', dir: 'green-olives', category: 'green', en: 'Green Olives', ar: 'زيتون أخضر', pt: 'Azeitonas verdes' },
+  { key: 'stuffed', dir: 'stuffed-green-olives', category: 'green', en: 'Stuffed Green Olives', ar: 'زيتون أخضر محشو', pt: 'Azeitonas verdes recheadas' },
+  { key: 'black_natural', dir: 'natural-black-olives', category: 'black', en: 'Natural Black Olives', ar: 'زيتون أسود طبيعي', pt: 'Azeitonas pretas naturais' },
+  { key: 'oxidized_black', dir: 'oxidized-black-olives', category: 'black', en: 'Oxidized Black Olives', ar: 'زيتون أسود مؤكسد', pt: 'Azeitonas pretas oxidadas' },
+  { key: 'jalapeno', dir: 'sliced-jalapeno-peppers', category: 'specialty', en: 'Sliced Jalapeño Peppers', ar: 'فلفل هالبينو مقطع', pt: 'Pimenta jalapeño fatiada' },
+  { key: 'artichoke', dir: 'marinated-artichoke-hearts', category: 'specialty', en: 'Marinated Artichoke Hearts', ar: 'قلوب أرضي شوكي متبّلة', pt: 'Corações de alcachofra marinados' },
+  { key: 'pepperoncini', dir: 'pepperoncini-peppers', category: 'specialty', en: 'Pepperoncini Peppers', ar: 'فلفل بيبرونشيني', pt: 'Pimenta pepperoncini' },
 ];
 
 // The olive types and the forms each is supplied in (owner, 2026-10-10).
@@ -49,28 +49,33 @@ const FORMS = {
 };
 // What a stuffed olive is filled with (C-152). Add one only on owner
 // confirmation (docs/evidence-needed.md).
-const FILLINGS = { en: ['pepper', 'carrot'], ar: ['الفلفل', 'الجزر'] };
+// Portuguese (the /pt-br/ page, owner 2026-10-25): which pepper is PENDING
+// the supplier -- "pimentão" (sweet) and "pimenta" (hot) are different
+// things -- so the page carries this placeholder and cannot be published
+// until it is replaced (scripts/check-pt-br.js).
+const PT_PEPPER_PENDING = '[PIMENTÃO or PIMENTA: pending supplier]';
+const FILLINGS = { en: ['pepper', 'carrot'], ar: ['الفلفل', 'الجزر'], pt: [PT_PEPPER_PENDING, 'cenoura'] };
 const FORM_WORDS = {
-  whole: { en: 'Whole', ar: 'كامل' },
-  pitted: { en: 'Pitted', ar: 'منزوع النواة' },
-  sliced: { en: 'Sliced', ar: 'مقطع' },
-  stuffed: { en: 'Stuffed', ar: 'محشو' },
+  whole: { en: 'Whole', ar: 'كامل', pt: 'inteiras' },
+  pitted: { en: 'Pitted', ar: 'منزوع النواة', pt: 'sem caroço' },
+  sliced: { en: 'Sliced', ar: 'مقطع', pt: 'fatiadas' },
+  stuffed: { en: 'Stuffed', ar: 'محشو', pt: 'recheadas' },
 };
 
 // Cultivars, for general reference on the CULTIVAR_PAGES only: the ones this
 // site once listed as products, Kalamata excluded (owner default, 2026-10-10).
 // Hamed is not here: it was withdrawn as "not confirmed available".
 const CULTIVARS = [
-  { en: 'Aggizi', ar: 'عجيزي', type: 'green' },
-  { en: 'Toffahi', ar: 'تفاحي', type: 'green' },
-  { en: 'Manzanilla', ar: 'مانزانيلا', type: 'green' },
+  { en: 'Aggizi', ar: 'عجيزي', pt: ['Aggizi', 'Agizi', 'Ajizi'], type: 'green' },
+  { en: 'Toffahi', ar: 'تفاحي', pt: ['Toffahi', 'Tofahi', 'Tufahi'], type: 'green' },
+  { en: 'Manzanilla', ar: 'مانزانيلا', pt: ['Manzanilla', 'Manzanilha'], type: 'green' },
 ];
 const CULTIVAR_PAGES = [
   'egyptian-table-olives', 'ar/egyptian-table-olives',
   'resources/why-egyptian-olives', 'ar/resources/why-egyptian-olives',
 ];
 // Named nowhere a buyer can read, in any language.
-const NEVER_NAMED = [{ en: 'Kalamata', ar: 'كالاماتا' }];
+const NEVER_NAMED = [{ en: 'Kalamata', ar: 'كالاماتا', pt: ['Kalamata', 'Calamata'] }];
 
 // Retired addresses and ids, and where each now goes.
 const RETIRED = [
@@ -98,5 +103,5 @@ const OLIVE_COUNT = Object.keys(FORMS).length;
 
 module.exports = {
   PRODUCTS, KEYS, DIRS, COUNT, OLIVE_COUNT, FORMS, FILLINGS, FORM_WORDS,
-  CULTIVARS, CULTIVAR_PAGES, NEVER_NAMED, RETIRED, WITHDRAWN,
+  CULTIVARS, CULTIVAR_PAGES, NEVER_NAMED, RETIRED, WITHDRAWN, PT_PEPPER_PENDING,
 };

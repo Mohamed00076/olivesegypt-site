@@ -190,12 +190,15 @@
 (function () {
   if (!document.querySelector('.fixed.bottom-6.right-6')) return;
   if (document.getElementById('tc-quote-fab')) return;
-  var ar = (document.documentElement.getAttribute('lang') || '').slice(0, 2) === 'ar';
+  var lang = (document.documentElement.getAttribute('lang') || '').slice(0, 2).toLowerCase();
+  var ar = lang === 'ar';
+  var pt = lang === 'pt';
   if (/^\/(ar\/)?contact(\/|\/index\.html)?$/.test(window.location.pathname)) return;
-  var label = ar ? 'اطلب عرض سعر' : 'Request a Quote';
+  var label = ar ? 'اطلب عرض سعر' : pt ? 'Solicitar cotação' : 'Request a Quote';
   var a = document.createElement('a');
   a.id = 'tc-quote-fab';
-  a.href = (ar ? '/ar' : '') + '/contact/?intent=quote';
+  // The Portuguese pages have their own quote form, on /pt-br/.
+  a.href = pt ? '/pt-br/#cotacao' : (ar ? '/ar' : '') + '/contact/?intent=quote';
   a.setAttribute('aria-label', label);
   // a paper plane ("send"), then the label; the icon is decorative
   a.innerHTML = '<svg class="tc-quote-fab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>';

@@ -27,6 +27,13 @@ const SKIP_DIRS = new Set([
 
 const AR_PREFIX = '/ar';
 
+// One Portuguese (Brazil) landing page and its privacy page (owner,
+// 2026-10-25): a locale of its own, outside the English-Arabic pairs. It has
+// no twin in either language, no hreflang pairing and no ?lang=ar redirect;
+// its English header's Arabic link goes to the Arabic home page. Held
+// together by scripts/check-pt-br.js.
+const PT_PREFIX = '/pt-br';
+
 /*
  * Routes that exist but have no index.html to find, because a Netlify
  * function serves them (netlify.toml rewrites the path). Today that is the
@@ -83,6 +90,10 @@ function isArabic(route) {
  * The Arabic counterpart of an English route, whether or not it exists.
  * '/' -> '/ar', '/catalog' -> '/ar/catalog'.
  */
+function isPortuguese(route) {
+  return route === PT_PREFIX || route.startsWith(PT_PREFIX + '/');
+}
+
 function toArabic(route) {
   if (isArabic(route)) return route;
   return route === '/' ? AR_PREFIX : AR_PREFIX + route;
@@ -160,7 +171,7 @@ function buildMap(root = ROOT) {
   const routes = listRoutes(root);
   const set = new Set(routes);
   const pairs = [];
-  for (const en of routes.filter((r) => !isArabic(r))) {
+  for (const en of routes.filter((r) => !isArabic(r) && !isPortuguese(r))) {
     const ar = toArabic(en);
     pairs.push({ en, ar: set.has(ar) ? ar : null });
   }
@@ -168,6 +179,6 @@ function buildMap(root = ROOT) {
 }
 
 module.exports = {
-  ROOT, SKIP_DIRS, AR_PREFIX, FUNCTION_ROUTES, isHtmlRoute, guideExt,
-  listRoutes, isArabic, toArabic, toEnglish, href, linkHref, routeOf, pageFile, buildMap,
+  ROOT, SKIP_DIRS, AR_PREFIX, PT_PREFIX, FUNCTION_ROUTES, isHtmlRoute, guideExt,
+  listRoutes, isArabic, isPortuguese, toArabic, toEnglish, href, linkHref, routeOf, pageFile, buildMap,
 };

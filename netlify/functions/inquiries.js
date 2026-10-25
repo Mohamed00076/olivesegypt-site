@@ -203,7 +203,7 @@ async function handlePost(event, sql) {
   try {
     await addEnquiryToPipeline(sql, inquiryId, {
       name, email, company, country, phone,
-      productInterest, estimatedVolume, requestType, message,
+      productInterest, estimatedVolume, requestType, message, sourcePage,
     });
   } catch (err) {
     console.error('[inquiries] pipeline intake failed:', err?.message ?? err);

@@ -130,10 +130,16 @@
           return '<button type="button" class="crm-btn crm-btn-danger delete-row-btn" style="margin-left:8px;" data-key="' + esc(r.key) + '">Delete</button>';
         }
 
+        // Read from the page the enquiry was sent from, as the pipeline
+        // entry does (_crm_intake.js): only the Portuguese page is named.
+        function languageOf(sourcePage) {
+          return /^https:\/\/(www\.)?olivesegypt\.com\/pt-br(\/|$)/.test(sourcePage || '') ? 'pt-BR' : '';
+        }
+
         function enquiryDetail(r) {
           return line('Product', r.product_interest) + line('Volume', r.estimated_volume) +
             (r.phone ? '<div><span class="crm-muted">Phone:</span> <span dir="ltr">' + esc(r.phone) + '</span></div>' : '') +
-            line('Sent from', r.source_page) +
+            line('Sent from', r.source_page) + line('Language', languageOf(r.source_page)) +
             '<div class="crm-inquiry-message">' + esc(r.message) + '</div>' +
             replyButton(r.email, 'Re: your enquiry to Triple Company') + deleteButton(r);
         }

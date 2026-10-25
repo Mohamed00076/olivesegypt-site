@@ -87,7 +87,9 @@ for (const route of map.routes) {
   const raw = fs.readFileSync(pageFile(route), 'utf8');
   const html = stripCrossLocaleTags(raw);
   const arabicPage = M.isArabic(route);
-  const ownCounterpart = arabicPage ? M.toEnglish(route) : M.toArabic(route);
+  // A Portuguese page has no Arabic twin: its (English) header's Arabic
+  // switcher goes to the Arabic home page.
+  const ownCounterpart = arabicPage ? M.toEnglish(route) : M.isPortuguese(route) ? M.AR_PREFIX : M.toArabic(route);
 
   const seen = [];
   let m;
@@ -130,7 +132,7 @@ for (const route of map.routes) {
     } else {
       // 3. LOCALE-MISMATCH (English page reaching into /ar/)
       if (M.isArabic(target) && !(link.isSwitcher && target === ownCounterpart)) {
-        add('LOCALE-MISMATCH', route, `${where} -> English page links into the Arabic tree`);
+        add('LOCALE-MISMATCH', route, `${where} -> ${M.isPortuguese(route) ? 'Portuguese' : 'English'} page links into the Arabic tree`);
       }
     }
   }
@@ -163,9 +165,10 @@ const byKind = violations.reduce((a, v) => ((a[v.kind] = (a[v.kind] || 0) + 1), 
 
 if (violations.length === 0) {
   const arCount = map.routes.filter(M.isArabic).length;
+  const ptCount = map.routes.filter(M.isPortuguese).length;
   console.log(
     `locale-links OK -- ${map.routes.length} routes checked ` +
-    `(${map.routes.length - arCount} en / ${arCount} ar), 0 violations.`
+    `(${map.routes.length - arCount - ptCount} en / ${arCount} ar / ${ptCount} pt-BR), 0 violations.`
   );
   process.exit(0);
 }

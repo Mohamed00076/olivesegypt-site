@@ -49,6 +49,8 @@ const PAGES = [
   { file: 'ar/contact/index.html', prefix: 'contact', dir: 'rtl' },
   { file: 'sample/index.html', prefix: 'sample', dir: 'ltr' },
   { file: 'ar/sample/index.html', prefix: 'sample', dir: 'rtl' },
+  // The Portuguese (Brazil) page's quote and sample form (2026-10-25)
+  { file: 'pt-br/index.html', prefix: 'contact', dir: 'ltr' },
 ];
 
 // Every id the shared handler reads, per form. If one of these is renamed on a
@@ -157,7 +159,7 @@ for (const file of ['contact/index.html', 'ar/contact/index.html']) {
     problems.push(`assets/consent.js carries only ${arabic} Arabic characters; the Arabic strings are missing`);
   }
   // both privacy destinations must exist, or one locale is sent to the other's page
-  for (const href of ["'/privacy/'", "'/ar/privacy/'"]) {
+  for (const href of ["'/privacy/'", "'/ar/privacy/'", "'/pt-br/privacidade/'"]) {
     if (!consent.includes(href)) {
       problems.push(`assets/consent.js has no ${href} privacy link, so one locale points at the other's page`);
     }

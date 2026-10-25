@@ -114,8 +114,24 @@ function forwardMove(currentStage, targetStage) {
   return targetStage;
 }
 
+/*
+ * The language an enquiry came in, read from the page it was sent from. Only
+ * the Portuguese (Brazil) page is told apart (owner, 2026-10-25, Option A: no
+ * database change, nothing written to older records). English and Arabic
+ * enquiries carry no language line, as before. The CRM itself stays in
+ * English (owner, 2026-10-25).
+ */
+function languageOf(sourcePage) {
+  try {
+    return /^\/pt-br(\/|$)/.test(new URL(sourcePage).pathname) ? 'pt-BR' : null;
+  } catch (err) {
+    return null;
+  }
+}
+
 function activityText(inquiryId, e, region) {
   const lines = [`Website enquiry #${inquiryId}: ${e.requestType || 'Enquiry'}`];
+  if (languageOf(e.sourcePage)) lines.push('Language: pt-BR (sent from the Portuguese page, /pt-br/)');
   if (e.productInterest) lines.push(`Product: ${e.productInterest}`);
   if (e.estimatedVolume) lines.push(`Volume: ${e.estimatedVolume}`);
   lines.push(`Country: ${e.country}` + (region === 'Unassigned' ? ' (region not set -- please choose one)' : ''));
@@ -131,7 +147,7 @@ async function noteOnEnquiry(sql, inquiryId, note) {
 /*
  * enquiry: the cleaned values inquiries.js has just saved --
  *   { name, email, company, country, phone, productInterest,
- *     estimatedVolume, requestType, message }
+ *     estimatedVolume, requestType, message, sourcePage }
  *
  * Returns { outcome: 'created' | 'updated' | 'skipped', buyerId?, note? }.
  * Throws only on a database error; the caller records that on the enquiry.
@@ -235,5 +251,5 @@ async function addEnquiryToPipeline(sql, inquiryId, e) {
 }
 
 module.exports = {
-  addEnquiryToPipeline, planFor, forwardMove, productsFor, PRODUCT_LABELS, LEGACY_LABELS, PLAN, ACTOR,
+  addEnquiryToPipeline, planFor, forwardMove, productsFor, languageOf, PRODUCT_LABELS, LEGACY_LABELS, PLAN, ACTOR,
 };

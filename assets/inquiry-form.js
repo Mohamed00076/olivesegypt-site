@@ -27,7 +27,8 @@
 // so a stray or hand-edited value can never write an arbitrary string into
 // the column.
 (function () {
-  var LANG = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+  var PAGE_LANG = (document.documentElement.lang || '').toLowerCase();
+  var LANG = PAGE_LANG === 'ar' ? 'ar' : PAGE_LANG.slice(0, 2) === 'pt' ? 'pt' : 'en';
 
   // The stored value is deliberately English in both locales: it is an
   // internal classification read in the admin inquiry list and exported to
@@ -62,6 +63,21 @@
       preview: 'هذه نسخة معاينة من الموقع: لم يُرسل أي شيء. لا تُرسل النماذج إلا من olivesegypt.com.',
       shipping: 'Shipping Address:',
       notes: 'Additional Notes:'
+    },
+    // /pt-br/ (owner, 2026-10-25): draft wording, awaiting a Brazilian
+    // reader. The reply time is softer than the 24 hours promised in English
+    // and Arabic, and names the Cairo working day (C-186). The server's own
+    // messages are English, so this page shows its own instead (rate, generic).
+    pt: {
+      sending: 'Enviando...',
+      contactSuccess: 'Obrigado — recebemos sua solicitação. Respondemos normalmente em até dois dias úteis (horário do Cairo).',
+      sampleSuccess: 'Obrigado — recebemos seu pedido de amostra. Confirmamos normalmente em até dois dias úteis (horário do Cairo).',
+      generic: 'Não foi possível enviar sua solicitação. Confira os campos obrigatórios e tente novamente, ou escreva para sales@olivesegypt.com.',
+      rate: 'Recebemos vários envios seguidos deste endereço. Tente novamente mais tarde ou escreva para sales@olivesegypt.com.',
+      network: 'Erro de conexão — tente novamente ou escreva para sales@olivesegypt.com.',
+      preview: 'Esta é uma cópia de pré-visualização do site: nada foi enviado. Os formulários só enviam a partir de olivesegypt.com.',
+      shipping: 'Shipping Address:',
+      notes: 'Additional Notes:'
     }
   };
   var T = STRINGS[LANG];
@@ -81,6 +97,10 @@
   // withholds the referrer. Only a Solutions path is accepted; anything else
   // falls back to the referrer, as before.
   function sourcePage() {
+    // The Portuguese page carries its own form, so the referrer would name
+    // the page before it. Its own address is what tells the CRM the enquiry
+    // came in Portuguese (Option A, owner 2026-10-25: no database change).
+    if (/^\/pt-br(\/|$)/.test(window.location.pathname)) return window.location.origin + '/pt-br/';
     var m = /[?&]from=(\/(?:ar\/)?solutions(?:\/[a-z-]+)?)(?:&|$)/.exec(window.location.search);
     if (m) return window.location.origin + m[1];
     return document.referrer || window.location.href;
@@ -147,7 +167,7 @@
         body: JSON.stringify(payload)
       }).then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (data) {
-          return { ok: res.ok, data: data };
+          return { ok: res.ok, status: res.status, data: data };
         });
       }).then(function (result) {
         submitBtn.disabled = false;
@@ -170,7 +190,8 @@
             TC.trackEvent('form_confirmation_viewed', { source_page: payload.source_page, form: prefix });
           }
         } else {
-          showStatus('error', (result.data && result.data.error) || T.generic);
+          if (LANG === 'pt') showStatus('error', result.status === 429 ? T.rate : T.generic);
+          else showStatus('error', (result.data && result.data.error) || T.generic);
         }
       }).catch(function () {
         submitBtn.disabled = false;
