@@ -66,9 +66,9 @@ const SAMPLE_BUYERS = [
     contact_name: 'Haruto Sato', contact_title: 'Import Director',
     contact_email: 'h.sato@example-kansaigourmet.test', lead_source: 'LinkedIn outreach',
     current_stage: 'Sample Requested', product_interest: ['oxidized-black-olives'],
-    packaging_format: '250g glass jars, retail-ready', estimated_volume: 'Trial order, 500 units',
+    packaging_format: '250g glass jars, retail-ready', estimated_volume: '1 x 20ft container',
     next_action: 'Ship sample kit', next_action_due: daysFromNow(4),
-    notes: 'Wants a retail-ready sample kit before committing to a trial order.',
+    notes: 'Wants a retail-ready sample kit before committing to a first container.',
   },
   {
     company_name: 'Great Lakes Specialty Foods Inc', country_region: 'North America',
