@@ -99,9 +99,10 @@ for (const locale of ['', 'ar/']) {
   // ---- the bar offers the full catalogue, in the page's own language -----
   // /ar/catalog had only the product count until 2026-09-28, when the owner
   // noticed its "download full catalogue" button was missing. The same day
-  // it became a direct download of the catalogue PDF, not the print page.
+  // it became a direct download of the catalogue PDF, not the print page;
+  // since 2026-10-25 a single link, not a button inside a link.
   const printHref = `/${locale}downloads/product-catalog-${locale ? 'ar' : 'en'}.pdf`;
-  if (!new RegExp(`<a href="${printHref}"[^>]*><button[^>]*>[\\s\\S]*?</button></a>`).test(html.slice(html.indexOf('data-catalog-count')))) {
+  if (!new RegExp(`<a href="${printHref}" download[ >]`).test(html.slice(html.indexOf('data-catalog-count')))) {
     problems.push(`${file}: the filter bar has no download-full-catalogue button for ${printHref}`);
   }
 
