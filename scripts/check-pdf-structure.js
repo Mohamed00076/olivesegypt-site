@@ -92,6 +92,10 @@ function problemsOf(job, buf) {
   return out;
 }
 
+// Also used by scripts/check-live.js on the PDFs as the live site serves them.
+module.exports = { problemsOf };
+if (require.main !== module) return;
+
 const problems = [];
 let tagged = 0;
 for (const job of JOBS) {
