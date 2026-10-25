@@ -297,12 +297,18 @@ function packIcon(label) {
  * end labels restate "a lower number means larger individual olives".
  */
 const CALIBER_WORDS = { en: ['Larger olives', 'Smaller olives'], ar: ['حبات أكبر', 'حبات أصغر'] };
+// The drawing's description, for screen readers (owner, 2026-10-24): what is
+// drawn, nothing more; the labels under it are read as text.
+const CALIBER_ALT = {
+  en: 'Drawing: seven olives in a row, from the largest beside 140 to the smallest beside 360.',
+  ar: 'رسم: سبع حبات زيتون في صف، من الأكبر عند 140 إلى الأصغر عند 360.',
+};
 function caliberScale(locale) {
   const sizes = [15, 13, 11, 9.5, 8, 6.8, 5.8];
   let x = 18;
   const olives = sizes.map((r) => { const cx = x + r; x += 2 * r + 9; return `<ellipse cx="${cx}" cy="22" rx="${r}" ry="${(r * 1.18).toFixed(1)}"/>`; }).join('');
   const [big, small] = CALIBER_WORDS[locale];
-  return `<figure class="caliber-scale">
+  return `<figure class="caliber-scale" aria-label="${CALIBER_ALT[locale]}">
 <svg viewBox="0 0 ${x + 10} 44" aria-hidden="true" focusable="false"><g fill="#8fa86a" stroke="#4c5926" stroke-width="1.2">${olives}</g></svg>
 <div class="scale-bar" aria-hidden="true"></div>
 <figcaption><span><b dir="ltr">140</b> ${big}</span><span>${small} <b dir="ltr">360</b></span></figcaption>
