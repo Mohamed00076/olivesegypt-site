@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div id="deleted-status" class="crm-status crm-status-success" style="display:none;"></div>
+      <div id="deleted-status" class="crm-status crm-status-success" style="display:none;" role="status" aria-live="polite"></div>
 
       <div class="crm-card" id="import-card" style="display:none;">
         <h2>Import Buyers From CSV</h2>
@@ -65,8 +65,8 @@
       <div class="crm-card">
         <div class="crm-flex">
           <input type="text" id="search-input" placeholder="Search company, contact, email…" style="max-width:280px;" />
-          <select id="stage-filter" style="max-width:180px;"><option value="">All stages</option></select>
-          <select id="region-filter" style="max-width:180px;"><option value="">All regions</option></select>
+          <select id="stage-filter" aria-label="Filter by stage" style="max-width:180px;"><option value="">All stages</option></select>
+          <select id="region-filter" aria-label="Filter by region" style="max-width:180px;"><option value="">All regions</option></select>
         </div>
       </div>
 
