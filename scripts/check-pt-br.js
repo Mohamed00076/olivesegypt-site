@@ -58,6 +58,12 @@ const CERTIFICATES = 'Certificações da unidade parceira: em verificação com 
 const REPLY = 'Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação). Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis (domingo a quinta).';
 // "Como funciona" points to it; the promise itself is printed twice, on the contact card and in the form (owner, round 3).
 const REPLY_POINTER = 'Prazo de resposta: veja Fale conosco, abaixo.';
+// Owner, 2026-10-26 (C-188): the Egypt–Mercosur agreement, narrowed. In force,
+// origin rules and certificate, other taxes, confirmed with the buyer's
+// importer and broker -- no NCM code, category, phase-out date, no claim that
+// our goods qualify or that we supply the certificate.
+const FTA_HEADING = 'Acordo de Livre Comércio Mercosul–Egito';
+const FTA = 'O Acordo de Livre Comércio entre o Mercosul e o Egito está em vigor desde 1º de setembro de 2017. A preferência tarifária vale apenas para mercadorias que cumprem as regras de origem do acordo e são acompanhadas de um certificado de origem. Os demais tributos de importação continuam valendo. A classificação e o tratamento tarifário são confirmados com o importador e o despachante aduaneiro do comprador antes de cada importação.';
 const HOURS = 'Atendimento de domingo a quinta-feira, das 9h às 18h (horário do Cairo).';
 const WHATSAPP_ANY_TIME = 'Você pode nos enviar uma mensagem pelo WhatsApp a qualquer hora.';
 const LEGAL_NAME = 'Triple Company for Industrial Development';
@@ -71,6 +77,8 @@ const LLMS_LINE = '- Languages: English, Arabic; one Portuguese (Brazil) landing
 // privacy policy's account of a form field; removed before the scan.
 const ALLOWED = [
   CERTIFICATES,
+  FTA_HEADING,
+  FTA,
   REPLY,
   'certificações exigidas',
   'Ela não certifica nem declara conformidade',
@@ -82,6 +90,7 @@ const BANNED = [
   [/garant(o|e|imos|ia|ido|ida)/i, 'a guarantee'],
   [/anvisa|\bMAPA\b|mercosul|mercosur|tarifa|imposto|\bisen(to|ta|ção)|alíquota|\bNCM\b|licença de importação|registro no brasil/i, 'a Brazilian import, tax or compliance claim'],
   [/frete (para|até) o brasil|entrega(mos)? no brasil|porto de santos|\bsantos\b|\bparanaguá\b|\bitajaí\b|trânsito de \d|dias até o brasil/i, 'a Brazil-specific shipping claim'],
+  [/categoria [A-E]\b|desgrava|elimina(do|da|ção) (da|das|do) (tarifa|imposto)|\b(2005|0711)\.\d|qualifica(m|dos?|das?)? para|emitimos|fornecemos o certificado/i, 'a tariff code, category, phase-out date or qualification claim (owner: docs only, C-188)'],
   [/vácuo/i, 'vacuum packing (not offered, C-151)'],
   [/outros recheios|recheios? (sob consulta|a pedido|personalizados)/i, 'a filling beyond pepper or carrot (C-152)'],
   [/\bLCL\b|menos de (um|1) contêiner|carga fracionada|pedido (de )?teste/i, 'an order below a full container (C-140)'],
@@ -152,10 +161,12 @@ const ltext = visibleText(landing);
 
 // ---- the approved commercial sentences -------------------------------------
 {
+  const f = landing.split(FTA).length - 1;
+  if (f !== 1) fail(`${LANDING}: the Mercosul–Egito paragraph is printed ${f} time(s), not once (C-188)`);
   const n = landing.split(REPLY).length - 1;
   if (n !== 2) fail(`${LANDING}: the reply time is printed ${n} time(s); it belongs on the contact card and in the form, twice (owner, round 3)`);
 }
-for (const [s, what] of [[REPLY_POINTER, 'the pointer to the reply time in "Como funciona"'], [REPLY, 'the reply time'], [HOURS, 'the hours'], [WHATSAPP_ANY_TIME, 'the WhatsApp line'],
+for (const [s, what] of [[FTA_HEADING, 'the Mercosul–Egito heading'], [FTA, 'the Mercosul–Egito paragraph (C-188)'], [REPLY_POINTER, 'the pointer to the reply time in "Como funciona"'], [REPLY, 'the reply time'], [HOURS, 'the hours'], [WHATSAPP_ANY_TIME, 'the WhatsApp line'],
   [MOQ, 'the minimum order'], [IMPORT, 'the import-requirements sentence'], [SAMPLE, 'the sample'],
   [PRICES, 'prices confirmed during quotation'], [CERTIFICATES, 'the certificates placeholder']]) {
   if (!ltext.includes(s)) fail(`${LANDING}: ${what} is not in the approved wording: "${s}"`);
@@ -170,7 +181,7 @@ if (JSON.stringify(names) !== JSON.stringify(want)) fail(`${LANDING}: the produc
 for (const p of P.PRODUCTS) {
   const card = cards.find((c) => c.name === p.pt);
   if (!card || !P.FORMS[p.key]) continue;
-  if (p.key === 'stuffed') continue; // named only, no filling (owner, 2026-10-26)
+  // The stuffed card is held to its forms too (pitted, owner 2026-10-26); its filling is never named.
   for (const [form, words] of Object.entries(P.FORM_WORDS)) {
     if (form === 'stuffed') continue;
     const has = card.line.toLowerCase().includes(words.pt);

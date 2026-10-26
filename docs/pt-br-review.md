@@ -47,6 +47,8 @@ The header, navigation and footer stay English, unchanged (owner, decision 5). T
 | List | Antes do pedido, você pode solicitar uma amostra de 1 a 5 kg. | Before ordering, you can request a 1–5 kg sample. | C-140 |
 | List | Preços e embalagens são confirmados na cotação. | Prices and packaging are confirmed in the quotation. | owner decision 3 |
 | List | Os requisitos para importação no Brasil são confirmados com o importador e o despachante aduaneiro do comprador durante a cotação. | Requirements for importing into Brazil are confirmed with the buyer's importer and customs broker during quotation. | C-187, owner decision 4 |
+| H3 (**DRAFT FOR BRAZILIAN REVIEW**) | Acordo de Livre Comércio Mercosul–Egito | Mercosur–Egypt Free Trade Agreement | C-188, owner 2026-10-26 |
+| Text (**DRAFT FOR BRAZILIAN REVIEW**) | O Acordo de Livre Comércio entre o Mercosul e o Egito está em vigor desde 1º de setembro de 2017. A preferência tarifária vale apenas para mercadorias que cumprem as regras de origem do acordo e são acompanhadas de um certificado de origem. Os demais tributos de importação continuam valendo. A classificação e o tratamento tarifário são confirmados com o importador e o despachante aduaneiro do comprador antes de cada importação. | The Mercosur–Egypt Free Trade Agreement has been in force since 1 September 2017. The tariff preference applies only to goods that meet the agreement's rules of origin and travel with a certificate of origin. Other import taxes still apply. Classification and tariff treatment are confirmed with the buyer's importer and customs broker before each import. No NCM code, category or date of the phase-out is printed; nothing says our products qualify or that we supply the certificate. | **C-188, owner 2026-10-26** |
 | Contact card and the note in the form, printed twice only (**DRAFT FOR BRAZILIAN REVIEW**) | Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação). Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis (domingo a quinta). | We reply within 24 hours Sunday to Thursday (Cairo time, 5 to 6 hours ahead of Brasília depending on the season). Messages received on Friday or Saturday are answered within two business days (Sunday to Thursday). | **C-186, owner round 3** |
 | How it works: pointer (**DRAFT FOR BRAZILIAN REVIEW**) | Prazo de resposta: veja Fale conosco, abaixo. | Reply time: see Contact us, below. | owner round 3 |
 | Contact card: hours (**DRAFT FOR BRAZILIAN REVIEW**) | Atendimento de domingo a quinta-feira, das 9h às 18h (horário do Cairo). | Open Sunday to Thursday, 9am to 6pm (Cairo time). | owner 2026-10-26 (the /contact hours) |
@@ -120,6 +122,10 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 | private label | marca própria | |
 | importer of record ⚠️ | importador (responsável) | no single fixed term; the page describes no Brazilian registration duties (decision 4) |
 | customs broker | despachante aduaneiro | |
+| tariff preference | preferência tarifária | C-188 |
+| rules of origin | regras de origem | C-188 |
+| certificate of origin | certificado de origem | C-188 |
+| other import taxes ⚠️ | demais tributos de importação | «tributos» covers taxes and contributions; «impostos» would be narrower. |
 | order / request ⚠️ | pedido | "pedido" is both an order and a request ("pedido mínimo", "pedido de amostra"); the form uses "solicitação" where it means a request |
 | pepper (filling) ⚠️ | not used | **pimentão** = sweet or bell pepper; **pimenta** = hot pepper. The page names no filling (owner, 2026-10-26); when the owner confirms it, it is added in all three languages together. |
 | business days ⚠️ | dias úteis (domingo a quinta) | In Egypt these are Sunday to Thursday, not Brazil's Monday to Friday; the sentence now says so (owner, round 3). |

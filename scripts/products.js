@@ -5,7 +5,8 @@
  *
  * Owner decisions, 2026-10-10 (catalog restructure brief):
  *   - We supply olives by TYPE, not by cultivar. Green olives: whole, pitted,
- *     sliced. Stuffed green olives: green only, pepper or carrot filling.
+ *     sliced. Stuffed green olives: green only, pitted, pepper or carrot
+ *     filling (pitted added 2026-10-26: the English and Arabic pages say so).
  *     Natural black olives: whole only. Oxidized black olives: whole, pitted,
  *     sliced. Black olives are never stuffed. The three pickled vegetables
  *     stay as they are.
@@ -43,7 +44,7 @@ const PRODUCTS = [
 // A form not listed here must not be stated for that type.
 const FORMS = {
   green: ['whole', 'pitted', 'sliced'],
-  stuffed: ['stuffed'],
+  stuffed: ['pitted', 'stuffed'], // pitted: as the English and Arabic pages say (owner, 2026-10-26)
   black_natural: ['whole'],
   oxidized_black: ['whole', 'pitted', 'sliced'],
 };
