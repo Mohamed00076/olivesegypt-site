@@ -11850,6 +11850,26 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 323 to 328 — Group 1 of the merge plan: Lost/Stalled reasons and their dashboard card; public-site keyboard focus; forms and zoom; the accessibility statement; no LCL option (PRs #417, #419, #421, #422, #426, #453)
+
+**Previous recorded deploy:** Deploy 322 (PR #425, `b930527`)
+**Approval:** "merge" (2026-10-27), for the sequence #417 → #419 → #421 → #422 → #426 → #453, the train of the owner's merge plan, stopping after it. #419, #422 and #426 were taken out of draft first.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 323 | #417 | `e04b4d4` | 2026-10-27 02:42:13 | 9 | +319 / −69 | CRM: Lost/Stalled reason categories |
+| 324 | #419 | `8aca3e3` | 2026-10-27 02:44:57 | 3 | +156 / −0 | CRM: dashboard reasons card |
+| 325 | #421 | `286fd13` | 2026-10-27 02:47:15 | 11 | +250 / −13 | Site: keyboard focus |
+| 326 | #422 | `bbb5f5b` | 2026-10-27 02:49:15 | 16 | +278 / −74 | Site: form labels, autofill, zoom |
+| 327 | #426 | `d1fbd84` | 2026-10-27 02:51:37 | 97 | +311 / −92 | Accessibility statement (EN/AR), every footer |
+| 328 | #453 | `e94a8c2` | 2026-10-27 02:55:21 | 5 | +23 / −12 | Contact form: no LCL option |
+
+Files and lines are each merge against the `main` it landed on. Tests passed on each branch before its merge.
+
+**Live check after each deploy:** 323, 324 and 325: 27 OK, 1 WARN, 0 FAIL. The warning was the newsletter's company and country fields, named only by their placeholder; #422 fixed it. 326, 327 and 328: 28 OK, 0 WARN, 0 FAIL.
+
+**Merge-conflict resolution:** #453 conflicted with main on `contact/index.html` and the register. The page was merged three-way, tag by tag, with no LCL option left on either contact page. The register row was renumbered C-181 → C-189, after #426's C-181 to C-188, and `check-inquiry-forms.js` cites C-189. `npm test`: 83 of 83 checks passed before the push.
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
