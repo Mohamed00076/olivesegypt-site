@@ -6,6 +6,7 @@
     <title>Document | Triple Company for Industrial Development</title>
     <meta name="robots" content="noindex, nofollow" />
     <link href="/assets/fonts/fonts.css" rel="stylesheet">
+    <link href="/assets/fonts/doc-fonts.css" rel="stylesheet">
     <link rel="stylesheet" crossorigin href="/assets/index-Dw0yUE42.css">
     <link rel="stylesheet" href="/assets/crm-ui.css">
 
@@ -20,22 +21,24 @@
          line and "Page n / N".
 
          Colours are the design's: green #4b5a23, gold #b8923a (#e6c57d for the small gold labels on green, for contrast, owner 2026-10-23), cream
-         #f7f2e4. Type is the site's own (Plus Jakarta Sans; Noto Naskh
-         Arabic for Arabic) -- the design's PDFs used stand-in fonts, which
-         is why its Arabic looked heavy.
+         #f7f2e4; ink #25281c, muted #5f6654, rules #ddd8c4 (owner's spec,
+         2026-10-25). Type is Plus Jakarta Sans, and Amiri for Arabic, both
+         STATIC files (assets/fonts/doc-fonts.css): the site's variable fonts
+         embed in a PDF as Type 3 and break its text layer. No text is set
+         below 8 pt; the body is 10 pt and the line table 9.5 pt.
 
          Logical properties throughout (inline-start/end, text-align
          start/end), so the Arabic sheet is the same sheet mirrored by the
          browser rather than a second stylesheet.
          ------------------------------------------------------------------ */
-      :root { --doc-green: #4b5a23; --doc-gold: #b8923a; --doc-gold-on-green: #e6c57d; --doc-cream: #f7f2e4; --doc-ink: #25281c; --doc-muted: #6b6f60; }
+      :root { --doc-green: #4b5a23; --doc-gold: #b8923a; --doc-gold-on-green: #e6c57d; --doc-cream: #f7f2e4; --doc-ink: #25281c; --doc-muted: #5f6654; --doc-line: #ddd8c4; }
 
       .sheet {
         max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; padding: 0;
         background: #fff; box-shadow: 0 2px 24px rgba(24, 32, 16, 0.10);
         display: flex; flex-direction: column; position: relative;
-        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-        font-size: 12px; line-height: 1.55; color: var(--doc-ink);
+        font-family: 'TC Doc Sans', sans-serif;
+        font-size: 10pt; line-height: 1.55; color: var(--doc-ink);
       }
 
       /* masthead band ---------------------------------------------------- */
@@ -45,9 +48,9 @@
       .doc-logo-tile img { width: 44px; height: 54px; object-fit: contain; }
       .doc-wordmark { font-size: 22px; font-weight: 800; letter-spacing: 0.01em; line-height: 1.1; }
       .doc-sub { font-size: 12.5px; opacity: 0.92; margin-top: 2px; }
-      .doc-trade { font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--doc-gold-on-green); margin-top: 6px; }
-      .doc-contact { display: grid; grid-template-columns: auto auto; gap: 3px 14px; margin: 0; padding-inline-start: 16px; border-inline-start: 1px solid var(--doc-gold); font-size: 9.5px; line-height: 1.45; max-width: 8.4cm; }
-      .doc-contact dt { font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-gold-on-green); padding-top: 2px; }
+      .doc-trade { font-size: 8pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--doc-gold-on-green); margin-top: 6px; }
+      .doc-contact { display: grid; grid-template-columns: auto auto; gap: 3px 14px; margin: 0; padding-inline-start: 16px; border-inline-start: 1px solid var(--doc-gold); font-size: 8.5pt; line-height: 1.45; max-width: 8.4cm; }
+      .doc-contact dt { font-size: 8pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-gold-on-green); padding-top: 2px; }
       .doc-contact dd { margin: 0; }
       .doc-goldbar { height: 5px; background: var(--doc-gold); }
 
@@ -60,21 +63,21 @@
       .doc-kind { font-size: 26px; font-weight: 800; line-height: 1.05; letter-spacing: 0.01em; color: var(--doc-ink); }
       .doc-no { font-size: 12px; font-weight: 700; color: var(--doc-green); margin-top: 6px; }
       /* A letter's reference: present for the record, not a headline. */
-      .doc-ref { font-size: 10px; color: var(--doc-muted); }
-      .doc-dates { text-align: end; font-size: 10.5px; color: var(--doc-muted); line-height: 1.75; }
+      .doc-ref { font-size: 8.5pt; color: var(--doc-muted); }
+      .doc-dates { text-align: end; font-size: 9pt; color: var(--doc-muted); line-height: 1.75; }
       .doc-dates b { color: var(--doc-ink); font-weight: 700; }
 
       /* cards -------------------------------------------------------------- */
       .doc-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
       .doc-cards.single { grid-template-columns: 1fr 1fr; }
       .doc-card { background: var(--doc-cream); border-top: 3px solid var(--doc-gold); padding: 13px 16px 14px; }
-      .doc-card-label { font-size: 7.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--doc-green); margin-bottom: 6px; }
+      .doc-card-label { font-size: 8pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--doc-green); margin-bottom: 6px; }
       .doc-card-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-      .doc-card-line { font-size: 10.5px; color: #4a4d40; line-height: 1.6; }
+      .doc-card-line { font-size: 9pt; color: var(--doc-muted); line-height: 1.6; }
 
       /* line items --------------------------------------------------------- */
-      .doc-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 16px; border-bottom: 2px solid var(--doc-gold); }
-      .doc-table th { background: var(--doc-green); color: #fff; text-align: start; font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 10px; }
+      .doc-table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 16px; border-bottom: 2px solid var(--doc-gold); }
+      .doc-table th { background: var(--doc-green); color: #fff; text-align: start; font-size: 8pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 10px; }
       .doc-table td { padding: 12px 10px; vertical-align: top; }
       .doc-table tbody tr:nth-child(even) td { background: var(--doc-cream); }
       .doc-table td:first-child { font-weight: 700; }
@@ -88,25 +91,25 @@
 
       /* totals ------------------------------------------------------------- */
       .doc-totals { margin-inline-start: auto; width: 7.6cm; margin-bottom: 20px; break-inside: avoid; }
-      .doc-totals .doc-sub-row { display: flex; justify-content: space-between; gap: 1rem; padding: 5px 10px; font-size: 11.5px; }
+      .doc-totals .doc-sub-row { display: flex; justify-content: space-between; gap: 1rem; padding: 5px 10px; font-size: 9.5pt; }
       .doc-totals .doc-grand { display: flex; justify-content: space-between; gap: 1rem; background: var(--doc-green); color: #fff; padding: 10px 12px; margin-top: 6px; font-size: 15px; font-weight: 800; }
       .doc-totals .num { font-variant-numeric: tabular-nums; }
 
       /* terms -------------------------------------------------------------- */
       .doc-terms { margin-top: 6px; margin-bottom: 16px; break-inside: avoid; }
-      .doc-section-label { font-size: 7.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--doc-green); padding-bottom: 6px; border-bottom: 1px solid #e3dccb; margin-bottom: 8px; }
-      .doc-terms-grid { display: grid; grid-template-columns: 2.6cm 1fr 2.6cm 1fr; gap: 8px 12px; margin: 0; font-size: 11px; }
+      .doc-section-label { font-size: 8pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--doc-green); padding-bottom: 6px; border-bottom: 1px solid var(--doc-line); margin-bottom: 8px; }
+      .doc-terms-grid { display: grid; grid-template-columns: 2.6cm 1fr 2.6cm 1fr; gap: 8px 12px; margin: 0; font-size: 9.5pt; }
       .doc-terms-grid dt { color: var(--doc-muted); }
       .doc-terms-grid dd { margin: 0; font-weight: 700; }
 
       /* letter ------------------------------------------------------------- */
       .doc-letter-subject { font-size: 14px; font-weight: 700; margin-bottom: 18px; }
       .doc-letter-salutation { margin-bottom: 14px; }
-      .doc-letter-body { white-space: pre-wrap; font-size: 13px; line-height: 1.85; max-width: 16.5cm; }
-      .doc-letter-closing { margin-top: 24px; font-size: 13px; }
-      .doc-letter-annex { margin-top: 22px; padding-top: 10px; border-top: 1px solid #e3dccb; font-size: 9.5px; }
+      .doc-letter-body { white-space: pre-wrap; font-size: 10.4pt; line-height: 1.7; max-width: 16.5cm; }
+      .doc-letter-closing { margin-top: 24px; font-size: 10.4pt; }
+      .doc-letter-annex { margin-top: 22px; padding-top: 10px; border-top: 1px solid var(--doc-line); font-size: 8.5pt; }
       .doc-letter-annex > div { display: flex; gap: 12px; margin-bottom: 3px; }
-      .doc-letter-annex dt { min-width: 44px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 7.5px; color: var(--doc-muted); padding-top: 1px; }
+      .doc-letter-annex dt { min-width: 44px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 8pt; color: var(--doc-muted); padding-top: 1px; }
       .doc-letter-annex dd { margin: 0; }
 
       /* notes, signature, stamp ------------------------------------------- */
@@ -120,21 +123,21 @@
       .doc-terms-wrap.has-bank { display: grid; grid-template-columns: 1.15fr 1fr; gap: 0 24px; align-items: start; }
       .doc-terms-wrap.has-bank .doc-terms-grid { grid-template-columns: 2.4cm 1fr; }
       .doc-terms-wrap.has-bank .doc-terms { margin-top: 0; }
-      .doc-bank-body { white-space: pre-wrap; font-size: 11px; line-height: 1.6; font-variant-numeric: tabular-nums; }
-      [dir="rtl"] .doc-bank-body { font-size: 12px; }
-      .doc-notes { font-size: 10.5px; line-height: 1.6; white-space: pre-wrap; color: #4a4d40; margin-bottom: 18px; }
+      .doc-bank-body { white-space: pre-wrap; font-size: 9.5pt; line-height: 1.6; font-variant-numeric: tabular-nums; }
+      [dir="rtl"] .doc-bank-body { font-size: 10.5pt; }
+      .doc-notes { font-size: 9pt; line-height: 1.6; white-space: pre-wrap; color: var(--doc-muted); margin-bottom: 18px; }
       .doc-notes b { color: var(--doc-ink); }
       .doc-sign { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-top: 8px; break-inside: avoid; }
       .doc-close { display: flex; flex-direction: column; flex: 1; break-inside: avoid; }
       .sheet.is-priced .doc-sign { margin-top: auto; padding-top: 28px; }
-      .doc-sign-for { font-size: 9.5px; color: var(--doc-muted); margin-bottom: 38px; }
+      .doc-sign-for { font-size: 8.5pt; color: var(--doc-muted); margin-bottom: 38px; }
       .doc-sign-line { width: 6.5cm; border-top: 1px solid var(--doc-ink); padding-top: 6px; }
       .doc-sign-name { font-size: 12px; font-weight: 700; }
-      .doc-sign-title { font-size: 10px; color: var(--doc-muted); }
-      .doc-stamp { width: 3.8cm; height: 2.5cm; border: 1.5px dashed var(--doc-gold); border-radius: 10px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-muted); }
+      .doc-sign-title { font-size: 8.5pt; color: var(--doc-muted); }
+      .doc-stamp { width: 3.8cm; height: 2.5cm; border: 1.5px dashed var(--doc-gold); border-radius: 10px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font-size: 8pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-muted); }
 
       /* footer band (on screen; in print it is the page's own footer) ----- */
-      .doc-foot { background: var(--doc-green); color: #fff; text-align: center; padding: 9px 1.5cm 10px; font-size: 8px; line-height: 1.6; }
+      .doc-foot { background: var(--doc-green); color: #fff; text-align: center; padding: 9px 1.5cm 10px; font-size: 8pt; line-height: 1.6; }
       /* the reference on the green band: the lighter gold of the masthead labels (4.5:1; owner, 2026-10-23) */
       .doc-foot-ref { color: var(--doc-gold-on-green, #e6c57d); }
 
@@ -144,23 +147,23 @@
          letter-spacing pulls joined letters apart, and Arabic has no
          capitals for uppercase to act on.
          ------------------------------------------------------------------ */
-      [dir="rtl"] .sheet { font-family: 'Noto Naskh Arabic', 'Plus Jakarta Sans', sans-serif; line-height: 1.75; }
-      /* Naskh sets visibly smaller than Plus Jakarta Sans at the same size,
-         which is most of why the first Arabic samples looked empty. */
-      [dir="rtl"] .doc-table { font-size: 12.5px; }
-      [dir="rtl"] .doc-card-line, [dir="rtl"] .doc-terms-grid { font-size: 12px; }
-      [dir="rtl"] .doc-card-name { font-size: 15px; }
-      [dir="rtl"] .doc-dates, [dir="rtl"] .doc-notes, [dir="rtl"] .doc-sign-for, [dir="rtl"] .doc-sign-title { font-size: 11.5px; }
-      [dir="rtl"] .doc-sign-name { font-size: 13px; }
-      [dir="rtl"] .doc-letter-body, [dir="rtl"] .doc-letter-closing, [dir="rtl"] .doc-letter-salutation { font-size: 14.5px; }
-      [dir="rtl"] .doc-letter-subject { font-size: 15.5px; }
+      [dir="rtl"] .sheet { font-family: 'TC Doc Arabic', 'TC Doc Sans', sans-serif; line-height: 1.6; }
+      /* Amiri sets visibly smaller than Plus Jakarta Sans at the same size,
+         so the Arabic sizes are a step up. */
+      [dir="rtl"] .doc-table { font-size: 10.5pt; }
+      [dir="rtl"] .doc-card-line, [dir="rtl"] .doc-terms-grid { font-size: 10pt; }
+      [dir="rtl"] .doc-card-name { font-size: 12pt; }
+      [dir="rtl"] .doc-dates, [dir="rtl"] .doc-notes, [dir="rtl"] .doc-sign-for, [dir="rtl"] .doc-sign-title { font-size: 9.5pt; }
+      [dir="rtl"] .doc-sign-name { font-size: 10.5pt; }
+      [dir="rtl"] .doc-letter-body, [dir="rtl"] .doc-letter-closing, [dir="rtl"] .doc-letter-salutation { font-size: 11.5pt; }
+      [dir="rtl"] .doc-letter-subject { font-size: 12.5pt; }
       [dir="rtl"] .doc-trade, [dir="rtl"] .doc-contact dt, [dir="rtl"] .doc-card-label,
       [dir="rtl"] .doc-table th, [dir="rtl"] .doc-section-label, [dir="rtl"] .doc-stamp,
       [dir="rtl"] .doc-letter-annex dt, [dir="rtl"] .void-stamp, [dir="rtl"] .doc-kind, [dir="rtl"] .doc-wordmark {
         letter-spacing: normal; text-transform: none;
       }
       [dir="rtl"] .doc-trade, [dir="rtl"] .doc-contact dt, [dir="rtl"] .doc-card-label,
-      [dir="rtl"] .doc-table th, [dir="rtl"] .doc-section-label { font-size: 9px; }
+      [dir="rtl"] .doc-table th, [dir="rtl"] .doc-section-label { font-size: 9pt; }
       /*
        * Anything Latin inside Arabic -- the document number, an email, a
        * phone number, a figure -- is isolated so the bidirectional algorithm
@@ -541,8 +544,8 @@
             ' content: "' + line + '\\A ' + LRI + css(docNumber) + PDI + ' · ' + css(t.page) + ' "' +
             ' "' + LRI + '" counter(page) " / " counter(pages) "' + PDI + '";' +
             ' white-space: pre; text-align: center; vertical-align: middle;' +
-            ' background: #4b5a23; color: #ffffff; font-size: 7.5px; line-height: 1.6;' +
-            ' font-family: ' + (t.lang === 'ar' ? "'Noto Naskh Arabic', " : '') + "'Plus Jakarta Sans', sans-serif;" +
+            ' background: #4b5a23; color: #ffffff; font-size: 8pt; line-height: 1.6;' +
+            ' font-family: ' + (t.lang === 'ar' ? "'TC Doc Arabic', " : '') + "'TC Doc Sans', sans-serif;" +
             ' direction: ' + t.dir + '; } } }';
           /*
            * Pages after the first have no masthead, so they would start
@@ -554,8 +557,8 @@
           rule += '@media print { @page { @top-center {' +
             ' content: "' + css(t.company) + ' · ' + LRI + css(docNumber) + PDI + '";' +
             ' text-align: center; vertical-align: middle; background: #4b5a23; color: #ffffff;' +
-            ' font-size: 8.5px; font-weight: 700; height: 9mm; margin-bottom: 5mm;' +
-            ' font-family: ' + (t.lang === 'ar' ? "'Noto Naskh Arabic', " : '') + "'Plus Jakarta Sans', sans-serif;" +
+            ' font-size: 8pt; font-weight: 700; height: 9mm; margin-bottom: 5mm;' +
+            ' font-family: ' + (t.lang === 'ar' ? "'TC Doc Arabic', " : '') + "'TC Doc Sans', sans-serif;" +
             ' direction: ' + t.dir + '; } } }';
           var el = document.getElementById('print-footer-style');
           if (!el) { el = document.createElement('style'); el.id = 'print-footer-style'; document.head.appendChild(el); }

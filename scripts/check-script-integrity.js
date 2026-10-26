@@ -65,7 +65,7 @@ const SELF = 'scripts/check-script-integrity.js';
 // Each entry names the file that needs it, so an undeclared dependency
 // appearing anywhere else still fails.
 const TOOLING_ONLY = new Map([
-  ['playwright', ['scripts/generate-export-catalog-pdf.js']],
+  ['playwright', ['scripts/generate-export-catalog-pdf.js', 'scripts/print-crm-samples.js']],
   ['PIL', ['scripts/build-favicons.py', 'scripts/make-logo-header.py', 'scripts/make-card-image-sizes.py']],
   ['fontTools', ['scripts/make-pdf-static-fonts.py', 'scripts/make-arabic-web-fonts.py']],
 ]);
