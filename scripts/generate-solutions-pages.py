@@ -292,7 +292,7 @@ PAGES['importer-distributor'] = {
                 ('شروط التسليم', 'FOB الإسكندرية أو CIF أو CFR &mdash; يُتفق عليها أثناء عرض السعر'),
                 ('الدفع', 'عادةً 30% T/T · 70% مقابل صورة B/L؛ واعتماد مستندي عند الاطلاع L/C وشروط قابلة للتفاوض للشركاء المعتمدين'),
                 ('العملة', 'الدولار أو اليورو'),
-                ('العينات', 'تشكيلة 1&ndash;5 كجم متاحة عند الطلب'),
+                ('العينات', 'تشكيلة <span dir="ltr">1&ndash;5</span> كجم متاحة عند الطلب'),
                 ('المستندات', 'حزمة مستندات تصدير كاملة مع كل حاوية (أدناه)'),
             ]) + note('الشروط الموضحة حالية واسترشادية؛ تُؤكَّد الشروط الدقيقة أثناء عرض السعر للمنتج والطلب المحدد. والخطوات الست من الاستفسار إلى الشحن على صفحة ' + a('/ar/how-we-work/', 'كيف نعمل') + '.')),
             block('مستندات التصدير مع كل حاوية',
@@ -469,7 +469,7 @@ PAGES['local-egypt'] = {
     'en': dict(
         crumb='Buyers in Egypt',
         title=f'Olive Supplier in Egypt — Local Bulk Barrel Orders',
-        desc='Egyptian olives for buyers inside Egypt, without export logistics: 220 kg barrel orders with the minimum confirmed during quotation; jars, tins and buckets at the full container load (FCL) minimum.',
+        desc='Egyptian olives for buyers inside Egypt, no export steps: 220 kg barrels, minimum confirmed at quotation; jars, tins and buckets from one full container (FCL).',
         keywords='olive supplier Egypt EGP pricing, local wholesale olives Cairo, olive barrel supplier Egypt',
         main=lambda: hero('Solutions', 'For Buyers in Egypt',
                           'Egyptian table olives for businesses buying inside Egypt rather than for export.')
@@ -491,7 +491,7 @@ PAGES['local-egypt'] = {
     'ar': dict(
         crumb='المشترون داخل مصر',
         title=f'مورد زيتون في مصر — طلبات براميل محلية بالجملة',
-        desc='زيتون مائدة مصري للمشترين داخل مصر دون إجراءات تصدير: طلبات البراميل سعة 220 كجم بحد أدنى يُؤكَّد أثناء عرض السعر؛ والبرطمانات والعلب والدِلاء بالحد الأدنى: حاوية كاملة (FCL).',
+        desc='زيتون مائدة مصري للمشترين داخل مصر دون إجراءات تصدير: براميل 220 كجم بحد أدنى يُؤكَّد عند عرض السعر، وبرطمانات وعلب ودِلاء بحد أدنى حاوية كاملة (FCL).',
         keywords='مورد زيتون مصر بالجنيه المصري, زيتون بالجملة القاهرة, مورد براميل زيتون مصر',
         main=lambda: hero('الحلول', 'للمشترين داخل مصر',
                           'زيتون مائدة مصري للشركات التي تشتري داخل مصر وليس للتصدير.')
@@ -588,10 +588,13 @@ def build(slug, lang, p):
 
 
 def main():
+    # An optional output root, so check-generator-parity.js can regenerate into
+    # a temporary folder and compare with the committed pages.
+    root = sys.argv[1] if len(sys.argv) > 1 else ROOT
     for slug, langs in PAGES.items():
         for lang, p in langs.items():
             parts = (['ar'] if lang == 'ar' else []) + ['solutions'] + ([slug] if slug else []) + ['index.html']
-            out = os.path.join(ROOT, *parts)
+            out = os.path.join(root, *parts)
             os.makedirs(os.path.dirname(out), exist_ok=True)
             with open(out, 'w', encoding='utf-8') as f:
                 f.write(build(slug, lang, p))

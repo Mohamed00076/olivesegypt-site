@@ -597,6 +597,20 @@ function create(body, { cookie = COOKIE } = {}) {
     t('a document with no line items is refused', res.statusCode === 400 && /line_items/.test(res.body), res.body);
   }
 
+  // ---- The document pages by keyboard (2026-10-23) ------------------------
+  {
+    const fsx = require('fs');
+    const page = fsx.readFileSync(path.join(__dirname, '..', 'crm', 'document', 'index.html'), 'utf8');
+    const view = fsx.readFileSync(path.join(__dirname, '..', 'crm', 'document', 'view', 'index.html'), 'utf8');
+    t('"Add Line" puts the cursor in the new line (priced documents and packing lists)',
+      /addLine\(\)\.querySelector\('\.li-desc'\)\.focus\(\)/.test(page) && /addPackLine\(\)\.querySelector\('\.pk-desc'\)\.focus\(\)/.test(page));
+    t('   removing a line moves the cursor to the next line, the one before, or "Add Line" -- never the top of the page',
+      /function lineAfterRemoval\(tr, addId\)/.test(page) && (page.match(/var next = lineAfterRemoval\(tr, '(add-line-btn|pk-add-btn)'\);/g) || []).length === 2 &&
+      (page.match(/next\.focus\(\);/g) || []).length === 2);
+    t('the document number on the green footer band is the lighter gold (#e6c57d, 4.5:1)',
+      /\.doc-foot-ref \{ color: var\(--doc-gold-on-green, #e6c57d\); \}/.test(view));
+  }
+
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail === 0 ? 0 : 1);
 })().catch((err) => {

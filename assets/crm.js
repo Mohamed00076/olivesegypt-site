@@ -146,11 +146,22 @@
   ];
 
   CRM.renderNav = function (active) {
-    var html = '<div class="crm-header"><div class="crm-brand">Triple Company &middot; Buyer CRM</div><div class="crm-nav">';
+    // Keyboard walkthrough (2026-10-23): a "Skip to main content" link first,
+    // the page's own content marked as its main region, and the top links
+    // marked as navigation, so a keyboard or screen-reader user can go
+    // straight past the bar.
+    var main = document.querySelector('.crm-container');
+    if (main) {
+      if (!main.id) main.id = 'crm-main';
+      main.setAttribute('role', 'main');
+      main.setAttribute('tabindex', '-1');
+    }
+    var html = (main ? '<a class="crm-ui-skip" href="#' + main.id + '">Skip to main content</a>' : '') +
+      '<div class="crm-header"><div class="crm-brand">Triple Company &middot; Buyer CRM</div><nav class="crm-nav" aria-label="Main">';
     CRM.NAV.forEach(function (l) {
-      html += '<a href="' + l[0] + '"' + (active === l[1] ? ' class="active"' : '') + '>' + l[1] + '</a>';
+      html += '<a href="' + l[0] + '"' + (active === l[1] ? ' class="active" aria-current="page"' : '') + '>' + l[1] + '</a>';
     });
-    html += '<button type="button" id="crm-logout-btn">Log Out</button></div></div>';
+    html += '<button type="button" id="crm-logout-btn">Log Out</button></nav></div>';
     document.body.insertAdjacentHTML('afterbegin', html);
     var btn = document.getElementById('crm-logout-btn');
     if (btn) btn.addEventListener('click', CRM.logout);
@@ -208,6 +219,14 @@
     document.getElementById('crm-ui-more-logout').addEventListener('click', CRM.logout);
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !more.hidden) { setOpen(false); moreBtn.focus(); }
+    });
+    // Tabbing out of the menu closes it too, so it never stays open over the page.
+    // (Checked once focus has landed: it may have left the page altogether.)
+    document.getElementById('crm-ui-tabbar').addEventListener('focusout', function () {
+      setTimeout(function () {
+        var a = document.activeElement;
+        if (!more.hidden && !more.contains(a) && a !== moreBtn) setOpen(false);
+      }, 0);
     });
     // A tap anywhere else closes it. Focus goes back to More unless the tap
     // itself put it somewhere (a field, a link), which is where the person wants it.
