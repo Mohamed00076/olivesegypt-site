@@ -55,7 +55,9 @@ const IMPORT = 'Os requisitos para importação no Brasil são confirmados com o
 const SAMPLE = 'Antes do pedido, você pode solicitar uma amostra de 1 a 5 kg.';
 const PRICES = 'Preços e embalagens são confirmados na cotação.';
 const CERTIFICATES = 'Certificações da unidade parceira: em verificação com os documentos originais dos certificados. Nenhum nome, número, organismo emissor, escopo ou validade de certificado aparece neste site até que essa verificação seja concluída.';
-const REPLY = 'Respondemos em até 24 horas de domingo a quinta-feira. Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis. Trabalhamos no horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação.';
+const REPLY = 'Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação). Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis (domingo a quinta).';
+// "Como funciona" points to it; the promise itself is printed twice, on the contact card and in the form (owner, round 3).
+const REPLY_POINTER = 'Prazo de resposta: veja Fale conosco, abaixo.';
 const HOURS = 'Atendimento de domingo a quinta-feira, das 9h às 18h (horário do Cairo).';
 const WHATSAPP_ANY_TIME = 'Você pode nos enviar uma mensagem pelo WhatsApp a qualquer hora.';
 const LEGAL_NAME = 'Triple Company for Industrial Development';
@@ -86,6 +88,7 @@ const BANNED = [
   [/tonelada|\b\d+([.,]\d+)?\s?(MT|t)\b/i, 'a tonnage (none is stated, C-140)'],
   [/premium|\bfin[oa]s? sabor|melhor(es)? (azeitona|qualidade)|orgânic/i, 'a quality claim the register does not hold (C-160)'],
   [/24 horas|dois dias úteis|resposta (imediata|garantida|instantânea)|respondemos (imediatamente|na hora|em minutos)|imediatamente/i, 'a reply-time promise outside the approved wording (C-186)'],
+  [/unidade parceira (aprovada|homologada|credenciada|autorizada)|aprovad[ao]s? pel[ao]s?|homologad/i, 'an approval the register does not hold: the partner facility is "uma unidade parceira" (owner, round 3)'],
   [/pimentão|\bpimenta\b|cenoura|\brecheio|recheadas? (com|de)\b|amêndoa|\balho\b|anchova|\bqueijo|\batum\b|limão/i, 'a filling: no filling is named in Portuguese until the owner confirms it (2026-10-26)'],
   [/Companhia Tripla|Empresa Tripla|Triple Companhia|Companhia Triple/i, 'a translated legal name'],
 ];
@@ -103,7 +106,7 @@ function visibleText(html) {
   const main = (html.match(/<main[\s\S]*?<\/main>/) || [''])[0].replace(ALLOWED_HEADING, ' ');
   return main.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
     .replace(/&mdash;/g, '—').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&#x27;|&rsquo;/g, "'")
-    .replace(/\s+/g, ' ').trim();
+    .replace(/\s+/g, ' ').replace(/ ([,.;:])/g, '$1').trim();
 }
 const meta = (html, re) => (html.match(re) || [])[1];
 
@@ -148,7 +151,11 @@ const landing = html[LANDING] || '';
 const ltext = visibleText(landing);
 
 // ---- the approved commercial sentences -------------------------------------
-for (const [s, what] of [[REPLY, 'the reply time'], [HOURS, 'the hours'], [WHATSAPP_ANY_TIME, 'the WhatsApp line'],
+{
+  const n = landing.split(REPLY).length - 1;
+  if (n !== 2) fail(`${LANDING}: the reply time is printed ${n} time(s); it belongs on the contact card and in the form, twice (owner, round 3)`);
+}
+for (const [s, what] of [[REPLY_POINTER, 'the pointer to the reply time in "Como funciona"'], [REPLY, 'the reply time'], [HOURS, 'the hours'], [WHATSAPP_ANY_TIME, 'the WhatsApp line'],
   [MOQ, 'the minimum order'], [IMPORT, 'the import-requirements sentence'], [SAMPLE, 'the sample'],
   [PRICES, 'prices confirmed during quotation'], [CERTIFICATES, 'the certificates placeholder']]) {
   if (!ltext.includes(s)) fail(`${LANDING}: ${what} is not in the approved wording: "${s}"`);
@@ -208,7 +215,7 @@ if (!/pathname\)\) return window\.location\.origin \+ '\/pt-br\/'/.test(read('as
   const pt = (read('assets/inquiry-form.js').match(/\n {4}pt: \{([\s\S]*?)\n {4}\}/) || ['', ''])[1];
   for (const key of ['contactSuccess', 'sampleSuccess']) {
     const msg = (pt.match(new RegExp(`${key}: '([^']*)'`)) || [])[1] || '';
-    if (!/em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se el[ae] chegou na sexta ou no sábado \(horário do Cairo\)/.test(msg)) {
+    if (!/em até 24 horas de domingo a quinta-feira \(horário do Cairo\); se el[ae] chegou na sexta ou no sábado, em até dois dias úteis \(domingo a quinta\)\./.test(msg)) {
       fail(`assets/inquiry-form.js: the Portuguese ${key} does not give the reply time as approved (24 hours Sunday to Thursday, two business days from Friday or Saturday)`);
     }
     if (/imediat|garantid|instantâne/i.test(msg)) fail(`assets/inquiry-form.js: the Portuguese ${key} promises an instant or guaranteed reply`);
