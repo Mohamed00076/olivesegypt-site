@@ -192,6 +192,7 @@
         if (el && el.value.trim()) payload[name] = el.value.trim();
       });
 
+      var hadFocus = form.contains(document.activeElement);
       if (submitBtn) submitBtn.disabled = true;
 
       fetch('/api/leads', {
@@ -227,16 +228,32 @@
           form.querySelectorAll('input, select, button[type="submit"]').forEach(function (el) {
             el.disabled = true;
           });
+          // the form is finished: focus goes to what comes next, the guide's link or the confirmation
+          if (hadFocus) returnFocus(link && reveal ? link : status);
+          return;
         } else if (result.data && result.data.error === 'Too many requests. Please try again later.') {
           showStatus('error', T.rateLimited);
         } else {
           showStatus('error', fieldMessage(result.data) || T.generic);
         }
+        if (hadFocus) returnFocus(submitBtn);
       }).catch(function () {
         if (submitBtn) submitBtn.disabled = false;
         showStatus('error', T.network);
+        if (hadFocus) returnFocus(submitBtn);
       });
     });
+  }
+
+  // Keyboard focus after sending (owner, 2026-10-23). The Send button is
+  // switched off while the request is out, and a switched-off button drops
+  // the focus to the top of the page. When it comes back, focus returns to
+  // where the person was -- unless they have already moved on.
+  function returnFocus(el) {
+    var a = document.activeElement;
+    if (!el || (a && a !== document.body)) return;
+    if (el.tagName === 'P' || el.tagName === 'DIV') el.setAttribute('tabindex', '-1');
+    try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
   }
 
   function init() {

@@ -91,6 +91,17 @@
     return (m && INTENTS[m[1]]) || fallback;
   }
 
+  // Keyboard focus after sending (owner, 2026-10-23). The Send button is
+  // switched off while the request is out, and a switched-off button drops
+  // the focus to the top of the page. When it comes back, focus returns to
+  // where the person was -- unless they have already moved on.
+  function returnFocus(el) {
+    var a = document.activeElement;
+    if (!el || (a && a !== document.body)) return;
+    if (el.tagName === 'P' || el.tagName === 'DIV') el.setAttribute('tabindex', '-1');
+    try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+  }
+
   function init(prefix, defaultType, buildPayload, successText, eventName) {
     var form = document.getElementById(prefix + '-form');
     var statusEl = document.getElementById(prefix + '-form-status');
@@ -138,6 +149,7 @@
         ? TC.currentSessionId()
         : null;
 
+      var hadFocus = form.contains(document.activeElement);
       submitBtn.disabled = true;
       submitBtn.textContent = T.sending;
 
@@ -172,10 +184,12 @@
         } else {
           showStatus('error', (result.data && result.data.error) || T.generic);
         }
+        if (hadFocus) returnFocus(submitBtn);
       }).catch(function () {
         submitBtn.disabled = false;
         submitBtn.textContent = restore;
         showStatus('error', T.network);
+        if (hadFocus) returnFocus(submitBtn);
       });
     });
   }
