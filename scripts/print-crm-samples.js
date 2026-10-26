@@ -43,7 +43,11 @@ const sha256 = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
     await page.evaluate(() => document.fonts.ready);
     const out = `${OUT_DIR}/${s.name}.pdf`;
     await page.pdf({ path: path.join(ROOT, out), format: 'A4', printBackground: true, preferCSSPageSize: true, tagged: true });
-    manifest[out] = { language: s.doc.language, title: await page.title(), inputs, pdf: sha256(fs.readFileSync(path.join(ROOT, out))) };
+    // The sheet's text as printed, for the value checks (check-crm-document-values.js).
+    const text = await page.evaluate(() => document.querySelector('.sheet').innerText.replace(/[ \t]+\n/g, '\n').trim() + '\n');
+    const txt = `${OUT_DIR}/${s.name}.txt`;
+    fs.writeFileSync(path.join(ROOT, txt), text);
+    manifest[out] = { language: s.doc.language, title: await page.title(), inputs, pdf: sha256(fs.readFileSync(path.join(ROOT, out))), text: sha256(text) };
     console.log(`Wrote ${out}`);
     await page.close();
   }

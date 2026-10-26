@@ -1,0 +1,50 @@
+VOID
+TRIPLE COMPANY
+for Industrial Development
+EGYPTIAN TABLE OLIVE EXPORT
+OFFICE
+Ouroba Square, 5th Settlement, New Cairo, Cairo, Egypt
+EMAIL
+sales@olivesegypt.com
+WHATSAPP
++20 100 604 5961
+WEB
+olivesegypt.com
+Quotation
+No. Q-2026-900005
+Date: 2 November 2026
+Valid until: 2 December 2026
+BILL TO / BUYER
+ZZ Test Importer
+ZZ Test
+Test Street 1, Test City
+ZZ
+SALES REPRESENTATIVE
+ZZ Test
+Sales, Triple Company for Industrial Development
+sales@olivesegypt.com
+WhatsApp: +20 100 604 5961
+DESCRIPTION	UNIT	QTY	UNIT PRICE (USD)	AMOUNT (USD)
+Green olives, whole, in brine	10 kg bucket	100	10.00	1,000.00
+Oxidized black olives, sliced, in brine	5 kg bucket	110	12.25	1,347.50
+Oxidized black olives, pitted, in glass jars	carton	120	14.50	1,740.00
+Subtotal
+4,087.50 USD
+Total
+4,087.50 USD
+TERMS
+Incoterm
+FOB Alexandria
+Currency
+USD
+Payment
+30% T/T deposit · 70% against B/L copy
+Lead time
+4–6 weeks, order to vessel
+Notes: TEST DOCUMENT, fake data.
+For Triple Company for Industrial Development
+ZZ Test
+Sales, Triple Company for Industrial Development
+COMPANY STAMP
+Triple Company for Industrial Development · Ouroba Square, 5th Settlement, New Cairo, Cairo, Egypt · sales@olivesegypt.com · olivesegypt.com
+Q-2026-900005

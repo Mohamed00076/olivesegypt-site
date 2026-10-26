@@ -57,11 +57,16 @@ function lines(lang, n) {
   }));
 }
 
+// Issued after the design change (part 2's cutoff), so printed by its rules;
+// the *-issued-before samples are dated before it and print as they always did.
+const ISSUED = '2026-11-02T09:00:00Z';
+const BEFORE = '2026-10-18T09:00:00Z';
+
 function priced(lang, type, n, extra) {
   const li = lines(lang, n);
   const total = li.reduce((s, l) => s + l.quantity * l.unit_price, 0);
   return Object.assign({
-    id: 1, buyer_id: null, doc_type: type, language: lang, created_at: '2026-10-18T09:00:00Z',
+    id: 1, buyer_id: null, doc_type: type, language: lang, created_at: ISSUED,
     currency: 'USD', incoterm: 'FOB Alexandria', payment_terms: lang === 'ar' ? 'دفعة مقدمة 30% بالتحويل البنكي · 70% مقابل صورة بوليصة الشحن' : '30% T/T deposit · 70% against B/L copy',
     lead_time: lang === 'ar' ? '4–6 أسابيع من الطلب إلى الشحن' : '4–6 weeks, order to vessel',
     signatory_name: 'ZZ Test', signatory_title: lang === 'ar' ? 'المبيعات' : 'Sales',
@@ -71,18 +76,21 @@ function priced(lang, type, n, extra) {
 }
 
 const SAMPLES = [
-  { name: 'quotation-en', doc: priced('en', 'quotation', 3, { doc_number: 'Q-2026-900001', valid_until: '2026-11-17' }) },
-  { name: 'quotation-ar', doc: priced('ar', 'quotation', 3, { doc_number: 'Q-2026-900002', valid_until: '2026-11-17' }) },
-  { name: 'quotation-en-1-line', doc: priced('en', 'quotation', 1, { doc_number: 'Q-2026-900003', valid_until: '2026-11-17' }) },
-  { name: 'quotation-en-25-lines', doc: priced('en', 'quotation', 25, { doc_number: 'Q-2026-900004', valid_until: '2026-11-17' }) },
-  { name: 'quotation-en-void', doc: priced('en', 'quotation', 3, { doc_number: 'Q-2026-900005', valid_until: '2026-11-17', voided_at: '2026-10-19T09:00:00Z' }) },
-  { name: 'proforma-en', doc: priced('en', 'proforma', 3, { doc_number: 'PI-2026-900001', valid_until: '2026-11-17', bank_details: 'Beneficiary: ZZ Test\nBank: ZZ Test Bank\nAccount: 0000 0000 0000' }) },
-  { name: 'invoice-en', doc: priced('en', 'invoice', 3, { doc_number: 'INV-2026-900001', due_date: '2026-11-18' }) },
-  { name: 'invoice-ar', doc: priced('ar', 'invoice', 3, { doc_number: 'INV-2026-900002', due_date: '2026-11-18' }) },
+  { name: 'quotation-en', doc: priced('en', 'quotation', 3, { doc_number: 'Q-2026-900001', valid_until: '2026-12-02' }) },
+  { name: 'quotation-ar', doc: priced('ar', 'quotation', 3, { doc_number: 'Q-2026-900002', valid_until: '2026-12-02' }) },
+  { name: 'quotation-en-1-line', doc: priced('en', 'quotation', 1, { doc_number: 'Q-2026-900003', valid_until: '2026-12-02' }) },
+  { name: 'quotation-en-25-lines', doc: priced('en', 'quotation', 25, { doc_number: 'Q-2026-900004', valid_until: '2026-12-02' }) },
+  { name: 'quotation-en-void', doc: priced('en', 'quotation', 3, { doc_number: 'Q-2026-900005', valid_until: '2026-12-02', voided_at: '2026-10-19T09:00:00Z' }) },
+  { name: 'proforma-en', doc: priced('en', 'proforma', 3, { doc_number: 'PI-2026-900001', valid_until: '2026-12-02', bank_details: 'Beneficiary: ZZ Test\nBank: ZZ Test Bank\nAccount: 0000 0000 0000' }) },
+  { name: 'invoice-en', doc: priced('en', 'invoice', 3, { doc_number: 'INV-2026-900001', due_date: '2026-12-02' }) },
+  { name: 'invoice-ar', doc: priced('ar', 'invoice', 3, { doc_number: 'INV-2026-900002', due_date: '2026-12-02' }) },
+  { name: 'quotation-en-issued-before', doc: priced('en', 'quotation', 3, { doc_number: 'Q-2026-900006', created_at: BEFORE, valid_until: '2026-11-17' }) },
+  { name: 'quotation-ar-issued-before', doc: priced('ar', 'quotation', 3, { doc_number: 'Q-2026-900007', created_at: BEFORE, valid_until: '2026-11-17' }) },
+  { name: 'invoice-ar-issued-before', doc: priced('ar', 'invoice', 3, { doc_number: 'INV-2026-900003', created_at: BEFORE, due_date: '2026-11-18' }) },
   {
     name: 'packing-en',
     doc: Object.assign({
-      id: 1, doc_type: 'packing', language: 'en', doc_number: 'PL-2026-900001', created_at: '2026-10-18T09:00:00Z',
+      id: 1, doc_type: 'packing', language: 'en', doc_number: 'PL-2026-900001', created_at: ISSUED,
       currency: 'USD', signatory_name: 'ZZ Test', signatory_title: 'Sales', voided_at: null, line_items: [], subtotal: 0, total: 0,
       packing_items: [{ description: 'Green olives, whole, in brine', packing: '10 kg bucket', packages: 400, net_kg: 4000, gross_kg: 4400 }],
       shipment: { container_no: 'ZZZU 000000-0', seal_no: 'ZZ000000', port_loading: 'Alexandria', port_discharge: 'Test Port' },
@@ -91,7 +99,7 @@ const SAMPLES = [
   {
     name: 'letter-en',
     doc: Object.assign({
-      id: 1, doc_type: 'letter', language: 'en', doc_number: 'L-2026-900001', created_at: '2026-10-18T09:00:00Z',
+      id: 1, doc_type: 'letter', language: 'en', doc_number: 'L-2026-900001', created_at: ISSUED,
       subject: 'Samples for your order (test letter)', salutation: 'Dear ZZ Test,',
       body: 'This is a test letter with fake data.\n\nIt shows the letter layout: subject, salutation, body, closing, signature, enclosures and copies.',
       closing: 'Kind regards,', signatory_name: 'ZZ Test', signatory_title: 'Sales', enclosures: 'Specification sheets (3)', cc: 'ZZ Test',
@@ -101,7 +109,7 @@ const SAMPLES = [
   {
     name: 'letter-ar',
     doc: Object.assign({
-      id: 1, doc_type: 'letter', language: 'ar', doc_number: 'L-2026-900002', created_at: '2026-10-18T09:00:00Z',
+      id: 1, doc_type: 'letter', language: 'ar', doc_number: 'L-2026-900002', created_at: ISSUED,
       subject: 'عينات لطلبكم (خطاب اختبار)', salutation: '',
       body: 'هذا خطاب اختبار ببيانات وهمية، يبيّن شكل الخطاب: الموضوع والنص والختام والتوقيع والمرفقات والنسخ.\n\nالشركة الثلاثية للتنمية الصناعية.',
       closing: 'مع أطيب التحيات،', signatory_name: 'ZZ Test', signatory_title: 'المبيعات', enclosures: 'مواصفات المنتجات (3)', cc: 'ZZ Test',
