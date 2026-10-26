@@ -71,8 +71,8 @@
     // instead (rate, generic).
     pt: {
       sending: 'Enviando...',
-      contactSuccess: 'Obrigado — recebemos sua solicitação. Respondemos em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se ela chegou na sexta ou no sábado (horário do Cairo).',
-      sampleSuccess: 'Obrigado — recebemos seu pedido de amostra. Confirmamos em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se ele chegou na sexta ou no sábado (horário do Cairo).',
+      contactSuccess: 'Obrigado — recebemos sua solicitação. Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo); se ela chegou na sexta ou no sábado, em até dois dias úteis (domingo a quinta).',
+      sampleSuccess: 'Obrigado — recebemos seu pedido de amostra. Confirmamos em até 24 horas de domingo a quinta-feira (horário do Cairo); se ele chegou na sexta ou no sábado, em até dois dias úteis (domingo a quinta).',
       generic: 'Não foi possível enviar sua solicitação. Confira os campos obrigatórios e tente novamente, ou escreva para sales@olivesegypt.com.',
       rate: 'Recebemos vários envios seguidos deste endereço. Tente novamente mais tarde ou escreva para sales@olivesegypt.com.',
       network: 'Erro de conexão — tente novamente ou escreva para sales@olivesegypt.com.',
