@@ -229,7 +229,8 @@ for (const m of wa) {
 const noindex = Object.keys(PAGES).map((f) => /<meta name="robots" content="noindex/.test(html[f] || ''));
 const draft = noindex.some(Boolean);
 const sitemap = read('sitemap.xml');
-const inSitemap = /<loc>https:\/\/olivesegypt\.com\/pt-br\//.test(sitemap);
+const listed = Object.values(PAGES).filter((u) => sitemap.includes(`<loc>${u}</loc>`));
+const inSitemap = listed.length > 0;
 const linkers = require('./locale-routes').listRoutes()
   .map((r) => path.relative(ROOT, require('./locale-routes').pageFile(r)))
   .filter((f) => !f.startsWith('pt-br') && f.endsWith('.html') && fs.existsSync(path.join(ROOT, f)) && /href="\/pt-br\//.test(read(f)));
@@ -240,7 +241,7 @@ if (draft) {
   if (linkers.length) fail(`draft: ${linkers.join(', ')} link(s) to /pt-br/; nothing outside it may until it is published`);
   if (/pt-br/i.test(llms)) fail('draft: llms.txt mentions the Portuguese page');
 } else {
-  if (!inSitemap) fail('published: the Portuguese pages are not in sitemap.xml');
+  if (listed.length !== Object.keys(PAGES).length) fail(`published: sitemap.xml lists ${listed.length} of the ${Object.keys(PAGES).length} Portuguese pages`);
   if (/<loc>https:\/\/olivesegypt\.com\/pt-br\/[^<]*<\/loc>\s*<lastmod>[^<]*<\/lastmod>\s*<xhtml:link/.test(sitemap)) fail('published: a Portuguese sitemap entry carries language alternates');
   for (const f of ['contact/index.html', 'ar/contact/index.html']) {
     if (!new RegExp(`<a href="/pt-br/"[^>]*>${SWITCHER}`).test(read(f))) fail(`published: ${f} does not carry the approved line "${SWITCHER}"`);
