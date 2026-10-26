@@ -1,0 +1,233 @@
+{
+  "docs/crm-samples/quotation-en.pdf": {
+    "language": "en",
+    "title": "Q-2026-900001 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "043321725e4f809f8e92b1d3837c56b642e5c2a26915fa6839579c4cef8da2da"
+  },
+  "docs/crm-samples/quotation-ar.pdf": {
+    "language": "ar",
+    "title": "Q-2026-900002 | الشركة الثلاثية للتنمية الصناعية",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "31f29993debc50b3872ffeb4f33cf944c133cbe77defdfa4db4c06d24f5ea995"
+  },
+  "docs/crm-samples/quotation-en-1-line.pdf": {
+    "language": "en",
+    "title": "Q-2026-900003 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "c072a8db6ebb10759abdf8e5bd44cb5ef5976c50d76e4a4f474dbda9e2255beb"
+  },
+  "docs/crm-samples/quotation-en-25-lines.pdf": {
+    "language": "en",
+    "title": "Q-2026-900004 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "cc031735f970f0011395d7065ad964994fbab9253fe12c0808364992fc25a3ee"
+  },
+  "docs/crm-samples/quotation-en-void.pdf": {
+    "language": "en",
+    "title": "Q-2026-900005 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "84f2b352f82accbd2eef4b28f69499f7c0c8b7e90ccbda115524f45c718de8b1"
+  },
+  "docs/crm-samples/proforma-en.pdf": {
+    "language": "en",
+    "title": "PI-2026-900001 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "a54f465aaae784e6f0c8840b618f6fc85f836a7f58776a9a99e36added6b7900"
+  },
+  "docs/crm-samples/invoice-en.pdf": {
+    "language": "en",
+    "title": "INV-2026-900001 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "974a77871fd5c3bcffd2724fbd7093bf5aae08fb16ecda1327640acd2cc92a83"
+  },
+  "docs/crm-samples/invoice-ar.pdf": {
+    "language": "ar",
+    "title": "INV-2026-900002 | الشركة الثلاثية للتنمية الصناعية",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "a736418c0a8feb286e1175972cd304067faa6f984922d6939c8afebe697bc5c9"
+  },
+  "docs/crm-samples/packing-en.pdf": {
+    "language": "en",
+    "title": "PL-2026-900001 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "7c8c8d53fb23449a7506f2a6e023a6c3f762adcbc55ebcf04b50d7a134575aae"
+  },
+  "docs/crm-samples/letter-en.pdf": {
+    "language": "en",
+    "title": "L-2026-900001 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "786b9f50917c45bd4622ac9c8a2db8ff04b58b103bd17f761e03b053964c3361"
+  },
+  "docs/crm-samples/letter-ar.pdf": {
+    "language": "ar",
+    "title": "L-2026-900002 | الشركة الثلاثية للتنمية الصناعية",
+    "inputs": {
+      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+    },
+    "pdf": "0625f139a77a3a7cc911fbe62274d61915b1a94cba0663635618068dc2369ecf"
+  }
+}
