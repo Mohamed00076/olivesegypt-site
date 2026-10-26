@@ -11678,6 +11678,87 @@ Files and lines are each merge against the `main` it landed on.
 
 ---
 
+## Deploys 306 to 310 — The record of 303 to 305; npm test runs every check; no button inside a link; a check that keeps it so (PRs #440, #441, #442, #443, #444)
+
+**Previous recorded deploy:** `c13e487` (Deploy 305, PR #439)
+**Approvals:**
+- **#440:** "Approved #440, do both fixes" (2026-10-25).
+- **#441 and #442:** "Approved #441 and #442, do the other 27" (2026-10-25).
+- **#443:** "Approved #443, add the check" (2026-10-25).
+- **#444:** "Approved #444" (2026-10-25).
+- **The merges:** all five were merged in this session on 2026-10-25 (+0300), in that order, each after the one before it was live and its live check passed.
+- **Before its merge, `main` was merged into:** #442 (`2954307`).
+- **#443 was merged while its GitHub Tests run was still in progress.** That run and the run on the merge commit both passed. Since then, every merge waits for Tests to pass first; #444 did.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 306 | #440 | `c79e58e` | 2026-10-25 03:18:35 | 1 | +63 / −1 | Notes only |
+| 307 | #441 | `065cb66` | 2026-10-25 03:25:15 | 2 | +56 / −1 | npm test runs every check (no site change) |
+| 308 | #442 | `9529d19` | 2026-10-25 03:27:50 | 3 | +5 / −4 | Catalogue: the full-catalogue download is one link |
+| 309 | #443 | `49d4a45` | 2026-10-25 03:31:25 | 4 | +11 / −11 | Catalogue and Downloads: no button inside a link |
+| 310 | #444 | `5bdf8d2` | 2026-10-25 10:59:36 | 1 | +51 / −0 | Check: nested controls (no site change) |
+
+Files and lines are each merge against the `main` it landed on.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 306** recorded Deploys 303 to 305.
+
+### What the deploys did
+
+- **Deploy 307 — npm test runs every check (#441).**
+  - **What:** `npm test` is now `node scripts/run-checks.js`. It runs every `scripts/check-*.js`, alphabetically, except two named with why: `check-live.js` (the live site) and `check-locale-switch.js` (a server and a browser).
+  - **Why:** the old single `&&` line in `package.json` made any two PRs that each added a check conflict.
+  - **Behaviour:** the same 79 checks as before. Every check runs even after one fails, and the run lists every failure.
+- **Deploy 308 — the full-catalogue download (#442).** "Download Full Catalog (PDF)" / «تحميل الكتالوج الكامل (PDF)» on `/catalog/` and `/ar/catalog/` is one link, not a button inside a link. `check-product-categories.js` now requires a download link to the catalogue PDF in the filter bar, in place of the old markup.
+- **Deploy 309 — no button inside a link (#443).** The last 24 such controls became single links, with the same classes, text and look and the focus outline kept:
+  - `/catalog/`: 7 × "Request a Quote", "Discuss Custom Packaging" and "View Certifications";
+  - `/ar/catalog/`: 7 × «طلب عرض سعر»;
+  - `/downloads/` and `/ar/downloads/`: the two PDF downloads, "Save to Contacts" and "Request a Quote" on each.
+
+  Screenshots are pixel-identical at 1280 and 390 px. (The owner was told 27; the list's real total was 26, including the 2 in #442.)
+- **Deploy 310 — a check that keeps it so (#444).** `scripts/check-nested-controls.js` reads every HTML file in the repository (143) and fails if a link or button sits inside another, in either order. It joined `npm test` by its name. On the pages as they were before #442 and #443, it reports all 26.
+- **Database:** nothing new.
+
+### Verified on the live site (2026-10-25)
+
+- **Deployed commit:** `deployed-commit.txt` reads `5bdf8d24e6a7a415fec2f3e3a1e8290f9e72a297`.
+- **Live check:**
+  - after Deploys 306 to 309: 22 OK, 0 WARN, 0 FAIL, 0 PENDING;
+  - after Deploy 310: 22 OK, 0 WARN, 0 FAIL, 0 PENDING.
+- **GitHub workflows:** on Deploy 307's and Deploy 310's merge commits, "Tests" passed. On Deploy 310's, so did "Live site check".
+- **Pages served:** `/catalog/`, `/ar/catalog/`, `/downloads/` and `/ar/downloads/` contain no button inside a link.
+
+### The open pull requests, updated
+
+After Deploy 309, `main` was merged into all nine train branches (#417 to #426) and into #359, with tests passing on each:
+- `package.json` took `main`'s test runner, keeping every script and dependency the branches had.
+- #422's and #426's catalogue and downloads pages had the single-link fixes and product names re-applied.
+- #422 was merged into #426.
+
+Replayed in the owner's order on `main` with #444, the train merges with no conflicts, and all 83 checks pass.
+
+### Claim register
+
+177 claims, unchanged.
+
+### Rollback
+
+- **Deploy 310:** `git revert -m 1 5bdf8d2`.
+- **Deploy 309:** `git revert -m 1 49d4a45`. Revert 310 first, or its check fails on the restored markup.
+- **Deploy 308:** `git revert -m 1 9529d19`. Same: revert 310 first.
+- **Deploy 307:** `git revert -m 1 065cb66`. The old test line returns, without the checks added since.
+- **Deploy 306** is documentation only.
+- Nothing is stored.
+
+### Known limitations shipped with Deploys 306 to 310
+
+- **Branch protection on `main`:** not yet on (owner).
+- **Unchanged from Deploys 303 to 305:** the owner's phone checks; #359's Arabic photo descriptions awaiting the vowel-mark convention, and its four photos still to come; the statement's "Known limitations" heading (#426); the merge train #417 to #426.
+
+**Listed in the next entry:** the merge of this record (notes only).
+
+---
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
@@ -11696,7 +11777,7 @@ warnings cleared, with no behaviour change. See the entry for Deploys 188 and U3
 **Changed 2026-10-12 (Deploy U4).** A local Netlify build plugin builds the
 tracker (`/script.js`) and recorder, which no deploy had served before.
 Umami's own code is unchanged. See the entry for Deploys 223 to 229 and U4.
-**Unchanged since U4, through Deploy 305 (2026-10-25).**
+**Unchanged since U4, through Deploy 310 (2026-10-25).**
 
 ## Outstanding, unresolved by this document
 
