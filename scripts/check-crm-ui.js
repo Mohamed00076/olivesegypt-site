@@ -170,6 +170,25 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
   t('the route is wired and probed by the live check', /from = "\/api\/crm\/client-failure"/.test(read('netlify.toml')) && read('scripts/check-live.js').includes("'/api/crm/client-failure'"));
   t('the dashboard names it in "Something failed"', /'crm-page': 'A CRM page'/.test(read('crm/index.html')));
 
+  // ---- Keyboard walkthrough (2026-10-23) ------------------------------------
+  {
+    const js = read('assets/crm.js'), css = read('assets/crm-ui.css'), kanban = read('crm/kanban/index.html');
+    t('"Skip to main content" comes first and jumps to the page\'s main region',
+      /'<a class="crm-ui-skip" href="#' \+ main\.id \+ '">Skip to main content<\/a>'/.test(js) &&
+      /main\.setAttribute\('role', 'main'\);/.test(js) && /main\.setAttribute\('tabindex', '-1'\);/.test(js) &&
+      /\.crm-ui-skip \{ position: absolute;[^}]*top: -100px;/.test(css) && /\.crm-ui-skip:focus \{ top: 8px; \}/.test(css));
+    t('the top links are marked as navigation', /<nav class="crm-nav" aria-label="Main">/.test(js) && /<\/nav><\/div>';/.test(js));
+    t('focus rings are olive (7.5:1 on white), light gold on the dark top bar; never the 2.9:1 gold',
+      /--crm-focus: #4b5a23;/.test(css) && /body\.crm-ui-app :focus-visible \{ outline: 3px solid var\(--crm-focus\);/.test(css) &&
+      /body\.crm-ui-app \.crm-header :focus-visible \{ outline-color: #e6c57d; \}/.test(css) &&
+      !/outline:[^;]*var\(--crm-secondary/.test(css));
+    t('the More menu closes when focus leaves it', /addEventListener\('focusout'/.test(js) && /if \(!more\.hidden && !more\.contains\(a\) && a !== moreBtn\) setOpen\(false\);/.test(js));
+    t('Kanban: choosing a stage does not move the buyer; the Move button does',
+      /sel\.addEventListener\('change', function \(\) \{ btn\.disabled = !sel\.value; \}\);/.test(kanban) &&
+      /btn\.addEventListener\('click', function \(\) \{\s*if \(sel\.value\) moveBuyer\(r, sel\.value, true\);/.test(kanban) &&
+      /btn\.disabled = true;/.test(kanban) && !/sel\.addEventListener\('change', function \(\) \{\s*if \(sel\.value\) moveBuyer/.test(kanban));
+  }
+
   // ---- the STAGING / PREVIEW badge -------------------------------------------
   {
     const env = (marker, cookieOk = true) => {
@@ -264,6 +283,30 @@ t('every rule in crm-ui.css is scoped to a .crm-ui- class', unscoped.length === 
     const signIn = ['crm/login/index.html', 'crm/forgot-password/index.html', 'crm/reset-password/index.html', 'crm/change-password/index.html'].filter((f) => fs.existsSync(path.join(ROOT, f)));
     t(`the sign-in pages (${signIn.length}) still load neither crm-ui.css nor crm.js, so none of this reaches them`,
       signIn.length > 0 && signIn.every((f) => !/crm-ui\.css|assets\/crm\.js/.test(read(f))));
+  }
+
+  // ---- Accessibility scan (2026-10-23): what axe found, held here ----------
+  {
+    const docForm = read('crm/document/index.html');
+    t('the Buyers filters have names a screen reader can say',
+      /id="stage-filter" aria-label="Filter by stage"/.test(read('crm/buyers/index.html')) && /id="region-filter" aria-label="Filter by region"/.test(read('crm/buyers/index.html')));
+    t('every line-item field on a document form is named after its column',
+      ['li-desc', 'li-unit', 'li-qty', 'li-price', 'pk-desc', 'pk-packing', 'pk-packages', 'pk-net', 'pk-gross'].every((c) => new RegExp(`class="${c}" aria-label="[^"]+"`).test(docForm)));
+    t('the document view\'s sideways-scrolling body can be reached from the keyboard',
+      /<div class="doc-body" tabindex="0" role="region" aria-label="Document contents">/.test(read('crm/document/view/index.html')));
+    t('status messages on Buyers, Documents and Data quality are announced',
+      /id="deleted-status"[^>]*role="status" aria-live="polite"/.test(read('crm/buyers/index.html')) &&
+      ['crm/documents/index.html', 'crm/data-quality/index.html'].every((f) => /id="status"[^>]*role="status" aria-live="polite"/.test(read(f))));
+    // Owner, 2026-10-23: the small gold labels on the green masthead use the
+    // lighter gold #e6c57d (4.5:1); the gold bar and rules stay #b8923a.
+    const mastheads = ['letterhead/index.html', 'ar/letterhead/index.html', 'crm/document/view/index.html'];
+    t('the masthead\'s small gold labels use #e6c57d, in English and Arabic, letterhead and documents',
+      mastheads.every((f) => {
+        const s = read(f);
+        return /--doc-gold: #b8923a; --doc-gold-on-green: #e6c57d;/.test(s) &&
+          /\.doc-trade \{[^}]*color: var\(--doc-gold-on-green\)/.test(s) && /\.doc-contact dt \{[^}]*color: var\(--doc-gold-on-green\)/.test(s) &&
+          /\.doc-goldbar \{ height: 5px; background: var\(--doc-gold\); \}/.test(s);
+      }));
   }
 
   console.log(`\ncrm-ui ${fail ? 'FAILED' : 'OK'} -- a failure is said in the page, recorded once, and the sign-in pages are left alone.`);
