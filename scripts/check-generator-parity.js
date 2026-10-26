@@ -60,7 +60,10 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const GENERATORS = [
-  { script: 'scripts/generate-product-pages.py', dir: 'products' },
+  { script: 'scripts/generate-product-pages.py', dirs: ['products'] },
+  // Added 2026-10-25: a fix made to /ar/solutions/importer-distributor by hand
+  // (#424) was not in this generator, so its next run would have undone it.
+  { script: 'scripts/generate-solutions-pages.py', dirs: ['solutions', 'ar/solutions'] },
 ];
 
 let pass = 0, fail = 0;
@@ -88,20 +91,22 @@ for (const gen of GENERATORS) {
     // <slug>/index.html only; the other also writes a hub page beside them, so
     // walking the tree is what keeps this honest about both.
     const produced = [];
-    (function collect(dir, rel) {
-      if (!fs.existsSync(dir)) return;
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name < b.name ? -1 : 1)) {
-        const next = rel ? `${rel}/${entry.name}` : entry.name;
-        entry.isDirectory() ? collect(path.join(dir, entry.name), next) : produced.push(next);
-      }
-    })(path.join(tmp, gen.dir), '');
+    for (const dir of gen.dirs) {
+      (function collect(abs, rel) {
+        if (!fs.existsSync(abs)) return;
+        for (const entry of fs.readdirSync(abs, { withFileTypes: true }).sort((a, b) => a.name < b.name ? -1 : 1)) {
+          const next = `${rel}/${entry.name}`;
+          entry.isDirectory() ? collect(path.join(abs, entry.name), next) : produced.push(next);
+        }
+      })(path.join(tmp, dir), dir);
+    }
 
-    t(`${gen.script} produced pages`, produced.length > 0, `nothing under ${gen.dir}/`);
+    t(`${gen.script} produced pages`, produced.length > 0, `nothing under ${gen.dirs.join(', ')}`);
 
     const differs = [], missing = [];
     for (const rel of produced) {
-      const got = path.join(tmp, gen.dir, rel);
-      const want = path.join(ROOT, gen.dir, rel);
+      const got = path.join(tmp, rel);
+      const want = path.join(ROOT, rel);
       if (!fs.existsSync(want)) { missing.push(rel); continue; }
       checked++;
       if (!fs.readFileSync(got).equals(fs.readFileSync(want))) differs.push(rel);
