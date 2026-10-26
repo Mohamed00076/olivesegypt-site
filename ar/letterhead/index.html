@@ -22,11 +22,11 @@
          one issued from the CRM come from the same company. Keep the two in
          step: colours, masthead and footer are copied from that page.
 
-         Green #4b5a23, gold #b8923a. Plus Jakarta Sans; Noto Naskh Arabic
+         Green #4b5a23, gold #b8923a (#e6c57d for the small gold labels on green, for contrast, owner 2026-10-23). Plus Jakarta Sans; Noto Naskh Arabic
          for Arabic. Logical properties, so the Arabic sheet is this sheet
          mirrored by the browser.
          ------------------------------------------------------------------ */
-      :root { --doc-green: #4b5a23; --doc-gold: #b8923a; --doc-ink: #25281c; }
+      :root { --doc-green: #4b5a23; --doc-gold: #b8923a; --doc-gold-on-green: #e6c57d; --doc-ink: #25281c; }
       .sheet {
         max-width: 21cm; min-height: 29.7cm; margin: 2rem auto; padding: 0;
         background: #fff; box-shadow: 0 2px 24px rgba(24, 32, 16, 0.10);
@@ -40,9 +40,9 @@
       .doc-logo-tile img { width: 44px; height: 54px; object-fit: contain; }
       .doc-wordmark { font-size: 22px; font-weight: 800; letter-spacing: 0.01em; line-height: 1.1; }
       .doc-sub { font-size: 12.5px; opacity: 0.92; margin-top: 2px; }
-      .doc-trade { font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--doc-gold); margin-top: 6px; }
+      .doc-trade { font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--doc-gold-on-green); margin-top: 6px; }
       .doc-contact { display: grid; grid-template-columns: auto auto; gap: 3px 14px; margin: 0; padding-inline-start: 16px; border-inline-start: 1px solid var(--doc-gold); font-size: 9.5px; line-height: 1.45; max-width: 8.4cm; }
-      .doc-contact dt { font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-gold); padding-top: 2px; }
+      .doc-contact dt { font-size: 7.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--doc-gold-on-green); padding-top: 2px; }
       .doc-contact dd { margin: 0; }
       .doc-goldbar { height: 5px; background: var(--doc-gold); }
       .lh-body { flex: 1; outline: none; min-height: 14cm; padding: 30px 1.5cm 24px; line-height: 1.85; font-size: 13px; }

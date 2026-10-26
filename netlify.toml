@@ -78,8 +78,10 @@
 # one runs*: no loading from or sending data to unknown external hosts
 # (connect-src/script-src), no <object>/<embed> injection, no <base> tag
 # hijacking, no framing (clickjacking). External hosts allowlisted below
-# are exactly what this site actually loads (grepped site-wide) -- Chart.js
-# from jsdelivr, Google Fonts.
+# are exactly what this site actually loads (grepped site-wide). Chart.js
+# for the analytics dashboard is served from assets/vendor/ since
+# 2026-10-25 (it came from jsdelivr, with no integrity check), so no
+# script CDN is allowed.
 #
 # connect.facebook.net/www.facebook.com (added for the homepage's
 # Facebook Like widget, footer "Follow Us" section): deliberately
@@ -116,7 +118,7 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.facebook.com https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.facebook.com https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 # A0 discovery flagged this and it was never actually done: JSON API
 # responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to
