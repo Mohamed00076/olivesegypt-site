@@ -104,6 +104,9 @@ for (const file of pages) {
   // 5
   const main = (html.match(/<main\b[\s\S]*?<\/main>/) || [''])[0]
     .replace(/<(svg|script|style)\b[\s\S]*?<\/\1>/g, ' ')
+    // Text an element marks as another language is that language, not English
+    // left behind: the Portuguese line on /ar/contact/ (lang="pt-BR").
+    .replace(/<(\w+)\b[^>]*\blang="(?!ar\b)[a-z]{2}(?:-[A-Za-z]{2})?"[^>]*>[^<]*<\/\1>/g, ' ')
     .replace(/<div\b[^>]*aria-hidden="true"[^>]*>(?:(?!<div\b)[\s\S])*?<\/div>/g, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z]+;|&#x?[0-9a-f]+;/gi, ' ')

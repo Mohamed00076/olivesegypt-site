@@ -633,7 +633,7 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/contact/</loc>
-    <lastmod>2026-10-25</lastmod>
+    <lastmod>2026-10-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/contact/" />
@@ -642,7 +642,7 @@
   </url>
   <url>
     <loc>https://olivesegypt.com/ar/contact/</loc>
-    <lastmod>2026-10-25</lastmod>
+    <lastmod>2026-10-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/contact/" />
@@ -792,5 +792,17 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://olivesegypt.com/media/olive-export-packaging-guide/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://olivesegypt.com/ar/media/olive-export-packaging-guide/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://olivesegypt.com/media/olive-export-packaging-guide/" />
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/pt-br/</loc>
+    <lastmod>2026-10-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://olivesegypt.com/pt-br/privacidade/</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>
