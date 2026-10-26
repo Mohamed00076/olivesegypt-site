@@ -23,12 +23,17 @@
  *     the approved neutral sentence; no cultivar, Kalamata or Hamed in any
  *     spelling.
  *   - Range: the seven products of scripts/products.js, in its order, each
- *     with its forms; stuffed green olives filled with FILLINGS.pt only.
+ *     with its forms. No filling is named in Portuguese (owner, 2026-10-26):
+ *     only «azeitonas verdes recheadas», until the owner confirms the filling
+ *     and adds it in all three languages together.
+ *   - Hours and reply time (owner, 2026-10-26): Sunday to Thursday, 9am to
+ *     6pm, Cairo time; a reply within 24 hours Sunday to Thursday and within
+ *     two business days for a request that arrives on Friday or Saturday;
+ *     WhatsApp messages any time, never an instant or guaranteed answer.
  *   - Form: the shared handler; Portuguese labels over the English values the
  *     CRM files by; the page's own address as the source page.
- *   - Draft: while the pepper filling is pending the supplier, or the pages
- *     still say noindex (a Brazilian reader and counsel's LGPD review are
- *     outstanding), the pages stay out of search, out of the sitemap and
+ *   - Draft: while the pages still say noindex (a Brazilian reader and
+ *     counsel's LGPD review are outstanding), the pages stay out of search, out of the sitemap and
  *     llms.txt, and nothing outside /pt-br/ links to them -- including the
  *     line on /contact/, which goes live only once someone can answer in
  *     Portuguese. Publishing is one deliberate change that flips all of it.
@@ -50,6 +55,9 @@ const IMPORT = 'Os requisitos para importação no Brasil são confirmados com o
 const SAMPLE = 'Antes do pedido, você pode solicitar uma amostra de 1 a 5 kg.';
 const PRICES = 'Preços e embalagens são confirmados na cotação.';
 const CERTIFICATES = 'Certificações da unidade parceira: em verificação com os documentos originais dos certificados. Nenhum nome, número, organismo emissor, escopo ou validade de certificado aparece neste site até que essa verificação seja concluída.';
+const REPLY = 'Respondemos em até 24 horas de domingo a quinta-feira. Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis. Trabalhamos no horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação.';
+const HOURS = 'Atendimento de domingo a quinta-feira, das 9h às 18h (horário do Cairo).';
+const WHATSAPP_ANY_TIME = 'Você pode nos enviar uma mensagem pelo WhatsApp a qualquer hora.';
 const LEGAL_NAME = 'Triple Company for Industrial Development';
 const WHATSAPP = '201006045961';
 // What /contact/ and /ar/contact/ will carry once the page is published
@@ -61,6 +69,7 @@ const LLMS_LINE = '- Languages: English, Arabic; one Portuguese (Brazil) landing
 // privacy policy's account of a form field; removed before the scan.
 const ALLOWED = [
   CERTIFICATES,
+  REPLY,
   'certificações exigidas',
   'Ela não certifica nem declara conformidade',
 ];
@@ -76,7 +85,8 @@ const BANNED = [
   [/\bLCL\b|menos de (um|1) contêiner|carga fracionada|pedido (de )?teste/i, 'an order below a full container (C-140)'],
   [/tonelada|\b\d+([.,]\d+)?\s?(MT|t)\b/i, 'a tonnage (none is stated, C-140)'],
   [/premium|\bfin[oa]s? sabor|melhor(es)? (azeitona|qualidade)|orgânic/i, 'a quality claim the register does not hold (C-160)'],
-  [/24 horas/i, 'the 24-hour promise (the pt-BR page uses the softer wording, C-186)'],
+  [/24 horas|dois dias úteis|resposta (imediata|garantida|instantânea)|respondemos (imediatamente|na hora|em minutos)|imediatamente/i, 'a reply-time promise outside the approved wording (C-186)'],
+  [/pimentão|\bpimenta\b|cenoura|\brecheio|recheadas? (com|de)\b|amêndoa|\balho\b|anchova|\bqueijo|\batum\b|limão/i, 'a filling: no filling is named in Portuguese until the owner confirms it (2026-10-26)'],
   [/Companhia Tripla|Empresa Tripla|Triple Companhia|Companhia Triple/i, 'a translated legal name'],
 ];
 for (const c of P.CULTIVARS) for (const n of new Set([c.en, ...(c.pt || [])])) BANNED.push([new RegExp(`\\b${n}\\b`, 'i'), `the cultivar name ${n}`]);
@@ -138,7 +148,8 @@ const landing = html[LANDING] || '';
 const ltext = visibleText(landing);
 
 // ---- the approved commercial sentences -------------------------------------
-for (const [s, what] of [[MOQ, 'the minimum order'], [IMPORT, 'the import-requirements sentence'], [SAMPLE, 'the sample'],
+for (const [s, what] of [[REPLY, 'the reply time'], [HOURS, 'the hours'], [WHATSAPP_ANY_TIME, 'the WhatsApp line'],
+  [MOQ, 'the minimum order'], [IMPORT, 'the import-requirements sentence'], [SAMPLE, 'the sample'],
   [PRICES, 'prices confirmed during quotation'], [CERTIFICATES, 'the certificates placeholder']]) {
   if (!ltext.includes(s)) fail(`${LANDING}: ${what} is not in the approved wording: "${s}"`);
 }
@@ -152,11 +163,7 @@ if (JSON.stringify(names) !== JSON.stringify(want)) fail(`${LANDING}: the produc
 for (const p of P.PRODUCTS) {
   const card = cards.find((c) => c.name === p.pt);
   if (!card || !P.FORMS[p.key]) continue;
-  if (p.key === 'stuffed') {
-    const filled = (card.line.match(/recheadas com (.*?)\.$/) || [])[1];
-    if (filled !== P.FILLINGS.pt.join(' ou ')) fail(`${LANDING}: stuffed green olives are filled with "${filled}", not "${P.FILLINGS.pt.join(' ou ')}" (C-152)`);
-    continue;
-  }
+  if (p.key === 'stuffed') continue; // named only, no filling (owner, 2026-10-26)
   for (const [form, words] of Object.entries(P.FORM_WORDS)) {
     if (form === 'stuffed') continue;
     const has = card.line.toLowerCase().includes(words.pt);
@@ -168,7 +175,7 @@ for (const p of P.PRODUCTS.filter((x) => x.category === 'black')) {
   if (card && /rechead/i.test(card.line)) fail(`${LANDING}: ${p.pt} are said to be stuffed; black olives never are (C-155)`);
 }
 if (/azeitonas pretas recheadas/i.test(ltext)) fail(`${LANDING}: black olives are never stuffed (C-155)`);
-if (/data-pending="pepper"/.test(landing) !== landing.includes(P.PT_PEPPER_PENDING)) fail(`${LANDING}: the pending pepper filling must be marked on the page (data-pending="pepper")`);
+if (P.FILLINGS.pt) fail('scripts/products.js: FILLINGS.pt names a Portuguese filling; none is named until the owner confirms it');
 
 // ---- the form ------------------------------------------------------------------
 const optionValues = (h, id) => [...((h.match(new RegExp(`<select[^>]*id="${id}"[\\s\\S]*?</select>`)) || [''])[0])
@@ -197,6 +204,16 @@ for (const [file, extra] of [['assets/consent.js', []], ['assets/inquiry-form.js
 }
 if (!read('assets/consent.js').includes("privacyHref: '/pt-br/privacidade/'")) fail('assets/consent.js: the Portuguese banner does not link /pt-br/privacidade/');
 if (!/pathname\)\) return window\.location\.origin \+ '\/pt-br\/'/.test(read('assets/inquiry-form.js'))) fail('assets/inquiry-form.js: the Portuguese form does not record /pt-br/ as its source page');
+{
+  const pt = (read('assets/inquiry-form.js').match(/\n {4}pt: \{([\s\S]*?)\n {4}\}/) || ['', ''])[1];
+  for (const key of ['contactSuccess', 'sampleSuccess']) {
+    const msg = (pt.match(new RegExp(`${key}: '([^']*)'`)) || [])[1] || '';
+    if (!/em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se el[ae] chegou na sexta ou no sábado \(horário do Cairo\)/.test(msg)) {
+      fail(`assets/inquiry-form.js: the Portuguese ${key} does not give the reply time as approved (24 hours Sunday to Thursday, two business days from Friday or Saturday)`);
+    }
+    if (/imediat|garantid|instantâne/i.test(msg)) fail(`assets/inquiry-form.js: the Portuguese ${key} promises an instant or guaranteed reply`);
+  }
+}
 if (!/pt \? 'Solicitar cotação'/.test(read('assets/site-nav.js'))) fail('assets/site-nav.js: the quote button has no Portuguese label');
 
 // ---- WhatsApp: the company number, with a Portuguese message ---------------
@@ -210,8 +227,7 @@ for (const m of wa) {
 
 // ---- draft or published, never in between ----------------------------------
 const noindex = Object.keys(PAGES).map((f) => /<meta name="robots" content="noindex/.test(html[f] || ''));
-const pending = landing.includes(P.PT_PEPPER_PENDING) || P.FILLINGS.pt.includes(P.PT_PEPPER_PENDING);
-const draft = pending || noindex.some(Boolean);
+const draft = noindex.some(Boolean);
 const sitemap = read('sitemap.xml');
 const inSitemap = /<loc>https:\/\/olivesegypt\.com\/pt-br\//.test(sitemap);
 const linkers = require('./locale-routes').listRoutes()
@@ -219,7 +235,7 @@ const linkers = require('./locale-routes').listRoutes()
   .filter((f) => !f.startsWith('pt-br') && f.endsWith('.html') && fs.existsSync(path.join(ROOT, f)) && /href="\/pt-br\//.test(read(f)));
 const llms = read('llms.txt');
 if (draft) {
-  if (!noindex.every(Boolean)) fail(`draft (${pending ? 'the pepper filling is pending' : 'a page is noindex'}): every Portuguese page must say noindex until all of them can be published`);
+  if (!noindex.every(Boolean)) fail('draft (a page is noindex): every Portuguese page must say noindex until all of them can be published');
   if (inSitemap) fail('draft: the Portuguese pages are in sitemap.xml');
   if (linkers.length) fail(`draft: ${linkers.join(', ')} link(s) to /pt-br/; nothing outside it may until it is published`);
   if (/pt-br/i.test(llms)) fail('draft: llms.txt mentions the Portuguese page');
@@ -238,4 +254,4 @@ if (problems.length) {
 }
 console.log(`pt-br OK -- ${Object.keys(PAGES).length} pages in pt-BR with their own canonical and no hreflang pairing; only approved claims, ` +
   `${want.length} products in order with their forms, the form's values the English ones; ` +
-  (draft ? 'DRAFT: noindex, unlisted and unlinked' + (pending ? ', pepper filling pending the supplier' : '') : 'published') + '.');
+  (draft ? 'DRAFT: noindex, unlisted and unlinked' : 'published') + '.');

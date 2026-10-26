@@ -64,14 +64,15 @@
       shipping: 'Shipping Address:',
       notes: 'Additional Notes:'
     },
-    // /pt-br/ (owner, 2026-10-25): draft wording, awaiting a Brazilian
-    // reader. The reply time is softer than the 24 hours promised in English
-    // and Arabic, and names the Cairo working day (C-186). The server's own
-    // messages are English, so this page shows its own instead (rate, generic).
+    // /pt-br/ (owner, 2026-10-26): draft wording, awaiting a Brazilian
+    // reader. The reply time: 24 hours Sunday to Thursday, two business days
+    // for a request that arrives on the Egyptian weekend, Cairo time (C-186).
+    // The server's own messages are English, so this page shows its own
+    // instead (rate, generic).
     pt: {
       sending: 'Enviando...',
-      contactSuccess: 'Obrigado — recebemos sua solicitação. Respondemos normalmente em até dois dias úteis (horário do Cairo).',
-      sampleSuccess: 'Obrigado — recebemos seu pedido de amostra. Confirmamos normalmente em até dois dias úteis (horário do Cairo).',
+      contactSuccess: 'Obrigado — recebemos sua solicitação. Respondemos em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se ela chegou na sexta ou no sábado (horário do Cairo).',
+      sampleSuccess: 'Obrigado — recebemos seu pedido de amostra. Confirmamos em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se ele chegou na sexta ou no sábado (horário do Cairo).',
       generic: 'Não foi possível enviar sua solicitação. Confira os campos obrigatórios e tente novamente, ou escreva para sales@olivesegypt.com.',
       rate: 'Recebemos vários envios seguidos deste endereço. Tente novamente mais tarde ou escreva para sales@olivesegypt.com.',
       network: 'Erro de conexão — tente novamente ou escreva para sales@olivesegypt.com.',

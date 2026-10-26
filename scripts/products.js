@@ -34,9 +34,9 @@ const PRODUCTS = [
   { key: 'stuffed', dir: 'stuffed-green-olives', category: 'green', en: 'Stuffed Green Olives', ar: 'زيتون أخضر محشو', pt: 'Azeitonas verdes recheadas' },
   { key: 'black_natural', dir: 'natural-black-olives', category: 'black', en: 'Natural Black Olives', ar: 'زيتون أسود طبيعي', pt: 'Azeitonas pretas naturais' },
   { key: 'oxidized_black', dir: 'oxidized-black-olives', category: 'black', en: 'Oxidized Black Olives', ar: 'زيتون أسود مؤكسد', pt: 'Azeitonas pretas oxidadas' },
-  { key: 'jalapeno', dir: 'sliced-jalapeno-peppers', category: 'specialty', en: 'Sliced Jalapeño Peppers', ar: 'فلفل هالبينو مقطع', pt: 'Pimenta jalapeño fatiada' },
+  { key: 'jalapeno', dir: 'sliced-jalapeno-peppers', category: 'specialty', en: 'Sliced Jalapeño Peppers', ar: 'فلفل هالبينو مقطع', pt: 'Jalapeño fatiado' },
   { key: 'artichoke', dir: 'marinated-artichoke-hearts', category: 'specialty', en: 'Marinated Artichoke Hearts', ar: 'قلوب أرضي شوكي متبّلة', pt: 'Corações de alcachofra marinados' },
-  { key: 'pepperoncini', dir: 'pepperoncini-peppers', category: 'specialty', en: 'Pepperoncini Peppers', ar: 'فلفل بيبرونشيني', pt: 'Pimenta pepperoncini' },
+  { key: 'pepperoncini', dir: 'pepperoncini-peppers', category: 'specialty', en: 'Pepperoncini Peppers', ar: 'فلفل بيبرونشيني', pt: 'Pepperoncini' },
 ];
 
 // The olive types and the forms each is supplied in (owner, 2026-10-10).
@@ -49,12 +49,11 @@ const FORMS = {
 };
 // What a stuffed olive is filled with (C-152). Add one only on owner
 // confirmation (docs/evidence-needed.md).
-// Portuguese (the /pt-br/ page, owner 2026-10-25): which pepper is PENDING
-// the supplier -- "pimentão" (sweet) and "pimenta" (hot) are different
-// things -- so the page carries this placeholder and cannot be published
-// until it is replaced (scripts/check-pt-br.js).
-const PT_PEPPER_PENDING = '[PIMENTÃO or PIMENTA: pending supplier]';
-const FILLINGS = { en: ['pepper', 'carrot'], ar: ['الفلفل', 'الجزر'], pt: [PT_PEPPER_PENDING, 'cenoura'] };
+// No Portuguese fillings (owner, 2026-10-26): the /pt-br/ page says only
+// «azeitonas verdes recheadas» and names no filling, until the owner confirms
+// the filling with the supplier and adds it in all three languages together.
+// scripts/check-pt-br.js fails if the Portuguese page names one.
+const FILLINGS = { en: ['pepper', 'carrot'], ar: ['الفلفل', 'الجزر'] };
 const FORM_WORDS = {
   whole: { en: 'Whole', ar: 'كامل', pt: 'inteiras' },
   pitted: { en: 'Pitted', ar: 'منزوع النواة', pt: 'sem caroço' },
@@ -103,5 +102,5 @@ const OLIVE_COUNT = Object.keys(FORMS).length;
 
 module.exports = {
   PRODUCTS, KEYS, DIRS, COUNT, OLIVE_COUNT, FORMS, FILLINGS, FORM_WORDS,
-  CULTIVARS, CULTIVAR_PAGES, NEVER_NAMED, RETIRED, WITHDRAWN, PT_PEPPER_PENDING,
+  CULTIVARS, CULTIVAR_PAGES, NEVER_NAMED, RETIRED, WITHDRAWN,
 };

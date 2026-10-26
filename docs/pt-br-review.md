@@ -1,6 +1,6 @@
 # DRAFT FOR BRAZILIAN REVIEW: the pt-BR landing page
 
-Status: **draft**. Every Portuguese line below was written by Claude Code (2026-10-25) and needs a Brazilian reader's approval. Nothing here is live: the pages under `/pt-br/` say `noindex`, aren't in the sitemap or `llms.txt`, and no other page links to them. `scripts/check-pt-br.js` enforces all of this until the pages are published.
+Status: **draft**. Every Portuguese line below was written by Claude Code (2026-10-25, updated 2026-10-26 with the owner's decisions on the filling, the hours and the reply time) and needs a Brazilian reader's approval. Nothing here is live: the pages under `/pt-br/` say `noindex`, aren't in the sitemap or `llms.txt`, and no other page links to them. `scripts/check-pt-br.js` enforces all of this until the pages are published.
 
 Pages: `/pt-br/` (landing page with the quote and sample form) and `/pt-br/privacidade/` (privacy policy, a translation of `/privacy/`).
 
@@ -31,13 +31,13 @@ The header, navigation and footer stay English, unchanged (owner, decision 5). T
 | H2 | Azeitonas pretas e verdes em conserva | Black and green olives, preserved | keyword |
 | Products intro | Fornecemos azeitonas por tipo, e não por variedade. Se precisar de uma variedade específica, informe na mensagem: a disponibilidade é verificada em cada pedido. | We supply olives by type, not by variety. If you need a specific variety, say so in your message: availability is checked for each request. | C-154 |
 | Card | **Azeitonas verdes**: Inteiras, sem caroço ou fatiadas. | Green olives: whole, pitted or sliced. | C-155 |
-| Card | **Azeitonas verdes recheadas**: Sem caroço, recheadas com **[PIMENTÃO or PIMENTA: pending supplier]** ou cenoura. | Stuffed green olives: pitted, stuffed with [pepper: pending] or carrot. | C-152, C-155 |
+| Card | **Azeitonas verdes recheadas**: Sem caroço. | Stuffed green olives: pitted. **No filling is named** (owner, 2026-10-26) until the owner confirms it with the supplier and adds it in all three languages. | C-155, C-185 |
 | Card | **Azeitonas pretas naturais**: Inteiras. | Natural black olives: whole. | C-155 |
 | Card | **Azeitonas pretas oxidadas**: Inteiras, sem caroço ou fatiadas. | Oxidized black olives: whole, pitted or sliced. | C-155 |
 | H3 | Vegetais em conserva | Pickled vegetables | C-150 |
-| Card | **Pimenta jalapeño fatiada**: Jalapeño em conserva, em rodelas, verde ou vermelho. | Sliced jalapeño peppers: pickled jalapeño, in rings, green or red. | C-182 |
+| Card | **Jalapeño fatiado**: Jalapeño em conserva, em rodelas, verde ou vermelho. | Sliced jalapeño: pickled jalapeño, in rings, green or red. Was «Pimenta jalapeño fatiada»: "pimenta" is now banned on the page, so no pepper reads as a filling. | C-182 |
 | Card | **Corações de alcachofra marinados**: Alcachofra em conserva, marinada em óleo com ervas. | Marinated artichoke hearts: preserved artichoke, marinated in oil with herbs. | C-184 |
-| Card | **Pimenta pepperoncini**: Pepperoncini em conserva, em salmoura. | Pepperoncini peppers: pickled, in brine. | C-183 |
+| Card | **Pepperoncini**: Pepperoncini em conserva, em salmoura. | Pepperoncini: pickled, in brine. Was «Pimenta pepperoncini», for the same reason. | C-183 |
 | H2 | Embalagens: azeitonas em salmoura a granel e embaladas | Packaging: olives in brine, bulk and packed | keyword |
 | List | A granel: bombonas plásticas de 220 kg. | Bulk: 220 kg plastic barrels. | C-76 |
 | List | Embaladas: potes de vidro, latas e baldes plásticos de 2, 5, 10 e 20 kg. | Packed: glass jars, tins and 2, 5, 10 and 20 kg plastic buckets. | C-146, C-151 |
@@ -47,7 +47,9 @@ The header, navigation and footer stay English, unchanged (owner, decision 5). T
 | List | Antes do pedido, você pode solicitar uma amostra de 1 a 5 kg. | Before ordering, you can request a 1–5 kg sample. | C-140 |
 | List | Preços e embalagens são confirmados na cotação. | Prices and packaging are confirmed in the quotation. | owner decision 3 |
 | List | Os requisitos para importação no Brasil são confirmados com o importador e o despachante aduaneiro do comprador durante a cotação. | Requirements for importing into Brazil are confirmed with the buyer's importer and customs broker during quotation. | C-187, owner decision 4 |
-| List and contact card | Respondemos normalmente em até dois dias úteis. Trabalhamos no horário do Cairo, 5 a 6 horas à frente de Brasília. | We normally reply within two business days. We work on Cairo time, 5 to 6 hours ahead of Brasília. | **C-186: proposal, for the owner's approval** |
+| How it works, contact card, and a note in the form (**DRAFT FOR BRAZILIAN REVIEW**) | Respondemos em até 24 horas de domingo a quinta-feira. Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis. Trabalhamos no horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação. | We reply within 24 hours Sunday to Thursday. Messages received on Friday or Saturday are answered within two business days. We work on Cairo time, 5 to 6 hours ahead of Brasília depending on the season. | **C-186, owner decision 2026-10-26** |
+| Contact card: hours (**DRAFT FOR BRAZILIAN REVIEW**) | Atendimento de domingo a quinta-feira, das 9h às 18h (horário do Cairo). | Open Sunday to Thursday, 9am to 6pm (Cairo time). | owner 2026-10-26 (the /contact hours) |
+| Contact card: WhatsApp (**DRAFT FOR BRAZILIAN REVIEW**) | Você pode nos enviar uma mensagem pelo WhatsApp a qualquer hora. | You can message us on WhatsApp at any time. Never an instant or guaranteed reply. | owner 2026-10-26 ("WhatsApp available 24/7") |
 | H2 | Certificados | Certificates | |
 | Text | Certificações da unidade parceira: em verificação com os documentos originais dos certificados. Nenhum nome, número, organismo emissor, escopo ou validade de certificado aparece neste site até que essa verificação seja concluída. | Partner-facility certifications: being verified against the actual certificate documents. No certificate name, number, issuing body, scope or validity date appears on this site until that check is complete. | C-35 (the approved English sentence, translated) |
 | H2 | Fale conosco | Contact us | |
@@ -69,8 +71,8 @@ The header, navigation and footer stay English, unchanged (owner, decision 5). T
 | Portuguese (draft) | English |
 |---|---|
 | Enviando... | Sending... |
-| Obrigado — recebemos sua solicitação. Respondemos normalmente em até dois dias úteis (horário do Cairo). | Thank you, we have received your request. We normally reply within two business days (Cairo time). **C-186** |
-| Obrigado — recebemos seu pedido de amostra. Confirmamos normalmente em até dois dias úteis (horário do Cairo). | … sample request … we normally confirm within two business days. **C-186** |
+| Obrigado — recebemos sua solicitação. Respondemos em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se ela chegou na sexta ou no sábado (horário do Cairo). | Thank you, we have received your request. We reply within 24 hours Sunday to Thursday, or within two business days if it arrived on Friday or Saturday (Cairo time). **C-186, DRAFT FOR BRAZILIAN REVIEW** |
+| Obrigado — recebemos seu pedido de amostra. Confirmamos em até 24 horas de domingo a quinta-feira, ou em até dois dias úteis se ele chegou na sexta ou no sábado (horário do Cairo). | … sample request … we confirm within 24 hours Sunday to Thursday, or within two business days if it arrived on Friday or Saturday. **C-186, DRAFT FOR BRAZILIAN REVIEW** |
 | Não foi possível enviar sua solicitação. Confira os campos obrigatórios e tente novamente, ou escreva para sales@olivesegypt.com. | Your request could not be sent. Check the required fields and try again, or write to sales@… |
 | Recebemos vários envios seguidos deste endereço. Tente novamente mais tarde ou escreva para sales@olivesegypt.com. | We received several submissions in a row from this address. Try again later or write to sales@… |
 | Erro de conexão — tente novamente ou escreva para sales@olivesegypt.com. | Connection error: try again or write to sales@… |
@@ -118,7 +120,8 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 | importer of record ⚠️ | importador (responsável) | no single fixed term; the page describes no Brazilian registration duties (decision 4) |
 | customs broker | despachante aduaneiro | |
 | order / request ⚠️ | pedido | "pedido" is both an order and a request ("pedido mínimo", "pedido de amostra"); the form uses "solicitação" where it means a request |
-| **pepper (filling) ⚠️** | **[PIMENTÃO or PIMENTA: pending supplier]** | **pimentão** = sweet or bell pepper (the usual stuffed-olive filling); **pimenta** = hot pepper. BLOCKING until the supplier confirms. |
+| pepper (filling) ⚠️ | not used | **pimentão** = sweet or bell pepper; **pimenta** = hot pepper. The page names no filling (owner, 2026-10-26); when the owner confirms it, it is added in all three languages together. |
+| business days ⚠️ | dias úteis | In Egypt these are Sunday to Thursday, not Brazil's Monday to Friday. A request sent on Friday is answered by the end of Monday. Does the sentence need to say so? |
 
 ## Questions for counsel (LGPD)
 
@@ -132,19 +135,19 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 
 ## Blocking items (the page can't be published until all are done)
 
-1. The supplier confirms the pepper: **pimentão** or **pimenta**.
-2. A Brazilian reader approves every Portuguese line in this file and on both pages.
-3. Counsel answers the LGPD questions and reviews `/pt-br/privacidade/`.
-4. Someone can answer in Portuguese. That's the condition for the `/contact/` line.
-5. The owner approves register rows C-182 to C-187, including the softer reply wording (C-186).
+1. A Brazilian reader approves every Portuguese line in this file and on both pages, and the glossary.
+2. Counsel answers the LGPD questions and reviews `/pt-br/privacidade/`.
+3. Someone can answer enquiries in Portuguese. That's the condition for the `/contact/` line.
+4. The owner approves this table and register rows C-182 to C-187 (the reply time is C-186).
+
+The pepper is no longer a blocker: the page names no filling (owner, 2026-10-26).
 
 ## Publishing (one change, for separate approval)
 
 `check-pt-br.js` fails if any of these is done without the others:
 
-- Replace the placeholder in `pt-br/index.html` and in `FILLINGS.pt` (`scripts/products.js`) with the confirmed word.
 - Remove `noindex, nofollow` from both pages (use the site's normal robots line).
 - Add both pages to `sitemap.xml`, with no language alternates.
-- Add the approved line to `/contact/` and `/ar/contact/`: `<a href="/pt-br/">Compradores no Brasil: atendimento em português</a>` (in Portuguese on both pages, `lang="pt-BR"`).
+- Add the approved line to `/contact/` and `/ar/contact/`: `<a href="/pt-br/">Compradores no Brasil: atendimento em português →</a>` (in Portuguese on both pages, `lang="pt-BR"`).
 - Change the `llms.txt` line to: `- Languages: English, Arabic; one Portuguese (Brazil) landing page at /pt-br/`.
 - Never submit the pages to Search Console (owner).
