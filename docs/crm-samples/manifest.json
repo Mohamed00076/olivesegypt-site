@@ -3,7 +3,7 @@
     "language": "en",
     "title": "Q-2026-900001 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -16,15 +16,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "043321725e4f809f8e92b1d3837c56b642e5c2a26915fa6839579c4cef8da2da"
+    "pdf": "31ed8ce56ba2a17fc504c55e4d7b4304ee5051c582fa704b8ca0b2e8d99bb6f9",
+    "text": "4e007ae2873520bfe8fdfa61da377790a58e8d6dd6b7a0a902773e358790aca2"
   },
   "docs/crm-samples/quotation-ar.pdf": {
     "language": "ar",
     "title": "Q-2026-900002 | الشركة الثلاثية للتنمية الصناعية",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -37,15 +38,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "31f29993debc50b3872ffeb4f33cf944c133cbe77defdfa4db4c06d24f5ea995"
+    "pdf": "551c513c06f57c351d0b67d53cf3aa6795b7f56cd8ce5d6ff4bf25a870e86382",
+    "text": "c865261e7be79923a4cbdb91a9763b1b662db68d37ed6af4e364f2669fe3d9ee"
   },
   "docs/crm-samples/quotation-en-1-line.pdf": {
     "language": "en",
     "title": "Q-2026-900003 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -58,15 +60,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "c072a8db6ebb10759abdf8e5bd44cb5ef5976c50d76e4a4f474dbda9e2255beb"
+    "pdf": "3af682296683aa9f66f17e44bb3a8a880a394567fa992171290b52b54c70482f",
+    "text": "9d5d3064cdbbc8a9118409763565461996ec94005e12cc69eb8db11c68751f0d"
   },
   "docs/crm-samples/quotation-en-25-lines.pdf": {
     "language": "en",
     "title": "Q-2026-900004 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -79,15 +82,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "cc031735f970f0011395d7065ad964994fbab9253fe12c0808364992fc25a3ee"
+    "pdf": "f0c3ce02fe0d3d71935328b34a323bf6d12fb3ea161687f7797f536d1198ee74",
+    "text": "18bf321fef6f70d8217aa4d4eb12818b18f4a34e41367d96c9b7fd464a5861d3"
   },
   "docs/crm-samples/quotation-en-void.pdf": {
     "language": "en",
     "title": "Q-2026-900005 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -100,15 +104,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "84f2b352f82accbd2eef4b28f69499f7c0c8b7e90ccbda115524f45c718de8b1"
+    "pdf": "9529558a2164dc1e170293e5e3eef225221460a0827ca156467d87e82bff7b98",
+    "text": "fb95c6e18c8f843e64055f6e549509d21900ed2e3d4f9d8ef283f7de1c90bc68"
   },
   "docs/crm-samples/proforma-en.pdf": {
     "language": "en",
     "title": "PI-2026-900001 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -121,15 +126,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "a54f465aaae784e6f0c8840b618f6fc85f836a7f58776a9a99e36added6b7900"
+    "pdf": "9fd805ad344ebc4a8a1bb919259aa03d82cda8c6ed773424ff7c1385b838d50c",
+    "text": "57501a1ae89760c68f8f65bf2fe9f57022fdb657524420c4356a4d30a79092c1"
   },
   "docs/crm-samples/invoice-en.pdf": {
     "language": "en",
     "title": "INV-2026-900001 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -142,15 +148,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "974a77871fd5c3bcffd2724fbd7093bf5aae08fb16ecda1327640acd2cc92a83"
+    "pdf": "bdbb1cb37ef65379478566c2c0af945e82057ec8c1e91bf270c226e52e2a7bc4",
+    "text": "7e2c4ea496a281b2f1fe10f5f368438caff2a15a10e5f7c4215feedcaabd71f6"
   },
   "docs/crm-samples/invoice-ar.pdf": {
     "language": "ar",
     "title": "INV-2026-900002 | الشركة الثلاثية للتنمية الصناعية",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -163,15 +170,82 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "a736418c0a8feb286e1175972cd304067faa6f984922d6939c8afebe697bc5c9"
+    "pdf": "64558240e406e033f2c56e2d2590febca977064c1fca33caa93d521cb808c59e",
+    "text": "7aa27d70dfdf65c969d17e2ee1bb9087b6c1730069fa1a26d49ebffe9b72bb13"
+  },
+  "docs/crm-samples/quotation-en-issued-before.pdf": {
+    "language": "en",
+    "title": "Q-2026-900006 | Triple Company for Industrial Development",
+    "inputs": {
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
+    },
+    "pdf": "0c57132b7d53c4555d29c01aab6a89468068879cd9c653e1086596271695cb26",
+    "text": "989158e7c739cfceb5174c0f93835aaa0ed9aff00fb9fed14d1fb209fe433f56"
+  },
+  "docs/crm-samples/quotation-ar-issued-before.pdf": {
+    "language": "ar",
+    "title": "Q-2026-900007 | الشركة الثلاثية للتنمية الصناعية",
+    "inputs": {
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
+    },
+    "pdf": "9cd4d77fd77a2211625a1203fdb6c1fc3bd207e951b1bf5c0ddcb8b2bfdd08c2",
+    "text": "921a20b180d5b7ddf0d2f7ec1c7c5318618ac1f349421bc565792bf3c4136b38"
+  },
+  "docs/crm-samples/invoice-ar-issued-before.pdf": {
+    "language": "ar",
+    "title": "INV-2026-900003 | الشركة الثلاثية للتنمية الصناعية",
+    "inputs": {
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
+      "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
+      "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
+      "assets/fonts/doc/plus-jakarta-sans-latin-700-normal.woff2": "2050755bf475817c96ac7d914c7f07cc3c2d11ff4b3fb4747b8d41de584aad17",
+      "assets/fonts/doc/plus-jakarta-sans-latin-800-normal.woff2": "5f301a8ef9c266c8b596e6793d3cc826daeff9849c5af035f5386439137955ad",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-400-normal.woff2": "65b5680bf2ba9c6c42af74ddd2e8aadde93af7c523454ebb3d4e32fdba3f94db",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-600-normal.woff2": "080a1fea8589c2bd4fa08750d0d99b3388be63df8c41a649de05cb2dda1ec007",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-700-normal.woff2": "b202ec87899e78825db955e6ab43858b88c0cd444abe2dfac2e763f837b8f234",
+      "assets/fonts/doc/plus-jakarta-sans-latin-ext-800-normal.woff2": "7c27e3fd36e9c1d6a2f354943b32993b01dc0b1e64e8275bdd5122b260ca6a24",
+      "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
+      "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
+      "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
+    },
+    "pdf": "e5ec408a12ea31ab623abf7b0da68aa20aa6034b63a615669f0a70f2950ec97a",
+    "text": "75187f6d44af0b5183abf082b1603a748a9fb8694d4a5a38e90c02ad0aa54109"
   },
   "docs/crm-samples/packing-en.pdf": {
     "language": "en",
     "title": "PL-2026-900001 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -184,15 +258,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "7c8c8d53fb23449a7506f2a6e023a6c3f762adcbc55ebcf04b50d7a134575aae"
+    "pdf": "83ab296cdec7b3fa467ad0a7b844475ebcdc8b21050ba514042e376e55bfe60c",
+    "text": "7158f222b5db47db8e67018896ea561cca3c1eee1aed0f8bf3ee4f71be07dd2c"
   },
   "docs/crm-samples/letter-en.pdf": {
     "language": "en",
     "title": "L-2026-900001 | Triple Company for Industrial Development",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -205,15 +280,16 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "786b9f50917c45bd4622ac9c8a2db8ff04b58b103bd17f761e03b053964c3361"
+    "pdf": "f0feb92a2b8987e40e11c0d8f2899faade20b0b16effccef9556f5b4aff12434",
+    "text": "b5b0272d46d212b0aa1cb677e6595b08554a815a0071dc9b5bdf363b54c3cfa2"
   },
   "docs/crm-samples/letter-ar.pdf": {
     "language": "ar",
     "title": "L-2026-900002 | الشركة الثلاثية للتنمية الصناعية",
     "inputs": {
-      "crm/document/view/index.html": "42686642aac71693f806a2477a1db9c4454f46aaef65c67a4f099580c61c5182",
+      "crm/document/view/index.html": "1c312b48d11bf055ef07e87623e66ee42c8327063d64835419a8237f8c788672",
       "assets/fonts/doc-fonts.css": "99bd2b8edf785602adc6217a6f21f6feb4112a2c6357d15f3d16e4fac1ccc5b2",
       "assets/fonts/doc/plus-jakarta-sans-latin-400-normal.woff2": "221a4135d06a4b33abbd535e9a0da4e565d19545ddd9267c4e678a916d54d9b6",
       "assets/fonts/doc/plus-jakarta-sans-latin-600-normal.woff2": "8872bb5c9111df9bd3162c2394aee6354d782b13408a4dd5bbf65c48207206e6",
@@ -226,8 +302,9 @@
       "assets/fonts/doc/amiri-arabic-400-normal.woff2": "9abf8a10b4a2f27b698740522c9beec9ded7728aeef0738ac0d6e175bf6249d7",
       "assets/fonts/doc/amiri-arabic-700-normal.woff2": "c775d9f8c3a7cf0d0c2bb5246dd699e8c09bf6f8758e1be0b98939331b18bcce",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
-      "scripts/crm-sample-documents.js": "573d9c8f8248aa6098913c87c0ece6e872491caebdf0908831a02fde6743d735"
+      "scripts/crm-sample-documents.js": "3820f5ac2663c2871321eb00bbff40e61325e8dbe903876afa663103060abe89"
     },
-    "pdf": "0625f139a77a3a7cc911fbe62274d61915b1a94cba0663635618068dc2369ecf"
+    "pdf": "8eee494c37ddfb907617d89b907c8ebef46a93e83c25d9d3e113c6ccee938927",
+    "text": "8f51290f4cca6e82604b4d204b19758b11f435665c36f6092ca244371980024e"
   }
 }

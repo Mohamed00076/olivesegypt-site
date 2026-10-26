@@ -482,6 +482,23 @@
 
         var t = STRINGS.en;
 
+        /*
+         * Documents are records (owner, 2026-10-25): what an issued document
+         * says must not change when it is opened or printed again. The design
+         * rules of 2026-10-25 -- print a term only if this document stored it,
+         * dates as "18 October 2026", the Arabic comma -- apply to documents
+         * created from DESIGN_CUTOFF on. One created before it prints exactly
+         * as it was issued: the quotation's fixed "Minimum order" and "Prices"
+         * rows, US-style English dates, and the comma it had.
+         *
+         * DESIGN_CUTOFF is the minute this design was deployed; it is set in
+         * the last commit before the merge, so no document is issued under one
+         * rule and printed under the other. check-crm-document-values.js holds
+         * documents on both sides of it to the text they printed before.
+         */
+        var DESIGN_CUTOFF = '2026-10-27T00:00:00Z';
+        var issuedBefore = false;
+
         function fmtMoney(n, currency) {
           n = Number(n) || 0;
           /*
@@ -510,7 +527,9 @@
           if (!iso) return '';
           // Long form in both languages, Western digits: 7/9/2026 and
           // 9/7/2026 are the same characters and different days.
-          var locale = t.lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US';
+          // "18 October 2026" / «18 أكتوبر 2026» (owner, 2026-10-25); a document
+          // issued before DESIGN_CUTOFF keeps the "October 18, 2026" it had.
+          var locale = t.lang === 'ar' ? 'ar-EG-u-nu-latn' : issuedBefore ? 'en-US' : 'en-GB';
           try { return new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' }); }
           catch (e) { return String(iso).slice(0, 10); }
         }
@@ -608,6 +627,7 @@
            * document issued before the language column existed is English.
            */
           applyLanguage(d.language || 'en');
+          issuedBefore = !!d.created_at && new Date(d.created_at) < new Date(DESIGN_CUTOFF);
 
           // A document no longer necessarily has a buyer (2026-09-07).
           var back = document.getElementById('back-link');
@@ -678,7 +698,8 @@
            * after the title. A letter carries the signature only, as letters
            * do; a quotation or invoice also gets the representative card.
            */
-          var signTitle = [d.signatory_title, t.company].filter(Boolean).join(', ');
+          // The Arabic comma in Arabic; Latin in a document issued before the cutoff.
+          var signTitle = [d.signatory_title, t.company].filter(Boolean).join(t.lang === 'ar' && !issuedBefore ? '، ' : ', ');
           setText('sign-name', d.signatory_name || '');
           setText('sign-title', signTitle);
           if (isLetter) {
@@ -777,18 +798,18 @@
             moneyInto(document.getElementById('doc-total'), d.total, d.currency);
 
             /*
-             * Terms: only what this document actually has. Payment terms and
-             * lead time are written on each document (owner, 2026-10-19: fill-in
-             * fields, no defaults). A quotation also states the minimum order,
-             * which is a full container load with no tonnage: what a container
-             * holds depends on the packing.
+             * Terms: only what this document actually stored (owner, 2026-10-25,
+             * option A). Payment terms and lead time are written on each document.
+             * The minimum order and the price basis are not stored, so a new
+             * document does not print them; a quotation issued before
+             * DESIGN_CUTOFF printed both as fixed rows, and still does.
              */
             var terms = [];
             if (d.incoterm) terms.push([t.term.incoterm, d.incoterm]);
             terms.push([t.term.currency, d.currency]);
             if (d.payment_terms) terms.push([t.term.payment, d.payment_terms]);
             if (d.lead_time) terms.push([t.term.lead, d.lead_time]);
-            if (isQuote) {
+            if (isQuote && issuedBefore) {
               terms.push([t.term.moq, t.moq]);
               terms.push([t.term.prices, t.prices]);
             }
