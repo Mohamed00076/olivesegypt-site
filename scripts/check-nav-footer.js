@@ -237,6 +237,9 @@ for (const route of routes()) {
       .filter((h) => !h.startsWith('/assets'))
       .filter((h) => !(h === '/' && new RegExp('href="/" hreflang="en"').test(chrome)));
     if (bad.length) problems.push(`${route}: Portuguese chrome links to English routes: ${[...new Set(bad)].join(', ')}`);
+    const logo = (header.match(/<a href="([^"]*)" class="flex items-center gap-2 shrink-0">/) || [])[1];
+    if (logo !== '/pt-br/') problems.push(`${route}: the Portuguese logo links to ${logo || 'nothing'}, not /pt-br/`);
+    if (!/class="[^"]*\btc-footer-pt\b/.test(footer)) problems.push(`${route}: the Portuguese footer has lost tc-footer-pt, its room for the floating buttons on a phone`);
     if (/Request a Quote|Toggle dark mode|Toggle menu|>Follow<|aria-label="Primary"/.test(header)) {
       problems.push(`${route}: the Portuguese header still has English labels`);
     }

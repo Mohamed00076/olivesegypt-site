@@ -86,6 +86,22 @@ t('   and only a mouse-driven screen from 1366px gets the slim side handle',
   /@media \(min-width: 1366px\) and \(hover: hover\) \{\s*a\[data-testid="floating-blog-link"\] \{ --tw-translate-x/.test(css));
 t('the cookie control also sits in the footer, and the floating pill steps aside for it on phones',
   /function addFooterControl\(/.test(consent) && /#tc-consent-reopen\.tc-in-footer\{display:none;\}/.test(consent));
+// ...in every footer: consent.js places it beside the footer's privacy link,
+// found by its address, so a footer whose privacy link it does not know (the
+// Portuguese one, /pt-br/privacidade/, until 2026-10-27) silently has none.
+{
+  const sel = (consent.match(/function addFooterControl\(\)[\s\S]*?querySelector\('([^']*)'\)/) || [])[1] || '';
+  const known = [...sel.matchAll(/footer a\[href="([^"]+)"\]/g)].map((m) => m[1]);
+  const orphans = [];
+  for (const f of pages) {
+    const footer = (read(f).match(/<footer[\s\S]*?<\/footer>/) || [])[0];
+    if (!footer) continue;
+    const priv = [...footer.matchAll(/href="([^"]*\/(?:privacy|privacidade)\/)"/g)].map((m) => m[1]);
+    for (const h of priv) if (!known.includes(h)) orphans.push(`${f} (${h})`);
+  }
+  t('   on every page with a footer: each footer privacy link is one consent.js places the settings link beside',
+    known.length > 0 && orphans.length === 0, orphans.slice(0, 5).join(', '));
+}
 
 // Both catalogues: every card offers a quote and its own language's spec sheet.
 for (const [f, contact, loc] of [['catalog/index.html', '/contact/', 'en'], ['ar/catalog/index.html', '/ar/contact/', 'ar']]) {

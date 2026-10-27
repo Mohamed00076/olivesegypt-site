@@ -518,7 +518,9 @@
   // (the printable sheets, the business card) keep the pill at every width.
   function addFooterControl() {
     if (document.getElementById('tc-consent-footer-link')) return true;
-    var privacy = document.querySelector('footer a[href="/privacy/"], footer a[href="/ar/privacy/"]');
+    // One privacy link per language; the Portuguese footer's goes to its own
+    // policy (2026-10-27), and the settings link sits beside it there too.
+    var privacy = document.querySelector('footer a[href="/privacy/"], footer a[href="/ar/privacy/"], footer a[href="/pt-br/privacidade/"]');
     if (!privacy || !privacy.parentNode) return false;
     var btn = document.createElement('button');
     btn.id = 'tc-consent-footer-link';

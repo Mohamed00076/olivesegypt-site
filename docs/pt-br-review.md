@@ -82,8 +82,8 @@ On both Portuguese pages. Every link stays on `/pt-br/`, apart from the one link
 | Language link | English | English | goes to `/` |
 | Facebook | Seguir; "Siga a Triple Company for Industrial Development no Facebook"; "Siga-nos no Facebook" | Follow; follow … on Facebook | |
 | Screen-reader labels | Principal (menu) · Alternar modo escuro · Abrir menu · Conversar pelo WhatsApp · Notificações (F8) | Primary · Toggle dark mode · Open menu · Chat on WhatsApp · Notifications | |
-| Footer line | Fornecedora egípcia de azeitonas de mesa, sediada no Cairo, Egito, preparando-se para a exportação internacional por meio de unidades parceiras. | An Egyptian table-olive supplier based in Cairo, Egypt, preparing for international export through partner facilities. | C-185; the English footer line, without "approved" (C-192) |
-| Footer links | Privacidade · Site em inglês | Privacy · English site | |
+| Footer line | Fornecedora egípcia de azeitonas de mesa, sediada no Cairo, Egito, preparando-se para a exportação internacional por meio de unidades parceiras. | An Egyptian table-olive supplier based in Cairo, Egypt, preparing for international export through partner facilities. | C-195; the English footer line, without "approved" (the removal in #463) |
+| Footer links | Privacidade · Configurações de cookies · Site em inglês | Privacy · Cookie settings (reopens the consent settings; appears once a choice is made, as on the English and Arabic pages) · English site | the consent strings below |
 | Copyright | © Triple Company for Industrial Development. Todos os direitos reservados. Site: olivesegypt.com | © … All rights reserved. Website: olivesegypt.com | the legal name, untranslated |
 
 The address, the email and the phone stay as they are. The English footer's five columns of English links aren't shown. The "Read Our Insights" tab isn't shown either, because it opens the English blog.
