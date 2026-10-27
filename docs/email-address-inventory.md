@@ -133,15 +133,15 @@ It appears nowhere in the repository. No public page, PDF or structured data sho
 
 No claim is made about what Google keeps or trains on.
 
-**Still to choose:** whether names and contact details are removed before pasting. The owner's answer came through as the placeholder "[YES: use Draft A / NO: use Draft B]", so both drafts are kept.
+**Chosen: Draft A** (owner, 2026-10-27: "do recommended"). Names and contact details are removed before an email's text is pasted into Google Translate; that is the working rule from now on. Draft B is kept below only as the alternative if that rule ever changes.
 
-### Draft A: names and contact details removed before pasting
+### Draft A (chosen): names and contact details removed before pasting
 
 - **English:** "When we reply to you in a language we do not use every day, such as Portuguese, we use machine translation; no translator reads your message. On WhatsApp, the translation is done on our phone and the text is not sent to a translation service. For email, we remove your name and contact details and paste the rest of your message into Google Translate, Google's free translation website, which processes the text on Google's servers, possibly outside Egypt and outside your own country."
 - **Portuguese ⚠️:** «Quando respondemos em um idioma que não usamos no dia a dia, como o português, usamos tradução automática; nenhum tradutor lê a sua mensagem. No WhatsApp, a tradução é feita no nosso celular e o texto não é enviado a um serviço de tradução. No e-mail, removemos seu nome e seus dados de contato e colamos o restante da mensagem no Google Tradutor, o site gratuito de tradução do Google, que processa o texto nos servidores do Google, possivelmente fora do Egito e fora do seu país.»
 - **Arabic ⚠️:** «عندما نرد عليك بلغة لا نستخدمها يوميًا، مثل البرتغالية، نستخدم الترجمة الآلية؛ ولا يقرأ رسالتك أي مترجم. في واتساب تتم الترجمة على هاتفنا ولا يُرسل النص إلى خدمة ترجمة. أما في البريد الإلكتروني، فنحذف اسمك وبيانات التواصل الخاصة بك ثم نلصق باقي رسالتك في Google Translate، موقع الترجمة المجاني من Google، الذي يعالج النص على خوادم Google، وقد تكون خارج مصر وخارج بلدك.»
 
-### Draft B: the message pasted as it is
+### Draft B (not used): the message pasted as it is
 
 - **English:** "When we reply to you in a language we do not use every day, such as Portuguese, we use machine translation; no translator reads your message. On WhatsApp, the translation is done on our phone and the text is not sent to a translation service. For email, we paste the text of your message, which can include your name, company and order details, into Google Translate, Google's free translation website, which processes it on Google's servers, possibly outside Egypt and outside your own country."
 - **Portuguese ⚠️:** «Quando respondemos em um idioma que não usamos no dia a dia, como o português, usamos tradução automática; nenhum tradutor lê a sua mensagem. No WhatsApp, a tradução é feita no nosso celular e o texto não é enviado a um serviço de tradução. No e-mail, colamos o texto da sua mensagem, que pode incluir seu nome, empresa e detalhes do pedido, no Google Tradutor, o site gratuito de tradução do Google, que o processa nos servidores do Google, possivelmente fora do Egito e fora do seu país.»
@@ -166,9 +166,9 @@ Counsel questions 25 (`docs/g0-counsel-questions.md`) and 9 (`docs/pt-br-review.
 - **Zoho Mail**, which holds every email a buyer sends us and every form notification.
 - **Resend**, which carries every form notification (the enquiry's contents) from the site to the mailbox.
 
-**Proposed wording** (for approval; the Zoho region is still a placeholder):
-- **English:** "Zoho Mail (our email mailboxes, hosted in [REGION]): it holds the emails you send us and the notifications of your form submissions. Resend (sends those form notifications from this site to our mailbox)."
-- **Arabic ⚠️:** «Zoho Mail (صناديق بريدنا الإلكتروني، المستضافة في [المنطقة]): تحفظ رسائل البريد التي ترسلها إلينا وإشعارات النماذج التي تقدّمها. وResend (ترسل إشعارات النماذج تلك من هذا الموقع إلى صندوق بريدنا).»
-- **Portuguese ⚠️:** «Zoho Mail (nossas caixas de e-mail, hospedadas em [REGIÃO]): guarda os e-mails que você nos envia e as notificações dos formulários que você envia. Resend (envia essas notificações de formulário deste site para a nossa caixa de e-mail).»
+**Proposed wording** (for approval). The Zoho region is the **United States**: the mailboxes are on `zoho.com`, Zoho's US data centre (owner, 2026-10-27).
+- **English:** "Zoho Mail (our email mailboxes, hosted in the United States): it holds the emails you send us and the notifications of your form submissions. Resend (sends those form notifications from this site to our mailbox)."
+- **Arabic ⚠️:** «Zoho Mail (صناديق بريدنا الإلكتروني، المستضافة في الولايات المتحدة): تحفظ رسائل البريد التي ترسلها إلينا وإشعارات النماذج التي تقدّمها. وResend (ترسل إشعارات النماذج تلك من هذا الموقع إلى صندوق بريدنا).»
+- **Portuguese ⚠️:** «Zoho Mail (nossas caixas de e-mail, hospedadas nos Estados Unidos): guarda os e-mails que você nos envia e as notificações dos formulários que você envia. Resend (envia essas notificações de formulário deste site para a nossa caixa de e-mail).»
 
-The region: Zoho's data-centre domain (zoho.com, zoho.eu, zoho.in and so on) appears in the Zoho Mail address bar. The owner's answer came through as the placeholder "[FILL IN]".
+Source: the owner's Zoho Mail domain, `zoho.com` (2026-10-27), which is Zoho's US data centre.
