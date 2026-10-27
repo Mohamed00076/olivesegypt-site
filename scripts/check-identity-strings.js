@@ -269,6 +269,18 @@ for (const f of [...pages, ...generators]) {
   }
 }
 
+// ---- office hours in Cairo time, not a fixed offset (C-190) -------------
+//
+// The contact pages said "(GMT+2)" / «(توقيت غرينتش+2)». Egypt has kept
+// summer time again since 2023, so from late April to late October Cairo is
+// GMT+3 and the hours were an hour out. "Cairo time" is right all year
+// (owner, 2026-10-26).
+const FIXED_OFFSET = /\b(?:GMT|UTC)\s*[+−-]\s*[23]\b|غرينتش\s*[+−-]\s*[23٢٣]/;
+for (const f of pages) {
+  const m = fs.readFileSync(path.join(ROOT, f), 'utf8').match(FIXED_OFFSET);
+  if (m) problems.push(`${f}: gives Cairo's time as "${m[0]}", which is wrong for half the year -- say "Cairo time" / «بتوقيت القاهرة» (C-190)`);
+}
+
 // ---- the built PDFs -----------------------------------------------------
 //
 // NOT checked here, deliberately. A PDF's text is Flate-compressed, so

@@ -7,7 +7,7 @@
  *
  *   node scripts/check-lead-time.js        (part of `npm test`)
  *
- * Owner decision 2026-10-25 (C-181): the lead time went from 3–4 to 4–6 weeks
+ * Owner decision 2026-10-25 (C-191): the lead time went from 3–4 to 4–6 weeks
  * "in every language and everywhere it is published". A range typed by hand
  * on seven separate pages and sources is exactly what drifts, so:
  *
@@ -70,7 +70,7 @@ for (const f of tracked) {
   const text = withAttributes(fs.readFileSync(abs, 'utf8'));
   scanned++;
   const old = text.match(L.RETIRED);
-  if (old) fail(`${f}: still states the retired lead time "${old[0]}" (now ${EN_VALUE}, C-181)`);
+  if (old) fail(`${f}: still states the retired lead time "${old[0]}" (now ${EN_VALUE}, C-191)`);
   // Test fixtures are made-up documents, not statements.
   if (/^scripts\/check-/.test(f)) continue;
   for (const m of text.matchAll(WEEK_RANGE)) {

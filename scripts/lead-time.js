@@ -3,7 +3,7 @@
 /*
  * The indicative lead time: one wording, everywhere it is published.
  *
- * Owner decision 2026-10-25 (C-181, superseding C-179): 4–6 weeks, order to
+ * Owner decision 2026-10-25 (C-191, superseding C-179): 4–6 weeks, order to
  * vessel -- indicative, confirmed during quotation, never a guarantee. The
  * Arabic label and value are the owner's choice of the same day.
  *

@@ -118,8 +118,35 @@ exports.handler = async (event) => {
       console.error('[crm-dashboard] could not read recent failures:', e?.message ?? e);
     }
 
+    /*
+     * Why buyers were lost (owner, 2026-10-23): every move to Lost/Stalled
+     * counted by the reason stored on that move, this calendar month (Cairo
+     * time) and overall. Read-only: it reads buyer_stage_history and never
+     * creates or alters anything, so if the reason columns are not there yet
+     * the card says so instead. Moves made before reasons were stored on
+     * each move have no category and count as "not_recorded". Deleted
+     * buyers are left out, as everywhere else on the dashboard.
+     */
+    let lostReasons = null;
+    try {
+      const rows = await sql`
+        SELECT COALESCE(h.reason_category, 'not_recorded') AS category,
+               (count(*) FILTER (WHERE h.changed_at >= date_trunc('month', now() AT TIME ZONE 'Africa/Cairo') AT TIME ZONE 'Africa/Cairo'))::int AS this_month,
+               count(*)::int AS overall
+        FROM buyer_stage_history h
+        JOIN buyers b ON b.id = h.buyer_id
+        WHERE h.to_stage = 'Lost/Stalled' AND b.deleted_at IS NULL
+        GROUP BY 1
+      `;
+      lostReasons = { rows };
+    } catch (e) {
+      console.error('[crm-dashboard] could not read Lost/Stalled reasons:', e?.message ?? e);
+      await reportFailure(sql, { source: 'crm-dashboard', method: event.httpMethod, actor: session.sub, step: 'reading Lost/Stalled reasons' }, e);
+    }
+
     return json(200, {
       failures,
+      lost_reasons: lostReasons,
       by_stage: byStage,
       by_region: byRegion,
       overdue_followups: overdue,
