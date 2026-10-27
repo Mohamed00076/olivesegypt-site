@@ -25,5 +25,7 @@ Disallow: /ar/downloads/export-catalog
 Disallow: /admin
 Disallow: /crm
 Disallow: /assets/triple-company.vcf
+Disallow: /vcard/
+Disallow: /vcard/mohamed-abdullah.vcf
 
 Sitemap: https://olivesegypt.com/sitemap.xml

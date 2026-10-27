@@ -32,7 +32,7 @@ const ROOT = path.join(__dirname, '..');
 const SELF = 'scripts/check-vcards.js';
 
 const MOHAMED_AGREED = true;           // written agreement, owner 2026-10-27 (withdrawal: remove the file)
-const MOHAMED_PUBLIC_PATH = null;      // the approved published path; null until the owner approves one
+const MOHAMED_PUBLIC_PATH = 'vcard/mohamed-abdullah.vcf'; // approved by the owner, 2026-10-27: https://olivesegypt.com/vcard/mohamed-abdullah.vcf
 const APPROVED_PHOTOS = new Set();     // file names, on the owner's approval
 const FIELDS = new Set(['BEGIN', 'VERSION', 'PRODID', 'N', 'FN', 'ORG', 'TITLE', 'EMAIL', 'TEL', 'ADR', 'URL', 'REV', 'END']);
 const EMAILS = { company: ['sales@olivesegypt.com'], mohamed: ['mohamed@olivesegypt.com'] };
@@ -137,6 +137,6 @@ for (const f of cards) {
   t('nothing outside docs/ links Mohamed\'s card or shows mohamed@ (only the card itself may)', leaks.length === 0, leaks.join(', '));
 }
 
-console.log(`\nvcards ${fail ? 'FAILED' : 'OK'} -- ${cards.length} vCard(s): well formed, approved fields only, Mohamed's card unpublished.`);
+console.log(`\nvcards ${fail ? 'FAILED' : 'OK'} -- ${cards.length} vCard(s): well formed, approved fields only, served as downloads kept out of search, Mohamed's card only at its approved path and linked from nowhere.`);
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -131,6 +131,15 @@
     Content-Disposition = "attachment; filename=\"triple-company.vcf\""
     X-Robots-Tag = "noindex"
 
+# Mohamed Abdullah's card (owner, 2026-10-27; his written agreement, C-192):
+# shared by hand over WhatsApp or email, linked from nowhere.
+[[headers]]
+  for = "/vcard/mohamed-abdullah.vcf"
+  [headers.values]
+    Content-Type = "text/vcard; charset=utf-8"
+    Content-Disposition = "attachment; filename=\"mohamed-abdullah.vcf\""
+    X-Robots-Tag = "noindex"
+
 # A0 discovery flagged this and it was never actually done: JSON API
 # responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to
 # carry noindex (only HTML pages do), so this carries the same signal at

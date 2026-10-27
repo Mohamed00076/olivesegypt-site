@@ -84,12 +84,12 @@ It appears nowhere in the repository. No public page, PDF or structured data sho
 
 ## 5. Netlify, the mail host and the owner's manual tests (names only)
 
-- **Mail host:** create `legal@`; confirm `info@` is read.
+- **Mail host (Zoho Mail):** `legal@` will be created as an **alias or group** in Zoho (owner, 2026-10-27). Its **sending permission** (replying *as* legal@) is tested by the owner. Confirm `info@` is read.
 - **Netlify:** `NOTIFY_EMAIL` decides who gets form notifications; `NOTIFY_FROM_EMAIL` is the sender.
 
 **Manual tests, run by the owner from outside:**
 
-1. A test mail **to**, and a reply **from**, each of `sales@`, `info@` and `mohamed@` now, and `legal@` once it exists. Check that each arrives, the reply shows the right sender, and nothing lands in spam.
+1. A test mail **to**, and a reply **from**, each of `sales@`, `info@` and `mohamed@` now, and `legal@` once it exists as a Zoho alias or group. Check that each arrives, the reply shows the right sender (for `legal@`, that Zoho lets you send as it), and nothing lands in spam.
 2. **Resend:** the dashboard shows olivesegypt.com as **Verified**, and `NOTIFY_FROM_EMAIL` (Netlify → Environment variables) ends in `@olivesegypt.com`. After you confirm, the stale "not verified" note in `docs/email-delivery.md` and `README.md` is corrected.
 3. **The contact form:** send one enquiry (fake data, ZZ Test, zz@example.test). The notification arrives, and the reply goes to the enquirer's address.
 4. **The unsubscribe page:** unsubscribe zz@example.test. The page confirms it, and the address appears as opted out in the CRM.
@@ -104,38 +104,71 @@ It appears nowhere in the repository. No public page, PDF or structured data sho
 | File | State | Served | Linked from |
 |---|---|---|---|
 | `assets/triple-company.vcf` (company) | **Rewritten 2026-10-27:** CRLF, the C-22 address with the comma escaped, no TITLE, no department in ORG | `netlify.toml` block: `text/vcard; charset=utf-8`, `Content-Disposition: attachment`, `X-Robots-Tag: noindex`; robots.txt `Disallow: /assets/triple-company.vcf` | `/downloads/` and `/ar/downloads/`, as before |
-| `docs/vcards/mohamed-abdullah-DRAFT.vcf` (Mohamed) | vCard 3.0, CRLF, UTF-8 without BOM, title "Representative", C-22 address; **consent given 2026-10-27** | **not published yet**: docs/ only, until the owner approves the path below | nowhere, ever: shared by hand |
+| `vcard/mohamed-abdullah.vcf` (Mohamed) | vCard 3.0, CRLF, UTF-8 without BOM, title "Representative", C-22 address; **consent given 2026-10-27** | own `netlify.toml` block (as the company card); robots.txt `Disallow: /vcard/`; live with the email PR | nowhere, ever: shared by hand |
 
 `.gitattributes` keeps `*.vcf` byte for byte (`-text`), and the deploy prunes `.gitattributes` itself.
 
-### Proposed placement of Mohamed's card (for approval; not built)
+### Mohamed's card: placement (approved 2026-10-27; built on this branch)
 
-- **URL:** `https://olivesegypt.com/vcard/mohamed-abdullah.vcf` (repository path `vcard/mohamed-abdullah.vcf`; "-DRAFT" dropped from the name).
-- **Serving:** a `netlify.toml` block for `/vcard/mohamed-abdullah.vcf`: `Content-Type: text/vcard; charset=utf-8`, `Content-Disposition: attachment; filename="mohamed-abdullah.vcf"`, `X-Robots-Tag: noindex`. robots.txt: `Disallow: /vcard/`.
-- **Not linked** from any page, PDF, sitemap or llms.txt. `check-vcards.js` already fails on any link or any mohamed@ outside the card. Publishing means setting `MOHAMED_PUBLIC_PATH = 'vcard/mohamed-abdullah.vcf'` and moving the file.
-- **Message to share it (WhatsApp or email):**
+- **URL:** `https://olivesegypt.com/vcard/mohamed-abdullah.vcf` (repository path `vcard/mohamed-abdullah.vcf`).
+- **Serving:** its own `netlify.toml` block, with `Content-Type: text/vcard; charset=utf-8`, `Content-Disposition: attachment; filename="mohamed-abdullah.vcf"` and `X-Robots-Tag: noindex`. robots.txt has `Disallow: /vcard/` and the file's own line.
+- **Not linked** from any page, PDF, sitemap or llms.txt. `check-vcards.js` (`MOHAMED_PUBLIC_PATH`) fails on any link, on mohamed@ anywhere else, or on the card at any other path.
+- **Goes live with the email PR**, which waits for "legal mailbox live". If you want the card sooner, it can move to a PR of its own.
+- **Message to share it (approved):**
   - English: "Save my contact details: https://olivesegypt.com/vcard/mohamed-abdullah.vcf — Mohamed Abdullah, Representative, Triple Company for Industrial Development"
-  - Arabic ⚠️: «احفظ بيانات التواصل الخاصة بي: https://olivesegypt.com/vcard/mohamed-abdullah.vcf — محمد عبدالله، ممثل، الشركة الثلاثية للتنمية الصناعية»
-- **On withdrawal:** delete the file, set `MOHAMED_AGREED = false`, deploy. The URL then answers 404.
+  - Arabic: «احفظ بيانات التواصل الخاصة بي: https://olivesegypt.com/vcard/mohamed-abdullah.vcf — محمد عبدالله، ممثل، الشركة الثلاثية للتنمية الصناعية»
+- **On withdrawal:** delete the file, set `MOHAMED_AGREED = false` and `MOHAMED_PUBLIC_PATH = null`, deploy. The URL then answers 404.
 
 ## 8. Password-reset role list (#382, report only)
 
 `ROLE_MAILBOXES` in `_auth_lib.js` on #382 is `sales, info, contact, admin, noreply, no-reply`. Add `legal`. `mohamed` stays allowed as a personal address.
 
-## 9. Translation service in the privacy pages (draft; not on any page)
+## 9. Translation service in the privacy pages (drafts; not on any page)
 
-Facts (owner, 2026-10-27): machine translation, no person. WhatsApp's built-in translation runs on the phone and sends no text to a translation server. Email is translated with Google's service. The mailbox account type (Google Workspace or free Gmail) is **not confirmed**, so the draft says nothing about what Google keeps or trains on.
+**Facts (owner, 2026-10-27):**
+- Machine translation; no person reads the message.
+- WhatsApp's built-in translation runs on the phone and sends no text to a translation server.
+- Email text is pasted into **Google's free Translate website**.
+- The mailboxes are on **Zoho Mail**, not Google Workspace.
 
-**English (draft):**
+No claim is made about what Google keeps or trains on.
 
-> When we reply to you in a language we do not use every day, such as Portuguese, we use machine translation; no translator reads your message. On WhatsApp, the translation is done on our phone and the text is not sent to a translation service. For email, the text of your message, which can include your name, company and order details, is processed by Google's translation service on Google's servers, which may be outside Egypt and outside your own country.
+**Still to choose:** whether names and contact details are removed before pasting. The owner's answer came through as the placeholder "[YES: use Draft A / NO: use Draft B]", so both drafts are kept.
 
-**Portuguese ⚠️ (draft, for the Portuguese privacy page):**
+### Draft A: names and contact details removed before pasting
 
-> Quando respondemos em um idioma que não usamos no dia a dia, como o português, usamos tradução automática; nenhum tradutor lê a sua mensagem. No WhatsApp, a tradução é feita no nosso celular e o texto não é enviado a um serviço de tradução. No e-mail, o texto da sua mensagem, que pode incluir seu nome, empresa e detalhes do pedido, é processado pelo serviço de tradução do Google nos servidores do Google, que podem ficar fora do Egito e fora do seu país.
+- **English:** "When we reply to you in a language we do not use every day, such as Portuguese, we use machine translation; no translator reads your message. On WhatsApp, the translation is done on our phone and the text is not sent to a translation service. For email, we remove your name and contact details and paste the rest of your message into Google Translate, Google's free translation website, which processes the text on Google's servers, possibly outside Egypt and outside your own country."
+- **Portuguese ⚠️:** «Quando respondemos em um idioma que não usamos no dia a dia, como o português, usamos tradução automática; nenhum tradutor lê a sua mensagem. No WhatsApp, a tradução é feita no nosso celular e o texto não é enviado a um serviço de tradução. No e-mail, removemos seu nome e seus dados de contato e colamos o restante da mensagem no Google Tradutor, o site gratuito de tradução do Google, que processa o texto nos servidores do Google, possivelmente fora do Egito e fora do seu país.»
+- **Arabic ⚠️:** «عندما نرد عليك بلغة لا نستخدمها يوميًا، مثل البرتغالية، نستخدم الترجمة الآلية؛ ولا يقرأ رسالتك أي مترجم. في واتساب تتم الترجمة على هاتفنا ولا يُرسل النص إلى خدمة ترجمة. أما في البريد الإلكتروني، فنحذف اسمك وبيانات التواصل الخاصة بك ثم نلصق باقي رسالتك في Google Translate، موقع الترجمة المجاني من Google، الذي يعالج النص على خوادم Google، وقد تكون خارج مصر وخارج بلدك.»
 
-**Arabic ⚠️ (draft):**
+### Draft B: the message pasted as it is
 
-> عندما نرد عليك بلغة لا نستخدمها يوميًا، مثل البرتغالية، نستخدم الترجمة الآلية؛ ولا يقرأ رسالتك أي مترجم. في واتساب تتم الترجمة على هاتفنا ولا يُرسل النص إلى خدمة ترجمة. أما في البريد الإلكتروني، فيعالج نص رسالتك، الذي قد يتضمن اسمك وشركتك وتفاصيل طلبك، بواسطة خدمة الترجمة من Google على خوادم Google، التي قد تكون خارج مصر وخارج بلدك.
+- **English:** "When we reply to you in a language we do not use every day, such as Portuguese, we use machine translation; no translator reads your message. On WhatsApp, the translation is done on our phone and the text is not sent to a translation service. For email, we paste the text of your message, which can include your name, company and order details, into Google Translate, Google's free translation website, which processes it on Google's servers, possibly outside Egypt and outside your own country."
+- **Portuguese ⚠️:** «Quando respondemos em um idioma que não usamos no dia a dia, como o português, usamos tradução automática; nenhum tradutor lê a sua mensagem. No WhatsApp, a tradução é feita no nosso celular e o texto não é enviado a um serviço de tradução. No e-mail, colamos o texto da sua mensagem, que pode incluir seu nome, empresa e detalhes do pedido, no Google Tradutor, o site gratuito de tradução do Google, que o processa nos servidores do Google, possivelmente fora do Egito e fora do seu país.»
+- **Arabic ⚠️:** «عندما نرد عليك بلغة لا نستخدمها يوميًا، مثل البرتغالية، نستخدم الترجمة الآلية؛ ولا يقرأ رسالتك أي مترجم. في واتساب تتم الترجمة على هاتفنا ولا يُرسل النص إلى خدمة ترجمة. أما في البريد الإلكتروني، فنلصق نص رسالتك، الذي قد يتضمن اسمك وشركتك وتفاصيل طلبك، في Google Translate، موقع الترجمة المجاني من Google، الذي يعالجه على خوادم Google، وقد تكون خارج مصر وخارج بلدك.»
 
-Once the account type is confirmed as Workspace, a sentence on what Google keeps can be added. Counsel questions 25 (`docs/g0-counsel-questions.md`) and 9 (`docs/pt-br-review.md`, #464).
+Counsel questions 25 (`docs/g0-counsel-questions.md`) and 9 (`docs/pt-br-review.md`, #464).
+
+## 10. Email providers and the privacy pages (report only)
+
+**Named today** on `/privacy` and `/ar/privacy` ("Third parties / sub-processors"):
+- Netlify (hosting and functions);
+- Neon (database);
+- the self-hosted Umami (analytics, with consent);
+- Google (Google Analytics, with consent);
+- the regional internet registries RIPE NCC, AFRINIC and ARIN (the network lookup, with consent);
+- Meta (the Facebook widget, only if clicked);
+- couriers, as needed.
+
+#467 adds MaxMind's GeoLite2 (a file held with our code, not a recipient).
+
+**Not named:**
+- **Zoho Mail**, which holds every email a buyer sends us and every form notification.
+- **Resend**, which carries every form notification (the enquiry's contents) from the site to the mailbox.
+
+**Proposed wording** (for approval; the Zoho region is still a placeholder):
+- **English:** "Zoho Mail (our email mailboxes, hosted in [REGION]): it holds the emails you send us and the notifications of your form submissions. Resend (sends those form notifications from this site to our mailbox)."
+- **Arabic ⚠️:** «Zoho Mail (صناديق بريدنا الإلكتروني، المستضافة في [المنطقة]): تحفظ رسائل البريد التي ترسلها إلينا وإشعارات النماذج التي تقدّمها. وResend (ترسل إشعارات النماذج تلك من هذا الموقع إلى صندوق بريدنا).»
+- **Portuguese ⚠️:** «Zoho Mail (nossas caixas de e-mail, hospedadas em [REGIÃO]): guarda os e-mails que você nos envia e as notificações dos formulários que você envia. Resend (envia essas notificações de formulário deste site para a nossa caixa de e-mail).»
+
+The region: Zoho's data-centre domain (zoho.com, zoho.eu, zoho.in and so on) appears in the Zoho Mail address bar. The owner's answer came through as the placeholder "[FILL IN]".
