@@ -17,7 +17,10 @@
  *      each place that states it has the label (and, where required, the
  *      "confirmed during quotation" qualifier);
  *   3. in Arabic, the range sits in its own <span dir="ltr">, so "4–6" can
- *      never display or extract as "6–4".
+ *      never display or extract as "6–4";
+ *   4. Arabic calls it «مدة التجهيز» everywhere, never «مدة التسليم»,
+ *      «مدة التنفيذ» or «موعد التسليم», except in the three sentences the
+ *      owner kept (AR_LABEL_KEPT in scripts/lead-time.js).
  *
  * Text is compared after decoding entities and removing tags: the English
  * profile writes the dash as &ndash;, and the PDF source wraps the range in
@@ -106,6 +109,18 @@ for (const f of tracked) {
     const isolated = m[2] && raw.slice(Math.max(0, m.index - 20), m.index).endsWith('<span dir="ltr">');
     if (!isolated) fail(`${f}: the Arabic range "${m[1]}" is not in its own <span dir="ltr">, so it can display reversed`);
   }
+}
+
+// ---- 4. one Arabic word for lead time ---------------------------------------
+for (const f of tracked) {
+  if (!/\.html$/.test(f) || !(/^ar\//.test(f) || /-ar\.html$/.test(f) || /\/ar\//.test(f))) continue;
+  let text = plain(fs.readFileSync(path.join(ROOT, f), 'utf8'));
+  for (const k of L.AR_LABEL_KEPT.filter((x) => x.file === f)) {
+    if (!text.includes(k.text)) fail(`${f}: the sentence kept as it was ("${k.text}") is gone -- update AR_LABEL_KEPT in scripts/lead-time.js`);
+    text = text.split(k.text).join(' ');
+  }
+  const m = text.match(L.AR_LABEL_RETIRED);
+  if (m) fail(`${f}: calls the lead time «${m[0]}»; it is «مدة التجهيز» everywhere (owner, 2026-10-25)`);
 }
 
 // ---- the PDFs, when pdftotext is here to read them -------------------------
