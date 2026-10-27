@@ -226,8 +226,10 @@
           </div>
 
           <div class="crm-field" id="lost-reason-field" style="display:none;">
-            <label for="lost_reason">Lost / Stalled Reason</label>
-            <input id="lost_reason" maxlength="300" />
+            <label for="lost_category">Lost / Stalled Reason</label>
+            <select id="lost_category"></select>
+            <label for="lost_reason" style="margin-top:10px;">Lost / Stalled Note <span class="crm-muted">(needed for “Other”)</span></label>
+            <input id="lost_reason" maxlength="300" dir="auto" />
           </div>
 
           <div class="crm-field">
@@ -298,6 +300,10 @@
             checksWrap.appendChild(label);
           });
           stageSel.addEventListener('change', toggleLostReason);
+          var lostSel = document.getElementById('lost_category');
+          [['', 'Choose\u2026']].concat(CRM.LOST_CATEGORIES).forEach(function (c) {
+            var o = document.createElement('option'); o.value = c[0]; o.textContent = c[1]; lostSel.appendChild(o);
+          });
         }
 
         function toggleLostReason() {
@@ -342,6 +348,8 @@
           document.getElementById('next_action_due').value = b.next_action_due ? String(b.next_action_due).slice(0, 10) : '';
           CRM.refreshDateTexts();
           document.getElementById('lost_reason').value = b.lost_reason || '';
+          // A reason given before categories existed has none: shown as "Other", its note kept.
+          document.getElementById('lost_category').value = b.lost_category || (b.lost_reason ? 'other' : '');
           document.getElementById('notes').value = b.notes || '';
           var interest = Array.isArray(b.product_interest) ? b.product_interest : [];
           // A withdrawn product is offered only to a buyer who already has it,
@@ -363,7 +371,7 @@
 
         function collectForm() {
           var checks = Array.prototype.slice.call(document.querySelectorAll('#product-checks input:checked')).map(function (cb) { return cb.value; });
-          return {
+          var out = {
             company_name: document.getElementById('company_name').value,
             country_region: document.getElementById('country_region').value,
             current_stage: document.getElementById('current_stage').value,
@@ -384,9 +392,20 @@
             certification_gap: document.getElementById('certification_gap').checked,
             next_action: document.getElementById('next_action').value,
             next_action_due: document.getElementById('next_action_due').value || null,
+            // Sent only while the stage is Lost/Stalled (below): a hidden, stale reason is never re-saved.
             lost_reason: document.getElementById('lost_reason').value,
+            lost_category: document.getElementById('lost_category').value,
             notes: document.getElementById('notes').value,
           };
+          /*
+           * The Lost/Stalled reason fields are hidden at any other stage
+           * (toggleLostReason), but still hold the buyer's last reason. They
+           * were sent with every Save, so saving a buyer who had moved on
+           * wrote that old reason back. Now sent only while the stage is
+           * Lost/Stalled (owner, 2026-10-23); the server ignores them otherwise.
+           */
+          if (out.current_stage !== 'Lost/Stalled') { delete out.lost_reason; delete out.lost_category; }
+          return out;
         }
 
         function showStatus(msg, ok, where) {
@@ -485,8 +504,8 @@
              * 2026-10-21): it was only in the folded form's Lost / Stalled
              * Reason field, which shows only while the stage is Lost/Stalled.
              */
-            (b.current_stage === 'Lost/Stalled' && b.lost_reason
-              ? '<span class="crm-ui-lost-reason" dir="auto">Lost/Stalled: ' + CRM.escapeHtml(b.lost_reason) + '</span>' : '');
+            (b.current_stage === 'Lost/Stalled' && (b.lost_category || b.lost_reason)
+              ? '<span class="crm-ui-lost-reason" dir="auto">Lost/Stalled: ' + CRM.escapeHtml(CRM.lostReasonText(b.lost_category, b.lost_reason)) + '</span>' : '');
           el.style.display = '';
         }
 
@@ -540,12 +559,16 @@
             if (!result.ok) {
               // The panel stays open on the chosen stage, and a typed reason is offered again (CRM.stageMoveCheck).
               showStatus(current.company_name + ' was not moved to ' + to + '. ' + CRM.refusalText(result, 'The server did not accept the move.') +
-                ' Nothing was changed.' + (extra.lost_reason ? ' The reason you typed is kept: press Move to send it again.' : ''), false);
+                ' Nothing was changed.' + (extra.lost_category ? ' The reason you chose is kept: press Move to send it again.' : ''), false);
               return;
             }
             current.current_stage = to;
             document.getElementById('current_stage').value = to;
-            if (extra.lost_reason) { current.lost_reason = extra.lost_reason; document.getElementById('lost_reason').value = extra.lost_reason; }
+            if (extra.lost_category) {
+              current.lost_category = extra.lost_category; current.lost_reason = extra.lost_reason || null;
+              document.getElementById('lost_category').value = extra.lost_category;
+              document.getElementById('lost_reason').value = extra.lost_reason || '';
+            }
             toggleLostReason();
             renderSummary(current);
             toggleMovePanel(false);
@@ -582,17 +605,25 @@
           if (!rows.length) { card.style.display = 'none'; return; }
           card.style.display = '';
           /*
-           * The reason, beside the latest move to Lost/Stalled. Only the latest:
-           * the record keeps one reason, the one given last, so an earlier
-           * Lost/Stalled row may have had another. A label on the page only --
-           * the history itself is never changed.
+           * Each move to Lost/Stalled shows the reason stored on its own row
+           * (2026-10-23): "Reason: Price -- note". A row from before reasons
+           * were stored has none; for the latest such row only, the buyer's
+           * current reason is shown, and said to be that. Labels on the page
+           * only -- the history itself is never changed.
            */
-          var reason = current && current.lost_reason;
+          var reason = current ? CRM.lostReasonText(current.lost_category, current.lost_reason) : '';
           var lastLost = -1;
           rows.forEach(function (r, i) { if (r.to_stage === 'Lost/Stalled') lastLost = i; });
           document.getElementById('stage-history-tbody').innerHTML = rows.map(function (r, i) {
+            var own = CRM.lostReasonText(r.reason_category, r.reason_note);
+            var label = own ? 'Reason: ' + own
+              : (i === lastLost && reason
+                // "current" only while the buyer is Lost/Stalled; after moving on it is the last one recorded.
+                ? (current && current.current_stage === 'Lost/Stalled' ? 'Buyer\u2019s current Lost/Stalled reason' : 'Last Lost/Stalled reason recorded for this buyer') +
+                  ' (not stored on this older row): ' + reason
+                : '');
             return '<tr><td>' + CRM.escapeHtml(r.from_stage || '—') + '</td><td>' + CRM.escapeHtml(r.to_stage) +
-              (i === lastLost && reason ? '<div class="crm-ui-lost-reason-row" dir="auto">Buyer\u2019s current Lost/Stalled reason: ' + CRM.escapeHtml(reason) + '</div>' : '') + '</td>' +
+              (label ? '<div class="crm-ui-lost-reason-row" dir="auto">' + CRM.escapeHtml(label) + '</div>' : '') + '</td>' +
               '<td>' + CRM.fmtDate(r.changed_at) + '</td><td>' + CRM.escapeHtml(r.changed_by || '') + '</td></tr>';
           }).join('');
         }
@@ -901,7 +932,14 @@
           if (!d.fields || !d.fields.length) return 'Not saved. ' + CRM.plainError({ ok: false, status: 0, data: d }, 'The server did not accept the change, and nothing was changed.');
           return d.fields.map(function (f) {
             var label = document.querySelector('label[for="' + f + '"]');
-            var name = label ? label.textContent.replace(/\s*\*\s*$/, '').trim() : f;
+            // The label's own words, without a grey hint inside it ("(needed for 'Other')").
+            var text = label ? label.textContent : f;
+            if (label && label.cloneNode) {
+              var c = label.cloneNode(true);
+              Array.prototype.forEach.call(c.querySelectorAll('.crm-muted'), function (h) { h.remove(); });
+              text = c.textContent;
+            }
+            var name = text.replace(/\s*\*\s*$/, '').trim();
             return name + ': ' + ((d.reasons && d.reasons[f]) || 'please check this field.');
           }).join(' ');
         }
@@ -920,11 +958,15 @@
           var fromStage = isNew ? null : (current ? current.current_stage : null);
           var toStage = payload.current_stage;
           var needsAsk = toStage !== fromStage &&
-            (toStage === 'Exported/Completed' || (toStage === 'Lost/Stalled' && !String(payload.lost_reason || '').trim()));
+            (toStage === 'Exported/Completed' ||
+             (toStage === 'Lost/Stalled' && (!payload.lost_category || (payload.lost_category === 'other' && !String(payload.lost_reason || '').trim()))));
           (needsAsk ? CRM.stageMoveCheck(document.getElementById('company_name').value.trim(), toStage) : Promise.resolve({})).then(function (extra) {
           if (!extra) { document.getElementById('current_stage').focus(); return; }
           Object.assign(payload, extra);
-          if (extra.lost_reason) document.getElementById('lost_reason').value = extra.lost_reason;
+          if (extra.lost_category) {
+            document.getElementById('lost_category').value = extra.lost_category;
+            document.getElementById('lost_reason').value = extra.lost_reason || '';
+          }
           saveBtn.disabled = true;
 
           var req = isNew
