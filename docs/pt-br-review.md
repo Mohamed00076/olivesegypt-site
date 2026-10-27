@@ -158,6 +158,7 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 5. How should the data-subject rights (art. 18) and the retention periods be worded? Several retention items on the English page are still open.
 6. Does the cookie banner (reject, settings and accept at the same level; analytics off by default) meet ANPD guidance as it is?
 7. Is the Portuguese policy the binding version for Brazilian visitors, or does the English one prevail?
+8. Unsubscribing (art. 8 §5 and art. 18 IX, consent revocable free of charge and by an easy procedure): the Portuguese form has no marketing-consent box, so the page itself signs nobody up, but the policy says a visitor can withdraw marketing consent. Is a Portuguese «Cancelar inscrição» link in the footer needed, and if so, is linking to the English and Arabic `/unsubscribe/` page enough, or must the unsubscribe page itself be in Portuguese?
 
 ## Blocking items (the page can't be published until all are done)
 
