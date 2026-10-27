@@ -1,12 +1,12 @@
-# DRAFT FOR BRAZILIAN REVIEW: the pt-BR landing page
+# The pt-BR landing page: Portuguese copy and review record
 
-Status: **draft**. Every Portuguese line below was written by Claude Code (2026-10-25, updated 2026-10-26 with the owner's decisions on the filling, the hours and the reply time) and needs a Brazilian reader's approval. Nothing here is live: the pages under `/pt-br/` say `noindex`, aren't in the sitemap or `llms.txt`, and no other page links to them. `scripts/check-pt-br.js` enforces all of this until the pages are published.
+Status: **approved by the Brazilian reader** (owner, 2026-10-27). Every Portuguese line below was written by Claude Code (2026-10-25 to 2026-10-27) and has been approved by the Brazilian reader. Register rows C-192 to C-198 are still the owner's to approve ("rows approved"). Nothing here is live: the pages under `/pt-br/` say `noindex`, aren't in the sitemap or `llms.txt`, and no other page links to them. `scripts/check-pt-br.js` enforces this until the pages are published.
 
 Pages: `/pt-br/` (landing page with the quote and sample form) and `/pt-br/privacidade/` (privacy policy, a translation of `/privacy/`).
 
-The header, navigation and footer stay English, unchanged (owner, decision 5). The CRM and every document it makes stay English and Arabic (owner, 2026-10-25): Brazilian buyers receive the English documents.
+The pages have their own Portuguese header and footer (owner, round 4; see below). The CRM and every document it makes stay English and Arabic (owner, 2026-10-25): Brazilian buyers receive the English documents.
 
-**Reviewer: for each row, mark OK or write your correction.**
+**Approved by the Brazilian reader, 2026-10-27.** Any later change to a Portuguese line goes back to the reader.
 
 ## Search and sharing
 
@@ -47,12 +47,12 @@ The header, navigation and footer stay English, unchanged (owner, decision 5). T
 | List | Antes do pedido, você pode solicitar uma amostra de 1 a 5 kg. | Before ordering, you can request a 1–5 kg sample. | C-140 |
 | List | Preços e embalagens são confirmados na cotação. | Prices and packaging are confirmed in the quotation. | owner decision 3 |
 | List | Os requisitos para importação no Brasil são confirmados com o importador e o despachante aduaneiro do comprador durante a cotação. | Requirements for importing into Brazil are confirmed with the buyer's importer and customs broker during quotation. | C-197, owner decision 4 |
-| H3 (**DRAFT FOR BRAZILIAN REVIEW**) | Acordo de Livre Comércio Mercosul–Egito | Mercosur–Egypt Free Trade Agreement | C-198, owner 2026-10-26 |
-| Text (**DRAFT FOR BRAZILIAN REVIEW**) | O Acordo de Livre Comércio entre o Mercosul e o Egito está em vigor desde 1º de setembro de 2017. A preferência tarifária vale apenas para mercadorias que cumprem as regras de origem do acordo e são acompanhadas de um certificado de origem. Os demais tributos de importação continuam valendo. A classificação e o tratamento tarifário são confirmados com o importador e o despachante aduaneiro do comprador antes de cada importação. | The Mercosur–Egypt Free Trade Agreement has been in force since 1 September 2017. The tariff preference applies only to goods that meet the agreement's rules of origin and travel with a certificate of origin. Other import taxes still apply. Classification and tariff treatment are confirmed with the buyer's importer and customs broker before each import. No NCM code, category or date of the phase-out is printed; nothing says our products qualify or that we supply the certificate. | **C-198, owner 2026-10-26** |
-| Contact card and the note in the form, printed twice only (**DRAFT FOR BRAZILIAN REVIEW**) | Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação). Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis (domingo a quinta). | We reply within 24 hours Sunday to Thursday (Cairo time, 5 to 6 hours ahead of Brasília depending on the season). Messages received on Friday or Saturday are answered within two business days (Sunday to Thursday). | **C-196, owner round 3** |
-| How it works: pointer (**DRAFT FOR BRAZILIAN REVIEW**) | Prazo de resposta: veja Fale conosco, abaixo. | Reply time: see Contact us, below. | owner round 3 |
-| Contact card: hours (**DRAFT FOR BRAZILIAN REVIEW**) | Atendimento de domingo a quinta-feira, das 9h às 18h (horário do Cairo). | Open Sunday to Thursday, 9am to 6pm (Cairo time). | owner 2026-10-26 (the /contact hours) |
-| Contact card: WhatsApp (**DRAFT FOR BRAZILIAN REVIEW**) | Você pode nos enviar uma mensagem pelo WhatsApp a qualquer hora. | You can message us on WhatsApp at any time. Never an instant or guaranteed reply. | owner 2026-10-26 ("WhatsApp available 24/7") |
+| H3 | Acordo de Livre Comércio Mercosul–Egito | Mercosur–Egypt Free Trade Agreement | C-198, owner 2026-10-26 |
+| Text | O Acordo de Livre Comércio entre o Mercosul e o Egito está em vigor desde 1º de setembro de 2017. A preferência tarifária vale apenas para mercadorias que cumprem as regras de origem do acordo e são acompanhadas de um certificado de origem. Os demais tributos de importação continuam valendo. A classificação e o tratamento tarifário são confirmados com o importador e o despachante aduaneiro do comprador antes de cada importação. | The Mercosur–Egypt Free Trade Agreement has been in force since 1 September 2017. The tariff preference applies only to goods that meet the agreement's rules of origin and travel with a certificate of origin. Other import taxes still apply. Classification and tariff treatment are confirmed with the buyer's importer and customs broker before each import. No NCM code, category or date of the phase-out is printed; nothing says our products qualify or that we supply the certificate. | **C-198, owner 2026-10-26** |
+| Contact card and the note in the form, printed twice only | Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação). Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis (domingo a quinta). | We reply within 24 hours Sunday to Thursday (Cairo time, 5 to 6 hours ahead of Brasília depending on the season). Messages received on Friday or Saturday are answered within two business days (Sunday to Thursday). | **C-196, owner round 3** |
+| How it works: pointer | Prazo de resposta: veja Fale conosco, abaixo. | Reply time: see Contact us, below. | owner round 3 |
+| Contact card: hours | Atendimento de domingo a quinta-feira, das 9h às 18h (horário do Cairo). | Open Sunday to Thursday, 9am to 6pm (Cairo time). | owner 2026-10-26 (the /contact hours) |
+| Contact card: WhatsApp | Você pode nos enviar uma mensagem pelo WhatsApp a qualquer hora. | You can message us on WhatsApp at any time. Never an instant or guaranteed reply. | owner 2026-10-26 ("WhatsApp available 24/7") |
 | H2 | Certificados | Certificates | |
 | Text | Certificações da unidade parceira: em verificação com os documentos originais dos certificados. Nenhum nome, número, organismo emissor, escopo ou validade de certificado aparece neste site até que essa verificação seja concluída. | Partner-facility certifications: being verified against the actual certificate documents. No certificate name, number, issuing body, scope or validity date appears on this site until that check is complete. | C-35 (the approved English sentence, translated) |
 | H2 | Fale conosco | Contact us | |
@@ -69,13 +69,32 @@ The header, navigation and footer stay English, unchanged (owner, decision 5). T
 | Request label (shown on arrival) | Pedido de cotação · Pedido de amostra · Pedido de catálogo · Pedido de documentos de qualidade · Consulta sobre marca própria · Pedido de preços no Egito | Quote request · Sample request · Catalogue request · Quality documents request · Private label enquiry · Egyptian pricing request | |
 | WhatsApp message (prefilled) | Olá! Sou comprador no Brasil e gostaria de uma cotação. Empresa: … Produto: … Volume: … | Hello! I'm a buyer in Brazil and would like a quote. Company: … Product: … Volume: … | |
 
+## Header, footer and floating buttons (owner round 4, 2026-10-27)
+
+On both Portuguese pages. Every link stays on `/pt-br/`, apart from the one link to the English site. No other page is in Portuguese.
+
+| Where | Portuguese (draft) | What it means in English | Source |
+|---|---|---|---|
+| Tagline under the name | Exportação de azeitonas de mesa do Egito | Egyptian table olive export | the English tagline |
+| Logo description | Logotipo da Triple Company for Industrial Development | Triple Company for Industrial Development logo | |
+| Menu (header and phone menu) | Produtos · Como funciona · Quem somos · Fale conosco | Products · How it works · About us · Contact us | links to the page's own sections |
+| Button | Solicitar cotação | Request a quote | opens the form on the page |
+| Language link | English | English | goes to `/` |
+| Facebook | Seguir; "Siga a Triple Company for Industrial Development no Facebook"; "Siga-nos no Facebook" | Follow; follow … on Facebook | |
+| Screen-reader labels | Principal (menu) · Alternar modo escuro · Abrir menu · Conversar pelo WhatsApp · Notificações (F8) | Primary · Toggle dark mode · Open menu · Chat on WhatsApp · Notifications | |
+| Footer line | Fornecedora egípcia de azeitonas de mesa, sediada no Cairo, Egito, preparando-se para a exportação internacional por meio de unidades parceiras. | An Egyptian table-olive supplier based in Cairo, Egypt, preparing for international export through partner facilities. | C-195; the English footer line, without "approved" (the removal in #463) |
+| Footer links | Privacidade · Configurações de cookies · Site em inglês | Privacy · Cookie settings (reopens the consent settings; appears once a choice is made, as on the English and Arabic pages) · English site | the consent strings below |
+| Copyright | © Triple Company for Industrial Development. Todos os direitos reservados. Site: olivesegypt.com | © … All rights reserved. Website: olivesegypt.com | the legal name, untranslated |
+
+The address, the email and the phone stay as they are. The English footer's five columns of English links aren't shown. The "Read Our Insights" tab isn't shown either, because it opens the English blog.
+
 ## Form messages (`assets/inquiry-form.js`)
 
 | Portuguese (draft) | English |
 |---|---|
 | Enviando... | Sending... |
-| Obrigado — recebemos sua solicitação. Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo); se ela chegou na sexta ou no sábado, em até dois dias úteis (domingo a quinta). | Thank you, we have received your request. We reply within 24 hours Sunday to Thursday (Cairo time); if it arrived on Friday or Saturday, within two business days (Sunday to Thursday). **C-196, DRAFT FOR BRAZILIAN REVIEW** |
-| Obrigado — recebemos seu pedido de amostra. Confirmamos em até 24 horas de domingo a quinta-feira (horário do Cairo); se ele chegou na sexta ou no sábado, em até dois dias úteis (domingo a quinta). | … sample request … we confirm within 24 hours Sunday to Thursday (Cairo time); if it arrived on Friday or Saturday, within two business days (Sunday to Thursday). **C-196, DRAFT FOR BRAZILIAN REVIEW** |
+| Obrigado — recebemos sua solicitação. Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo); se ela chegou na sexta ou no sábado, em até dois dias úteis (domingo a quinta). | Thank you, we have received your request. We reply within 24 hours Sunday to Thursday (Cairo time); if it arrived on Friday or Saturday, within two business days (Sunday to Thursday). **C-196** |
+| Obrigado — recebemos seu pedido de amostra. Confirmamos em até 24 horas de domingo a quinta-feira (horário do Cairo); se ele chegou na sexta ou no sábado, em até dois dias úteis (domingo a quinta). | … sample request … we confirm within 24 hours Sunday to Thursday (Cairo time); if it arrived on Friday or Saturday, within two business days (Sunday to Thursday). **C-196** |
 | Não foi possível enviar sua solicitação. Confira os campos obrigatórios e tente novamente, ou escreva para sales@olivesegypt.com. | Your request could not be sent. Check the required fields and try again, or write to sales@… |
 | Recebemos vários envios seguidos deste endereço. Tente novamente mais tarde ou escreva para sales@olivesegypt.com. | We received several submissions in a row from this address. Try again later or write to sales@… |
 | Erro de conexão — tente novamente ou escreva para sales@olivesegypt.com. | Connection error: try again or write to sales@… |
@@ -102,7 +121,7 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 - The opening note also names **a LGPD** among the laws the page does *not* claim compliance with.
 - It adds one line: "Esta é uma tradução da Privacy Policy em inglês." with a link to the English page.
 - The unsubscribe page is marked "(em inglês)", because it has no Portuguese version.
-- **Geolocation provider, now "Confirmado"** (**DRAFT FOR BRAZILIAN REVIEW**, owner 2026-10-27, with the English and Arabic pages): «Com o consentimento para Análise, seu país é estimado a partir do seu endereço de internet (IP) usando o banco de dados GeoLite2 Country, da MaxMind, mantido junto ao código do nosso servidor; nenhum serviço externo é consultado. Guardamos apenas o código de duas letras do país; o seu endereço IP em si não é armazenado.» It is no longer in the open-items box. The other five items stay open. Counsel questions 21–23 in `docs/g0-counsel-questions.md` (GeoLite2 attribution and the mirror, consent records kept indefinitely, the 395-day period) apply to the Portuguese page too.
+- **Geolocation provider, now "Confirmado"** (owner 2026-10-27, with the English and Arabic pages): «Com o consentimento para Análise, seu país é estimado a partir do seu endereço de internet (IP) usando o banco de dados GeoLite2 Country, da MaxMind, mantido junto ao código do nosso servidor; nenhum serviço externo é consultado. Guardamos apenas o código de duas letras do país; o seu endereço IP em si não é armazenado.» It is no longer in the open-items box. The other five items stay open. Counsel questions 21–23 in `docs/g0-counsel-questions.md` (GeoLite2 attribution and the mirror, consent records kept indefinitely, the 395-day period) apply to the Portuguese page too.
 
 ## Glossary (⚠️ = more than one Portuguese meaning)
 
@@ -131,7 +150,9 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 | pepper (filling) ⚠️ | not used | **pimentão** = sweet or bell pepper; **pimenta** = hot pepper. The page names no filling (owner, 2026-10-26); when the owner confirms it, it is added in all three languages together. |
 | business days ⚠️ | dias úteis (domingo a quinta) | In Egypt these are Sunday to Thursday, not Brazil's Monday to Friday; the sentence now says so (owner, round 3). |
 
-## Questions for counsel (LGPD)
+## Questions for counsel (LGPD): open, not blocking
+
+Owner, 2026-10-27: `/pt-br/` is published without prior counsel review (a small company). These questions stay open and are not a condition for publishing; the privacy page keeps its line that it does not claim compliance with the LGPD or any other law.
 
 1. Does the LGPD apply? The contacts are businesses, but their staff are natural persons in Brazil, and the page is aimed at Brazil (LGPD art. 3).
 2. Which legal basis: pre-contract steps at the data subject's request, or legitimate interest?
@@ -140,13 +161,21 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 5. How should the data-subject rights (art. 18) and the retention periods be worded? Several retention items on the English page are still open.
 6. Does the cookie banner (reject, settings and accept at the same level; analytics off by default) meet ANPD guidance as it is?
 7. Is the Portuguese policy the binding version for Brazilian visitors, or does the English one prevail?
+8. Unsubscribing (art. 8 §5 and art. 18 IX, consent revocable free of charge and by an easy procedure): the Portuguese form has no marketing-consent box, so the page itself signs nobody up, but the policy says a visitor can withdraw marketing consent. Is a Portuguese «Cancelar inscrição» link in the footer needed, and if so, is linking to the English and Arabic `/unsubscribe/` page enough, or must the unsubscribe page itself be in Portuguese?
+   Until counsel answers and a Portuguese unsubscribe exists, the standing rule below applies: no marketing email to Brazilian contacts (owner, 2026-10-27).
+9. Translation service: machine translation, no person (owner, 2026-10-27). WhatsApp's built-in translation runs on the phone and sends no text to a translation server; email text is pasted into Google's free Translate website (the mailboxes are on Zoho Mail, not Google Workspace), so a buyer's message (the owner's working rule, Draft A: names and contact details are removed before pasting) is processed on Google's servers, possibly outside Egypt and outside Brazil. Zoho Mail itself, which stores the buyer's emails on `zoho.com` (Zoho's US data centre), is not named on the privacy page either (`docs/g0-counsel-questions.md` 26). Is disclosing Google's processing needed on the Portuguese privacy page (art. 9 V), as a recipient or processor, and is it an international transfer (art. 33)? No claim is made about what Google keeps or trains on. Draft wording, not on any page: `docs/email-address-inventory.md` §9 (the email branch). Same as question 25 in `docs/g0-counsel-questions.md`.
+
+## Standing rule
+
+**No marketing email to Brazilian contacts until a Portuguese unsubscribe exists** (owner, 2026-10-27). Replies to a contact's own request (a quotation, a sample confirmation) are not marketing and are unaffected. Nothing is built for it yet: no «Cancelar inscrição» page or link.
 
 ## Blocking items (the page can't be published until all are done)
 
-1. A Brazilian reader approves every Portuguese line in this file and on both pages, and the glossary.
-2. Counsel answers the LGPD questions and reviews `/pt-br/privacidade/`.
-3. Someone can answer enquiries in Portuguese. That's the condition for the `/contact/` line.
-4. The owner approves this table and register rows C-192 to C-197 (the reply time is C-196).
+1. ~~A Brazilian reader approves every Portuguese line and the glossary.~~ **Done:** approved by the Brazilian reader, 2026-10-27.
+2. ~~Counsel answers the LGPD questions and reviews `/pt-br/privacidade/`.~~ **Not blocking:** the owner publishes without prior counsel review (small company, 2026-10-27); the questions above stay open.
+3. ~~Someone can answer enquiries in Portuguese.~~ **Closed:** replies in Portuguese are produced via a translation service (owner, 2026-10-27; no provider named here). See counsel question 9.
+4. The owner approves register rows C-192 to C-198 ("rows approved").
+5. The English and Arabic changes go live first: #463, #465, #467 (and #466), then #464 into #454 and #454, then the publish step, each for separate approval.
 
 The pepper is no longer a blocker: the page names no filling (owner, 2026-10-26).
 

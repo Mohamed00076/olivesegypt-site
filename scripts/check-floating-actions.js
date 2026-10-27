@@ -64,7 +64,7 @@ const t = (name, cond, extra) => {
   console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '   <-- ' + (extra === undefined ? '' : extra)}`);
 };
 
-const noFab = [], noTab = [], onPrintable = [];
+const noFab = [], noTab = [], onPrintable = [], ptTab = [];
 let en = 0, ar = 0;
 
 for (const file of walk(ROOT)) {
@@ -77,6 +77,13 @@ for (const file of walk(ROOT)) {
   }
   if (!html.includes('</footer>')) continue;   // no site chrome, nothing to carry
 
+  // The Portuguese pages (owner, 2026-10-27) carry the WhatsApp button, in
+  // Portuguese, and no insights tab: there is no Portuguese blog to open.
+  if (rel.startsWith('pt-br/')) {
+    if (!html.includes(FAB)) noFab.push(rel);
+    if (html.includes(TAB) || !html.includes('aria-label="Conversar pelo WhatsApp"')) ptTab.push(rel);
+    continue;
+  }
   rel.startsWith('ar/') ? ar++ : en++;
   if (!html.includes(FAB)) noFab.push(rel);
   if (!html.includes(TAB)) noTab.push(rel);
@@ -92,6 +99,7 @@ const show = (list) => `${list.length}: ${list.slice(0, 6).join(', ')}${list.len
 t(`both locales are covered (${en} English, ${ar} Arabic browsing pages)`, en > 0 && ar > 0, `en=${en} ar=${ar}`);
 t('every browsing page carries the WhatsApp button', noFab.length === 0, noFab.length ? show(noFab) : '');
 t('every browsing page carries the Read Our Insights tab', noTab.length === 0, noTab.length ? show(noTab) : '');
+t('the Portuguese pages: the WhatsApp button in Portuguese, and no insights tab (no Portuguese blog)', ptTab.length === 0, ptTab.length ? show(ptTab) : '');
 t('no printable sheet carries a floating action', onPrintable.length === 0, onPrintable.length ? show(onPrintable) : '');
 
 // The consent controls share the bottom of the screen with the WhatsApp

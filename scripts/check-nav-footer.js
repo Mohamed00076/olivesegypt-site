@@ -47,6 +47,14 @@ const EXPECTED_NAV = {
        '/media/news', '/media/blog', '/media/inquiries', '/about', '/contact'],
 };
 EXPECTED_NAV.ar = EXPECTED_NAV.en.map((r) => '/ar' + r);
+// The Portuguese pages (owner, 2026-10-27): their own header, whose links stay
+// on /pt-br/ because no other page is in Portuguese, no dropdowns, and a short
+// footer -- the company, the address, Privacidade, the English site.
+EXPECTED_NAV.pt = ['/pt-br#produtos', '/pt-br#como-funciona', '/pt-br#quem-somos', '/pt-br#cotacao'];
+const PT_FOOTER = {
+  links: ['/pt-br/privacidade/', '/'],
+  blurb: 'Fornecedora egípcia de azeitonas de mesa, sediada no Cairo, Egito, preparando-se para a exportação internacional por meio de unidades parceiras.',
+};
 
 const EXPECTED_FOOTER_COLS = 5;
 
@@ -97,7 +105,7 @@ function section(html, tag) {
 for (const route of routes()) {
   const file = path.join(ROOT, route === '/' ? '' : route.slice(1), 'index.html');
   const html = fs.readFileSync(file, 'utf8');
-  const lang = /<html lang="ar"/.test(html) ? 'ar' : 'en';
+  const lang = /<html lang="ar"/.test(html) ? 'ar' : /<html lang="pt-BR"/.test(html) ? 'pt' : 'en';
   const base = lang === 'ar' ? (route.slice(3) || '/') : route;
 
   const header = section(html, 'header');
@@ -138,8 +146,9 @@ for (const route of routes()) {
   const triggers = [...header.matchAll(/aria-controls="(nav-[a-z]+)"/g)].map((m) => m[1]);
   // Four since 2026-10-10: Products became a dropdown (All Products, Table
   // Olives, Pickled Vegetables -- the last two their own pages) so buyers can find the hub from any page.
-  if (triggers.length !== 4) {
-    problems.push(`${route}: expected 4 nav dropdowns, found ${triggers.length}`);
+  const wantTriggers = lang === 'pt' ? 0 : 4;
+  if (triggers.length !== wantTriggers) {
+    problems.push(`${route}: expected ${wantTriggers} nav dropdowns, found ${triggers.length}`);
   }
   for (const id of triggers) {
     if (!header.includes(`id="${id}"`)) {
@@ -190,7 +199,14 @@ for (const route of routes()) {
   }
 
   // --- footer ------------------------------------------------------------
-  if (!/tc-footer-cols/.test(footer)) {
+  if (lang === 'pt') {
+    const links = [...footer.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+    if (JSON.stringify(links) !== JSON.stringify(PT_FOOTER.links)) {
+      problems.push(`${route}: the Portuguese footer links to ${links.join(', ') || 'nothing'}, not ${PT_FOOTER.links.join(', ')}`);
+    }
+    if (!footer.includes(PT_FOOTER.blurb)) problems.push(`${route}: the Portuguese footer does not carry the approved company line`);
+    if (/tc-footer-cols|All rights reserved|>Privacy</.test(footer)) problems.push(`${route}: the Portuguese footer still carries the English footer`);
+  } else if (!/tc-footer-cols/.test(footer)) {
     problems.push(`${route}: missing the shared footer`);
   } else {
     const cols = (footer.match(/class="tc-footer-col"/g) || []).length;
@@ -215,6 +231,19 @@ for (const route of routes()) {
   }
 
   // --- locale integrity of the shared chrome -----------------------------
+  if (lang === 'pt') {
+    const chrome = header + footer;
+    const bad = [...chrome.matchAll(/href="(\/(?!pt-br\/)[^"]*)"/g)].map((m) => m[1])
+      .filter((h) => !h.startsWith('/assets'))
+      .filter((h) => !(h === '/' && new RegExp('href="/" hreflang="en"').test(chrome)));
+    if (bad.length) problems.push(`${route}: Portuguese chrome links to English routes: ${[...new Set(bad)].join(', ')}`);
+    const logo = (header.match(/<a href="([^"]*)" class="flex items-center gap-2 shrink-0">/) || [])[1];
+    if (logo !== '/pt-br/') problems.push(`${route}: the Portuguese logo links to ${logo || 'nothing'}, not /pt-br/`);
+    if (!/class="[^"]*\btc-footer-pt\b/.test(footer)) problems.push(`${route}: the Portuguese footer has lost tc-footer-pt, its room for the floating buttons on a phone`);
+    if (/Request a Quote|Toggle dark mode|Toggle menu|>Follow<|aria-label="Primary"/.test(header)) {
+      problems.push(`${route}: the Portuguese header still has English labels`);
+    }
+  }
   if (lang === 'ar') {
     const chrome = header + footer;
     const bad = [...chrome.matchAll(/href="(\/(?!ar\/)[^"]*)"/g)]

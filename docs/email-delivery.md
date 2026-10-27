@@ -108,6 +108,10 @@ RESEND_API_KEY=re_... NOTIFY_FROM_EMAIL='...' NOTIFY_EMAIL='...' \
 The key is read from the environment and never written to disk. **This
 repository is public — a committed key is a leaked key.**
 
+## 6a. Who may receive marketing email
+
+- **No marketing email to Brazilian contacts until a Portuguese unsubscribe exists** (owner, 2026-10-27). Replies to a contact's own request (a quotation, a sample confirmation) are not marketing and are unaffected. Nothing is built for it yet: no «Cancelar inscrição» page or link. The unsubscribe page, `/unsubscribe/`, exists in English and Arabic only. Counsel question 8 in `docs/pt-br-review.md` asks whether a Portuguese one is required.
+
 ## 7. Still missing
 
 Known gaps, not addressed by this pass:
