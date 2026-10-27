@@ -121,6 +121,7 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 - The opening note also names **a LGPD** among the laws the page does *not* claim compliance with.
 - It adds one line: "Esta é uma tradução da Privacy Policy em inglês." with a link to the English page.
 - The unsubscribe page is marked "(em inglês)", because it has no Portuguese version.
+- **Geolocation provider, now "Confirmado"** (**DRAFT FOR BRAZILIAN REVIEW**, owner 2026-10-27, with the English and Arabic pages): «Com o consentimento para Análise, seu país é estimado a partir do seu endereço de internet (IP) usando o banco de dados GeoLite2 Country, da MaxMind, mantido junto ao código do nosso servidor; nenhum serviço externo é consultado. Guardamos apenas o código de duas letras do país; o seu endereço IP em si não é armazenado.» It is no longer in the open-items box. The other five items stay open. Counsel questions 21–23 in `docs/g0-counsel-questions.md` (GeoLite2 attribution and the mirror, consent records kept indefinitely, the 395-day period) apply to the Portuguese page too.
 
 ## Glossary (⚠️ = more than one Portuguese meaning)
 
