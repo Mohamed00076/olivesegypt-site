@@ -206,7 +206,7 @@ function list(el, ctx = {}, heading = '') {
       return `<li><span class="step-num">${m[1]}</span><div class="step-body"><strong>${inline(m[2])}</strong> ${inline(rest)}</div></li>`;
     }).join('')}</ol>`;
   }
-  // "We handle" and "The approved partner facility handles", side by side.
+  // "We handle" and "The partner facility handles", side by side.
   if (ctx.slug === 'company-overview' && lis.length === 2 && lis.every((li) => strongOf(li)[1])) {
     return `<div class="split">${lis.map((li, n) => {
       const [, title, rest] = strongOf(li);
