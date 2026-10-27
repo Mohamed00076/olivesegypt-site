@@ -248,7 +248,7 @@
     '.tc-btn-modal-secondary{background:transparent;color:#1c2416;border-color:#1c241633;}' +
     '#tc-consent-reopen{position:fixed;inset-inline-start:16px;bottom:16px;z-index:9998;background:#1c2416;color:#e9e7dd;border:1px solid #c9a84c;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
     '#tc-consent-reopen.tc-in-footer{display:none;}' +
-    '#tc-consent-footer-link{background:none;border:0;padding:0;font:inherit;cursor:pointer;}' +
+    '#tc-consent-footer-link{background:none;border:0;padding:0;font-family:inherit;line-height:inherit;cursor:pointer;}' +
     '.dark #tc-consent-modal{background:hsl(var(--card));color:hsl(var(--card-foreground));}' +
     '.dark .tc-modal-subtext{color:hsl(var(--muted-foreground));}' +
     '.dark .tc-cat{border-top-color:hsl(var(--card-border));}' +
@@ -507,8 +507,15 @@
     return true;
   }
 
+  // The printable sheets (catalogue print, business card) have no footer
+  // row, and the pill sat on their last line (owner, 2026-10-27): they show
+  // none. Their visitors reach the settings from any other page; the gated
+  // guides, also without a footer row, keep the pill.
+  var PRINT_SHEET = /^\/(?:ar\/)?(?:catalog\/print|business-card)\/?$/.test(location.pathname);
+
   function showReopenControl() {
     if (document.getElementById('tc-consent-reopen')) return;
+    if (!addFooterControl() && PRINT_SHEET) return;
     var btn = document.createElement('button');
     btn.id = 'tc-consent-reopen';
     btn.type = 'button';
