@@ -114,7 +114,7 @@ for (const [f, badge] of Object.entries(OPEN_BADGE)) {
   t('the analytics code still resolves the country from GeoLite2 (else this check is moot)', usesGeoLite);
   const pages = Object.keys(OPEN_BADGE).filter((f) => fs.existsSync(path.join(ROOT, f)));
   const denies = pages.filter((f) => /no geolocation service of its own|لا يستخدم الموقع خدمة خاصة به لتحديد الموقع الجغرافي|não tem serviço de geolocalização próprio/.test(read(f)));
-  const silent = pages.filter((f) => !/MaxMind/.test(read(f)) || !/GeoLite2 Country/.test(read(f)));
+  const silent = pages.filter((f) => !/MaxMind/.test(read(f)) || !/GeoLite2 Country|الدول GeoLite2/.test(read(f)));
   t('   every privacy page names MaxMind\'s GeoLite2 Country and none says there is no geolocation', !usesGeoLite || (denies.length === 0 && silent.length === 0),
     [...denies.map((f) => f + ' denies it'), ...silent.map((f) => f + ' does not name it')].join(', '));
 }

@@ -65,7 +65,8 @@ const KEEP = new Set([
   'ripe', 'ncc', 'afrinic', 'arin', 'apnic', 'lacnic', 'whatsapp', 'facebook', 'linkedin', 'instagram',
   'google', 'olivesegypt.com', 'sales',
   // The country-lookup database, named on the privacy page (2026-10-27).
-  'maxmind', 'geolite2', 'geolite', 'country',
+  // (the word splitter stops at digits: "GeoLite2" reads as "geolite")
+  'maxmind', 'geolite',
   // Google Analytics, a service name, and its cookie names _ga / _ga_<id>.
   'analytics', 'ga',
   // The visit counter's two local-storage entries, named on the privacy page.
