@@ -11870,6 +11870,37 @@ Files and lines are each merge against the `main` it landed on. Tests passed on 
 
 **Merge-conflict resolution:** #453 conflicted with main on `contact/index.html` and the register. The page was merged three-way, tag by tag, with no LCL option left on either contact page. The register row was renumbered C-181 → C-189, after #426's C-181 to C-188, and `check-inquiry-forms.js` cites C-189. `npm test`: 83 of 83 checks passed before the push.
 
+## Deploys 329 to 332 — Group 2 of the merge plan: the record of 311 to 328; contact hours in Cairo time; lead time 4–6 weeks; the Arabic label «مدة التجهيز» (PRs #457, #458, #455, #456)
+
+**Previous recorded deploy:** Deploy 328 (PR #453, `e94a8c2`)
+**Approval:** "next: start group 2 (#457, #458, then #455 and #456)" (2026-10-27). #458 was cleared by the owner's approval of the hours and "WhatsApp available 24/7" (C-190). Group 3 waits for the owner's Neon backup name.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 329 | #457 | `b12ea3f` | 2026-10-27 03:04:33 | 2 | +118 / −2 | Notes only |
+| 330 | #458 | `5b0cfc2` | 2026-10-27 03:08:20 | 4 | +15 / −2 | Contact hours, Cairo time |
+| 331 | #455 | `2768a4e` | 2026-10-27 03:11:32 | 17 | +209 / −21 | Lead time 4–6 weeks, "against B/L copy", PDFs |
+| 332 | #456 | `5e30e45` | 2026-10-27 03:15:00 | 16 | +55 / −28 | Arabic lead-time label, PDFs |
+
+Files and lines are each merge against the `main` it landed on. Every Tests run passed on each branch before its merge. The live check after each deploy: 28 OK, 0 WARN, 0 FAIL.
+
+**Notes-only deploys listed here, under the recording convention:**
+- **Deploy 329** recorded Deploys 311 to 328, and corrected the audit-log line about the 2,000 MT claim (C-127).
+
+**Merge-conflict resolutions (`npm test` after each, before the push):**
+- **#457:** none. 83 of 83 checks passed.
+- **#458:** `contact/index.html` was merged three-way, tag by tag, keeping both the new hours and the removed LCL option. Register row C-181 became **C-190**, and `check-identity-strings.js` cites C-190. 83 of 83 checks passed.
+- **#455:** `how-we-work/index.html` was merged three-way. Register row C-181 became **C-191**. `scripts/lead-time.js`, `scripts/check-lead-time.js` and C-179's "Superseded … by" note cite C-191. 84 of 84 checks passed.
+- **#456:** retargeted from `claude/lead-time-4-6` to `main` once #455 merged. Two Arabic one-line pages were merged three-way, and the sitemap kept the later `lastmod` (2026-10-25). 84 of 84 checks passed.
+
+**Confirmed live after Deploy 332:**
+- `/contact/`: "Sun–Thu, 9am–6pm, Cairo time · WhatsApp available 24/7".
+- `/ar/contact/`: «الأحد–الخميس، 9ص–6م بتوقيت القاهرة · واتساب متاح على مدار الساعة».
+- No LCL option on either contact page.
+- "Indicative lead time 4–6 weeks, order to vessel" on `/company-profile/` and in `company-profile-en.pdf`.
+- «مدة التجهيز الاسترشادية 4–6 أسابيع من الطلب إلى الشحن» on `/ar/company-profile/` and in `company-profile-ar.pdf`.
+- Both export catalogues say 4–6 weeks.
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
