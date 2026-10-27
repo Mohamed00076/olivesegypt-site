@@ -190,7 +190,7 @@ const buyerWrites = (calls) => calls.filter((c) => /INSERT INTO buyers|UPDATE bu
     // it files under the olive type it now belongs to.
     t('   with the product mapped to the CRM\'s own id (a legacy label to its type)', v.includes('["green-olives"]'), JSON.stringify(v));
     t('   created by "website" and assigned to nobody', v.includes('website') && /VALUES \( \?, NULL,/.test(ins.text));
-    t('   due tomorrow, as the form promises a reply within 24 hours', /CURRENT_DATE \+ 1/.test(ins.text));
+    t('   due tomorrow: within the promised reply time (24 hours Sunday to Thursday, two business days from Friday or Saturday, C-192), never later', /CURRENT_DATE \+ 1/.test(ins.text));
     t('   with stage history, activity, audit and the link back -- in the same statement',
       ['INSERT INTO buyer_stage_history', 'INSERT INTO buyer_activity_log', 'INSERT INTO crm_audit_log', 'UPDATE inquiries SET buyer_id']
         .every((s) => ins && ins.text.includes(s)), ins && ins.text.slice(0, 200));
