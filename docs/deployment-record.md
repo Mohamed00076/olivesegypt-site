@@ -11916,6 +11916,24 @@ Files and lines are each merge against the `main` it landed on. Every Tests run 
 - **Merged without changes:** the branch already contained `main`. Before the merge, 84 of 84 checks passed. After the deploy, the live check gave 28 OK, 0 WARN, 0 FAIL.
 - **Confirmed live:** no "approved partner" or «شراكة/شريكة معتمدة» on `/`, `/ar/`, `/about/`, `/ar/about/`, `/resources/faq/`, `/ar/resources/faq/` or `/solutions/manufacturer/` (EN and AR), nor in either company profile PDF.
 
+## Deploy 334 — one reply time in English and Arabic: 24 hours Sunday to Thursday, two business days from Friday or Saturday (PR #465)
+
+**Previous recorded deploy:** Deploy 333 (PR #463, `0bec1f3`)
+**Approval:** "next" (2026-10-27), after Deploy 333.
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 334 | #465 | `8c2a94d` | 2026-10-27 15:26:28 | 41 | +108 / −79 | Copy (EN/AR), 2 PDFs reprinted, guard |
+
+- **What changed:** "within 24 hours, Sunday to Thursday (two business days if received on Friday or Saturday)" and its Arabic replace the flat "24 hours", with «إذا وصل الطلب» where the sentence doesn't name a single request. It covers the form messages, the contact, home and sample pages, the FAQ and its structured data, media and the seven articles, the accessibility statement and both buyer's guides. The contact pages' meta descriptions say "We reply within 24 hours, Sunday to Thursday." / «نرد خلال 24 ساعة من الأحد إلى الخميس.» C-115 is superseded by **C-193**. `check-article-claims` fails on a flat promise.
+- **Merge-conflict resolution:** 29 files conflicted with Deploy 333.
+  - The 26 single-line pages were merged three-way, tag by tag, and each carries both changes.
+  - The register row was renumbered C-192 → **C-193**, after #463's C-192. Its cross-references (C-113, C-115, C-188) and the three files that cite it were updated.
+  - The buyer's guide sources were regenerated from the merged guides, and the two PDFs reprinted. Their text differs from Deploy 333's only in the reply sentence. Page counts are unchanged, and «الثلاثية» is intact.
+  - `npm test`: 84 of 84 checks passed, and the guard caught all 15 broken copies.
+- **Live check after the deploy:** 28 OK, 0 WARN, 0 FAIL.
+- **Confirmed live:** no flat "24 hours" on `/`, `/ar/`, the contact, sample, FAQ, media inquiries and accessibility pages, an article, or `/assets/inquiry-form.js`. The new wording is present on each.
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
