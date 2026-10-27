@@ -212,16 +212,23 @@ t('no page or guide promises a reply in "one business day"', slowReply.length ==
 // reads it promised a Friday reply by Saturday. (The Portuguese pages carry
 // their own sentence, held by check-pt-br.js.)
 const REPLY_EN = 'within 24 hours, Sunday to Thursday (two business days if received on Friday or Saturday)';
-const REPLY_AR = 'خلال 24 ساعة من الأحد إلى الخميس (وخلال يومي عمل إذا وصل يوم الجمعة أو السبت)';
+// The Arabic names the request where the sentence does not (owner, round 6):
+// «إذا وصل الطلب» after «يرد فريقنا», a plural, or «نرد» on its own.
+const REPLY_AR = ['خلال 24 ساعة من الأحد إلى الخميس (وخلال يومي عمل إذا وصل يوم الجمعة أو السبت)',
+  'خلال 24 ساعة من الأحد إلى الخميس (وخلال يومي عمل إذا وصل الطلب يوم الجمعة أو السبت)'];
+// A search snippet is short: in a contact page's meta descriptions, and only
+// there, the first half of the rule (owner, round 6).
+const META_SHORT = /(<meta (?:name|property)="(?:description|og:description|twitter:description)" content="[^"]*?)(?:We reply within 24 hours, Sunday to Thursday\.|نرد خلال 24 ساعة من الأحد إلى الخميس\.)/g;
 const bareReply = [];
 // Pages and guides, and what else a buyer reads: the form messages, the PDF
 // sources, llms.txt.
 const replySurfaces = [...pages, ...guides, ...execSync('git ls-files "assets/*.js" "scripts/pdf-sources/**/*.html" "scripts/export-catalog-source*.html" llms.txt', { cwd: ROOT }).toString().trim().split('\n').filter(Boolean)];
 for (const f of [...new Set(replySurfaces)]) {
   if (f.startsWith('pt-br/')) continue;
-  const src = read(f);
+  let src = read(f);
+  if (f === 'contact/index.html' || f === 'ar/contact/index.html') src = src.replace(META_SHORT, '$1');
   const en = src.split(REPLY_EN).join(' ').match(/within 24 hours/i);
-  const ar = src.split(REPLY_AR).join(' ').match(/خلال 24 ساعة/);
+  const ar = REPLY_AR.reduce((s, r) => s.split(r).join(' '), src).match(/خلال 24 ساعة/);
   if (en || ar) bareReply.push(`${f}: "${(en || ar)[0]}"`);
 }
 t('every English and Arabic reply promise is 24 hours Sunday to Thursday, two business days from Friday or Saturday (C-192)', bareReply.length === 0, bareReply.slice(0, 8).join(' | '));
