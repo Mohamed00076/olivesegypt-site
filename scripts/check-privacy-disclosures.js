@@ -87,6 +87,38 @@ if (looksUp) {
     !/Contact, Sample Request, and Market Brief forms collect what you enter/.test(en));
 }
 
+// ---- the open items, and the country lookup (2026-10-27) -------------------
+// Each privacy page marks an unsettled fact in its Key Facts table and lists it
+// again in a box under the table. The two must agree, item for item: a fact
+// closed in the table but still in the box (or the reverse) says two things at
+// once, and once nothing is open the box goes. The Portuguese page is held too
+// once it exists.
+const OPEN_BADGE = { 'privacy/index.html': 'TO BE CONFIRMED', 'ar/privacy/index.html': 'قيد التحديد', 'pt-br/privacidade/index.html': 'A CONFIRMAR' };
+for (const [f, badge] of Object.entries(OPEN_BADGE)) {
+  if (!fs.existsSync(path.join(ROOT, f))) continue;
+  const html = read(f);
+  const label = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const open = [...html.matchAll(/<td[^>]*>([^<]*)<span class="[^"]*">([^<]*)<\/span><\/td>/g)]
+    .filter((m) => m[2] === badge).map((m) => label(m[1]));
+  const boxMatch = html.match(/<div class="rounded-xl border border-border bg-muted\/30 p-5">\s*<p[^>]*>[^<]*<\/p>\s*<ul[^>]*>([\s\S]*?)<\/ul><\/div>/);
+  const listed = boxMatch ? [...boxMatch[1].matchAll(/<li>([^<]*)<\/li>/g)].map((m) => label(m[1])) : [];
+  t(`${f}: the open-items box lists exactly the facts still marked "${badge}"${open.length ? '' : ' (none: no box)'}`,
+    JSON.stringify(open) === JSON.stringify(listed) && (open.length > 0) === !!boxMatch,
+    `table: [${open.join(', ')}] box: [${listed.join(', ')}]`);
+}
+// The country comes from a GeoLite2 file held with the functions
+// (_geo_lib.js); the pages said the site had no geolocation of its own.
+{
+  const geo = read('netlify/functions/_geo_lib.js');
+  const usesGeoLite = /GeoLite2-Country/.test(geo) && /result\.country\.iso_code/.test(geo);
+  t('the analytics code still resolves the country from GeoLite2 (else this check is moot)', usesGeoLite);
+  const pages = Object.keys(OPEN_BADGE).filter((f) => fs.existsSync(path.join(ROOT, f)));
+  const denies = pages.filter((f) => /no geolocation service of its own|لا يستخدم الموقع خدمة خاصة به لتحديد الموقع الجغرافي|não tem serviço de geolocalização próprio/.test(read(f)));
+  const silent = pages.filter((f) => !/MaxMind/.test(read(f)) || !/GeoLite2 Country|الدول GeoLite2/.test(read(f)));
+  t('   every privacy page names MaxMind\'s GeoLite2 Country and none says there is no geolocation', !usesGeoLite || (denies.length === 0 && silent.length === 0),
+    [...denies.map((f) => f + ' denies it'), ...silent.map((f) => f + ' does not name it')].join(', '));
+}
+
 const ok = fail === 0;
 console.log(`\nprivacy-disclosures ${ok ? 'OK' : 'FAILED'} -- what the code does with an IP address, the privacy pages say.`);
 console.log(`\n${pass} passed, ${fail} failed`);
