@@ -68,6 +68,7 @@ const ROOT = path.join(__dirname, '..');
 // lives in it.
 const PRUNE = [
   '.github',
+  '.gitattributes',
   'docs',
   'contrast-audit.md',
   'mobile-nav-overlap-audit.md',
