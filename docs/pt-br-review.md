@@ -159,6 +159,11 @@ The policy is a full translation of `/privacy/`: the same sections, facts and op
 6. Does the cookie banner (reject, settings and accept at the same level; analytics off by default) meet ANPD guidance as it is?
 7. Is the Portuguese policy the binding version for Brazilian visitors, or does the English one prevail?
 8. Unsubscribing (art. 8 §5 and art. 18 IX, consent revocable free of charge and by an easy procedure): the Portuguese form has no marketing-consent box, so the page itself signs nobody up, but the policy says a visitor can withdraw marketing consent. Is a Portuguese «Cancelar inscrição» link in the footer needed, and if so, is linking to the English and Arabic `/unsubscribe/` page enough, or must the unsubscribe page itself be in Portuguese?
+   Until counsel answers and a Portuguese unsubscribe exists, the standing rule below applies: no marketing email to Brazilian contacts (owner, 2026-10-27).
+
+## Standing rule
+
+**No marketing email to Brazilian contacts until a Portuguese unsubscribe exists** (owner, 2026-10-27). Replies to a contact's own request (a quotation, a sample confirmation) are not marketing and are unaffected. Nothing is built for it yet: no «Cancelar inscrição» page or link.
 
 ## Blocking items (the page can't be published until all are done)
 
