@@ -66,7 +66,7 @@
     },
     // /pt-br/ (owner, 2026-10-26): draft wording, awaiting a Brazilian
     // reader. The reply time: 24 hours Sunday to Thursday, two business days
-    // for a request that arrives on the Egyptian weekend, Cairo time (C-186).
+    // for a request that arrives on the Egyptian weekend, Cairo time (C-196).
     // The server's own messages are English, so this page shows its own
     // instead (rate, generic).
     pt: {
@@ -110,6 +110,17 @@
   function requestType(fallback) {
     var m = /[?&]intent=([a-z_]+)/.exec(window.location.search);
     return (m && INTENTS[m[1]]) || fallback;
+  }
+
+  // Keyboard focus after sending (owner, 2026-10-23). The Send button is
+  // switched off while the request is out, and a switched-off button drops
+  // the focus to the top of the page. When it comes back, focus returns to
+  // where the person was -- unless they have already moved on.
+  function returnFocus(el) {
+    var a = document.activeElement;
+    if (!el || (a && a !== document.body)) return;
+    if (el.tagName === 'P' || el.tagName === 'DIV') el.setAttribute('tabindex', '-1');
+    try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
   }
 
   function init(prefix, defaultType, buildPayload, successText, eventName) {
@@ -159,6 +170,7 @@
         ? TC.currentSessionId()
         : null;
 
+      var hadFocus = form.contains(document.activeElement);
       submitBtn.disabled = true;
       submitBtn.textContent = T.sending;
 
@@ -194,10 +206,12 @@
           if (LANG === 'pt') showStatus('error', result.status === 429 ? T.rate : T.generic);
           else showStatus('error', (result.data && result.data.error) || T.generic);
         }
+        if (hadFocus) returnFocus(submitBtn);
       }).catch(function () {
         submitBtn.disabled = false;
         submitBtn.textContent = restore;
         showStatus('error', T.network);
+        if (hadFocus) returnFocus(submitBtn);
       });
     });
   }

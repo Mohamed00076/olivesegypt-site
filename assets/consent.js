@@ -417,9 +417,24 @@
     return document.getElementById('tc-quote-fab');
   }
 
+  // Room at the foot of the page while the banner is up, so the last links
+  // can scroll above it rather than stay underneath (owner, 2026-10-23).
+  function bannerRoom(h) {
+    var spacer = document.getElementById('tc-consent-room');
+    if (!h) { if (spacer) spacer.remove(); return; }
+    if (!spacer) {
+      spacer = document.createElement('div');
+      spacer.id = 'tc-consent-room';
+      spacer.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(spacer);
+    }
+    spacer.style.height = h + 'px';
+  }
+
   function positionFab() {
     var banner = document.getElementById('tc-consent-banner');
     var h = banner ? banner.offsetHeight : 0;
+    bannerRoom(h);
     var el = fab();
     if (el) el.style.bottom = h ? (24 + h) + 'px' : '';
     var q = quoteFab();
@@ -467,12 +482,30 @@
       q.classList.remove('tc-quote-fab--compact');
     }
     positionTab(0);
+    bannerRoom(0);
   }
 
+  // Keyboard (owner, 2026-10-23): when the banner is answered from the
+  // keyboard, focus would go down with the banner and the next Tab would
+  // start from nowhere. It moves to the first thing after the banner -- the
+  // top of the page, since the banner is the first thing in it -- without
+  // scrolling.
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
   function removeBanner() {
     var b = document.getElementById('tc-consent-banner');
+    var hadFocus = b && b.contains(document.activeElement);
     if (b) b.remove();
     restoreFabPosition();
+    if (hadFocus) {
+      var list = document.body.querySelectorAll(FOCUSABLE);
+      for (var i = 0; i < list.length; i++) {
+        var el = list[i];
+        if (el.offsetWidth || el.offsetHeight || el.getClientRects().length) {
+          try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+          break;
+        }
+      }
+    }
   }
 
   // On a phone the floating pill joined the WhatsApp bubble and the insights
@@ -586,7 +619,9 @@
           '<button type="button" class="tc-btn tc-btn-link" id="tc-consent-manage">' + T.manage + '</button>' +
         '</div>' +
       '</div>';
-    document.body.appendChild(banner);
+    // First in the page, so a keyboard meets it before anything it covers
+    // (owner, 2026-10-23); it is drawn at the bottom of the screen either way.
+    document.body.insertBefore(banner, document.body.firstChild);
     shiftFabForBanner();
 
     document.getElementById('tc-consent-accept').addEventListener('click', function () {

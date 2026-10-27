@@ -2,7 +2,7 @@
 
 **Internal. Never published.** `docs/` is removed from every deploy by
 `scripts/prune-publish.js`. The page `/pt-br/` says only what register row
-C-188 holds (in force since 1 September 2017; the preference needs the
+C-198 holds (in force since 1 September 2017; the preference needs the
 agreement's rules of origin and a certificate of origin; other import taxes
 still apply; classification and tariff treatment are confirmed with the
 buyer's importer and customs broker before each import). Nothing below is
