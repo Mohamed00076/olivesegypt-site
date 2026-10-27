@@ -45,8 +45,8 @@
   var STRINGS = {
     en: {
       sending: 'Sending...',
-      contactSuccess: 'Thank you — your request has been received. Our export team will respond within 24 hours.',
-      sampleSuccess: 'Thank you — your sample request has been received. Our export team will confirm within 24 hours.',
+      contactSuccess: 'Thank you — your request has been received. Our export team will respond within 24 hours, Sunday to Thursday (two business days if received on Friday or Saturday).',
+      sampleSuccess: 'Thank you — your sample request has been received. Our export team will confirm within 24 hours, Sunday to Thursday (two business days if received on Friday or Saturday).',
       generic: 'Something went wrong sending your request. Please try again, or email sales@olivesegypt.com directly.',
       network: 'Network error — please try again, or email sales@olivesegypt.com directly.',
       preview: 'This is a preview copy of the site: nothing was sent. Forms send only from olivesegypt.com.',
@@ -55,8 +55,8 @@
     },
     ar: {
       sending: 'جارٍ الإرسال...',
-      contactSuccess: 'شكرًا لك — تم استلام طلبك. سيرد فريق التصدير لدينا خلال 24 ساعة.',
-      sampleSuccess: 'شكرًا لك — تم استلام طلب العينة. سيؤكده فريق التصدير لدينا خلال 24 ساعة.',
+      contactSuccess: 'شكرًا لك — تم استلام طلبك. سيرد فريق التصدير لدينا خلال 24 ساعة من الأحد إلى الخميس (وخلال يومي عمل إذا وصل يوم الجمعة أو السبت).',
+      sampleSuccess: 'شكرًا لك — تم استلام طلب العينة. سيؤكده فريق التصدير لدينا خلال 24 ساعة من الأحد إلى الخميس (وخلال يومي عمل إذا وصل يوم الجمعة أو السبت).',
       generic: 'حدث خطأ أثناء إرسال طلبك. يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
       network: 'خطأ في الشبكة — يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على sales@olivesegypt.com.',
       preview: 'هذه نسخة معاينة من الموقع: لم يُرسل أي شيء. لا تُرسل النماذج إلا من olivesegypt.com.',

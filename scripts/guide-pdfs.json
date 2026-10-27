@@ -2,7 +2,7 @@
   "ar/downloads/company-profile-ar.pdf": {
     "source": "scripts/pdf-sources/documents/company-profile-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-profile-ar.html": "e7f65ddac31665fbee28a359396fe0ed8bf90869ee3ff163057db9011c4da77a",
+      "scripts/pdf-sources/documents/company-profile-ar.html": "1bb7cefbcea9b528e1942cd896d2c0a818fcd0dfba640b5341ca7c8cbe2eea14",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -90,7 +90,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "c8a1f120b9e9566156140b93660e3e722ef752df5eb62848d524bd920fe05847"
+    "pdf": "ca09651ba7a6dd1acdc60c6132b7981a21d3797255aa68984587d5ca3fc332c5"
   },
   "ar/downloads/product-catalog-ar.pdf": {
     "source": "ar/catalog/print/index.html",
@@ -1004,7 +1004,7 @@
   "downloads/company-profile-en.pdf": {
     "source": "scripts/pdf-sources/documents/company-profile-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-profile-en.html": "51fd5495ca110c2857d7ff1661beb6cb6dbb71035899f5c47606247d6c2615d5",
+      "scripts/pdf-sources/documents/company-profile-en.html": "568cb637b5acdcfbca425f0389f8237dba9c0d2287046a72581d31698d0ad955",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -1092,7 +1092,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "b495470bb8cd67d0fe5f23a4c48fdab2569fce12869c936576d18d83ed9a6d9b"
+    "pdf": "510f50d46fa8e8b2534fb29d11834cc1d73867cb71e731f1402475c025db3784"
   },
   "downloads/product-catalog-en.pdf": {
     "source": "catalog/print/index.html",
@@ -1997,7 +1997,7 @@
   "netlify/functions/_guides/ar/buyers-guide.pdf": {
     "source": "scripts/pdf-sources/documents/buyers-guide-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/buyers-guide-ar.html": "a06a5c24d9cf9dc2fd694eb988d92f6a8d6ae36e2a32e37f508122ecc33045a4",
+      "scripts/pdf-sources/documents/buyers-guide-ar.html": "b7deb9c3c473fc9ea32005e0fe72cf35a79fda3947626d4ac68aaceedbc820dd",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -2085,12 +2085,12 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "e65131c9dffe8b21d8d62d8e52bd061b4b35bcdd08eab40d451bafe2448c1612"
+    "pdf": "01c135702601481662cecf2bec0514b84ebcfbf12798d1cff3af7afe9cfc372e"
   },
   "netlify/functions/_guides/ar/company-overview.pdf": {
     "source": "scripts/pdf-sources/documents/company-overview-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-overview-ar.html": "cc1a16971257b7beedc63584e6c9bd412cbb6cb26577e62c31ada1d680bdeb08",
+      "scripts/pdf-sources/documents/company-overview-ar.html": "39962623bbc1a4c23ef9be86c89ac66cbeee8f8074d1d7a595999c5b49ae1413",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -2178,12 +2178,12 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "131a83eaa484c1f46d18a3abf87040d906c55eba9465f334c02518903399c8bc"
+    "pdf": "837b01ca7ccba0756192126bbc3c682a843b5269373455d9f24ec351e0a2b22d"
   },
   "netlify/functions/_guides/ar/export-catalog.pdf": {
     "source": "scripts/export-catalog-source-ar.html",
     "inputs": {
-      "scripts/export-catalog-source-ar.html": "e6160a37578942fcd54aec1dba484015bbf1e15a6ae2464c16d8c1d0683a5aa0",
+      "scripts/export-catalog-source-ar.html": "dde9f522f15e36840aadf5abcabc67c2b0b673ebb35575460e930df359a36dfc",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke-ar.svg": "50a06a2c87bcfe0d59b9276b2c8c3a649fcd07de30190154b5211c3b3260baf7",
       "assets/illus-natural-black-ar.svg": "328f7496e750cfd8f1406960ea5a114dc5f4175c667d4075e2a71d1805bf147c",
@@ -2278,7 +2278,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "39b65610215312120904daa2de7a4ec2ab986d101ff7013387c7d23b1e138a05",
-    "pdf": "70248a3163774965344c04f5bc4f7c814f06d5902b8be62710a341221d3fdae5"
+    "pdf": "64ca35832ddd3bb559f13232b24546ad64a57e2f332bbf8e6ce6d0ce5fa2abda"
   },
   "netlify/functions/_guides/ar/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-ar.html",
@@ -2655,7 +2655,7 @@
   "netlify/functions/_guides/ar/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-ar.html",
     "inputs": {
-      "scripts/pdf-sources/documents/private-label-brochure-ar.html": "9903388abdb4c1b9e6c1b6017e2f1f3a33ec7f43ab7f35dbf62c682ee90859b9",
+      "scripts/pdf-sources/documents/private-label-brochure-ar.html": "edbbed080bcba8a71c87e142a1ebb9def6ff9329ddfe872a64786f26a71d2a87",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -2743,12 +2743,12 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "7912e77243990d91f99e5a01b45dd526272d295be0c90b761bd66f2b90deefce",
-    "pdf": "92d467b66e7329291e0ddb4f8066bc6b4990c36dbe9eb5aa6045de120f83bca6"
+    "pdf": "8cdef688a4a3fe77868fe16d88d17029025a3228ccf16beaa1a8cbf2e7e68c16"
   },
   "netlify/functions/_guides/en/buyers-guide.pdf": {
     "source": "scripts/pdf-sources/documents/buyers-guide-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/buyers-guide-en.html": "72b07a264693c981be49c97460a69cdebd69a1cbaf2c552c0033bc9088583a86",
+      "scripts/pdf-sources/documents/buyers-guide-en.html": "b38736f8bfa2ff5defe46804a6549f44ad4a1e8b65edb084ea9212293d610208",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -2836,12 +2836,12 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "9fa5d4d6c90bff2ca610ac7025b324922b1144c4ffd33f742bb1c9b324cc9ee2"
+    "pdf": "7c8ff324e541a7e016987f740319630acb5d6198407d8046399099905f1302d6"
   },
   "netlify/functions/_guides/en/company-overview.pdf": {
     "source": "scripts/pdf-sources/documents/company-overview-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/company-overview-en.html": "b8fcaef5e902f4f2156c6170f3003974613c146113210ca3acc1c5c241ec6d3a",
+      "scripts/pdf-sources/documents/company-overview-en.html": "baef396355d4e7088c61ba9771b26b7d6b93879e7da1be46bc8d4b3d24f8df18",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -2929,12 +2929,12 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "17c47e7d46c8976184ad0ef3cc2af59f8ef53ff29bfa839dda0494bddbf2a868"
+    "pdf": "239de8691440ec29785483bee21b865cddb42ec7cf77f3bbe67efd98fa0d554c"
   },
   "netlify/functions/_guides/en/export-catalog.pdf": {
     "source": "scripts/export-catalog-source.html",
     "inputs": {
-      "scripts/export-catalog-source.html": "e99e1014386729e49c92f43012c0f0fab55188dd49f3a882f02aef0772cada86",
+      "scripts/export-catalog-source.html": "f15bd781359ac5f5bbbaac67c20753eb650ae1f2427dd7a7f0c0c63301506093",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/illus-artichoke.svg": "8f24e41fe50e435d580dd5e8d858ca697b35e9ba53abd8d2e8c006a8d4f3ef3f",
       "assets/illus-natural-black.svg": "274f1a1d0485614cbd40b4d1f03664400b90b1ccac2a98cb0d3e7bd72d352175",
@@ -3029,7 +3029,7 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "f04e3f916acbc42affa249ae48f49302ccf236c7e401f5413e95bf2d403fcd7a",
-    "pdf": "c8ee7db2ed0a3084b3191d1e70c5b8d31172b046d19d2b7113b3dcdd923e0f44"
+    "pdf": "d01618e8dabdfbdc6be0d35d2ed9eee3003d2728c940d844ce5f7edfd9961dd2"
   },
   "netlify/functions/_guides/en/export-documentation-checklist.pdf": {
     "source": "scripts/pdf-sources/documents/export-documentation-checklist-en.html",
@@ -3406,7 +3406,7 @@
   "netlify/functions/_guides/en/private-label-brochure.pdf": {
     "source": "scripts/pdf-sources/documents/private-label-brochure-en.html",
     "inputs": {
-      "scripts/pdf-sources/documents/private-label-brochure-en.html": "d0127bb0c06b36c6bb54850488a75f4b0f930f57f7c37df841afec66d20c23d6",
+      "scripts/pdf-sources/documents/private-label-brochure-en.html": "42a8dc07ab8b81a6fc317061c92f574bfa8df4417bdd7f0d822928d1d325e477",
       "assets/fonts/fonts.css": "01a70764db00d71b4db7897093fe5ec440c5be696ef6ff581d66d42fd680178c",
       "assets/logo-BJ1TOn9V.png": "8a7dd9713cfcfa8ea9302e9dd981a565329e386d61dc02c5604ef9eb4f71d365",
       "scripts/pdf-design/document.css": "9d17689c8c0e1bc7f0714b69204953bd79795258ca707c9b3d288a34a3e11536",
@@ -3494,6 +3494,6 @@
       "scripts/pdf-fonts/static/plusjakartasans-LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw-700.woff2": "076257da66416805a330bd7b47a02d4d762b07a2cd9a52b0aecf80094a849696"
     },
     "render": "8639e8e8bb9369f8a8634223ebca1bda22fc21f1e1a91bcf3bdc8ff89aa6efca",
-    "pdf": "19516f31578b97ab4a38dd66ea4842f2d971daeb7834d645153af018cf88f5c6"
+    "pdf": "b1b7a9270311d7a18b4dca54309fdd16da147f1f4a0da374f1ee9289f6204c72"
   }
 }
