@@ -120,6 +120,17 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.facebook.com https://connect.facebook.net https://umami-olivesegypt.netlify.app https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
+# Contact cards (owner, 2026-10-27): every published .vcf is saved, not shown,
+# kept out of search, and declared as UTF-8 vCard. One block per card;
+# scripts/check-vcards.js fails if a published card has no block here, or no
+# Disallow line in robots.txt.
+[[headers]]
+  for = "/assets/triple-company.vcf"
+  [headers.values]
+    Content-Type = "text/vcard; charset=utf-8"
+    Content-Disposition = "attachment; filename=\"triple-company.vcf\""
+    X-Robots-Tag = "noindex"
+
 # A0 discovery flagged this and it was never actually done: JSON API
 # responses under /admin/, /crm/, and /api/ have no HTML <meta> tag to
 # carry noindex (only HTML pages do), so this carries the same signal at

@@ -82,11 +82,18 @@ It appears nowhere in the repository. No public page, PDF or structured data sho
   - the structured data carries anything but `SALES`;
   - mohamed@ appears anywhere public. `check-vcards.js` already enforces that last rule.
 
-## 5. Netlify and the mail host (owner's side, names only)
+## 5. Netlify, the mail host and the owner's manual tests (names only)
 
 - **Mail host:** create `legal@`; confirm `info@` is read.
-- **Netlify:** `NOTIFY_EMAIL` decides who gets form notifications (add or route mohamed@ there if wanted); `NOTIFY_FROM_EMAIL` stays unset until the sending domain is verified in Resend.
-- **Manual tests (owner):** a test mail to, and a reply from, each of sales@, info@ and mohamed@ now, and legal@ once it exists; the contact form; the unsubscribe page; opening each vCard on an iPhone and an Android phone.
+- **Netlify:** `NOTIFY_EMAIL` decides who gets form notifications; `NOTIFY_FROM_EMAIL` is the sender.
+
+**Manual tests, run by the owner from outside:**
+
+1. A test mail **to**, and a reply **from**, each of `sales@`, `info@` and `mohamed@` now, and `legal@` once it exists. Check that each arrives, the reply shows the right sender, and nothing lands in spam.
+2. **Resend:** the dashboard shows olivesegypt.com as **Verified**, and `NOTIFY_FROM_EMAIL` (Netlify → Environment variables) ends in `@olivesegypt.com`. After you confirm, the stale "not verified" note in `docs/email-delivery.md` and `README.md` is corrected.
+3. **The contact form:** send one enquiry (fake data, ZZ Test, zz@example.test). The notification arrives, and the reply goes to the enquirer's address.
+4. **The unsubscribe page:** unsubscribe zz@example.test. The page confirms it, and the address appears as opted out in the CRM.
+5. **Each vCard on an iPhone and an Android phone:** open the link, save the contact, and check name, title (Mohamed: "Representative"; the company card: none), email, phone and the address "Ouroba Square, 5th Settlement, New Cairo, Cairo, Egypt" with no stray backslash.
 
 ## 6. SPF, DKIM, DMARC
 
@@ -96,19 +103,39 @@ It appears nowhere in the repository. No public page, PDF or structured data sho
 
 | File | State | Served | Linked from |
 |---|---|---|---|
-| `assets/triple-company.vcf` (company) | LF line endings; address "5th Settlement, Ouroba Square" with an unescaped comma and locality "Cairo"; `TITLE:Sales` | live as `text/vcard; charset=UTF-8` (Netlify's default); no `Content-Disposition`, no `X-Robots-Tag`; not excluded in robots.txt | `/downloads/` and `/ar/downloads/` (a `download` link) |
-| `docs/vcards/mohamed-abdullah-DRAFT.vcf` (Mohamed) | vCard 3.0, CRLF, UTF-8 without BOM, title "Representative", address in the C-22 order with the comma escaped | **not published** (docs/ only) | nowhere; `check-vcards.js` fails if anything outside docs/ links it or shows mohamed@ |
+| `assets/triple-company.vcf` (company) | **Rewritten 2026-10-27:** CRLF, the C-22 address with the comma escaped, no TITLE, no department in ORG | `netlify.toml` block: `text/vcard; charset=utf-8`, `Content-Disposition: attachment`, `X-Robots-Tag: noindex`; robots.txt `Disallow: /assets/triple-company.vcf` | `/downloads/` and `/ar/downloads/`, as before |
+| `docs/vcards/mohamed-abdullah-DRAFT.vcf` (Mohamed) | vCard 3.0, CRLF, UTF-8 without BOM, title "Representative", C-22 address; **consent given 2026-10-27** | **not published yet**: docs/ only, until the owner approves the path below | nowhere, ever: shared by hand |
 
-`.gitattributes` keeps `*.vcf` byte-for-byte (`-text`), so git never turns CRLF into LF.
+`.gitattributes` keeps `*.vcf` byte for byte (`-text`), and the deploy prunes `.gitattributes` itself.
+
+### Proposed placement of Mohamed's card (for approval; not built)
+
+- **URL:** `https://olivesegypt.com/vcard/mohamed-abdullah.vcf` (repository path `vcard/mohamed-abdullah.vcf`; "-DRAFT" dropped from the name).
+- **Serving:** a `netlify.toml` block for `/vcard/mohamed-abdullah.vcf`: `Content-Type: text/vcard; charset=utf-8`, `Content-Disposition: attachment; filename="mohamed-abdullah.vcf"`, `X-Robots-Tag: noindex`. robots.txt: `Disallow: /vcard/`.
+- **Not linked** from any page, PDF, sitemap or llms.txt. `check-vcards.js` already fails on any link or any mohamed@ outside the card. Publishing means setting `MOHAMED_PUBLIC_PATH = 'vcard/mohamed-abdullah.vcf'` and moving the file.
+- **Message to share it (WhatsApp or email):**
+  - English: "Save my contact details: https://olivesegypt.com/vcard/mohamed-abdullah.vcf — Mohamed Abdullah, Representative, Triple Company for Industrial Development"
+  - Arabic ⚠️: «احفظ بيانات التواصل الخاصة بي: https://olivesegypt.com/vcard/mohamed-abdullah.vcf — محمد عبدالله، ممثل، الشركة الثلاثية للتنمية الصناعية»
+- **On withdrawal:** delete the file, set `MOHAMED_AGREED = false`, deploy. The URL then answers 404.
 
 ## 8. Password-reset role list (#382, report only)
 
 `ROLE_MAILBOXES` in `_auth_lib.js` on #382 is `sales, info, contact, admin, noreply, no-reply`. Add `legal`. `mohamed` stays allowed as a personal address.
 
-## 9. Translation service in the privacy pages (report only)
+## 9. Translation service in the privacy pages (draft; not on any page)
 
-Proposed English, for the owner's facts:
+Facts (owner, 2026-10-27): machine translation, no person. WhatsApp's built-in translation runs on the phone and sends no text to a translation server. Email is translated with Google's service. The mailbox account type (Google Workspace or free Gmail) is **not confirmed**, so the draft says nothing about what Google keeps or trains on.
 
-> If you write to us in a language we do not use every day, such as Portuguese, we may pass your message through a translation service [by machine / by a person] to read and answer it. The service receives the text of your message, which can include your name, company and order details. [It keeps it for … / It does not keep it.] It may handle the text outside Egypt and outside your own country.
+**English (draft):**
 
-The Arabic and Portuguese wording would follow once the owner gives the facts. Counsel questions 25 (`docs/g0-counsel-questions.md`) and 9 (`docs/pt-br-review.md`, #464).
+> When we reply to you in a language we do not use every day, such as Portuguese, we use machine translation; no translator reads your message. On WhatsApp, the translation is done on our phone and the text is not sent to a translation service. For email, the text of your message, which can include your name, company and order details, is processed by Google's translation service on Google's servers, which may be outside Egypt and outside your own country.
+
+**Portuguese ⚠️ (draft, for the Portuguese privacy page):**
+
+> Quando respondemos em um idioma que não usamos no dia a dia, como o português, usamos tradução automática; nenhum tradutor lê a sua mensagem. No WhatsApp, a tradução é feita no nosso celular e o texto não é enviado a um serviço de tradução. No e-mail, o texto da sua mensagem, que pode incluir seu nome, empresa e detalhes do pedido, é processado pelo serviço de tradução do Google nos servidores do Google, que podem ficar fora do Egito e fora do seu país.
+
+**Arabic ⚠️ (draft):**
+
+> عندما نرد عليك بلغة لا نستخدمها يوميًا، مثل البرتغالية، نستخدم الترجمة الآلية؛ ولا يقرأ رسالتك أي مترجم. في واتساب تتم الترجمة على هاتفنا ولا يُرسل النص إلى خدمة ترجمة. أما في البريد الإلكتروني، فيعالج نص رسالتك، الذي قد يتضمن اسمك وشركتك وتفاصيل طلبك، بواسطة خدمة الترجمة من Google على خوادم Google، التي قد تكون خارج مصر وخارج بلدك.
+
+Once the account type is confirmed as Workspace, a sentence on what Google keeps can be added. Counsel questions 25 (`docs/g0-counsel-questions.md`) and 9 (`docs/pt-br-review.md`, #464).

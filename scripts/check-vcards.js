@@ -14,13 +14,14 @@
  *     address in the approved order (C-22) with its comma escaped;
  *   - Mohamed Abdullah's title is "Representative", not "Sales";
  *   - no PHOTO unless the owner approves one;
- *   - Mohamed's card stays in docs/ (never published) and nothing outside
- *     docs/ links to it or shows mohamed@, until the owner confirms Mohamed's
- *     written agreement (MOHAMED_AGREED below).
- *
- * The company card, assets/triple-company.vcf, predates these rules. Its two
- * deviations wait for the owner's approval (PENDING); the check fails if
- * one of them is fixed and still listed, so the exemption cannot outlive it.
+ *   - Mohamed's card is published only with his written agreement
+ *     (MOHAMED_AGREED, given 2026-10-27) and only at the place the owner
+ *     approves (MOHAMED_PUBLIC_PATH; until then it stays in docs/); nothing
+ *     links to it, and mohamed@ appears nowhere but in the card itself;
+ *   - the company card carries no TITLE and no department in ORG;
+ *   - every published card is served as text/vcard; charset=utf-8, as an
+ *     attachment, with X-Robots-Tag: noindex (netlify.toml), and robots.txt
+ *     disallows it.
  */
 
 const fs = require('fs');
@@ -30,14 +31,15 @@ const { execSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 const SELF = 'scripts/check-vcards.js';
 
-const MOHAMED_AGREED = false;          // flip only on the owner's word
+const MOHAMED_AGREED = true;           // written agreement, owner 2026-10-27 (withdrawal: remove the file)
+const MOHAMED_PUBLIC_PATH = null;      // the approved published path; null until the owner approves one
 const APPROVED_PHOTOS = new Set();     // file names, on the owner's approval
 const FIELDS = new Set(['BEGIN', 'VERSION', 'PRODID', 'N', 'FN', 'ORG', 'TITLE', 'EMAIL', 'TEL', 'ADR', 'URL', 'REV', 'END']);
 const EMAILS = { company: ['sales@olivesegypt.com'], mohamed: ['mohamed@olivesegypt.com'] };
 const PHONE = '+20 100 604 5961';
 const ADR = ';;Ouroba Square\\, 5th Settlement;New Cairo;Cairo;;Egypt';
 const MOHAMED_EMAIL = 'mohamed@olivesegypt.com';
-const PENDING = { 'assets/triple-company.vcf': ['crlf', 'address'] };
+const PENDING = {};
 
 let pass = 0, fail = 0;
 const t = (name, cond, extra) => {
@@ -92,7 +94,24 @@ for (const f of cards) {
   if (isMohamed) {
     const title = (fields.find((x) => x.name === 'TITLE') || {}).value;
     t(`${f}: Mohamed's title is "Representative"`, title === 'Representative', title);
-    if (!MOHAMED_AGREED) t(`${f}: kept in docs/ until Mohamed has agreed`, f.startsWith('docs/'));
+    t(`${f}: published only with his agreement, at the approved path (else kept in docs/)`,
+      f.startsWith('docs/') || (MOHAMED_AGREED && MOHAMED_PUBLIC_PATH !== null && f === MOHAMED_PUBLIC_PATH), f);
+  } else {
+    const org = (fields.find((x) => x.name === 'ORG') || {}).value || '';
+    t(`${f}: a company card: no TITLE, no department in ORG`, !fields.some((x) => x.name === 'TITLE') && !/(^|[^\\]);/.test(org), org);
+  }
+
+  // A published card (anything outside docs/) is served as a download, kept
+  // out of search.
+  if (!f.startsWith('docs/')) {
+    const url = '/' + f;
+    const toml = fs.readFileSync(path.join(ROOT, 'netlify.toml'), 'utf8');
+    const block = (toml.split('[[headers]]').find((b) => new RegExp(`for = "${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`).test(b)) || '');
+    t(`${f}: served as text/vcard; charset=utf-8, as an attachment, noindex`,
+      /Content-Type = "text\/vcard; charset=utf-8"/.test(block) && /Content-Disposition = "attachment/.test(block) && /X-Robots-Tag = "noindex"/.test(block),
+      block ? 'a header is missing in its netlify.toml block' : `no [[headers]] block for "${url}" in netlify.toml`);
+    const robots = fs.readFileSync(path.join(ROOT, 'robots.txt'), 'utf8');
+    t(`${f}: robots.txt disallows it`, robots.split('\n').some((l) => l.trim() === `Disallow: ${url}`));
   }
 
   for (const [rule, broken] of Object.entries(problems)) {
@@ -100,18 +119,22 @@ for (const f of cards) {
   }
 }
 
-// Until Mohamed agrees: nothing outside docs/ names his card or his address.
-if (!MOHAMED_AGREED) {
+// Nothing outside docs/ links Mohamed's card or shows his address -- with or
+// without his agreement: the card is shared by hand (owner, 2026-10-27). The
+// card itself, and its serving rules once it has an approved path, are the
+// only exceptions.
+{
   const mohamedCards = cards.filter((f) => /Mohamed Abdullah/.test(fs.readFileSync(path.join(ROOT, f), 'utf8'))).map((f) => path.basename(f));
   const leaks = [];
   for (const f of tracked) {
-    if (f.startsWith('docs/') || f === SELF || /\.(png|jpe?g|webp|gif|ico|woff2?|ttf|mmdb|gz)$/i.test(f)) continue;
+    if (f.startsWith('docs/') || f === SELF || f === MOHAMED_PUBLIC_PATH || /\.(png|jpe?g|webp|gif|ico|woff2?|ttf|mmdb|gz)$/i.test(f)) continue;
+    if (MOHAMED_PUBLIC_PATH && (f === 'netlify.toml' || f === 'robots.txt')) continue;
     let src;
     try { src = fs.readFileSync(path.join(ROOT, f)); } catch (e) { continue; }
     const s = f.endsWith('.pdf') ? src.toString('latin1') : src.toString('utf8');
     if (s.includes(MOHAMED_EMAIL) || mohamedCards.some((c) => s.includes(c))) leaks.push(f);
   }
-  t('nothing outside docs/ links Mohamed\'s card or shows mohamed@ (he has not agreed yet)', leaks.length === 0, leaks.join(', '));
+  t('nothing outside docs/ links Mohamed\'s card or shows mohamed@ (only the card itself may)', leaks.length === 0, leaks.join(', '));
 }
 
 console.log(`\nvcards ${fail ? 'FAILED' : 'OK'} -- ${cards.length} vCard(s): well formed, approved fields only, Mohamed's card unpublished.`);

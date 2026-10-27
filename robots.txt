@@ -24,5 +24,6 @@ Disallow: /downloads/export-catalog
 Disallow: /ar/downloads/export-catalog
 Disallow: /admin
 Disallow: /crm
+Disallow: /assets/triple-company.vcf
 
 Sitemap: https://olivesegypt.com/sitemap.xml
