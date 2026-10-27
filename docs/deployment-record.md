@@ -11901,6 +11901,21 @@ Files and lines are each merge against the `main` it landed on. Every Tests run 
 - «مدة التجهيز الاسترشادية 4–6 أسابيع من الطلب إلى الشحن» on `/ar/company-profile/` and in `company-profile-ar.pdf`.
 - Both export catalogues say 4–6 weeks.
 
+## Deploy 333 — "approved" removed for the partner facility, English and Arabic (PR #463)
+
+**Previous recorded deploy:** Deploy 332 (PR #456, `5e30e45`)
+**Approval:** "next: start the merge sequence with #463" (2026-10-27).
+
+| Deploy | PR | Production commit | Date (+0300) | Files | Lines | Kind |
+|---|---|---|---|---|---|---|
+| 333 | #463 | `0bec1f3` | 2026-10-27 14:57:23 | 128 | +228 / −214 | Copy (EN/AR), 10 PDFs reprinted, guard |
+
+- **What changed:** "approved partner facility / arrangements" and «… معتمدة» are removed from every page footer, the pages, the FAQ structured data, the guides, the company profile and `llms.txt` (register C-36 and C-137; new row C-192, the owner's decision). "Approved artwork" and «مجموعة المنتجات المعتمدة» stay.
+- **Ten PDFs reprinted:** the same page counts. Their text differs from before only where the word was removed, and «الثلاثية» is intact in the Arabic ones.
+- **Guard:** `check-identity-strings` fails if either wording returns.
+- **Merged without changes:** the branch already contained `main`. Before the merge, 84 of 84 checks passed. After the deploy, the live check gave 28 OK, 0 WARN, 0 FAIL.
+- **Confirmed live:** no "approved partner" or «شراكة/شريكة معتمدة» on `/`, `/ar/`, `/about/`, `/ar/about/`, `/resources/faq/`, `/ar/resources/faq/` or `/solutions/manufacturer/` (EN and AR), nor in either company profile PDF.
+
 ## Companion repo (`umami-olivesegypt`)
 
 No commits were made to this repository in any session covered by this
