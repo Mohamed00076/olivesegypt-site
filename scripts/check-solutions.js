@@ -77,7 +77,7 @@ const CONFIRMED = {
   'en manufacturer': [
     'We offer co-packing and OEM supply for buyers who repack, private-label, or process our product further.',
     'This is an active service we currently provide, not a theoretical capability.',
-    'Our team works directly on custom brine formulation, specific caliber sorting, and private packaging and labeling requirements for OEM buyers, coordinating execution with our approved partner processing facility.',
+    'Our team works directly on custom brine formulation, specific caliber sorting, and private packaging and labeling requirements for OEM buyers, coordinating execution with our partner processing facility.',
     "If you need a specific formulation, sort, or private-label configuration for your own brand or further processing, tell us your requirements and we'll confirm feasibility, specification, and quotation.",
     'We do not own or operate a processing factory',
   ],
