@@ -312,9 +312,32 @@
       analyticsDesc: 'تقيس الزيارات. تضع Google Analytics الكوكيز وترسل بيانات الزيارة إلى Google، ويحفظ عدّادنا معرّفًا في متصفحك. معطّل ما لم تفعّله أنت.',
       cancel: 'إلغاء',
       save: 'حفظ'
+    },
+    // The Portuguese (Brazil) pages under /pt-br/ (owner, 2026-10-25): draft
+    // wording, awaiting a Brazilian reader and counsel's LGPD review.
+    pt: {
+      bannerLabel: 'Consentimento de cookies',
+      body: 'Podemos medir as visitas? O Google Analytics usa cookies; nosso contador guarda um identificador no seu navegador. ',
+      privacy: 'Privacidade',
+      privacyHref: '/pt-br/privacidade/',
+      reject: 'Recusar',
+      manage: 'Configurações',
+      accept: 'Aceitar',
+      reopen: 'Configurações de cookies',
+      reopenFooter: 'Configurações de cookies',
+      modalTitle: 'Configurações de cookies',
+      modalSubtext: 'Escolha o que podemos usar. Você pode mudar isso quando quiser.',
+      necessary: 'Necessários para o site',
+      necessaryDesc: 'Formulários, navegação e a memória das suas escolhas aqui. Sempre ativos.',
+      necessaryAria: 'Necessários para o site (sempre ativos)',
+      analytics: 'Análise',
+      analyticsDesc: 'Mede as visitas. O Google Analytics usa cookies e envia dados da visita ao Google; nosso contador guarda um identificador no seu navegador. Desativado, a menos que você o ative.',
+      cancel: 'Cancelar',
+      save: 'Salvar'
     }
   };
-  var T = STRINGS[document.documentElement.lang === 'ar' ? 'ar' : 'en'];
+  var PAGE_LANG = (document.documentElement.lang || '').toLowerCase();
+  var T = STRINGS[PAGE_LANG === 'ar' ? 'ar' : PAGE_LANG.slice(0, 2) === 'pt' ? 'pt' : 'en'];
 
   function injectStyle() {
     if (document.getElementById('tc-consent-style')) return;

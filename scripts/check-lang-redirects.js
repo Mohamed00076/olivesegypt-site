@@ -44,7 +44,8 @@ const all = routes.listRoutes();
 // query parameter does not carry the others across, so the unsubscribe
 // token or the print options would be lost.
 const READS_QUERY = new Set(['/unsubscribe', '/catalog/print']);
-const pages = all.filter((r) => !routes.isArabic(r) && !routes.FUNCTION_ROUTES.includes(r) && !READS_QUERY.has(r));
+// The Portuguese pages have no Arabic twin to redirect to (locale-routes.js).
+const pages = all.filter((r) => !routes.isArabic(r) && !routes.isPortuguese(r) && !routes.FUNCTION_ROUTES.includes(r) && !READS_QUERY.has(r));
 
 const problems = [];
 const rules = [];

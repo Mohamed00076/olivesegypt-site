@@ -205,6 +205,24 @@ const buyerWrites = (calls) => calls.filter((c) => /INSERT INTO buyers|UPDATE bu
       v.includes('Unassigned') && v.some((x) => typeof x === 'string' && /region not set/.test(x)), JSON.stringify(v));
   }
 
+  // The Portuguese page's enquiries say so in the pipeline entry (owner,
+  // 2026-10-25, Option A); every other page's entry is unchanged.
+  for (const [sourcePage, want] of [['https://olivesegypt.com/pt-br/', true], ['https://olivesegypt.com/contact/', false],
+    ['https://olivesegypt.com/ar/contact/', false], [undefined, false]]) {
+    const { sql, calls } = recordingSql((q) => (/RETURNING id/.test(q) && /INSERT INTO buyers/.test(q) ? [{ id: 44 }] : []));
+    await intake.addEnquiryToPipeline(sql, 10, E({ sourcePage, country: 'Brasil' }));
+    const ins = calls.find((c) => /INSERT INTO buyers/.test(c.text));
+    const entry = (ins ? ins.values : []).find((x) => typeof x === 'string' && /^Website enquiry #10/.test(x)) || '';
+    t(`an enquiry from ${sourcePage || 'no page'} ${want ? 'is' : 'is not'} marked Language: pt-BR`,
+      /\nLanguage: pt-BR \(/.test(entry) === want, entry);
+  }
+  {
+    // The Portuguese form starts its country field at "Brasil".
+    const { regionForCountry } = require('../netlify/functions/_country_regions');
+    t('a Brazilian enquiry files under South America, written either way',
+      regionForCountry('Brasil') === 'South America' && regionForCountry('Brazil') === 'South America');
+  }
+
   for (const [stage, expectMove] of [['Lead', true], ['Negotiation', false], ['Lost/Stalled', false]]) {
     const { sql, calls } = recordingSql((q) => (/SELECT id, current_stage FROM buyers WHERE deleted_at IS NULL/.test(q)
       ? [{ id: 5, current_stage: stage }] : []));

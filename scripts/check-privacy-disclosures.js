@@ -35,6 +35,9 @@ const collect = read('netlify/functions/analytics-collect.js');
 const b2b = read('netlify/functions/_b2b_lib.js');
 const en = read('privacy/index.html');
 const ar = read('ar/privacy/index.html');
+// The Portuguese translation (/pt-br/privacidade/, 2026-10-25) is held to
+// the same facts.
+const pt = read('pt-br/privacidade/index.html');
 
 const looksUp = /await resolveOrg\(sql, ip\)/.test(collect);
 t('the analytics pipeline still makes the network lookup (else this check is moot)', looksUp,
@@ -50,12 +53,17 @@ if (looksUp) {
   t('   and names the registries as a third party',
     /سجلات الإنترنت الإقليمية \(مثل RIPE NCC وAFRINIC وARIN\)/.test(ar) && /إذ تتلقى عنوان IP الخاص بك/.test(ar));
 
+  t('/pt-br/privacidade describes the same lookup',
+    /consultamos a qual organização o seu endereço de internet \(IP\) está registrado/.test(pt));
+  t('   and names the registries as a third party',
+    /os registros regionais de internet \(como RIPE NCC, AFRINIC e ARIN\), que recebem o seu endereço IP/.test(pt));
+
   // The pages make two factual promises about storage; hold the code to them.
   t('what the pages promise is still true: only a one-way hash of the IP is kept',
     /ip_hash\s+text PRIMARY KEY/.test(b2b) && !/\bip\s+text\b/.test(b2b) && !/INSERT INTO ip_org_cache \(ip,/.test(b2b),
     'the cache now stores something other than a hash of the address');
   t('   for 30 days',
-    /const CACHE_TTL_DAYS = 30;/.test(b2b) && /up to 30 days/.test(en) && /لمدة تصل إلى 30 يومًا/.test(ar),
+    /const CACHE_TTL_DAYS = 30;/.test(b2b) && /up to 30 days/.test(en) && /لمدة تصل إلى 30 يومًا/.test(ar) && /por até 30 dias/.test(pt),
     'the cache lifetime and the pages disagree');
   t('   and the lookup is reached only through consented analytics events',
     /if \(!TC\.consent\.analytics\) return;/.test(read('assets/analytics.js')),
@@ -83,6 +91,9 @@ if (looksUp) {
   t('/ar/privacy says the same',
     /موجز العلامة الخاصة/.test(ar) && /السوق المستهدف/.test(ar) && /Incoterm/.test(ar) &&
     /ومع كل نموذج، نحتفظ أيضًا بعنوان الإنترنت \(IP\)/.test(ar));
+  t('/pt-br/privacidade says the same',
+    /briefing de marca própria/.test(pt) && /mercado-alvo/.test(pt) && /Incoterm/.test(pt) &&
+    /Em cada formulário, também guardamos o endereço de internet \(IP\)/.test(pt));
   t('the Market Brief is no longer said to collect a name, phone or message',
     !/Contact, Sample Request, and Market Brief forms collect what you enter/.test(en));
 }

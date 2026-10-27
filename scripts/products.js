@@ -5,7 +5,8 @@
  *
  * Owner decisions, 2026-10-10 (catalog restructure brief):
  *   - We supply olives by TYPE, not by cultivar. Green olives: whole, pitted,
- *     sliced. Stuffed green olives: green only, pepper or carrot filling.
+ *     sliced. Stuffed green olives: green only, pitted, pepper or carrot
+ *     filling (pitted added 2026-10-26: the English and Arabic pages say so).
  *     Natural black olives: whole only. Oxidized black olives: whole, pitted,
  *     sliced. Black olives are never stuffed. The three pickled vegetables
  *     stay as they are.
@@ -30,47 +31,51 @@
 // Order is the order every list on the site uses: olive types, then the
 // pickled vegetables. key: ?product= and data-slug; dir: the page directory.
 const PRODUCTS = [
-  { key: 'green', dir: 'green-olives', category: 'green', en: 'Green Olives', ar: 'زيتون أخضر' },
-  { key: 'stuffed', dir: 'stuffed-green-olives', category: 'green', en: 'Stuffed Green Olives', ar: 'زيتون أخضر محشو' },
-  { key: 'black_natural', dir: 'natural-black-olives', category: 'black', en: 'Natural Black Olives', ar: 'زيتون أسود طبيعي' },
-  { key: 'oxidized_black', dir: 'oxidized-black-olives', category: 'black', en: 'Oxidized Black Olives', ar: 'زيتون أسود مؤكسد' },
-  { key: 'jalapeno', dir: 'sliced-jalapeno-peppers', category: 'specialty', en: 'Sliced Jalapeño Peppers', ar: 'فلفل هالبينو مقطع' },
-  { key: 'artichoke', dir: 'marinated-artichoke-hearts', category: 'specialty', en: 'Marinated Artichoke Hearts', ar: 'قلوب أرضي شوكي متبّلة' },
-  { key: 'pepperoncini', dir: 'pepperoncini-peppers', category: 'specialty', en: 'Pepperoncini Peppers', ar: 'فلفل بيبرونشيني' },
+  { key: 'green', dir: 'green-olives', category: 'green', en: 'Green Olives', ar: 'زيتون أخضر', pt: 'Azeitonas verdes' },
+  { key: 'stuffed', dir: 'stuffed-green-olives', category: 'green', en: 'Stuffed Green Olives', ar: 'زيتون أخضر محشو', pt: 'Azeitonas verdes recheadas' },
+  { key: 'black_natural', dir: 'natural-black-olives', category: 'black', en: 'Natural Black Olives', ar: 'زيتون أسود طبيعي', pt: 'Azeitonas pretas naturais' },
+  { key: 'oxidized_black', dir: 'oxidized-black-olives', category: 'black', en: 'Oxidized Black Olives', ar: 'زيتون أسود مؤكسد', pt: 'Azeitonas pretas oxidadas' },
+  { key: 'jalapeno', dir: 'sliced-jalapeno-peppers', category: 'specialty', en: 'Sliced Jalapeño Peppers', ar: 'فلفل هالبينو مقطع', pt: 'Jalapeño fatiado' },
+  { key: 'artichoke', dir: 'marinated-artichoke-hearts', category: 'specialty', en: 'Marinated Artichoke Hearts', ar: 'قلوب أرضي شوكي متبّلة', pt: 'Corações de alcachofra marinados' },
+  { key: 'pepperoncini', dir: 'pepperoncini-peppers', category: 'specialty', en: 'Pepperoncini Peppers', ar: 'فلفل بيبرونشيني', pt: 'Pepperoncini' },
 ];
 
 // The olive types and the forms each is supplied in (owner, 2026-10-10).
 // A form not listed here must not be stated for that type.
 const FORMS = {
   green: ['whole', 'pitted', 'sliced'],
-  stuffed: ['stuffed'],
+  stuffed: ['pitted', 'stuffed'], // pitted: as the English and Arabic pages say (owner, 2026-10-26)
   black_natural: ['whole'],
   oxidized_black: ['whole', 'pitted', 'sliced'],
 };
 // What a stuffed olive is filled with (C-152). Add one only on owner
 // confirmation (docs/evidence-needed.md).
+// No Portuguese fillings (owner, 2026-10-26): the /pt-br/ page says only
+// «azeitonas verdes recheadas» and names no filling, until the owner confirms
+// the filling with the supplier and adds it in all three languages together.
+// scripts/check-pt-br.js fails if the Portuguese page names one.
 const FILLINGS = { en: ['pepper', 'carrot'], ar: ['الفلفل', 'الجزر'] };
 const FORM_WORDS = {
-  whole: { en: 'Whole', ar: 'كامل' },
-  pitted: { en: 'Pitted', ar: 'منزوع النواة' },
-  sliced: { en: 'Sliced', ar: 'مقطع' },
-  stuffed: { en: 'Stuffed', ar: 'محشو' },
+  whole: { en: 'Whole', ar: 'كامل', pt: 'inteiras' },
+  pitted: { en: 'Pitted', ar: 'منزوع النواة', pt: 'sem caroço' },
+  sliced: { en: 'Sliced', ar: 'مقطع', pt: 'fatiadas' },
+  stuffed: { en: 'Stuffed', ar: 'محشو', pt: 'recheadas' },
 };
 
 // Cultivars, for general reference on the CULTIVAR_PAGES only: the ones this
 // site once listed as products, Kalamata excluded (owner default, 2026-10-10).
 // Hamed is not here: it was withdrawn as "not confirmed available".
 const CULTIVARS = [
-  { en: 'Aggizi', ar: 'عجيزي', type: 'green' },
-  { en: 'Toffahi', ar: 'تفاحي', type: 'green' },
-  { en: 'Manzanilla', ar: 'مانزانيلا', type: 'green' },
+  { en: 'Aggizi', ar: 'عجيزي', pt: ['Aggizi', 'Agizi', 'Ajizi'], type: 'green' },
+  { en: 'Toffahi', ar: 'تفاحي', pt: ['Toffahi', 'Tofahi', 'Tufahi'], type: 'green' },
+  { en: 'Manzanilla', ar: 'مانزانيلا', pt: ['Manzanilla', 'Manzanilha'], type: 'green' },
 ];
 const CULTIVAR_PAGES = [
   'egyptian-table-olives', 'ar/egyptian-table-olives',
   'resources/why-egyptian-olives', 'ar/resources/why-egyptian-olives',
 ];
 // Named nowhere a buyer can read, in any language.
-const NEVER_NAMED = [{ en: 'Kalamata', ar: 'كالاماتا' }];
+const NEVER_NAMED = [{ en: 'Kalamata', ar: 'كالاماتا', pt: ['Kalamata', 'Calamata'] }];
 
 // Retired addresses and ids, and where each now goes.
 const RETIRED = [
