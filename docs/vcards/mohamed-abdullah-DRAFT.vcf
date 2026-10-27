@@ -1,0 +1,13 @@
+BEGIN:VCARD
+VERSION:3.0
+PRODID:-//Triple Company for Industrial Development//olivesegypt.com vCard//EN
+N:Abdullah;Mohamed;;;
+FN:Mohamed Abdullah
+ORG:Triple Company for Industrial Development
+TITLE:Representative
+EMAIL;TYPE=INTERNET,WORK:mohamed@olivesegypt.com
+TEL;TYPE=WORK,CELL,VOICE:+20 100 604 5961
+ADR;TYPE=WORK:;;Ouroba Square\, 5th Settlement;New Cairo;Cairo;;Egypt
+URL:https://olivesegypt.com
+REV:2026-10-27T11:31:20Z
+END:VCARD
