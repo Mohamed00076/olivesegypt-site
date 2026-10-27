@@ -168,12 +168,12 @@ def sample(lang):
 MFR_EN = ('We offer co-packing and OEM supply for buyers who repack, private-label, or process our product further. '
           'This is an active service we currently provide, not a theoretical capability. Our team works directly on custom brine '
           'formulation, specific caliber sorting, and private packaging and labeling requirements for OEM buyers, coordinating '
-          'execution with our approved partner processing facility. If you need a specific formulation, sort, or private-label '
+          'execution with our partner processing facility. If you need a specific formulation, sort, or private-label '
           'configuration for your own brand or further processing, tell us your requirements and we&#x27;ll confirm feasibility, '
           'specification, and quotation.')
 MFR_AR = ('نقدّم التعبئة التعاقدية (Co-packing) وتوريد OEM للمشترين الذين يعيدون تعبئة منتجنا، أو يبيعونه بعلامتهم الخاصة، أو يعالجونه معالجة إضافية. '
           'هذه خدمة فعلية نقدّمها حاليًا، وليست قدرة نظرية. يعمل فريقنا مباشرة على تركيب المحلول الملحي المخصص، وفرز الأعيرة المحددة، '
-          'ومتطلبات التغليف ووضع الملصقات الخاصة لمشتري OEM، وينسّق التنفيذ مع منشأة المعالجة الشريكة المعتمدة لدينا. '
+          'ومتطلبات التغليف ووضع الملصقات الخاصة لمشتري OEM، وينسّق التنفيذ مع منشأة المعالجة الشريكة لدينا. '
           'إذا كنت تحتاج تركيبة أو فرزًا أو إعدادًا محددًا للعلامة الخاصة لعلامتك التجارية أو لمعالجة إضافية، فأخبرنا بمتطلباتك '
           'وسنؤكد إمكانية التنفيذ والمواصفات وعرض السعر.')
 LOCAL_EN = ('We can supply local Egyptian buyers without export logistics. For bulk orders in 220kg barrels, the minimum order is '
@@ -273,7 +273,7 @@ PAGES['importer-distributor'] = {
             block('Markets we are engaging',
                   'We are actively building buyer relationships in Africa, the Middle East and Asia. As a newly established export company, we are direct about where things stand: we have not yet completed an export shipment, so these are markets we are engaging, not markets we already serve. More on ' + a('/resources/export-markets/', 'Export Markets') + '.'),
             block('Who does what',
-                  'Processing and brining are completed through our approved partner processing facility in the 10th of Ramadan Industrial Zone. ' + ORG + ' manages sourcing, product specification, buyer communication, export coordination and documentation. The full arrangement is on ' + a('/resources/supply-network/', 'Supply &amp; Processing Network') + '.'),
+                  'Processing and brining are completed through our partner processing facility in the 10th of Ramadan Industrial Zone. ' + ORG + ' manages sourcing, product specification, buyer communication, export coordination and documentation. The full arrangement is on ' + a('/resources/supply-network/', 'Supply &amp; Processing Network') + '.'),
             block('The range', 'Seven products. Calibers, brine specification and formats are on each product&rsquo;s own page and in the ' + a('/catalog/', 'catalogue') + '.', extra=products('en')),
         )
         + cta('Tell us your market and volume', 'We&#x27;ll come back with a tailored offer and confirm the terms for your order.',
@@ -303,7 +303,7 @@ PAGES['importer-distributor'] = {
             block('الأسواق التي نتواصل معها',
                   'نبني علاقات مع المشترين بفاعلية في أفريقيا والشرق الأوسط وآسيا. وبصفتنا شركة تصدير حديثة التأسيس، نحن صريحون بشأن الوضع الحالي: لم نُتمّ بعد أي شحنة تصدير، فهذه أسواق نتواصل معها، وليست أسواقًا نخدمها حاليًا. المزيد على صفحة ' + a('/ar/resources/export-markets/', 'أسواق التصدير') + '.'),
             block('من يقوم بماذا',
-                  'تُنجَز المعالجة والتخليل عبر منشأة المعالجة الشريكة المعتمدة في منطقة العاشر من رمضان الصناعية. وتتولى ' + ORG_AR + ' التوريد وتحديد مواصفات المنتج والتواصل مع المشترين وتنسيق التصدير والمستندات. والترتيب كاملًا على صفحة ' + a('/ar/resources/supply-network/', 'شبكة التوريد والمعالجة') + '.'),
+                  'تُنجَز المعالجة والتخليل عبر منشأة المعالجة الشريكة في منطقة العاشر من رمضان الصناعية. وتتولى ' + ORG_AR + ' التوريد وتحديد مواصفات المنتج والتواصل مع المشترين وتنسيق التصدير والمستندات. والترتيب كاملًا على صفحة ' + a('/ar/resources/supply-network/', 'شبكة التوريد والمعالجة') + '.'),
             block('التشكيلة', 'سبعة منتجات. الأعيرة ومواصفات المحلول الملحي والصيغ على صفحة كل منتج وفي ' + a('/ar/catalog/', 'الكتالوج') + '.', extra=products('ar')),
         )
         + cta('أخبرنا بسوقك وحجم طلبك', 'سنرسل لك عرضًا مخصصًا ونؤكد الشروط لطلبك.',
@@ -416,7 +416,7 @@ PAGES['manufacturer'] = {
     'en': dict(
         crumb='Manufacturers &amp; OEM',
         title=f'OEM &amp; Co-Packing Olive Supply | {ORG_SHORT}',
-        desc='Co-packing and OEM supply of Egyptian olives: custom brine formulation, caliber sorting, private packaging and labeling, with our approved partner facility.',
+        desc='Co-packing and OEM supply of Egyptian olives: custom brine formulation, caliber sorting, private packaging and labeling, with our partner facility.',
         keywords='OEM olive co-packing Egypt, olive contract manufacturing, custom brine formulation olives, private label olive formulation',
         main=lambda: hero('Solutions', 'For Manufacturers and OEM Buyers',
                           'Co-packing and OEM supply for buyers who need Egyptian table olives to their own specification.')
@@ -429,7 +429,7 @@ PAGES['manufacturer'] = {
                 ('Private packaging and labeling', 'Packing and labeling to your requirements, across glass, tin, bucket and barrel formats, with label design help on request.'),
             ])),
             block('Who does what',
-                  'Our team takes an active technical role: formulation, sorting and packaging and labeling decisions are worked out by us, with you. The physical processing, brining and packing are carried out at our approved partner processing facility in the 10th of Ramadan Industrial Zone. We do not own or operate a processing factory, and we do not present the partner facility as ours &mdash; the arrangement is set out on ' + a('/resources/supply-network/', 'Supply &amp; Processing Network') + '.'),
+                  'Our team takes an active technical role: formulation, sorting and packaging and labeling decisions are worked out by us, with you. The physical processing, brining and packing are carried out at our partner processing facility in the 10th of Ramadan Industrial Zone. We do not own or operate a processing factory, and we do not present the partner facility as ours &mdash; the arrangement is set out on ' + a('/resources/supply-network/', 'Supply &amp; Processing Network') + '.'),
             block('How to start',
                   'Send us your requirements &mdash; the product, the brine, the caliber, the packaging and labeling, and the volume. We will confirm what is feasible, the specification, and a quotation. A sample of the varieties you are considering can come first; see ' + a('/how-we-work/', 'How We Work') + ' for the steps. Which products are offered for private label is on ' + a('/resources/private-label/', 'Private Label &amp; OEM') + '.'),
             block('Order terms',
@@ -441,7 +441,7 @@ PAGES['manufacturer'] = {
     'ar': dict(
         crumb='المصنّعون و OEM',
         title=f'توريد زيتون OEM وتعبئة تعاقدية | {ORG_AR_SHORT}',
-        desc='تعبئة تعاقدية وتوريد OEM لزيتون المائدة المصري: تركيب محلول ملحي مخصص، وفرز أعيرة محددة، وتغليف وملصقات خاصة، يُنفَّذ مع منشأة المعالجة الشريكة المعتمدة لدينا.',
+        desc='تعبئة تعاقدية وتوريد OEM لزيتون المائدة المصري: تركيب محلول ملحي مخصص، وفرز أعيرة محددة، وتغليف وملصقات خاصة، يُنفَّذ مع منشأة المعالجة الشريكة لدينا.',
         keywords='تعبئة تعاقدية للزيتون مصر, تصنيع زيتون بالتعاقد, تركيب محلول ملحي مخصص للزيتون, زيتون بالعلامة الخاصة OEM',
         main=lambda: hero('الحلول', 'للمصنّعين ومشتري OEM',
                           'تعبئة تعاقدية وتوريد OEM للمشترين الذين يحتاجون زيتون مائدة مصريًا بحسب مواصفاتهم.')
@@ -454,7 +454,7 @@ PAGES['manufacturer'] = {
                 ('التغليف ووضع الملصقات الخاصة', 'تعبئة ووضع ملصقات بحسب متطلباتك، بصيغ الزجاج والصفيح والدلو والبرميل، مع إمكانية المساعدة في تصميم الملصق عند الطلب.'),
             ])),
             block('من يقوم بماذا',
-                  'يؤدي فريقنا دورًا فنيًا فعليًا: قرارات التركيب والفرز والتغليف ووضع الملصقات نعمل عليها نحن، معك. أما المعالجة والتخليل والتعبئة فعليًا فتُنفَّذ في منشأة المعالجة الشريكة المعتمدة في منطقة العاشر من رمضان الصناعية. نحن لا نمتلك مصنع معالجة ولا نُشغّله، ولا نقدّم المنشأة الشريكة على أنها ملكنا &mdash; والترتيب موضّح على صفحة ' + a('/ar/resources/supply-network/', 'شبكة التوريد والمعالجة') + '.'),
+                  'يؤدي فريقنا دورًا فنيًا فعليًا: قرارات التركيب والفرز والتغليف ووضع الملصقات نعمل عليها نحن، معك. أما المعالجة والتخليل والتعبئة فعليًا فتُنفَّذ في منشأة المعالجة الشريكة في منطقة العاشر من رمضان الصناعية. نحن لا نمتلك مصنع معالجة ولا نُشغّله، ولا نقدّم المنشأة الشريكة على أنها ملكنا &mdash; والترتيب موضّح على صفحة ' + a('/ar/resources/supply-network/', 'شبكة التوريد والمعالجة') + '.'),
             block('كيف تبدأ',
                   'أرسل لنا متطلباتك &mdash; المنتج، والمحلول الملحي، والعيار، والتغليف والملصقات، والكمية. وسنؤكد ما يمكن تنفيذه، والمواصفات، وعرض السعر. ويمكن أن تسبق ذلك عينة من الأصناف التي تدرسها؛ والخطوات على صفحة ' + a('/ar/how-we-work/', 'كيف نعمل') + '. والمنتجات المتاحة للعلامة الخاصة على صفحة ' + a('/ar/resources/private-label/', 'العلامة الخاصة و OEM') + '.'),
             block('شروط الطلب',

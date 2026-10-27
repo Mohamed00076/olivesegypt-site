@@ -45,7 +45,7 @@
  * and, on every page, on a trial order offered below the container
  * ("smaller trial quantities may be possible"; owner, 2026-10-02: there is
  * no trial order), a reply promised in "one business day" when the reply
- * time is 24 hours, Sunday to Thursday (C-192; C-115 until 2026-10-27), and the "a approved" typo.
+ * time is 24 hours, Sunday to Thursday (C-193; C-115 until 2026-10-27), and the "a approved" typo.
  *
  * A new article, or an edit, gets the same review as any page: its company
  * facts must already be in docs/claim-and-evidence-register.csv.
@@ -200,7 +200,7 @@ for (const f of articles) {
 }
 t('no article puts a tonnage on a container', containerTonnage.length === 0, containerTonnage.join(' | '));
 
-// ---- one reply time (C-192) ---------------------------------------------------
+// ---- one reply time (C-193) ---------------------------------------------------
 // The articles' CTA and /media (and its Inquiries page) said "one business day"
 // until 2026-10-02, beside the 24 hours promised on every form.
 const slowReply = [...pages, ...guides].filter((f) => /one business day|يوم عمل واحد/i.test(read(f)));
@@ -231,7 +231,7 @@ for (const f of [...new Set(replySurfaces)]) {
   const ar = REPLY_AR.reduce((s, r) => s.split(r).join(' '), src).match(/خلال 24 ساعة/);
   if (en || ar) bareReply.push(`${f}: "${(en || ar)[0]}"`);
 }
-t('every English and Arabic reply promise is 24 hours Sunday to Thursday, two business days from Friday or Saturday (C-192)', bareReply.length === 0, bareReply.slice(0, 8).join(' | '));
+t('every English and Arabic reply promise is 24 hours Sunday to Thursday, two business days from Friday or Saturday (C-193)', bareReply.length === 0, bareReply.slice(0, 8).join(' | '));
 
 // ---- /media/news carries the same news as /media ----------------------------
 // Until 2026-10-02 the brining-line announcement was on /media only, and

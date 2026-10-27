@@ -21,7 +21,7 @@
  *
  * A NEW PERSON becomes a new buyer: created_by 'website', unassigned, due
  * tomorrow -- the forms promise a reply within 24 hours Sunday to Thursday
- * (two business days from Friday or Saturday, C-192), so an unanswered
+ * (two business days from Friday or Saturday, C-193), so an unanswered
  * enquiry shows up in the dashboard's overdue list rather than going quiet.
  *
  * SOMEONE ALREADY IN THE CRM (same email, not deleted) is not duplicated.

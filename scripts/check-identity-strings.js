@@ -136,7 +136,20 @@ const BANNED = [
     why: 'the Arabic form of the same claim' },
 
   { pattern: /certified partner facilit(y|ies)/i,
-    why: 'no partner certificate has been verified yet; the approved wording is "approved partner facility"' },
+    why: 'no partner certificate has been verified yet; the approved wording is "partner facility"' },
+
+  /*
+   * "Approved partner facility" read as if a regulator had approved the
+   * facility; the register holds only our own choice of partner. Owner,
+   * 2026-10-27 (C-192): "partner facility", "partner arrangements", and in
+   * Arabic «منشأة شريكة» / «ترتيبات شراكة», never «معتمدة». "Approved
+   * artwork" and «مجموعة المنتجات المعتمدة» are not about the facility and
+   * stay.
+   */
+  { pattern: /\b(?:approved|accredited) partner\b|\bpartner-approved\b|\bapproved (?:processing )?facilit(?:y|ies)\b/i,
+    why: 'reads as a regulatory approval of the partner facility; say "partner facility" / "partner arrangements" (C-192)' },
+  { pattern: /(?:شراكة|الشريكة|شريكة|الشريك)\s+(?:ال)?معتمد/,
+    why: 'the Arabic form of the same: «منشأة شريكة» / «ترتيبات شراكة», without «معتمدة» (C-192)' },
 ];
 
 /*
