@@ -58,7 +58,7 @@ const CERTIFICATES = 'Certificações da unidade parceira: em verificação com 
 const REPLY = 'Respondemos em até 24 horas de domingo a quinta-feira (horário do Cairo, 5 a 6 horas à frente de Brasília, conforme a estação). Mensagens recebidas na sexta ou no sábado são respondidas em até dois dias úteis (domingo a quinta).';
 // "Como funciona" points to it; the promise itself is printed twice, on the contact card and in the form (owner, round 3).
 const REPLY_POINTER = 'Prazo de resposta: veja Fale conosco, abaixo.';
-// Owner, 2026-10-26 (C-188): the Egypt–Mercosur agreement, narrowed. In force,
+// Owner, 2026-10-26 (C-198): the Egypt–Mercosur agreement, narrowed. In force,
 // origin rules and certificate, other taxes, confirmed with the buyer's
 // importer and broker -- no NCM code, category, phase-out date, no claim that
 // our goods qualify or that we supply the certificate.
@@ -90,13 +90,13 @@ const BANNED = [
   [/garant(o|e|imos|ia|ido|ida)/i, 'a guarantee'],
   [/anvisa|\bMAPA\b|mercosul|mercosur|tarifa|imposto|\bisen(to|ta|ção)|alíquota|\bNCM\b|licença de importação|registro no brasil/i, 'a Brazilian import, tax or compliance claim'],
   [/frete (para|até) o brasil|entrega(mos)? no brasil|porto de santos|\bsantos\b|\bparanaguá\b|\bitajaí\b|trânsito de \d|dias até o brasil/i, 'a Brazil-specific shipping claim'],
-  [/categoria [A-E]\b|desgrava|elimina(do|da|ção) (da|das|do) (tarifa|imposto)|\b(2005|0711)\.\d|qualifica(m|dos?|das?)? para|emitimos|fornecemos o certificado/i, 'a tariff code, category, phase-out date or qualification claim (owner: docs only, C-188)'],
+  [/categoria [A-E]\b|desgrava|elimina(do|da|ção) (da|das|do) (tarifa|imposto)|\b(2005|0711)\.\d|qualifica(m|dos?|das?)? para|emitimos|fornecemos o certificado/i, 'a tariff code, category, phase-out date or qualification claim (owner: docs only, C-198)'],
   [/vácuo/i, 'vacuum packing (not offered, C-151)'],
   [/outros recheios|recheios? (sob consulta|a pedido|personalizados)/i, 'a filling beyond pepper or carrot (C-152)'],
   [/\bLCL\b|menos de (um|1) contêiner|carga fracionada|pedido (de )?teste/i, 'an order below a full container (C-140)'],
   [/tonelada|\b\d+([.,]\d+)?\s?(MT|t)\b/i, 'a tonnage (none is stated, C-140)'],
   [/premium|\bfin[oa]s? sabor|melhor(es)? (azeitona|qualidade)|orgânic/i, 'a quality claim the register does not hold (C-160)'],
-  [/24 horas|dois dias úteis|resposta (imediata|garantida|instantânea)|respondemos (imediatamente|na hora|em minutos)|imediatamente/i, 'a reply-time promise outside the approved wording (C-186)'],
+  [/24 horas|dois dias úteis|resposta (imediata|garantida|instantânea)|respondemos (imediatamente|na hora|em minutos)|imediatamente/i, 'a reply-time promise outside the approved wording (C-196)'],
   [/unidade parceira (aprovada|homologada|credenciada|autorizada)|aprovad[ao]s? pel[ao]s?|homologad/i, 'an approval the register does not hold: the partner facility is "uma unidade parceira" (owner, round 3)'],
   [/pimentão|\bpimenta\b|cenoura|\brecheio|recheadas? (com|de)\b|amêndoa|\balho\b|anchova|\bqueijo|\batum\b|limão/i, 'a filling: no filling is named in Portuguese until the owner confirms it (2026-10-26)'],
   [/Companhia Tripla|Empresa Tripla|Triple Companhia|Companhia Triple/i, 'a translated legal name'],
@@ -162,11 +162,11 @@ const ltext = visibleText(landing);
 // ---- the approved commercial sentences -------------------------------------
 {
   const f = landing.split(FTA).length - 1;
-  if (f !== 1) fail(`${LANDING}: the Mercosul–Egito paragraph is printed ${f} time(s), not once (C-188)`);
+  if (f !== 1) fail(`${LANDING}: the Mercosul–Egito paragraph is printed ${f} time(s), not once (C-198)`);
   const n = landing.split(REPLY).length - 1;
   if (n !== 2) fail(`${LANDING}: the reply time is printed ${n} time(s); it belongs on the contact card and in the form, twice (owner, round 3)`);
 }
-for (const [s, what] of [[FTA_HEADING, 'the Mercosul–Egito heading'], [FTA, 'the Mercosul–Egito paragraph (C-188)'], [REPLY_POINTER, 'the pointer to the reply time in "Como funciona"'], [REPLY, 'the reply time'], [HOURS, 'the hours'], [WHATSAPP_ANY_TIME, 'the WhatsApp line'],
+for (const [s, what] of [[FTA_HEADING, 'the Mercosul–Egito heading'], [FTA, 'the Mercosul–Egito paragraph (C-198)'], [REPLY_POINTER, 'the pointer to the reply time in "Como funciona"'], [REPLY, 'the reply time'], [HOURS, 'the hours'], [WHATSAPP_ANY_TIME, 'the WhatsApp line'],
   [MOQ, 'the minimum order'], [IMPORT, 'the import-requirements sentence'], [SAMPLE, 'the sample'],
   [PRICES, 'prices confirmed during quotation'], [CERTIFICATES, 'the certificates placeholder']]) {
   if (!ltext.includes(s)) fail(`${LANDING}: ${what} is not in the approved wording: "${s}"`);

@@ -4,7 +4,7 @@ const { neon } = require('@neondatabase/serverless');
 const { reportFailure } = require('./_failure_lib');
 const { normaliseEmail } = require('./_optout_lib');
 const {
-  stageRuleError,
+  stageRuleError, lostReasonOf, LOST_CATEGORIES,
   requireCrmSession, readJsonBody, json, describeDbError, dbStep, classifyCompanyName,
   STAGES, REGIONS: REGION_LIST, ensureBuyerTables, parseId, INVALID_ID_ERROR,
 } = require('./_crm_lib');
@@ -50,7 +50,7 @@ const MAX = {
   contact_email: 320, contact_phone: 60, contact_whatsapp: 60, lead_source: 150,
   current_stage: 40, packaging_format: 150, estimated_volume: 150, target_price: 100,
   quoted_price: 100, incoterm: 20, certifications_required: 500, next_action: 300,
-  notes: 8000, lost_reason: 300,
+  notes: 8000, lost_reason: 300, lost_category: 40,
 };
 
 function str(v) { return typeof v === 'string' ? v : v == null ? '' : String(v); }
@@ -70,6 +70,8 @@ async function audit(sql, actor, action, recordType, recordId, details) {
     VALUES (${actor}, ${action}, ${recordType}, ${recordId}, ${details || null})
   `;
 }
+
+const LOST_CATEGORY_VALUES = new Set(LOST_CATEGORIES.map((c) => c[0]));
 
 function validateBuyerInput(body, forCreate) {
   const errors = [];
@@ -102,6 +104,12 @@ function validateBuyerInput(body, forCreate) {
     fieldReasons.country_region = 'Choose a region from the list.';
   }
   if (body.current_stage !== undefined && !STAGE_SET.has(currentStage)) errors.push('current_stage');
+  // A Lost/Stalled category, when one is sent, must be one of the list (empty clears it).
+  if (body.lost_category !== undefined && body.lost_category !== null && body.lost_category !== '' &&
+      !LOST_CATEGORY_VALUES.has(String(body.lost_category))) {
+    errors.push('lost_category');
+    fieldReasons.lost_category = 'Choose a reason from the list.';
+  }
 
   let productInterest = [];
   if (Array.isArray(body.product_interest)) {
@@ -127,7 +135,7 @@ async function handleList(event, sql) {
   const rows = await sql`
     SELECT id, created_at, updated_at, created_by, assigned_to, company_name, country_region,
            contact_name, contact_email, current_stage, product_interest, next_action,
-           next_action_due, certification_gap, lost_reason, deleted_at
+           next_action_due, certification_gap, lost_reason, lost_category, deleted_at
     FROM buyers
     WHERE deleted_at IS NULL
       AND (${stage}::text IS NULL OR current_stage = ${stage})
@@ -170,7 +178,7 @@ async function handleGet(event, sql, id, actor) {
   const activity = await dbStep('reading the activity log',
     () => sql`SELECT id, created_at, created_by, entry FROM buyer_activity_log WHERE buyer_id = ${id} ORDER BY created_at DESC LIMIT 500`);
   const stageHistory = await dbStep('reading the stage history',
-    () => sql`SELECT id, from_stage, to_stage, changed_at, changed_by FROM buyer_stage_history WHERE buyer_id = ${id} ORDER BY changed_at ASC`);
+    () => sql`SELECT id, from_stage, to_stage, changed_at, changed_by, reason_category, reason_note FROM buyer_stage_history WHERE buyer_id = ${id} ORDER BY changed_at ASC`);
 
   /*
    * Has this buyer's own email address used the website's unsubscribe page?
@@ -209,7 +217,7 @@ async function handleCreate(event, sql, actor) {
       created_by, assigned_to, company_name, country_region, contact_name, contact_title,
       contact_email, contact_phone, contact_whatsapp, lead_source, current_stage,
       product_interest, packaging_format, estimated_volume, target_price, quoted_price,
-      incoterm, certifications_required, certification_gap, next_action, next_action_due, notes, lost_reason
+      incoterm, certifications_required, certification_gap, next_action, next_action_due, notes, lost_reason, lost_category
     ) VALUES (
       ${actor}, ${optional(body.assigned_to, 100) || actor}, ${companyName}, ${countryRegion},
       ${optional(body.contact_name, MAX.contact_name)}, ${optional(body.contact_title, MAX.contact_title)},
@@ -221,13 +229,16 @@ async function handleCreate(event, sql, actor) {
       ${optional(body.incoterm, MAX.incoterm)}, ${optional(body.certifications_required, MAX.certifications_required)},
       ${body.certification_gap === true}, ${optional(body.next_action, MAX.next_action)},
       ${body.next_action_due ? clean(body.next_action_due, 10) : null}, ${optional(body.notes, MAX.notes)},
-      ${optional(body.lost_reason, MAX.lost_reason)}
+      ${optional(body.lost_reason, MAX.lost_reason)}, ${currentStage === 'Lost/Stalled' ? lostReasonOf(body).category : optional(body.lost_category, MAX.lost_category)}
     )
     RETURNING id
   `;
   const id = rows[0].id;
 
-  await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by) VALUES (${id}, NULL, ${currentStage}, ${actor})`;
+  // Created straight into Lost/Stalled: the reason goes on its first history row too.
+  const created = currentStage === 'Lost/Stalled' ? lostReasonOf(body) : { category: null, note: null };
+  await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by, reason_category, reason_note)
+            VALUES (${id}, NULL, ${currentStage}, ${actor}, ${created.category || null}, ${created.note ? created.note.slice(0, MAX.lost_reason) : null})`;
   await audit(sql, actor, 'create', 'buyer', id, null);
 
   return json(200, { ok: true, id });
@@ -261,7 +272,7 @@ async function handleUpdate(event, sql, id, actor) {
     'assigned_to', 'company_name', 'country_region', 'contact_name', 'contact_title',
     'contact_email', 'contact_phone', 'contact_whatsapp', 'lead_source', 'current_stage',
     'packaging_format', 'estimated_volume', 'target_price', 'quoted_price', 'incoterm',
-    'certifications_required', 'next_action', 'next_action_due', 'notes', 'lost_reason',
+    'certifications_required', 'next_action', 'next_action_due', 'notes', 'lost_reason', 'lost_category',
   ];
   const updates = {};
   for (const f of fields) {
@@ -269,6 +280,19 @@ async function handleUpdate(event, sql, id, actor) {
   }
   if (body.product_interest !== undefined) updates.product_interest = productInterest;
   if (body.certification_gap !== undefined) updates.certification_gap = body.certification_gap === true;
+  if (updates.lost_category === '') updates.lost_category = null;
+  // The reason belongs to Lost/Stalled: at any other stage a sent reason is
+  // ignored, so a stale one cannot be saved back (owner, 2026-10-23).
+  const resultingStage = body.current_stage !== undefined ? currentStage : previousStage;
+  if (resultingStage !== 'Lost/Stalled') { delete updates.lost_reason; delete updates.lost_category; }
+  // A move to Lost/Stalled stores the reason it was given, made consistent
+  // (a reason with no category is "other"), on the buyer and on the new row.
+  const movingToLost = body.current_stage !== undefined && currentStage !== previousStage && currentStage === 'Lost/Stalled';
+  const moveReason = movingToLost ? lostReasonOf(body) : null;
+  if (moveReason) {
+    updates.lost_category = moveReason.category;
+    updates.lost_reason = moveReason.note ? clean(moveReason.note, MAX.lost_reason) : null;
+  }
 
   if (Object.keys(updates).length === 0) return json(400, { ok: false, error: 'No fields to update' });
 
@@ -298,7 +322,10 @@ async function handleUpdate(event, sql, id, actor) {
   await sql.query(`UPDATE buyers SET ${setClauses.join(', ')} WHERE id = $${i}`, values);
 
   if (updates.current_stage && updates.current_stage !== previousStage) {
-    await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by) VALUES (${id}, ${previousStage}, ${updates.current_stage}, ${actor})`;
+    // Append-only: the reason is written with the row, never added to it later.
+    await sql`INSERT INTO buyer_stage_history (buyer_id, from_stage, to_stage, changed_by, reason_category, reason_note)
+              VALUES (${id}, ${previousStage}, ${updates.current_stage}, ${actor},
+                      ${moveReason ? moveReason.category : null}, ${moveReason && moveReason.note ? clean(moveReason.note, MAX.lost_reason) : null})`;
   }
 
   await audit(sql, actor, 'update', 'buyer', id, Object.keys(updates).join(','));
