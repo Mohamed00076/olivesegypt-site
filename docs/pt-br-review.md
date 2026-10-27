@@ -69,6 +69,25 @@ The header, navigation and footer stay English, unchanged (owner, decision 5). T
 | Request label (shown on arrival) | Pedido de cotação · Pedido de amostra · Pedido de catálogo · Pedido de documentos de qualidade · Consulta sobre marca própria · Pedido de preços no Egito | Quote request · Sample request · Catalogue request · Quality documents request · Private label enquiry · Egyptian pricing request | |
 | WhatsApp message (prefilled) | Olá! Sou comprador no Brasil e gostaria de uma cotação. Empresa: … Produto: … Volume: … | Hello! I'm a buyer in Brazil and would like a quote. Company: … Product: … Volume: … | |
 
+## Header, footer and floating buttons (**DRAFT FOR BRAZILIAN REVIEW**, owner round 4, 2026-10-27)
+
+On both Portuguese pages. Every link stays on `/pt-br/`, apart from the one link to the English site. No other page is in Portuguese.
+
+| Where | Portuguese (draft) | What it means in English | Source |
+|---|---|---|---|
+| Tagline under the name | Exportação de azeitonas de mesa do Egito | Egyptian table olive export | the English tagline |
+| Logo description | Logotipo da Triple Company for Industrial Development | Triple Company for Industrial Development logo | |
+| Menu (header and phone menu) | Produtos · Como funciona · Quem somos · Fale conosco | Products · How it works · About us · Contact us | links to the page's own sections |
+| Button | Solicitar cotação | Request a quote | opens the form on the page |
+| Language link | English | English | goes to `/` |
+| Facebook | Seguir; "Siga a Triple Company for Industrial Development no Facebook"; "Siga-nos no Facebook" | Follow; follow … on Facebook | |
+| Screen-reader labels | Principal (menu) · Alternar modo escuro · Abrir menu · Conversar pelo WhatsApp · Notificações (F8) | Primary · Toggle dark mode · Open menu · Chat on WhatsApp · Notifications | |
+| Footer line | Fornecedora egípcia de azeitonas de mesa, sediada no Cairo, Egito, preparando-se para a exportação internacional por meio de unidades parceiras. | An Egyptian table-olive supplier based in Cairo, Egypt, preparing for international export through partner facilities. | C-185; the English footer line, without "approved" (C-192) |
+| Footer links | Privacidade · Site em inglês | Privacy · English site | |
+| Copyright | © Triple Company for Industrial Development. Todos os direitos reservados. Site: olivesegypt.com | © … All rights reserved. Website: olivesegypt.com | the legal name, untranslated |
+
+The address, the email and the phone stay as they are. The English footer's five columns of English links aren't shown. The "Read Our Insights" tab isn't shown either, because it opens the English blog.
+
 ## Form messages (`assets/inquiry-form.js`)
 
 | Portuguese (draft) | English |
