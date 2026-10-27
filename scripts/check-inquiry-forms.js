@@ -92,6 +92,16 @@ for (const { file, prefix, dir } of PAGES) {
     problems.push(`${file}: the handler reads ids that are not on this page: ${missing.join(', ')}`);
   }
 
+  // ---- no volume option below a full container -------------------------
+  //
+  // The minimum order is a full container load (C-140), so the volume list
+  // offered "Less than 1 container (LCL)" to buyers we cannot serve (owner,
+  // 2026-10-25; C-189).
+  const volume = (html.match(new RegExp(`<select[^>]*id="${prefix}-volume"[\\s\\S]*?</select>`)) || [''])[0];
+  if (/\bLCL\b|less than (1|one|a) (full )?container|أقل من حاوية/i.test(volume)) {
+    problems.push(`${file}: the volume list offers less than a full container (LCL); the minimum order is FCL (C-140)`);
+  }
+
   // ---- the honeypot is off-screen, on the correct side -----------------
   //
   // left:-9999px on an RTL page pushes the field into view instead of out of

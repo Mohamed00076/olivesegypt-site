@@ -177,7 +177,12 @@ Nothing here has been fixed. Each item needs separate approval.
    sign-in; B7 Search Console).
 8. **Confirm the `/admin/analytics` sign-in works** (dropped item).
 9. **Content upkeep:** replace the stale harvest teaser; add register rows for
-   the 2000 MT capacity teaser and the FAO/IOC statistics.
+   the FAO/IOC statistics. *Corrected 2026-10-26: this item also asked for a
+   row for "the 2000 MT capacity teaser". That claim is covered by C-127
+   (registered 2026-09-28, revised 2026-10-02): the owner's wording, in which
+   about 2,000 metric tons is the partner facility's total capacity, not the
+   brining line's. The teaser that said the line "lifts capacity past
+   2000 MT", and its "September 2025" label, are no longer on the site.*
 10. **Soft-404 catch-all:** decide whether unknown URLs should return 404.
 11. **Locale-switch scroll (REGRESSION, minor):** fix, and treat the manual
     check as part of this audit.
