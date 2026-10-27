@@ -84,6 +84,18 @@ t('   and the cookie banner lifts it with the bubble, not onto it',
   /a\[data-testid="floating-blog-link"\] \{[^}]*bottom: 92px;/.test(css));
 t('   and only a mouse-driven screen from 1366px gets the slim side handle',
   /@media \(min-width: 1366px\) and \(hover: hover\) \{\s*a\[data-testid="floating-blog-link"\] \{ --tw-translate-x/.test(css));
+// 2026-10-27 (owner): the footer cookie link at its neighbours' 12px -- a
+// font shorthand on its id beat their text-xs class and set it at 16px; no
+// pill on the printable sheets; room above the floating buttons on the
+// contact pages' footers.
+t('the footer cookie link takes its size from its class, not a font shorthand',
+  /#tc-consent-footer-link\{[^}]*font-family:inherit/.test(consent) && !/#tc-consent-footer-link\{[^}]*\bfont:/.test(consent));
+t('   the printable sheets show no cookie pill',
+  /var PRINT_SHEET = \/\^\\\/\(\?:ar\\\/\)\?\(\?:catalog\\\/print\|business-card\)/.test(consent) && /if \(!addFooterControl\(\) && PRINT_SHEET\) return;/.test(consent));
+for (const f of ['contact/index.html', 'ar/contact/index.html']) {
+  t(`   ${f}: the footer ends with room for the floating buttons on a phone`,
+    /<style>[^<]*@media \(max-width: 639px\) \{ footer \{ padding-bottom: 7rem; \} \}<\/style>/.test(read(f)));
+}
 t('the cookie control also sits in the footer, and the floating pill steps aside for it on phones',
   /function addFooterControl\(/.test(consent) && /#tc-consent-reopen\.tc-in-footer\{display:none;\}/.test(consent));
 
