@@ -31,6 +31,7 @@ const SKIP = new Set(['node_modules', '.git', 'netlify', 'scripts', 'assets', 'd
 
 const HOOKS = {
   'tc-drawer-trigger': 'the mobile menu script finds the button by it',
+  'tc-scroll-region': 'the privacy table\u2019s sideways scroll box; its focus style is in assets/site-nav.js (screen only, kept out of the stylesheet the PDFs are built from)',
   'tc-catalog-filters-meta': 'names the catalogue count row for the filter script',
   'pkg-info': 'names the catalogue packaging note for the filter script',
   'tc-caliber': 'wraps the packaging page caliber scale; its parts (tc-caliber-bar, -seg) carry the styles',

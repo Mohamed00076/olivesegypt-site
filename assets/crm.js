@@ -527,6 +527,26 @@
        * buyer to Lost/Stalled asks why). Confirm stays disabled until it is
        * filled in, and a Confirm resolves { reason: '...' }.
        */
+      /*
+       * choice: { label, options: [[value, label], ...], value, noteRequiredFor }
+       * -- a menu to pick from (the Lost/Stalled reason). With it, the reason
+       * field below is the note, required only when the choice is
+       * noteRequiredFor ("other"). A Confirm resolves { choice, reason }.
+       */
+      var choiceSel = null;
+      if (o.choice) {
+        var chl = document.createElement('label');
+        chl.setAttribute('for', id + '-c');
+        chl.textContent = o.choice.label || 'Choose';
+        choiceSel = document.createElement('select');
+        choiceSel.id = id + '-c';
+        var none = document.createElement('option'); none.value = ''; none.textContent = 'Choose\u2026'; choiceSel.appendChild(none);
+        (o.choice.options || []).forEach(function (op) {
+          var el = document.createElement('option'); el.value = op[0]; el.textContent = op[1]; choiceSel.appendChild(el);
+        });
+        choiceSel.value = o.choice.value || '';
+        box.appendChild(chl); box.appendChild(choiceSel);
+      }
       var reasonInput = null;
       if (o.reason) {
         var rl = document.createElement('label');
@@ -536,6 +556,7 @@
         reasonInput.id = id + '-r'; reasonInput.type = 'text'; reasonInput.setAttribute('dir', 'auto');
         reasonInput.maxLength = o.reason.maxlength || 300;
         if (o.reason.value) reasonInput.value = o.reason.value;
+        if (o.reason.placeholder) reasonInput.placeholder = o.reason.placeholder;
         box.appendChild(rl); box.appendChild(reasonInput);
       }
       var input = null;
@@ -559,7 +580,9 @@
       var before = document.activeElement && document.activeElement !== document.body ? document.activeElement : lastPressed;
       function norm(v) { return String(v || '').trim().replace(/\s+/g, ' ').toLowerCase(); }
       function sync() {
-        ok.disabled = (input ? norm(input.value) !== norm(o.typeToConfirm) : false) || (reasonInput ? !reasonInput.value.trim() : false);
+        var noteNeeded = reasonInput && (choiceSel ? choiceSel.value === o.choice.noteRequiredFor : true);
+        ok.disabled = (input ? norm(input.value) !== norm(o.typeToConfirm) : false) ||
+          (choiceSel ? !choiceSel.value : false) || (noteNeeded ? !reasonInput.value.trim() : false);
       }
       function done(v) {
         document.removeEventListener('keydown', onKey, true);
@@ -571,7 +594,7 @@
         if (e.key === 'Escape') { e.preventDefault(); done(false); }
         if (e.key === 'Tab') {
           // Keep focus inside the panel while it is open.
-          var f = Array.prototype.filter.call(box.querySelectorAll('button, input'), function (x) { return !x.disabled; });
+          var f = Array.prototype.filter.call(box.querySelectorAll('button, input, select'), function (x) { return !x.disabled; });
           if (!f.length) return;
           var i = f.indexOf(document.activeElement);
           if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
@@ -580,14 +603,16 @@
       }
       cancel.addEventListener('click', function () { done(false); });
       function yes() {
-        if (!check && !reasonInput) return true;
+        if (!check && !reasonInput && !choiceSel) return true;
         var v = {};
+        if (choiceSel) v.choice = choiceSel.value;
         if (check) v.checked = !!check.checked;
         if (reasonInput) v.reason = reasonInput.value.trim();
         return v;
       }
       ok.addEventListener('click', function () { if (!ok.disabled) done(yes()); });
       back.addEventListener('click', function (e) { if (e.target === back) done(false); });
+      if (choiceSel) choiceSel.addEventListener('change', sync);
       if (reasonInput) {
         reasonInput.addEventListener('input', sync);
         reasonInput.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !ok.disabled) done(yes()); });
@@ -596,7 +621,7 @@
       document.addEventListener('keydown', onKey, true);
       sync();
       document.body.appendChild(back);
-      (reasonInput || input || cancel).focus();
+      (choiceSel || reasonInput || input || cancel).focus();
     });
   };
 
@@ -619,6 +644,23 @@
    * next time that buyer is moved to Lost/Stalled, so nothing typed is lost
    * (owner, 2026-10-21). CRM.stageMoveSaved forgets it once a move is saved.
    */
+  // Same list, same order, as LOST_CATEGORIES in netlify/functions/_crm_lib.js.
+  CRM.LOST_CATEGORIES = [
+    ['price', 'Price'],
+    ['certification_gap', 'Certification gap'],
+    ['competitor', 'Went to a competitor'],
+    ['no_response', 'No response'],
+    ['other', 'Other'],
+  ];
+  // "Price \u2014 the note", "Price", or the note alone (a reason given before categories, 2026-10-23).
+  CRM.lostReasonText = function (category, note) {
+    var label = '';
+    CRM.LOST_CATEGORIES.forEach(function (c) { if (c[0] === category) label = c[1]; });
+    var n = String(note || '').trim();
+    if (label && n) return label + ' \u2014 ' + n;
+    return label || n;
+  };
+
   var typedReasons = {};
   CRM.stageMoveSaved = function (companyName) { delete typedReasons[companyName || 'this buyer']; };
 
@@ -635,11 +677,15 @@
   CRM.stageMoveCheck = function (companyName, toStage) {
     var who = companyName || 'this buyer';
     if (toStage === 'Lost/Stalled') {
+      var kept = typedReasons[who] || {};
       return CRM.ask({ title: 'Move ' + who + ' to Lost/Stalled?',
-        message: 'Say why. The reason is kept with the buyer, as their Lost / Stalled Reason.',
-        reason: { label: 'Reason', maxlength: 300, value: typedReasons[who] || '' }, confirm: 'Move to Lost/Stalled' }).then(function (v) {
-        if (v && v.reason) typedReasons[who] = v.reason;
-        return v && v.reason ? { lost_reason: v.reason } : null;
+        message: 'Why? The reason is kept with the buyer and on this move in its Stage History.',
+        choice: { label: 'Reason', options: CRM.LOST_CATEGORIES, value: kept.category || '', noteRequiredFor: 'other' },
+        reason: { label: 'Note (needed for \u201cOther\u201d)', maxlength: 300, value: kept.note || '', placeholder: 'e.g. buying from Spain this season' },
+        confirm: 'Move to Lost/Stalled' }).then(function (v) {
+        if (!v || !v.choice) return null;
+        typedReasons[who] = { category: v.choice, note: v.reason || '' };
+        return { lost_category: v.choice, lost_reason: v.reason || '' };
       });
     }
     if (toStage === 'Exported/Completed') {
